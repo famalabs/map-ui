@@ -49,8 +49,8 @@ import {
   UseSortByState,
 } from 'react-table';
 import React from 'react';
-import { ConditionType } from '../components/tables/filters/model';
-import { AutoSelectOption } from '../components/simple';
+import { ConditionType } from '../src/components/tables/filters/model';
+import { AutoSelectOption } from '../src/components/simple';
 
 //type ColumnType = 'boolean' | 'number' | 'date' | 'string' | 'select' | undefined;
 
