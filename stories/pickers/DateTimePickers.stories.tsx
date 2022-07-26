@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { DateTimePicker, DateTimePickerProps } from '@src/components/pickers';
+import { DateTimePicker, DateTimePickerProps } from '../../src/components/pickers';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

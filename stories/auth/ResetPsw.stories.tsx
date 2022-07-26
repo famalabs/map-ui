@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { ResetPsw, ResetPswProps } from '@src/components/auth';
+import { ResetPsw, ResetPswProps } from '../../src/components/auth';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

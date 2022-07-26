@@ -18,18 +18,17 @@ export const SubmitButton: React.VFC<SubmitButtonProps> = ({
   return (
     <>
       <ButtonLoading
-        type="submit"
+        loading={false} type="submit"
         label={label}
         fullWidth={fullWidth}
         variant={variant}
         color={color}
         sx={{
-          margin: (theme: Theme )=> theme.spacing(3, 0, 2),
+          margin: (theme: Theme) => theme.spacing(3, 0, 2),
           textTransform: 'uppercase'
         }}
         disabled={!validForm}
-        {...props}
-      />
+        {...props}      />
     </>
   );
 };

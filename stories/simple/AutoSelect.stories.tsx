@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { AutoSelect, AutoSelectProps } from '@src/components/simple';
+import { AutoSelect, AutoSelectProps } from '../../src/components/simple';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

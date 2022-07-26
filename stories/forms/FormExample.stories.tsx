@@ -1,8 +1,8 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { InputNumber, InputRadio, InputString, useFormState } from '@src/components/forms';
-import { ButtonLoading } from '@src/components/simple/ButtonLoading';
-import {checkRegEx} from '@src/components/validators/common'
+import { InputNumber, InputRadio, InputString, useFormState } from '../../src/components/forms';
+import { ButtonLoading } from '../../src/components/simple/ButtonLoading';
+import {checkRegEx} from '../../src/components/validators/common'
 import { Button, Grid, Paper, Typography } from '@mui/material';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls

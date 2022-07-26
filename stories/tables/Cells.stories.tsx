@@ -14,7 +14,7 @@ import {
   StatusCell,
   ImageCell,
   SelectCell,
-} from '@src/components/tables';
+} from '../../src/components/tables';
 import { ComplexData, generateComplexData } from './mockdata';
 import {Warning} from '@mui/icons-material';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

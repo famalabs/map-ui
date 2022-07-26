@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
+    "declarationDir": "types",
+    "sourceMap": true,
+    "outDir": "dist",
+    "emitDeclarationOnly": true,
     "allowJs": true,
     "strict": false,
     "module": "esnext",
@@ -11,7 +15,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "@src": ["src"],
@@ -25,5 +28,5 @@
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "tests", "types", "stories", "src/**/*.stories.tsx"]
+  "exclude": ["node_modules", "dist", "tests", "stories", "src/**/*.stories.tsx"]
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SurveyEditor, Survey, SurveyForm } from '@src/components/survey';
+import { SurveyEditor, Survey, SurveyForm } from '../../src/components/survey';
 import { FormControl, FormControlLabel, Switch, Divider } from '@mui/material';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls

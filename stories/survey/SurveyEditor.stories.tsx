@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SurveyEditor, SurveyEditorProps } from '@src/components/survey';
+import { SurveyEditor, SurveyEditorProps } from '../../src/components/survey';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

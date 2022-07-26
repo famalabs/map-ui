@@ -12,7 +12,7 @@ export interface ButtonLoadingProps extends ButtonProps {
 /**
  * Button with a Loading prop available
  */
-export const ButtonLoading: React.VFC<ButtonLoadingProps> = ({
+const ButtonLoading: React.VFC<ButtonLoadingProps> = ({
   label = "Button",
   loading,
   ...props
@@ -31,3 +31,5 @@ export const ButtonLoading: React.VFC<ButtonLoadingProps> = ({
     </Button>
   );
 };
+
+export default ButtonLoading;

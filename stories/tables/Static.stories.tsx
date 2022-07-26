@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { StaticTablePaginatedProps, StaticTablePaginated, AvatarCell } from '@src/components/tables';
+import { StaticTablePaginatedProps, StaticTablePaginated, AvatarCell } from '../../src/components/tables';
 import { SimpleData, generateSimpleData, generateComplexData, ComplexData } from './mockdata';
 
 export default {
