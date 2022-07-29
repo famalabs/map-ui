@@ -1,7 +1,9 @@
 import React from 'react';
 import { ColumnInterfaceBasedOnValue } from 'react-table';
 import {  Theme, Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
+const Div = styled('div')``;
 const ALL_TYPES = ['success', 'error', 'warning', 'normal'] as const;
 type SelectTypes = typeof ALL_TYPES[number];
 
@@ -19,14 +21,14 @@ export const SelectCell: <T extends Record<string, any>>(options: SelectCellOpti
 
     return (
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box sx={{
+        <Div sx={{
            paddingLeft: 10,
            paddingRight: 10,
            paddingVertical: 5,
            width: 'auto',
            textAlign: 'center',
            //borderWidth: 3,
-           //borderStyle: 'solid',
+           //borderStyle: 'solid',s
            borderRadius: 20,
            color: (theme:Theme) => theme.palette.primary.main,
           backgroundColor: (theme:Theme) => theme.palette.primary.main + '33',
@@ -44,7 +46,7 @@ export const SelectCell: <T extends Record<string, any>>(options: SelectCellOpti
            }),
         }}>
           {option?.Content || value}
-        </Box>
+        </Div>
       </Box>
     );
 };

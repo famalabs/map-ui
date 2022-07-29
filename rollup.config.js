@@ -7,7 +7,7 @@ const postcss = require('rollup-plugin-postcss');
 import dts from "rollup-plugin-dts";
 import { terser } from "rollup-plugin-terser";
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-const rdel = require('rollup-plugin-delete');
+const rdel = require('rollup-plugin-delete'); // delete dist every time
 
 const packageJson = require("./package.json");
 
@@ -41,6 +41,6 @@ export default [
       input: "dist/esm/types/index.d.ts",
       output: [{ file: "dist/index.d.ts", format: "esm" }],
       plugins: [dts()],
-      external: [/\.css$/],
+      // external: [/\.css$/],
     },
   ];

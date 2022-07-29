@@ -113,14 +113,14 @@ export function CommonTable<T extends Record<string, any>>(props: IProps<T>) {
   zIndex: 1,
   left: 0,
   fontWeight: '300',
-  '&:hover $filterButton': {
+  '&:hover .filterButton': {
     display: 'initial'
   }
                       }),
 
                     ...(index !== 0 && {
                       position: 'relative',
-    '&:hover $filterButton': {
+    '&:hover .filterButton': {
       display: 'initial'
     }
                     })
@@ -133,6 +133,7 @@ export function CommonTable<T extends Record<string, any>>(props: IProps<T>) {
                   {column.render('Header')}
                   {column.canFilter && onFilterClick ? (
                     <IconButton
+                    className='filterButton'
                       onClick={() => onFilterClick(column.id)}
                       size={'small'}
                       sx={{position: 'absolute',

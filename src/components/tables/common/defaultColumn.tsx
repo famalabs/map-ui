@@ -42,9 +42,9 @@ export default function defaultColumn<T extends Record<string, any>>(
     Cell: (props) => {
       switch (props.column.type) {
         case 'boolean':
-          return BooleanCell(props);
+          return BooleanCell()(props);
         case 'date':
-          return DateCell(props);
+          return DateCell()(props);
       }
       return props.value ?? '';
     },

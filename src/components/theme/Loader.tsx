@@ -1,8 +1,9 @@
 import React from 'react';
 import { CssBaseline, Theme, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
-import AdapterMoment from '@mui/lab/AdapterMoment';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+
 import moment from 'moment';
 
 type ThemeLoaderProps = {
@@ -33,7 +34,7 @@ export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, l
 
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterMoment} locale={lang}>
+      <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={lang}>
         <SnackbarProvider maxSnack={3}>
           <CssBaseline />
           {children}

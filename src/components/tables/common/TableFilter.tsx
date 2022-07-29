@@ -8,6 +8,7 @@ import { FilterIcon } from './Table';
 import { styled } from '@mui/material/styles';
 
 const Span = styled('span')``;
+const Div = styled('div')``;
 
 export interface CustomFilter<T extends Record<string, any>> {
   column: IdType<T>;
@@ -175,16 +176,13 @@ export function TableFilter<T extends Record<string, any>>({
               ValueFilter = col.filterModel.DisplayFilter;
             }
             return (
-              <Box sx={{ display: 'flex',
-              marginBottom: 15}} key={idx}>
-                <Box style={{ width: '5%', textAlign: 'center' }} sx={{ justifySelf: 'stretch',
+              <Div sx={{ display: 'flex', marginBottom: 15}} key={idx}>
+                <Div style={{ width: '5%', textAlign: 'center' }} sx={{ justifySelf: 'stretch',
       alignSelf: 'center',
       marginRight: 8}}>
                   {idx === 0 ? 'Dove' : 'e'}
-                </Box>
-                <Box style={{ width: '34%' }} sx={{ justifySelf: 'stretch',
-      alignSelf: 'center',
-      marginRight: 8}}>
+                </Div>
+                <Box style={{ width: '34%' }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 8}}>
                   <AutoSelect
                     title="Colonna"
                     autocompleteProps={{ disableClearable: true, size: 'small' }}
@@ -226,7 +224,7 @@ export function TableFilter<T extends Record<string, any>>({
                     <CloseOutlined />
                   </IconButton>
                 </Box>
-              </Box>
+              </Div>
             );
           })}
 

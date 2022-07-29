@@ -1,6 +1,6 @@
 {
   "name": "@famalabs/map-ui",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "author": "Alberto Pietrangelo",
   "private": false,
   "main": "dist/cjs/index.js",
@@ -16,6 +16,7 @@
     "@mui/lab": "^5.0.0-alpha.91",
     "@mui/material": "^5.9.1",
     "@mui/system": "^5.9.1",
+    "@mui/x-date-pickers": "^5.0.0-beta.3",
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.3.3",
