@@ -176,13 +176,11 @@ export function TableFilter<T extends Record<string, any>>({
               ValueFilter = col.filterModel.DisplayFilter;
             }
             return (
-              <Div sx={{ display: 'flex', marginBottom: 15}} key={idx}>
-                <Div style={{ width: '5%', textAlign: 'center' }} sx={{ justifySelf: 'stretch',
-      alignSelf: 'center',
-      marginRight: 8}}>
-                  {idx === 0 ? 'Dove' : 'e'}
-                </Div>
-                <Box style={{ width: '34%' }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 8}}>
+              <Div sx={{ display: 'flex', marginBottom: 2}} key={idx}>
+                {/* <Div style={{ width: '40px', flex: 'none', textAlign: 'center' }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 4}}>
+                  {idx === dfilters.length-1 ? 'Nuovo':'Filtro '+(idx+1) }
+                </Div> */}
+                <Box style={{ width: '80px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
                   <AutoSelect
                     title="Colonna"
                     autocompleteProps={{ disableClearable: true, size: 'small' }}
@@ -194,9 +192,7 @@ export function TableFilter<T extends Record<string, any>>({
                     onChange={(id) => editDfilter(idx, { column: id })}
                   />
                 </Box>
-                <Box style={{ width: '20%' }} sx={{ justifySelf: 'stretch',
-      alignSelf: 'center',
-      marginRight: 8}}>
+                <Box style={{ width: '80px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
                   <AutoSelect
                     title="Condizione"
                     autocompleteProps={{ disableClearable: true, size: 'small' }}
@@ -205,9 +201,7 @@ export function TableFilter<T extends Record<string, any>>({
                     onChange={(id) => editDfilter(idx, { cond: id })}
                   />
                 </Box>
-                <Box style={{ flex: 1 }} sx={{ justifySelf: 'stretch',
-      alignSelf: 'center',
-      marginRight: 8}}>
+                <Box style={{ width: '140px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
                   <ValueFilter
                     value={dfilter.value}
                     condition={dfilter.cond}
@@ -217,9 +211,7 @@ export function TableFilter<T extends Record<string, any>>({
                     label="Valore"
                   />
                 </Box>
-                <Box style={{ width: '3%' }} sx={{ justifySelf: 'stretch',
-      alignSelf: 'center',
-      marginRight: 8}}>
+                <Box style={{ width: '24px' }} sx={{ justifySelf: 'stretch',alignSelf: 'center', marginRight: 2}}>
                   <IconButton size="small" onClick={() => removeDfilter(idx)}>
                     <CloseOutlined />
                   </IconButton>

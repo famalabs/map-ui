@@ -4,7 +4,7 @@ import { SurveyEditor, SurveyEditorProps } from '../../src/components/survey/Sur
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
-  title: 'survey/Editor',
+  title: 'crf/Editor',
   component: SurveyEditor,
   argTypes: {},
 } as Meta;

@@ -20,22 +20,22 @@ export interface InputStringProps
 const emptyValidators: any = [];
 
 export const InputString: React.VFC<InputStringProps> = ({
-                                                           nameid,
-                                                           value,
-                                                           setValue,
-                                                           setValid,
-                                                           emptyMessage = 'You cannot leave this field empty',
-                                                           defaultErrorMessage = 'Invalid input',
-                                                           validators = emptyValidators,
-                                                           variant = 'outlined',
-                                                           margin = 'normal',
-                                                           fullWidth = true,
-                                                           label,
-                                                           required = true,
-                                                           onBlur,
-                                                           showError = false,
-                                                           ...props
-                                                         }) => {
+    nameid,
+    value,
+    setValue,
+    setValid,
+    emptyMessage = 'You cannot leave this field empty',
+    defaultErrorMessage = 'Invalid input',
+    validators = emptyValidators,
+    variant = 'outlined',
+    margin = 'normal',
+    fullWidth = true,
+    label,
+    required = true,
+    onBlur,
+    showError = false,
+    ...props
+  }) => {
   const [error, setError] = React.useState(required ? emptyMessage : '');
   const [showErr, setShowErr] = React.useState(showError);
   React.useEffect(() => {
