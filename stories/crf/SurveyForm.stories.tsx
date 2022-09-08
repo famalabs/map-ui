@@ -19,7 +19,7 @@ const SurveyFormExample: React.VFC = (args) => {
   return (
     <SurveyForm
       {...args}
-      survey={new Survey(Survey.schemaFromJSON(JSON.stringify(surveyFormExmple)))}
+      survey={new Survey(surveyFormExmple)}
     //   questions={{
     //     1: { type: 'textbox', text: 'Nome', value: 'string' },
     //     2: { type: 'textbox', text: 'Anni', value: 'number' },

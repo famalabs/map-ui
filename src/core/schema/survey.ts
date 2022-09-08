@@ -23,9 +23,9 @@ export class Survey {
       this.root.parent = null;
     }
   }
-  public static schemaFromJSON = (json: string): Object => {
+  public static schemaFromJSON = (json: Object): Object => {
     // console.log(json);
-    const jsonObject = JSON.parse(json);
+    const jsonObject = JSON.parse(JSON.stringify(json));
     return jsonObject;
   };  
 
