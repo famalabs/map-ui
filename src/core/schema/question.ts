@@ -4,7 +4,7 @@ import {isDefault, DEFAULT_OPTIONS_REQUIRED} from './config';
 
 export class Question extends SurveyItem implements IAnswerable<any> {
 
-  options: any;
+  // options: any;
   answer: any;
 
   constructor(data: any = {}) {
@@ -56,5 +56,14 @@ export class Question extends SurveyItem implements IAnswerable<any> {
     let thinkTime = 0.03;
     let writeTime = 0.1;
     return thinkTime + writeTime + super.estimateCompileTime();
+  }
+
+  toUseFormState() {
+    // var _res = this.items.map((itm) => itm.toUseFormState())
+    // return "\""+this.id+"\":\{\"type\":\"node\",\"required\":"+(this.options.required ?? false)+"\}"
+    return {
+      type: 'node',
+      value: 'string'
+    } 
   }
 }

@@ -72,7 +72,8 @@ export const InputNumber: React.VFC<InputNumberProps> = ({
       margin={margin}
       fullWidth={fullWidth}
       id={nameid}
-      label={label ?? nameid.toUpperCase()}
+      // label={label ?? nameid.toUpperCase()}
+      label={label}
       name={nameid}
       required={required}
       {...props}

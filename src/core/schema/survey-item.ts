@@ -1,6 +1,7 @@
 import React from 'react';
 import {DocumentRenderer} from './renderer';
 import {isId, isValidField, isValidName} from './config';
+import { Form } from '@src/components';
 
 export class SurveyItem {
   id: string;
@@ -8,6 +9,7 @@ export class SurveyItem {
   name: string;
   text: string;
   items: Array<SurveyItem>;
+  options: any;
   layout: any;
   description: string;
   bibliography: string;
@@ -23,6 +25,7 @@ export class SurveyItem {
     if (isValidField(data.text))
       this.text = data.text;
     this.items = data.items || [];
+    this.options = data.options || {};
     this.layout = data.layout || {};
     if (isValidField(data.description))
       this.description = data.description;
@@ -208,6 +211,28 @@ export class SurveyItem {
       }
     }
     return time; // minutes
+  }
+
+  toUseFormState() {
+    // var _childState = ""
+    // for (let i = 0; i < this.items.length; i++) {
+    //   _childState += this.items[i].toUseFormState();
+    //   if (i+1 != this.items.length) { _childState += ","; }
+    // }
+    // var _type = "\"type\":\"group\""
+    // // var _childState = this.items.map((itm) => ({ [itm.id]:itm.toUseFormState() }))
+    // if (this.type === 'Survey') {
+    //   return "\{,\"value\":\{"+_childState+"\}\}"
+    // } else {
+    //   return "\""+this.id+"\":\{\"type\":\"group\",\"value\":\{"+_childState+"\}\}"
+    // }
+    return {
+      type: 'group',
+      value: this.items.reduce((acc, itm) => ({
+        ...acc,
+        [itm.id]:itm.toUseFormState() as Form,
+      }),{})
+    }
   }
 
 }

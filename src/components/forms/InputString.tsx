@@ -72,7 +72,8 @@ export const InputString: React.VFC<InputStringProps> = ({
       margin={margin}
       fullWidth={fullWidth}
       id={nameid}
-      label={label ?? nameid.toUpperCase()}
+      // label={label ?? nameid.toUpperCase()}
+      label={label}
       name={nameid}
       required={required}
       {...props}

@@ -93,4 +93,14 @@ export class QuestionSelect extends Question {
     return null;
   }
 
+  toUseFormState() {
+    var validators = []
+    return {
+      type: 'node',
+      value: 'number',
+      required: this.options.required ?? false,
+      validators: validators
+    }
+  }
+
 }

@@ -62,4 +62,17 @@ export class QuestionDate extends Question {
     }
     return true;
   }
+
+    toUseFormState() {
+    var validators = []
+    // if (this.options.minLength) validators.push({id:'minValue'})
+    // if (this.options.minLength) validators.push({id:'maxValue'})
+    return {
+      type: 'node',
+      value: 'string',
+      required: this.options.required ?? false,
+      validators: validators
+    }
+  }
+
 }

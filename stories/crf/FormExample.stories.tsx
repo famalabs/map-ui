@@ -139,6 +139,10 @@ const FormExample: React.VFC = () => {
       />
       <ButtonLoading label="log data" type="submit" variant="contained" loading={false} />
       <div>
+        <pre>{JSON.stringify(Value, null, 2)}</pre>
+        <pre>{JSON.stringify(setValue, null, 2)}</pre>
+        <pre>{JSON.stringify(validators, null, 2)}</pre>
+        <pre>{JSON.stringify(requires, null, 2)}</pre>
         <pre>{JSON.stringify(Valid, null, 2)}</pre>
       </div>
     </form>

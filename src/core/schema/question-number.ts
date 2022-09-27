@@ -66,4 +66,16 @@ export class QuestionNumber extends Question {
       schema.unit = this.unit;
     return schema;
   }
+  
+    toUseFormState() {
+    var validators = []
+    // if (this.options.minLength) validators.push({id:'minValue'})
+    // if (this.options.minLength) validators.push({id:'maxValue'})
+    return {
+      type: 'node',
+      value: 'number',
+      required: this.options.required ?? false,
+      validators: validators
+    }
+  }
 }

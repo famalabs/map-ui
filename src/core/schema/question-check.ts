@@ -47,4 +47,17 @@ export class QuestionCheck extends Question {
       return super.iterate(iterator, context);
     iterator(this, context);
   }
+
+  toUseFormState() {
+    var validators = []
+    // if (this.options.minLength) validators.push({id:'minLength'})
+    // if (this.options.minLength) validators.push({id:'maxLength'})
+    return {
+      type: 'node',
+      value: 'string',
+      required: this.options.required ?? false,
+      validators: validators
+    }
+  }
+  
 }

@@ -42,4 +42,17 @@ export class QuestionText extends Question {
     }
     return schema;
   }
+
+  toUseFormState() {
+    var validators = []
+    // if (this.options.minLength) validators.push({id:'minLength'})
+    // if (this.options.minLength) validators.push({id:'maxLength'})
+    return {
+      type: 'node',
+      value: 'string',
+      required: this.options.required ?? false,
+      validators: validators
+    }
+  }
+
 }

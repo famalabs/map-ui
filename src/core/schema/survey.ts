@@ -11,6 +11,7 @@ import {ItemFunction} from './item-function';
 import {ItemTable} from './item-table';
 import {isId} from './config';
 import {FeaturesMap, Field, FieldsMap, IterationContext} from "./interfaces";
+import { Form } from '@src/components/forms';
 
 export class Survey {
   root: SurveyItem;
@@ -283,6 +284,14 @@ export class Survey {
         item.result = undefined;
       }
     });
+  }
+
+  toUseFormState(): Form {
+    // var _childState = this.root.toUseFormState();
+    var _res = this.root.toUseFormState();
+    console.log(_res)
+    // return JSON.parse(_childState)
+    return _res as Form;
   }
 
 }
