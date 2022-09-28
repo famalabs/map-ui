@@ -27,6 +27,7 @@ export function QuestionForm({
         return (
             <InputString
             nameid={item.id}
+            title={item.text}
             label={item.description ?? item.text}
             value={value[item.id]}
             setValue={setValue[item.id]}
@@ -39,6 +40,7 @@ export function QuestionForm({
         return (
             <InputNumber
             nameid={item.id}
+            title={item.text}
             label={item.description ?? item.text}
             value={value[item.id]}
             setValue={setValue[item.id]}
@@ -63,7 +65,7 @@ export function QuestionForm({
         return (
             <InputRadio
                 nameid={item.id}
-                title={''}
+                title={item.text}
                 value={value[item.id]}
                 options={item.textScoreToOption() as any}
                 setValue={setValue[item.id]}

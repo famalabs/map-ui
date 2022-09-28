@@ -8,6 +8,8 @@ import { debug } from 'console';
 import { BaseSidebarLayout } from './BaseSidebarLayout';
 import { Box, CssBaseline, Paper, Typography } from '@mui/material';
 import { useState, useEffect } from "react";
+import { HorizontalStepper } from './HorizontalStepper';
+import { NavigationButtons } from './NavigationButtons';
 
 export interface SurveyFormProps {
     survey: Survey;
@@ -17,7 +19,7 @@ export function SurveyForm({
     survey,
 }: SurveyFormProps) {
 
-    const drawerWidth = 240;
+    const drawerWidth = 320;
 
     const [showAllErrors, setShowAllErrors] = React.useState(false);
     const { Value, setValue, validators, requires, Valid } = useFormState(
@@ -38,7 +40,13 @@ export function SurveyForm({
         startPage = survey.root.items[0].items[0].id;
     }
     const [folder, setFolder] = useState(startFolder);
+    // const handleSetFolder = (id: string) => () => {
+    //     setFolder(id);
+    // };
     const [page, setPage] = useState(startPage);
+    // const handleSetPage = (id: string) => () => {
+    //     setPage(id);
+    // };
 
     // return null;
     return (
@@ -47,13 +55,22 @@ export function SurveyForm({
             <BaseSidebarLayout
                 drawerWidth={drawerWidth}
                 root={survey.root}
-                setFolder={setFolder}
-                setPage={setPage}
+                folder={folder}
+                handleSetFolder={setFolder}
+                page={page}
+                handleSetPage={setPage}
             />
             <Box
                 component="main"
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
+                <HorizontalStepper
+                    root={survey.root}
+                    folder={folder}
+                    handleSetFolder={setFolder}
+                    page={page}
+                    handleSetPage={setPage}
+                />
                 <form onSubmit={onSubmitForm}>
                     {/* <SurveyItemForm 
                         item={survey.root}
@@ -94,14 +111,27 @@ export function SurveyForm({
                             </div>
                         ) : null}
                     </Paper>
-                    <div>
-                        <pre>{JSON.stringify(Value, null, 2)}</pre>
-                        <pre>{JSON.stringify(setValue, null, 2)}</pre>
-                        <pre>{JSON.stringify(validators, null, 2)}</pre>
-                        <pre>{JSON.stringify(requires, null, 2)}</pre>
-                        <pre>{JSON.stringify(Valid, null, 2)}</pre>
-                    </div>
                 </form>
+                <NavigationButtons
+                    root={survey.root}
+                    folder={folder}
+                    handleSetFolder={setFolder}
+                    page={page}
+                    handleSetPage={setPage}
+                />
+                <div>
+                    <p>Value</p>
+                    <pre>{JSON.stringify(Value[folder][page], null, 2)}</pre>
+                    <p>setValue</p>
+                    <pre>{JSON.stringify(setValue[folder], null, 2)}</pre>
+                    <p>validators</p>
+                    <pre>{JSON.stringify(validators[folder][page], null, 2)}</pre>
+                    <p>requires</p>
+                    <pre>{JSON.stringify(requires[folder][page], null, 2)}</pre>
+                    <p>Valid</p>
+                    <pre>{JSON.stringify(Valid, null, 2)}</pre>
+                </div>
+
             </Box>
 
         </Box>

@@ -111,6 +111,7 @@ export function SurveyForm<T extends Survey>({
             question.value === 'string' ? (
               <InputString
                 nameid={idx}
+                title={''}
                 label={''}
                 value={Value[idx]}
                 setValue={setValue[idx]}
@@ -121,6 +122,7 @@ export function SurveyForm<T extends Survey>({
             ) : question.value === 'number' ? (
               <InputNumber
                 nameid={idx}
+                title={''}
                 label={''}
                 value={Value[idx]}
                 setValue={setValue[idx]}

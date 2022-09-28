@@ -289,7 +289,7 @@ export class Survey {
   toUseFormState(): Form {
     // var _childState = this.root.toUseFormState();
     var _res = this.root.toUseFormState();
-    console.log(_res)
+    // console.log(_res)
     // return JSON.parse(_childState)
     return _res as Form;
   }
