@@ -1,19 +1,23 @@
-import { AppBar, Box, Paper, Typography } from "@mui/material";
+import { AppBar, Box, Link, Paper, Typography } from "@mui/material";
 import { SurveyItem } from "@src/core/schema";
 import React from "react";
 
 export interface BaseSidebarLayoutProps {
     drawerWidth: number;
     root: SurveyItem;
-    setFolder:any;
-    setPage:any;
+    folder:string;
+    handleSetFolder:any;
+    page:string;
+    handleSetPage:any;
 }
 
 export function BaseSidebarLayout ({
     drawerWidth,
     root,
-    setFolder,
-    setPage
+    folder,
+    handleSetFolder,
+    page,
+    handleSetPage
 }: BaseSidebarLayoutProps) {
 
     return (
@@ -22,16 +26,16 @@ export function BaseSidebarLayout ({
             sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
             aria-label="mailbox folders"
         >
-            <Paper style={{margin:'24px',padding:'24px'}}>
+            <Paper style={{padding:'24px'}}>
                 <Typography variant="h3">{root.text}</Typography>
                 {root.layout.style === 'multi_folder' ? (
                     <div>
                     {root.items.map((itm) => (
                         <div key={itm.id}>
-                            <Typography variant="h4" onClick={(e) => setFolder(itm.id)}>{itm.text}</Typography>
+                            <Link underline="hover" onClick={(e) => {handleSetFolder(itm.id); handleSetPage(itm.items[0].id); }}><Typography variant="h5">{itm.text}</Typography></Link>
                             {itm.items.map((itm2) => (
                                 <div key={itm2.id}>
-                                    <Typography variant="h5" onClick={(e) => { setFolder(itm.id); setPage(itm2.id); }}>{itm2.text}</Typography>
+                                    <Link underline="hover" onClick={(e) => { handleSetFolder(itm.id); handleSetPage(itm2.id); }}><Typography>{itm2.text}</Typography></Link>
                                 </div>
                             ))}
                         </div>

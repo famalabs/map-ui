@@ -61,14 +61,17 @@ export function InputDate({
   }, [value, validate, setValid]);
 
   return (
-        <MobileDatePicker
-            label=""
-            inputFormat="YYYYY-MM-DD"
-            // inputFormat="MM/DD/YYYY"
-            value={value}
-            onChange={((value:boolean)=>console.log(value))}
-            renderInput={(params) => <TextField {...params} />}
-        />
+        <div>
+          {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+          <MobileDatePicker
+              label=""
+              inputFormat="YYYYY-MM-DD"
+              // inputFormat="MM/DD/YYYY"
+              value={value}
+              onChange={((value:boolean)=>console.log(value))}
+              renderInput={(params) => <TextField {...params} />}
+          />
+        </div>
     // <FormControl
     //   component="fieldset"
     //   error={showError && !!error}

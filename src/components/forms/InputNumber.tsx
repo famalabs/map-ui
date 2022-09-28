@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, BaseTextFieldProps } from '@mui/material';
+import { TextField, BaseTextFieldProps, FormLabel } from '@mui/material';
 import { FormNodeValidator } from './useFormState';
 
 export type NumberValidator = FormNodeValidator<number>;
@@ -7,6 +7,7 @@ export type NumberValidator = FormNodeValidator<number>;
 export interface InputNumberProps
   extends Omit<BaseTextFieldProps, 'value' | 'onChange' | 'error' | 'helperText' | 'type'> {
   nameid: string;
+  title: string;
   value: number | null;
   setValue: (text: number) => void;
   setValid?: (valid: boolean) => void;
@@ -21,6 +22,7 @@ const emptyValidators: any = [];
 
 export const InputNumber: React.VFC<InputNumberProps> = ({
   nameid,
+  title,
   value,
   setValue,
   setValid,
@@ -67,25 +69,28 @@ export const InputNumber: React.VFC<InputNumberProps> = ({
   }, [value, validate, setValid]);
 
   return (
-    <TextField
-      variant={variant}
-      margin={margin}
-      fullWidth={fullWidth}
-      id={nameid}
-      // label={label ?? nameid.toUpperCase()}
-      label={label}
-      name={nameid}
-      required={required}
-      {...props}
-      value={value ?? ''}
-      type="number"
-      onChange={(event) => setValue(event.target.value === '' ? null : Number(event.target.value))}
-      onBlur={(e) => {
-        setShowErr(true);
-        if (onBlur) onBlur(e);
-      }}
-      error={showErr && !!error}
-      helperText={showErr ? error : ''}
-    />
+    <div>
+      {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      <TextField
+        variant={variant}
+        margin={margin}
+        fullWidth={fullWidth}
+        id={nameid}
+        // label={label ?? nameid.toUpperCase()}
+        label={label}
+        name={nameid}
+        required={required}
+        {...props}
+        value={value ?? ''}
+        type="number"
+        onChange={(event) => setValue(event.target.value === '' ? null : Number(event.target.value))}
+        onBlur={(e) => {
+          setShowErr(true);
+          if (onBlur) onBlur(e);
+        }}
+        error={showErr && !!error}
+        helperText={showErr ? error : ''}
+      />
+    </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, BaseTextFieldProps } from '@mui/material';
+import { TextField, BaseTextFieldProps, FormLabel } from '@mui/material';
 import { FormNodeValidator } from './useFormState';
 
 export type StringValidator = FormNodeValidator<string>;
@@ -7,6 +7,7 @@ export type StringValidator = FormNodeValidator<string>;
 export interface InputStringProps
   extends Omit<BaseTextFieldProps, 'value' | 'onChange' | 'error' | 'helperText'> {
   nameid: string;
+  title: string;
   value: string | null;
   setValue: (text: string) => void;
   setValid?: (valid: boolean) => void;
@@ -21,6 +22,7 @@ const emptyValidators: any = [];
 
 export const InputString: React.VFC<InputStringProps> = ({
     nameid,
+    title,
     value,
     setValue,
     setValid,
@@ -67,24 +69,27 @@ export const InputString: React.VFC<InputStringProps> = ({
   }, [value, validate, setValid]);
 
   return (
-    <TextField
-      variant={variant}
-      margin={margin}
-      fullWidth={fullWidth}
-      id={nameid}
-      // label={label ?? nameid.toUpperCase()}
-      label={label}
-      name={nameid}
-      required={required}
-      {...props}
-      value={value ?? ''}
-      onChange={(event) => setValue(event.target.value)}
-      onBlur={(e) => {
-        setShowErr(true);
-        if (onBlur) onBlur(e);
-      }}
-      error={showErr && !!error}
-      helperText={showErr ? error : ''}
-    />
+    <div>
+      {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      <TextField
+        variant={variant}
+        margin={margin}
+        fullWidth={fullWidth}
+        id={nameid}
+        // label={label ?? nameid.toUpperCase()}
+        label={label}
+        name={nameid}
+        required={required}
+        {...props}
+        value={value ?? ''}
+        onChange={(event) => setValue(event.target.value)}
+        onBlur={(e) => {
+          setShowErr(true);
+          if (onBlur) onBlur(e);
+        }}
+        error={showErr && !!error}
+        helperText={showErr ? error : ''}
+      />
+    </div>
   );
 };
