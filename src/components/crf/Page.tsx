@@ -5,7 +5,7 @@ import { Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Typogra
 import {Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';
 import { GroupForm } from './Group';
-import { SurveyItemForm } from './SurveyItem';
+// import { SurveyItemForm } from './SurveyItem';
 
 export interface PageProps {
     item: SurveyItem;

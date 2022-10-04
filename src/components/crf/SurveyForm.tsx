@@ -1,5 +1,5 @@
 import React from 'react';
-import { SurveyItemForm } from './SurveyItem'
+// import { SurveyItemForm } from './SurveyItem'
 import {Survey} from '../../core/schema'
 // import {Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';

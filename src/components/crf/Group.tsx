@@ -1,10 +1,10 @@
 import React from 'react';
-import { useFormState, InputString, InputNumber, InputRadio, Option, Form, InputCheck } from '../forms';
+import { useFormState, InputString, InputNumber, InputRadio, Option, Form } from '../forms';
 import { ButtonLoading } from '../simple';
 import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Typography } from '@mui/material';
 import {Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';
-import { SurveyItemForm } from './SurveyItem';
+// import { SurveyItemForm } from './SurveyItem';
 import { PageForm } from './Page';
 
 
