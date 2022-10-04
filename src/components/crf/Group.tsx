@@ -5,6 +5,7 @@ import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Ty
 import {Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';
 import { SurveyItemForm } from './SurveyItem';
+import { PageForm } from './Page';
 
 
 export interface GroupProps {
@@ -26,26 +27,29 @@ export function GroupForm({
 }: GroupProps) {
     if (item.items.length != 0) {
         if (item.items[0] instanceof QuestionCheck) {
+            // TODO: requires function only on first and not function setvalue
             return (
                 <div style={{marginTop:'12px',paddingTop:'12px'}}>
                     <Typography>{item.text}</Typography>
                     <FormControl>
                         <FormHelperText>{item.description}</FormHelperText>
                         {item.items.map((itm) => (
-                            <FormControlLabel control={<Checkbox />} label={itm.text} key={itm.id}/> 
+                            <FormControlLabel control={
+                                <Checkbox onChange={(event)=>{setValue[itm.id](event.target.value)}} />
+                            } label={itm.text} key={itm.id}/> 
                         ))}
                     </FormControl>
                 </div>
             );
         } else {
             return (
-                <Paper style={{margin:'24px',padding:'24px'}}>
-                    <Typography variant={(item.items[0].type === 'Group' ? 'h4' : 'h5')}>{item.text}</Typography>
+                <div>
+                    <Typography variant={'h5'}>{item.text}</Typography>
                     <Typography>{item.description}</Typography>
-                    {/* <Typography>{item.type}</Typography> */}
                     {item.items.map((itm) => (
                         <div key={itm.id}>
-                            <SurveyItemForm 
+                        {itm instanceof Question ? (
+                            <QuestionForm 
                                 item={itm}
                                 value={value}
                                 setValue={setValue}
@@ -53,9 +57,20 @@ export function GroupForm({
                                 requires={requires}
                                 showError={showError}
                             />
+                        ) : itm.type === 'Group' ? (
+                            // <GroupForm 
+                            //     item={itm}
+                            //     value={value[item.id]}
+                            //     setValue={setValue[item.id]}
+                            //     validators={validators[item.id]}
+                            //     requires={requires[item.id]}
+                            //     showError={showError} 
+                            // />
+                            null
+                        ) : null}
                         </div>
                     ))}
-                </Paper>
+                </div>
             );
         }
     }

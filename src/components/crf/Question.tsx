@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormState, InputString, InputNumber, InputRadio, Option, Form, FormNodeType, InputCheck, InputDate  } from '../forms';
+import { useFormState, InputString, InputNumber, InputRadio, Option, Form, FormNodeType, InputDate  } from '../forms';
 import { ButtonLoading } from '../simple';
 import { Typography } from '@mui/material';
 import {Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Survey, SurveyItem} from '../../core/schema'
@@ -30,8 +30,9 @@ export function QuestionForm({
             title={item.text}
             label={item.description ?? item.text}
             value={value[item.id]}
-            setValue={setValue[item.id]}
-            required={item.options.required}
+            setValue={(text) => setValue[item.id](text)}
+            required={requires[item.id]}
+            // required={item.options.required}
             emptyMessage={'empty message'}
             showError={showError}
             />
@@ -43,8 +44,9 @@ export function QuestionForm({
             title={item.text}
             label={item.description ?? item.text}
             value={value[item.id]}
-            setValue={setValue[item.id]}
-            required={item.options.required}
+            setValue={(number) => setValue[item.id](number)}
+            required={requires[item.id]}
+            // required={item.options.required}
             emptyMessage={'empty message'}
             showError={showError}
             />
@@ -54,9 +56,11 @@ export function QuestionForm({
             <InputDate
                 nameid={item.id}
                 title={item.text}
+                label={item.description ?? item.text}
                 value={value[item.id]}
-                setValue={setValue[item.id]}
-                required={item.options.required}
+                setValue={(text) => setValue[item.id](text)}
+                required={requires[item.id]}
+                // required={item.options.required}
                 emptyMessage={'empty message'}
                 showError={showError}
             />
@@ -68,8 +72,9 @@ export function QuestionForm({
                 title={item.text}
                 value={value[item.id]}
                 options={item.textScoreToOption() as any}
-                setValue={setValue[item.id]}
-                required={item.options.required}
+                setValue={(radio) => setValue[item.id](radio)}
+                required={requires[item.id]}
+                // required={item.options.required}
                 emptyMessage={'empty message'}
                 showError={showError}
             />

@@ -5,9 +5,9 @@ import React from "react";
 export interface BaseSidebarLayoutProps {
     drawerWidth: number;
     root: SurveyItem;
-    folder:string;
+    folder:[string, number];
     handleSetFolder:any;
-    page:string;
+    page:[string, number];
     handleSetPage:any;
 }
 
@@ -30,12 +30,12 @@ export function BaseSidebarLayout ({
                 <Typography variant="h3">{root.text}</Typography>
                 {root.layout.style === 'multi_folder' ? (
                     <div>
-                    {root.items.map((itm) => (
+                    {root.items.map((itm, idx) => (
                         <div key={itm.id}>
-                            <Link underline="hover" onClick={(e) => {handleSetFolder(itm.id); handleSetPage(itm.items[0].id); }}><Typography variant="h5">{itm.text}</Typography></Link>
-                            {itm.items.map((itm2) => (
+                            <Link underline="hover" onClick={(e) => {handleSetFolder([itm.id,idx],[itm.items[0].id,0]); }}><Typography variant="h5">{itm.text}</Typography></Link>
+                            {itm.items.map((itm2, idx2) => (
                                 <div key={itm2.id}>
-                                    <Link underline="hover" onClick={(e) => { handleSetFolder(itm.id); handleSetPage(itm2.id); }}><Typography>{itm2.text}</Typography></Link>
+                                    <Link underline="hover" onClick={(e) => { handleSetFolder([itm.id,idx],[itm2.id,idx2]); }}><Typography>{itm2.text}</Typography></Link>
                                 </div>
                             ))}
                         </div>
