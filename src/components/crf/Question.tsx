@@ -33,7 +33,7 @@ export function QuestionForm({
             setValue={(text) => setValue[item.id](text)}
             required={requires[item.id]}
             // required={item.options.required}
-            emptyMessage={'empty message'}
+            // emptyMessage={'empty message'}
             showError={showError}
             />
         );
@@ -47,7 +47,7 @@ export function QuestionForm({
             setValue={(number) => setValue[item.id](number)}
             required={requires[item.id]}
             // required={item.options.required}
-            emptyMessage={'empty message'}
+            // emptyMessage={'empty message'}
             showError={showError}
             />
         );
@@ -61,7 +61,7 @@ export function QuestionForm({
                 setValue={(text) => setValue[item.id](text)}
                 required={requires[item.id]}
                 // required={item.options.required}
-                emptyMessage={'empty message'}
+                // emptyMessage={'empty message'}
                 showError={showError}
             />
         );
@@ -75,7 +75,7 @@ export function QuestionForm({
                 setValue={(radio) => setValue[item.id](radio)}
                 required={requires[item.id]}
                 // required={item.options.required}
-                emptyMessage={'empty message'}
+                // emptyMessage={'empty message'}
                 showError={showError}
             />
         );
