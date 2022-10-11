@@ -27,26 +27,11 @@ export function ItemFunctionForm<T>({
         const computeFnValue = () => {
             AdapterUseFormStateSurvey.setValuesFromUseFormState(item.parent, value);
             console.log(item.toUseFormState());
-            computeValue(item.compute());
+            if (item.hasValidParams()) computeValue(item.compute());
         };
         return (
             <div>
                 {item.text === '' ? null : <FormLabel component="legend">{item.text ?? item.id}</FormLabel>}
-                {/* <Button color="inherit" onClick={(e) => {console.log(item.compute())}}>
-                    Calcola {item.text}
-                </Button>
-                <Button color="inherit" onClick={(e) => {console.log(item.getResult())}}>
-                    Calcola {item.text}
-                </Button>
-                <Button color="inherit" onClick={(e) => {console.log(item.parameters)}}>
-                    Calcola {item.text}
-                </Button>
-                <Button color="inherit" onClick={(e) => {console.log(item.getParam("952"),item.getParam("953"))}}>
-                    Calcola {item.text}
-                </Button>
-                <Button color="inherit" onClick={(e) => {console.log(item.hasValidParams())}}>
-                    Calcola {item.text}
-                </Button> */}
                 <Button color="inherit" onClick={(e) => {computeFnValue();}}>
                     Calcola {item.text}
                 </Button>

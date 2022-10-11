@@ -164,7 +164,7 @@ export function SurveyForm({
                     <p>requires</p>
                     <pre>{JSON.stringify(requires[surveyNav.getFolderId()][surveyNav.getPageId()], null, 2)}</pre>
                     <p>Valid</p>
-                    <pre>{JSON.stringify(Valid.children[surveyNav.getFolderId()].children[surveyNav.getPageId()], null, 2)}</pre>
+                    <pre>{JSON.stringify(typeof Valid !== 'boolean' ? Valid.children[surveyNav.getFolderId()].children[surveyNav.getPageId()] : {}, null, 2)}</pre>
                 </div>
 
             </Box>
