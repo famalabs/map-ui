@@ -2,9 +2,10 @@ import React from 'react';
 import { useFormState, InputString, InputNumber, InputRadio, Option, Form } from '../forms';
 import { ButtonLoading } from '../simple';
 import { Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Typography } from '@mui/material';
-import {Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
+import {ItemFunction, Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';
 import { GroupForm } from './Group';
+import { ItemFunctionForm } from './ItemFunction';
 // import { SurveyItemForm } from './SurveyItem';
 
 export interface PageProps {
@@ -35,6 +36,15 @@ export function PageForm({
                 <div key={itm.id}>
                     {itm instanceof Question ? (
                         <QuestionForm 
+                            item={itm}
+                            value={value}
+                            setValue={setValue}
+                            validators={validators}
+                            requires={requires}
+                            showError={showError}
+                        />
+                    ) : itm instanceof ItemFunction ? (
+                        <ItemFunctionForm 
                             item={itm}
                             value={value}
                             setValue={setValue}

@@ -95,7 +95,7 @@ export class ItemFunction<T> extends SurveyItem {
     return true;
   }
 
-  protected getParam(id) {
+  getParam(id) {
     let item = this.renderer.get(id);
     if (item instanceof Question) {
       return item.getScore();
@@ -131,6 +131,13 @@ export class ItemFunction<T> extends SurveyItem {
     if (!super.isValid())
       return false;
     return (this.result !== undefined);
+  }
+
+  toUseFormState() {
+    return {
+      type: 'node',
+      value: 'string'
+    } 
   }
 
 }

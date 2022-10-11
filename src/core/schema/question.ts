@@ -39,7 +39,8 @@ export class Question extends SurveyItem implements IAnswerable<any> {
 
   getScore(): number {
     if (this.isValid())
-      return null;
+    return this.answer;
+    // return null;
     return undefined;
   }
 
@@ -59,8 +60,6 @@ export class Question extends SurveyItem implements IAnswerable<any> {
   }
 
   toUseFormState() {
-    // var _res = this.items.map((itm) => itm.toUseFormState())
-    // return "\""+this.id+"\":\{\"type\":\"node\",\"required\":"+(this.options.required ?? false)+"\}"
     return {
       type: 'node',
       value: 'string'

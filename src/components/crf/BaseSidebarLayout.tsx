@@ -36,10 +36,10 @@ export function BaseSidebarLayout ({
                     {root.items.map((itm, idx) => (
                         <div key={itm.id}>
                         {/* <Link underline="hover" onClick={(e) => {handleSetFolder([itm.id,idx],[itm.items[0].id,0]); }}><Typography variant="h5">{itm.text}</Typography></Link> */}
-                            <Link underline="hover" onClick={(e) => {surveyNav.setFolder(itm); }}><Typography variant="h5">{itm.text}/{itm.id}</Typography></Link>
+                            <Link underline="hover" onClick={(e) => {surveyNav.setFolder(itm); }}><Typography variant="h5">{itm.text}</Typography></Link>
                             {itm.items.map((itm2, idx2) => (
                                 <div key={itm2.id}>
-                                    <Link underline="hover" onClick={(e) => {  surveyNav.setFolder(itm, itm2); }}><Typography>{itm2.text}/{itm2.id}</Typography></Link>
+                                    <Link underline="hover" onClick={(e) => {  surveyNav.setFolder(itm, itm2); }}><Typography>{itm2.text}</Typography></Link>
                                 </div>
                             ))}
                         </div>
