@@ -1,5 +1,6 @@
 import {Question} from './question';
-import {DEFAULT_OPTIONS_NUM_MAX, DEFAULT_OPTIONS_NUM_MIN, DEFAULT_OPTIONS_NUM_STEP, isDefault} from './config';
+import {isDefault} from './config';
+import { QuestionNumberMap } from './config-map';
 
 export class QuestionNumber extends Question {
 
@@ -8,11 +9,11 @@ export class QuestionNumber extends Question {
 
   constructor(data: any = {}) {
     super(data);
-    if (!isDefault(data.options.minValue, DEFAULT_OPTIONS_NUM_MIN))
+    if (!isDefault(data.options.minValue, QuestionNumberMap.options.minValue.default ))
       this.options.minValue = data.options.minValue;
-    if (!isDefault(data.options.maxValue, DEFAULT_OPTIONS_NUM_MAX))
+    if (!isDefault(data.options.maxValue, QuestionNumberMap.options.maxValue.default))
       this.options.maxValue = data.options.maxValue;
-    if (!isDefault(data.options.step, DEFAULT_OPTIONS_NUM_STEP))
+    if (!isDefault(data.options.step, QuestionNumberMap.options.step.default))
       this.options.step = data.options.step;
     this.unit = data.unit;
   }
@@ -49,15 +50,15 @@ export class QuestionNumber extends Question {
   getSchema(): any {
     let schema = super.getSchema();
     if (this.options) {
-      if (!isDefault(this.options.minValue, DEFAULT_OPTIONS_NUM_MIN)) {
+      if (!isDefault(this.options.minValue, QuestionNumberMap.options.minValue.default)) {
         schema.options = schema.options || {};
         schema.options.minValue = this.options.minValue;
       }
-      if (!isDefault(this.options.maxValue, DEFAULT_OPTIONS_NUM_MAX)) {
+      if (!isDefault(this.options.maxValue, QuestionNumberMap.options.maxValue.default)) {
         schema.options = schema.options || {};
         schema.options.maxValue = this.options.maxValue;
       }
-      if (!isDefault(this.options.step, DEFAULT_OPTIONS_NUM_STEP)) {
+      if (!isDefault(this.options.step, QuestionNumberMap.options.step.default)) {
         schema.options = schema.options || {};
         schema.options.step = this.options.step;
       }

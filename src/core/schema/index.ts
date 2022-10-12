@@ -23,3 +23,4 @@ export * from './renderer';
 export * from './interfaces';
 
 export * from './adapter'
+export * from './config-map'

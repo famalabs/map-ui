@@ -19,35 +19,6 @@ export function isValidField(field) {
 
 export const MAX_ITEMS_DEPTH = 1024;
 
-// Layout
-export const DEFAULT_LAYOUT_STYLE = "";
-
-// Question
-export const DEFAULT_OPTIONS_REQUIRED = false;
-
-// QuestionCheck
-export const DEFAULT_OPTIONS_INVERTED = false;
-export const DEFAULT_OPTIONS_TOGGLE = false;
-
-// QuestionText
-export const DEFAULT_OPTIONS_TEXT_MIN = 0;
-export const DEFAULT_OPTIONS_TEXT_MAX = MAX_FIELD_SIZE;
-
-// QuestionNumber
-export const DEFAULT_OPTIONS_NUM_MIN = -Infinity;
-export const DEFAULT_OPTIONS_NUM_MAX = +Infinity;
-export const DEFAULT_OPTIONS_NUM_STEP = 0;
-
-// QuestionDate
-export const DEFAULT_OPTIONS_DATE_MIN = -Infinity;
-export const DEFAULT_OPTIONS_DATE_MAX = +Infinity;
-
-// QuestionSelect
-// export const DEFAULT_OPTIONS_CUSTOM = false;
-export function DEFAULT_OPTIONS_ACTIVATE(value) {
-  return !(value instanceof Array && value.length > 0);
-}
-
 export function isDefault(value, defaultValue) {
   return value === undefined || (typeof defaultValue === 'function' ? defaultValue(value) : (value === defaultValue));
 }

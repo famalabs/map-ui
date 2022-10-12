@@ -1,7 +1,7 @@
 import {Question} from './question';
 import {TextScore} from './answer';
-import {DEFAULT_OPTIONS_ACTIVATE, isDefault} from './config';
-import { Option } from '@src/components';
+import { isDefault} from './config';
+import { QuestionSelectMap } from './config-map';
 
 export class QuestionSelect extends Question {
   // {"id":"31","type":"QuestionSelect","text":"Genere","options":{"required":true},"selectOptions":[{"text":"M","score":0},{"text":"F","score":1}]}
@@ -13,7 +13,7 @@ export class QuestionSelect extends Question {
 
   constructor(data: any = {}) {
     super(data);
-    if (!isDefault(data.options.activate, DEFAULT_OPTIONS_ACTIVATE))
+    if (!isDefault(data.options.activate, QuestionSelectMap.options.activate.default))
       this.options.activate = data.options.activate;
     this.setOptions(data.selectOptions);
   }
@@ -28,7 +28,7 @@ export class QuestionSelect extends Question {
   getSchema(): any {
     let schema = super.getSchema();
     if (this.options) {
-      if (!isDefault(this.options.activate, DEFAULT_OPTIONS_ACTIVATE)) {
+      if (!isDefault(this.options.activate, QuestionSelectMap.options.activate.default)) {
         schema.options = schema.options || {};
         schema.options.activate = this.options.activate;
       }

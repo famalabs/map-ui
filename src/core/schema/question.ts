@@ -1,6 +1,7 @@
 import {SurveyItem} from './survey-item';
 import {DBAnswer, IAnswerable} from './answer';
-import {isDefault, DEFAULT_OPTIONS_REQUIRED} from './config';
+import {isDefault} from './config';
+import { QuestionMap } from './config-map';
 
 export class Question extends SurveyItem implements IAnswerable<any> {
 
@@ -11,7 +12,7 @@ export class Question extends SurveyItem implements IAnswerable<any> {
     super(data);
     data.options = data.options || {};
     this.options = {};
-    if (!isDefault(data.options.required, DEFAULT_OPTIONS_REQUIRED))
+    if (!isDefault(data.options.required, QuestionMap.options.required.default ))
       this.options.required = data.options.required as boolean;
     if (data.answer !== undefined)
       this.setAnswer(data.answer);
@@ -46,7 +47,7 @@ export class Question extends SurveyItem implements IAnswerable<any> {
 
   getSchema(): any {
     let schema = super.getSchema();
-    if (this.options && !isDefault(this.options.required, DEFAULT_OPTIONS_REQUIRED))
+    if (this.options && !isDefault(this.options.required, QuestionMap.options.required.default))
       schema.options = {required: this.options.required};
     // if (this.answer !== undefined)
     //  schema.answer = this.answer; // default answer

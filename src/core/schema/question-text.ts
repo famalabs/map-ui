@@ -1,5 +1,6 @@
 import {Question} from './question';
-import {DEFAULT_OPTIONS_TEXT_MAX, DEFAULT_OPTIONS_TEXT_MIN, isDefault} from "./config";
+import {isDefault} from "./config";
+import { QuestionTextMap } from './config-map';
 
 export class QuestionText extends Question {
 
@@ -7,9 +8,9 @@ export class QuestionText extends Question {
 
   constructor(data: any = {}) {
     super(data);
-    if (!isDefault(data.options.minLength, DEFAULT_OPTIONS_TEXT_MIN))
+    if (!isDefault(data.options.minLength, QuestionTextMap.options.minLength.default ))
       this.options.minLength = data.options.minLength;
-    if (!isDefault(data.options.maxLength, DEFAULT_OPTIONS_TEXT_MAX))
+    if (!isDefault(data.options.maxLength, QuestionTextMap.options.maxLength.default ))
       this.options.maxLength = data.options.maxLength;
   }
 
@@ -31,11 +32,11 @@ export class QuestionText extends Question {
   getSchema(): any {
     let schema = super.getSchema();
     if (this.options) {
-      if (!isDefault(this.options.minLength, DEFAULT_OPTIONS_TEXT_MIN)) {
+      if (!isDefault(this.options.minLength, QuestionTextMap.options.minLength.default)) {
         schema.options = schema.options || {};
         schema.options.minLength = this.options.minLength;
       }
-      if (!isDefault(this.options.maxLength, DEFAULT_OPTIONS_TEXT_MAX)) {
+      if (!isDefault(this.options.maxLength, QuestionTextMap.options.maxLength.default )) {
         schema.options = schema.options || {};
         schema.options.maxLength = this.options.maxLength;
       }
