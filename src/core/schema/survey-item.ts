@@ -214,18 +214,6 @@ export class SurveyItem {
   }
 
   toUseFormState() {
-    // var _childState = ""
-    // for (let i = 0; i < this.items.length; i++) {
-    //   _childState += this.items[i].toUseFormState();
-    //   if (i+1 != this.items.length) { _childState += ","; }
-    // }
-    // var _type = "\"type\":\"group\""
-    // // var _childState = this.items.map((itm) => ({ [itm.id]:itm.toUseFormState() }))
-    // if (this.type === 'Survey') {
-    //   return "\{,\"value\":\{"+_childState+"\}\}"
-    // } else {
-    //   return "\""+this.id+"\":\{\"type\":\"group\",\"value\":\{"+_childState+"\}\}"
-    // }
     return {
       type: 'group',
       value: this.items.reduce((acc, itm) => ({

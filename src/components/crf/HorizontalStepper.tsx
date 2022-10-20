@@ -1,52 +1,52 @@
 import { Box, Button, Step, StepButton, StepLabel, Stepper, Typography } from '@mui/material';
 import { SurveyItem } from '@src/core/schema';
 import React from 'react';
+import { INavState, SurveyNav } from './Navigation';
 
 export interface HorizontalStepperProps {
     root: SurveyItem;
-    folder:[string, number];
-    handleSetFolder:any;
-    page:[string, number];
-    handleSetPage:any;
+    surveyNav: INavState;
+    // folder:[string, number];
+    // handleSetFolder:any;
+    // page:[string, number];
+    // handleSetPage:any;
     valid:any;
-    visited: any;
+    // visited: any;
 }
 
 export function HorizontalStepper({
     root,
-    folder,
-    handleSetFolder,
-    page,
-    handleSetPage,
+    surveyNav,
+    // folder,
+    // handleSetFolder,
+    // page,
+    // handleSetPage,
     valid,
-    visited
+    // visited
 }: HorizontalStepperProps) {
-// const pages = root.items
-//     .find(itm => {return itm.id === folder[0]; }).items;
-    const pages = root.items[folder[1]].items;
+    // const pages = root.items[folder[1]].items;
     const isStepFailed = (pg: SurveyItem, idx: number) => {
-        // const curPage = pages.findIndex((item) => item.id === page);
-        // const thisPage = pages.findIndex((item) => item.id === pg.id);
-        return valid.children[folder[0]].children[pg.id].allValid ? false : (idx < page[1]);
+        return valid.children[surveyNav.getFolderId()].children[pg.id].allValid ? false : (idx < surveyNav.getPageIdx());
     };
     return (
         <Box sx={{ width: '100%' }}>
         <Stepper alternativeLabel nonLinear 
-            // activeStep={pages.findIndex((item) => item.id === page)}
-            activeStep={page[1]}
+            // activeStep={page[1]}
+            activeStep={surveyNav.getPageIdx()}
         >
-            {pages.map((itm, idx) => {
+            {surveyNav.getPages().map((pg, idx) => {
             const labelProps: {
                 optional?: React.ReactNode;
                 error?: boolean;
                 } = {};
-            if (isStepFailed(itm, idx)) {
+            if (isStepFailed(pg, idx)) {
                 labelProps.optional = (<Typography variant="caption" color="error"></Typography>);
                 labelProps.error = true;
             }
-            return (<Step key={itm.id} completed={valid.children[folder[0]].children[itm.id].allValid}>
-                <StepButton color="inherit" onClick={(e) => {handleSetPage([itm.id,idx]);}}>
-                    <StepLabel {...labelProps}>{itm.text}</StepLabel>
+            return (<Step key={pg.id} completed={valid.children[surveyNav.getFolderId()].children[pg.id].allValid}>
+            {/* <StepButton color="inherit" onClick={(e) => {handleSetPage([itm.id,idx]);}}> */}
+                <StepButton color="inherit" onClick={(e) => {surveyNav.setPage(pg)}}>
+                    <StepLabel {...labelProps}>{pg.text}</StepLabel>
                 </StepButton>
             </Step>)
             })}

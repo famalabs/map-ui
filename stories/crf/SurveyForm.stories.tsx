@@ -20,31 +20,6 @@ const SurveyFormExample: React.VFC = (args) => {
     <SurveyForm
       {...args}
       survey={new Survey(surveyFormExmple)}
-    //   questions={{
-    //     1: { type: 'textbox', text: 'Nome', value: 'string' },
-    //     2: { type: 'textbox', text: 'Anni', value: 'number' },
-    //     3: {
-    //       type: 'select',
-    //       text: 'Si no',
-    //       value: 'bool',
-    //       options: [
-    //         { value: true, label: 'si' },
-    //         { value: false, label: 'no' },
-    //       ],
-    //     },
-    //     4: {
-    //       type: 'select',
-    //       text: 'Carne',
-    //       value: 'string',
-    //       options: [
-    //         { value: 'bufalo', label: 'bufalo' },
-    //         { value: 'manzo', label: 'manzo' },
-    //         { value: 'maialo', label: 'maialo' },
-    //       ],
-    //     },
-    //   }}
-    //   initAnswers={{ 1: 'we', 3: false }}
-    //   onSubmit={(answers, allValid) => console.log(answers)}
     />
   );
 };

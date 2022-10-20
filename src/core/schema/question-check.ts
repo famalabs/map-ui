@@ -1,5 +1,6 @@
 import {Question} from './question';
-import {DEFAULT_OPTIONS_INVERTED, DEFAULT_OPTIONS_TOGGLE, isDefault} from './config';
+import { isDefault} from './config';
+import { QuestionCheckMap } from './config-map';
 
 export class QuestionCheck extends Question {
 
@@ -7,9 +8,9 @@ export class QuestionCheck extends Question {
 
   constructor(data: any = {}) {
     super(data);
-    if (!isDefault(data.options.inverted, DEFAULT_OPTIONS_INVERTED))
+    if (!isDefault(data.options.inverted, QuestionCheckMap.options.inverted.default ))
       this.options.inverted = data.options.inverted as boolean;
-    if (!isDefault(data.options.toggle, DEFAULT_OPTIONS_TOGGLE))
+    if (!isDefault(data.options.toggle, QuestionCheckMap.options.toggle.default))
       this.options.toggle = data.options.toggle as boolean;
   }
 
@@ -24,11 +25,11 @@ export class QuestionCheck extends Question {
   getSchema(): any {
     let schema = super.getSchema();
     if (this.options) {
-      if (!isDefault(this.options.inverted, DEFAULT_OPTIONS_INVERTED)) {
+      if (!isDefault(this.options.inverted, QuestionCheckMap.options.inverted.default)) {
         schema.options = schema.options || {};
         schema.options.inverted = this.options.inverted;
       }
-      if (!isDefault(this.options.toggle, DEFAULT_OPTIONS_TOGGLE)) {
+      if (!isDefault(this.options.toggle, QuestionCheckMap.options.toggle.default)) {
         schema.options = schema.options || {};
         schema.options.toggle = this.options.toggle;
       }

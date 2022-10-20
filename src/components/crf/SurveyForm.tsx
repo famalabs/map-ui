@@ -1,6 +1,6 @@
 import React from 'react';
 // import { SurveyItemForm } from './SurveyItem'
-import {Survey} from '../../core/schema'
+import {Survey, SurveyMap} from '../../core/schema'
 // import {Survey, SurveyItem} from '../../core/schema'
 import { QuestionForm } from './Question';
 import { Form, useFormState } from '../forms';
@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { HorizontalStepper } from './HorizontalStepper';
 import { NavigationButtons } from './NavigationButtons';
 import { PageForm } from './Page';
+import { SurveyNav, useNavState } from './Navigation';
 
 export interface SurveyFormProps {
     survey: Survey;
@@ -29,51 +30,17 @@ export function SurveyForm({
     const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setShowAllErrors(true);
-        // console.log(Value);
         onSubmit(Value as any, Valid);
     };
+    const surveyNav = useNavState(survey.root);
 
-    var startFolder: [string, number] = ["",0];
-    var startPage: [string, number] = ["",0];
-    if (survey.root.layout.style === 'multi_folder') {
-        startFolder = [survey.root.items[0].id,0];
-        startPage = [survey.root.items[0].items[0].id,0];
-    }
-    const [folder, setFolder] = useState(startFolder);
-    function handleSetFolder(folder: [string, number], page?: [string, number]) {
-        setFolder(folder);
-        if (typeof page !== 'undefined') {
-            setPage(page);
-            if (folder[0] in visited) {
-                if (visited[folder[0]][1] < page[1]) {
-                    visited[folder[0]] = page;
-                    setVisited(visited)
-                }
-            } else {
-                visited[folder[0]] = page;
-                setVisited(visited);
-            }
-        } else {
-            setPage([survey.root.items[folder[1]].items[0].id,0])
-        }
-    };
-    const [page, setPage] = useState(startPage);
-    function handleSetPage(page: [string, number]) {
-        setPage(page);
-    };
-    const [visited, setVisited] = useState({startFolder:startPage});
-
-    // return null;
     return (
         <Box sx={{ display: 'flex', width:'100%' }}>
             <CssBaseline />
             <BaseSidebarLayout
                 drawerWidth={drawerWidth}
                 root={survey.root}
-                folder={folder}
-                handleSetFolder={handleSetFolder}
-                page={page}
-                handleSetPage={handleSetPage}
+                surveyNav={surveyNav}
             />
             <Box
                 component="main"
@@ -81,35 +48,21 @@ export function SurveyForm({
             >
                 <HorizontalStepper
                     root={survey.root}
-                    folder={folder}
-                    handleSetFolder={handleSetFolder}
-                    page={page}
-                    handleSetPage={handleSetPage}
+                    surveyNav={surveyNav}
                     valid={Valid}
-                    visited={visited}
                 />
                 <form onSubmit={onSubmitForm}>
-                    {/* <SurveyItemForm 
-                        item={survey.root}
-                        value={Value}
-                        setValue={setValue as any}
-                        validators={validators}
-                        requires={requires}
-                        showError={showAllErrors}
-                        // onSubmit={(answers, allValid) => console.log(answers)}
-                    /> */}
                     <Paper style={{margin:'24px',padding:'24px'}}>
                         <Typography variant="h3">{survey.root.text}</Typography>
-                        {survey.root.layout.style === 'multi_folder' ? (
+                        {survey.root.layout.style === SurveyMap.layout.style.multi_folder ? (
                             <div>
                                 {survey.root.items.map((itm) => {
-                                    return itm.id === folder[0] ?
+                                    return itm.id === surveyNav.getFolderId() ?
                                         <div key={itm.id}>
                                             <Typography variant="h4">{itm.text}</Typography>
                                             {itm.items.map((itm2) => {
-                                                return itm2.id === page[0] ?
+                                                return itm2.id === surveyNav.getPageId() ?
                                                     <div key={itm2.id}>
-                                                        <Typography variant="h5">{itm.id}/{itm2.id}</Typography>
                                                             <PageForm 
                                                                 item={itm2}
                                                                 value={Value[itm.id][itm2.id]}
@@ -131,24 +84,20 @@ export function SurveyForm({
                 </form>
                 <NavigationButtons
                     root={survey.root}
-                    folder={folder}
-                    handleSetFolder={handleSetFolder}
-                    page={page}
-                    handleSetPage={handleSetPage}
+                    surveyNav={surveyNav}
                     valid={Valid}
-                    visited={visited}
                 />
                 <div>
                     <p>Value</p>
-                    <pre>{JSON.stringify(Value[folder[0]][page[0]], null, 2)}</pre>
+                    <pre>{JSON.stringify(Value[surveyNav.getFolderId()][surveyNav.getPageId()], null, 2)}</pre>
                     {/* <p>setValue</p>
                     <pre>{JSON.stringify(setValue, null, 2)}</pre> */}
                     <p>validators</p>
-                    <pre>{JSON.stringify(validators[folder[0]][page[0]], null, 2)}</pre>
+                    <pre>{JSON.stringify(validators[surveyNav.getFolderId()][surveyNav.getPageId()], null, 2)}</pre>
                     <p>requires</p>
-                    <pre>{JSON.stringify(requires[folder[0]][page[0]], null, 2)}</pre>
+                    <pre>{JSON.stringify(requires[surveyNav.getFolderId()][surveyNav.getPageId()], null, 2)}</pre>
                     <p>Valid</p>
-                    <pre>{JSON.stringify(Valid.children[folder[0]].children[page[0]], null, 2)}</pre>
+                    <pre>{JSON.stringify(typeof Valid !== 'boolean' ? Valid.children[surveyNav.getFolderId()].children[surveyNav.getPageId()] : {}, null, 2)}</pre>
                 </div>
 
             </Box>
