@@ -1,5 +1,5 @@
 export * from './Question'
-export * from './SurveyEditor'
+export * from './Editor/SurveyEditor'
 export * from './SurveyForm'
 // export * from './SurveyItem'
 export * from './Group'
