@@ -54,6 +54,8 @@ export class FolderNav extends NavState {
 }
 
 export interface INavState {
+    updateValues: (root: SurveyItem) => void;
+
     getPages: () => SurveyItem[];
     nextPage: () => void;
     prevPage: () => void;
@@ -69,6 +71,8 @@ export interface INavState {
     getFolder: () => SurveyItem;
     getFolderId: () => string;
     getFolderIdx: () => number;
+
+    getPagesOfFolder: (folder: SurveyItem) => SurveyItem[];
 }
 
 export class SurveyNav implements INavState {
@@ -89,6 +93,8 @@ export class SurveyNav implements INavState {
             this.pages = new PageNav(value.pages, value.page);
     }
 
+    updateValues: (root: SurveyItem) => void;
+    
     public getPages():SurveyItem[] { return this.pages.getItems(); }
     public nextPage():any { this.pages.next(); return this.getValue(); }
     public prevPage():any  { this.pages.prev(); return this.getValue(); }
@@ -127,6 +133,10 @@ export class SurveyNav implements INavState {
     public getFolderId():string { return this.folders.getId(); }
     public getFolderIdx():number { return this.folders.getIdx(); }
 
+    public getPagesOfFolder(folder: SurveyItem): SurveyItem[] {
+        return folder.items;
+    }
+
     public getValue(): any {
         return {
             folders: this.getFolders(),
@@ -148,19 +158,25 @@ export class SurveyNav implements INavState {
 
 export function useNavState(root: SurveyItem): INavState {
 
-    const initValue = {
+
+    const rootToValue = (root: SurveyItem) => {
+        return {
             folders: root.items,
             folder: root.items[0],
             pages: root.items[0].items,
             page: root.items[0].items[0]
         }
+    }
 
-    const [value, setValue] = React.useState(initValue);
+    const [value, setValue] = React.useState(rootToValue(root));
     function handleSetValue(value:any) {
         setValue(value);
     }
 
     return {
+        updateValues: (root: SurveyItem) => handleSetValue(rootToValue(root)),
+
+        getPage: () => new SurveyNav(value).getPage(),
         getPages: () => new SurveyNav(value).getPages(),
         nextPage: () => {handleSetValue(new SurveyNav(value).nextPage());},
         prevPage: () => {handleSetValue(new SurveyNav(value).prevPage());},
@@ -168,12 +184,15 @@ export function useNavState(root: SurveyItem): INavState {
         getPageId: () => new SurveyNav(value).getPageId(),
         getPageIdx: () => new SurveyNav(value).getPageIdx(),
 
+        getFolder: () => new SurveyNav(value).getFolder(),
         getFolders: () => new SurveyNav(value).getFolders(),
         nextFolder: () => {handleSetValue(new SurveyNav(value).nextFolder());},
         prevFolder: () => {handleSetValue(new SurveyNav(value).prevFolder());},
         setFolder: (folder: SurveyItem, page?: SurveyItem) => {handleSetValue(new SurveyNav(value).setFolder(folder, page));},
         getFolderId: () => new SurveyNav(value).getFolderId(),
         getFolderIdx: () => new SurveyNav(value).getFolderIdx(),
+
+        getPagesOfFolder: (folder: SurveyItem) => new SurveyNav(value).getPagesOfFolder(folder),
 
     } as INavState;
 }

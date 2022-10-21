@@ -1,5 +1,5 @@
 import React from 'react';
-import {Survey, SurveyMap} from '../../../core/schema'
+import {Survey, SurveyItem, SurveyMap} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
 import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -7,25 +7,29 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import { OptionsEditorForm } from './OptionsEditor';
 import { FolderEditorForm } from './FolderEditor';
+import { IEditorState } from './EditorBuilder';
+import { INavState } from '../Navigation';
 
 export interface SidebarEditorProps {
+    editor: IEditorState;
+    nav: INavState;
 }
 
 export function SidebarEditorForm({
+    editor,
+    nav
     }: SidebarEditorProps) {
 
-    const renderPages = () => {
+    const renderPages = (pages: SurveyItem[]) => {
         return (
             <div>
-            <Button color="inherit" startIcon={<EditIcon />}>
-                Page 1
-            </Button>
-            <Button color="inherit" startIcon={<EditIcon />}>
-                Page 2
-            </Button>
-            <Button color="inherit" startIcon={<EditIcon />}>
-                Page 3
-            </Button>
+                {pages.map((page) => {
+                    return(
+                        <Button color="inherit" startIcon={<EditIcon />}>
+                            {page.text}
+                        </Button>
+                    );
+                })}
             </div>
         );
     }
@@ -33,51 +37,25 @@ export function SidebarEditorForm({
     const renderFolders = () => {
         return (
             <div>
-                <Accordion>
-                    <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="pane21a-content"
-                    id="panel2a-header"
-                    >
-                    <Typography>Folder 1</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        {renderPages()}
-                        <Button color="inherit" startIcon={<AddCircleIcon />}>
-                        Add new page
-                        </Button>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                    <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="pane21a-content"
-                    id="panel2a-header"
-                    >
-                    <Typography>Folder 2</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        {renderPages()}
-                        <Button color="inherit" startIcon={<AddCircleIcon />}>
-                        Add new page
-                        </Button>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                    <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="pane21a-content"
-                    id="panel2a-header"
-                    >
-                    <Typography>Folder 3</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        {renderPages()}
-                        <Button color="inherit" startIcon={<AddCircleIcon />}>
-                        Add new page
-                        </Button>
-                    </AccordionDetails>
-                </Accordion>
+                {nav.getFolders().map((folder) => {
+                    return (
+                        <Accordion>
+                            <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="pane21a-content"
+                            id="panel2a-header"
+                            >
+                            <Typography>{folder.text}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                {renderPages(nav.getPagesOfFolder(folder))}
+                                <Button color="inherit" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addPage(folder)}}>
+                                Add new page
+                                </Button>
+                            </AccordionDetails>
+                        </Accordion>
+                    );
+                })}
 
             </div>
         );
@@ -114,7 +92,7 @@ export function SidebarEditorForm({
                     </AccordionSummary>
                     <AccordionDetails>
                         {renderFolders()}
-                        <Button color="inherit" startIcon={<AddCircleIcon />}>
+                        <Button color="inherit" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addFolder()}}>
                         Add new folder
                         </Button>
                     </AccordionDetails>
