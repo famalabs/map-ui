@@ -12,13 +12,17 @@ import {
 } from '@mui/material';
 import { FormNodeType } from './useFormState';
 import { MobileDatePicker } from '@mui/x-date-pickers';
+import { InputString } from './InputString';
 
 
 interface InputDateProps extends Partial<Omit<FormControlProps<any, 'div'>, 'title' | 'component' | 'error' | 'children'>> { 
     nameid: string;
-    title?: React.ReactNode;
-    value: boolean;
-    setValue: (value: boolean) => void;
+    title?: string;
+    // title?: React.ReactNode;
+    value: string;
+    // value: boolean;
+    setValue: (value: string) => void;
+    // setValue: (value: boolean) => void;
     setValid?: (valid: boolean) => void;
     emptyMessage?: string;
     required?: boolean;
@@ -28,6 +32,7 @@ interface InputDateProps extends Partial<Omit<FormControlProps<any, 'div'>, 'tit
 export function InputDate({
   nameid,
   title,
+  label,
   value,
   setValue,
   setValid,
@@ -61,40 +66,27 @@ export function InputDate({
   }, [value, validate, setValid]);
 
   return (
-        <div>
-          {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
-          <MobileDatePicker
-              label=""
-              inputFormat="YYYYY-MM-DD"
-              // inputFormat="MM/DD/YYYY"
-              value={value}
-              onChange={((value:boolean)=>console.log(value))}
-              renderInput={(params) => <TextField {...params} />}
-          />
-        </div>
-    // <FormControl
-    //   component="fieldset"
-    //   error={showError && !!error}
-    //   margin={margin}
-    //   fullWidth={fullWidth}
-    //   {...props}
-    // >
-    //   {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
-    //   <RadioGroup
-    //     name={nameid}
-    //     aria-label={nameid}
-    //     value={idxValue}
-    //     onChange={(e, v) => {
-    //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //       // @ts-ignore
-    //       setValue(options[v].value);
-    //     }}
-    //   >
-    //     {options.map((opt, idx) => (
-    //       <FormControlLabel key={idx} value={idx} control={<Radio />} label={opt.label} />
-    //     ))}
-    //   </RadioGroup>
-    //   <FormHelperText>{showError ? error : ''}</FormHelperText>
-    // </FormControl>
+        // <div>
+        //   {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+        //   <MobileDatePicker
+        //       label={label}
+        //       inputFormat="YYYYY-MM-DD"
+        //       // inputFormat="MM/DD/YYYY"
+        //       value={value}
+        //       onChange={((value:boolean)=>console.log(value))}
+        //       renderInput={(params) => <TextField {...params} helperText={showError ? error : ''}/>}
+        //   />
+        // </div>
+        <InputString
+            nameid={nameid}
+            title={title}
+            label={label}
+            value={value}
+            setValue={setValue}
+            required={required}
+            // required={item.options.required}
+            emptyMessage={'empty message'}
+            showError={showError}
+            />
   );
 }

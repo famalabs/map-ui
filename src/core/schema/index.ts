@@ -21,3 +21,6 @@ export * from './item-table';
 export * from './survey';
 export * from './renderer';
 export * from './interfaces';
+
+export * from './adapter'
+export * from './config-map'

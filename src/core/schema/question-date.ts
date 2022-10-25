@@ -1,6 +1,7 @@
 import {Question} from './question';
 import {DBAnswer} from './answer';
-import {DEFAULT_OPTIONS_DATE_MAX, DEFAULT_OPTIONS_DATE_MIN, isDefault} from './config';
+import {isDefault} from './config';
+import { QuestionDateMap } from './config-map';
 
 export class QuestionDate extends Question {
 
@@ -34,11 +35,11 @@ export class QuestionDate extends Question {
   getSchema(): any {
     let schema = super.getSchema();
     if (this.options) {
-      if (!isDefault(this.options.minValue, DEFAULT_OPTIONS_DATE_MIN)) {
+      if (!isDefault(this.options.minValue, QuestionDateMap.options.minDate.default )) {
         schema.options = schema.options || {};
         schema.options.minValue = this.options.minValue;
       }
-      if (!isDefault(this.options.maxValue, DEFAULT_OPTIONS_DATE_MAX)) {
+      if (!isDefault(this.options.maxValue, QuestionDateMap.options.minDate.default )) {
         schema.options = schema.options || {};
         schema.options.maxValue = this.options.maxValue;
       }

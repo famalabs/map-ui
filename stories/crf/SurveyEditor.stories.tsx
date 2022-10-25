@@ -1,15 +1,15 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SurveyEditor, SurveyEditorProps } from '../../src/components/survey/SurveyEditor';
+import { SurveyEditorForm, SurveyEditorProps } from '../../src/components/crf';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
   title: 'crf/Editor',
-  component: SurveyEditor,
+  component: SurveyEditorForm,
   argTypes: {},
 } as Meta;
 
-const Template: Story<SurveyEditorProps> = (args) => <SurveyEditor {...args} />;
+const Template: Story<SurveyEditorProps> = (args) => <SurveyEditorForm {...args} />;
 
 export const Primary: Story<SurveyEditorProps> = Template.bind({});
 
