@@ -38,12 +38,10 @@ export function SurveyEditorForm({
                 component="main"
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${320}px)` } }}
             >
-                <Paper style={{margin:'24px',padding:'24px'}}>
-                    <FolderEditorForm
-                    editor={editor}
-                    nav={nav}
-                    />
-                </Paper>
+                <FolderEditorForm
+                editor={editor}
+                nav={nav}
+                />
             </Box>
 
         </Box>

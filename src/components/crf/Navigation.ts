@@ -38,9 +38,14 @@ export class NavState {
         }
     }
     public set(item: SurveyItem):boolean {
-        if (!this.items.includes(item)) { return false; }
-        this.curItem = item;
-        return true;
+        // if (!this.items.includes(item)) { return false; }
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i].id == item.id) {
+                this.curItem = this.items[i];
+                return true;
+            }
+        }
+        return false;
     }
 
 }
@@ -51,10 +56,27 @@ export class PageNav extends NavState {
 
 export class FolderNav extends NavState {
 
+    public findFolderOfPage(page: SurveyItem):SurveyItem {
+        const folders = this.getItems();
+        for (let i = 0; i < folders.length; i++) {
+            const pages = folders[i].items;
+            for (let j = 0; j < pages.length; j++) {
+                if (page.id === pages[j].id) {
+                    // folderIdx = i;
+                    // pageIdx = j;
+                    return folders[i];
+                }
+            }
+        }
+        return undefined;
+    }
+
 }
 
 export interface INavState {
     updateValues: (root: SurveyItem) => void;
+    updateAndSet: (root: SurveyItem, folder?:SurveyItem, page?:SurveyItem) => void;
+    updateAndSetWithIds: (root: SurveyItem, folderIdx?:number, pageIdx?:number) => void;
 
     getPages: () => SurveyItem[];
     nextPage: () => void;
@@ -77,38 +99,22 @@ export interface INavState {
 
 export class SurveyNav implements INavState {
     private root: SurveyItem;
-    // private folders: SurveyItem[];
     private folders: FolderNav;
-    // private pages: SurveyItem[];
     private pages: PageNav;
-
-    // public constructor(root: SurveyItem) {
-    //     this.root = root;
-    //     // this.folders = root.items;
-    //     this.folders = new FolderNav(root.items);
-    //     this.pages = new PageNav(this.folders.getCurItem().items);
-    // }
     public constructor(value: any) {
             this.folders = new FolderNav(value.folders, value.folder);
             this.pages = new PageNav(value.pages, value.page);
     }
 
     updateValues: (root: SurveyItem) => void;
+    updateAndSet: (root: SurveyItem, folder?:SurveyItem, page?:SurveyItem) => void;
+    updateAndSetWithIds: (root: SurveyItem, folderIdx?:number, pageIdx?:number) => void;
     
     public getPages():SurveyItem[] { return this.pages.getItems(); }
     public nextPage():any { this.pages.next(); return this.getValue(); }
     public prevPage():any  { this.pages.prev(); return this.getValue(); }
     public setPage(page: SurveyItem):any  {
         if (!this.pages.set(page)) {
-            // for (let i = 0; i < this.getFolders().length; i++) {
-            //     const tmpFolders = new FolderNav(this.getFolders(),this.getFolders()[i]);
-            //     const tmpPages = new PageNav(tmpFolders.getCurItem().items);
-            //     if (tmpPages.getItems().includes(page)) {
-            //         this.setFolder(tmpFolders.getCurItem());
-            //         this.pages
-            //         return this.getValue();
-            //     }
-            // }
             throw Error("page not in pages");
         }
         // TODO: handle if not in pages
@@ -159,12 +165,32 @@ export class SurveyNav implements INavState {
 export function useNavState(root: SurveyItem): INavState {
 
 
-    const rootToValue = (root: SurveyItem) => {
+    const rootToValue = (root: SurveyItem, folderIdx?:number, pageIdx?:number) => {
+
+        if (typeof folderIdx === 'undefined') { folderIdx = 0; }
+        if (typeof pageIdx === 'undefined') { pageIdx = 0; }
+            // if (typeof folder !== 'undefined' || typeof page !== 'undefined') {
+            //     for (let i = 0; i < root.items.length; i++) {
+            //         if (typeof folder !== 'undefined') {
+            //             if (folder.id === root.items[i].id) {
+            //                 folderIdx = i;
+            //             }
+            //         }
+            //         if (typeof page !== 'undefined') {
+            //             for (let j = 0; j < root.items[i].items.length; j++) {
+            //                 if (page.id === root.items[i].items[j].id) {
+            //                     folderIdx = i;
+            //                     pageIdx = j;
+            //                 }
+            //             }  
+            //         }
+            //     }
+            // }
         return {
             folders: root.items,
-            folder: root.items[0],
-            pages: root.items[0].items,
-            page: root.items[0].items[0]
+            folder: root.items[folderIdx],
+            pages: root.items[folderIdx].items,
+            page: root.items[folderIdx].items[pageIdx]
         }
     }
 
@@ -174,7 +200,18 @@ export function useNavState(root: SurveyItem): INavState {
     }
 
     return {
-        updateValues: (root: SurveyItem) => handleSetValue(rootToValue(root)),
+        updateValues: (root: SurveyItem) => {
+            handleSetValue(rootToValue(root));
+        },
+        updateAndSet: (root: SurveyItem, folder:SurveyItem, page:SurveyItem) => {
+            // root for values, folder to select or page to select
+            const nav = new SurveyNav(rootToValue(root));
+            handleSetValue(nav.setFolder(folder, page));
+        },
+        updateAndSetWithIds: (root: SurveyItem, folderIdx:number, pageIdx:number) => {
+            // root for values, folder to select or page to select
+            handleSetValue(rootToValue(root,folderIdx,pageIdx));
+        },
 
         getPage: () => new SurveyNav(value).getPage(),
         getPages: () => new SurveyNav(value).getPages(),

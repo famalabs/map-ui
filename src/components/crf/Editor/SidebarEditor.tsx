@@ -1,12 +1,14 @@
 import React from 'react';
 import {Survey, SurveyItem, SurveyMap} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box } from '@mui/material';
+import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box, Stack } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
+import FolderIcon from '@mui/icons-material/Folder';
 import { OptionsEditorForm } from './OptionsEditor';
 import { FolderEditorForm } from './FolderEditor';
+import PreviewIcon from '@mui/icons-material/Preview';
 import { IEditorState } from './EditorBuilder';
 import { INavState } from '../Navigation';
 
@@ -35,29 +37,22 @@ export function SidebarEditorForm({
     }
 
     const renderFolders = () => {
+        const folders = nav.getFolders();
+        const folderId = nav.getFolderId();
         return (
-            <div>
+            <Stack spacing={1}>
                 {nav.getFolders().map((folder) => {
                     return (
-                        <Accordion>
-                            <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="pane21a-content"
-                            id="panel2a-header"
-                            >
-                            <Typography>{folder.text}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                {renderPages(nav.getPagesOfFolder(folder))}
-                                <Button color="inherit" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addPage(folder)}}>
-                                Add new page
-                                </Button>
-                            </AccordionDetails>
-                        </Accordion>
+                        // color={nav.getFolderId() === folder.id ? "secondary" : "inherit"}
+                        <Button variant={folderId === folder.id ? "contained" : "outlined"} color={folderId === folder.id ? "secondary" : "inherit"}  onClick={(e) => {nav.setFolder(folder)}}>
+                        {folder.text}
+                        </Button>
                     );
                 })}
-
-            </div>
+                <Button variant="outlined" color="secondary" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addFolder()}}>
+                Add new folder
+                </Button>
+            </Stack>
         );
     }
     
@@ -92,9 +87,6 @@ export function SidebarEditorForm({
                     </AccordionSummary>
                     <AccordionDetails>
                         {renderFolders()}
-                        <Button color="inherit" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addFolder()}}>
-                        Add new folder
-                        </Button>
                     </AccordionDetails>
                 </Accordion>
             </Paper>
