@@ -1,7 +1,7 @@
 import React from 'react';
 import {Survey, GroupMap, Question, QuestionMap, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Menu } from '@mui/material';
+import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Menu, Stack } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
@@ -11,16 +11,18 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
-import { IEditorState } from './EditorBuilder';
+import { IEditorState, IQuestionState } from './EditorBuilder';
 
 export interface PageEditorFormProps {
 	editor: IEditorState;
 	nav: INavState;
+	questionState: IQuestionState;
 }
 
 export function PageEditorForm({
 	editor,
-	nav
+	nav,
+	questionState
 	}: PageEditorFormProps) {
 	const page = nav.getPage();
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
@@ -30,31 +32,27 @@ export function PageEditorForm({
 	};
 	const handleAddQuestion = (type: string) => {
 		setAnchorAddQuestion(null);
+		if (typeof type !== 'undefined') {
+			editor.addQuestion(type, nav, questionState);
+		}
 	};
+	console.log('render page',page);
 	return (
 		<div>
 			<Typography variant='h6'>Questions</Typography>
+			<Stack spacing={2}>
 			{page.items.map((question) => {
 				return(
 					<QuestionEditorForm
-							editor={editor}
-							nav={nav}
-							question={question as Question}
+						key={question.id}
+						editor={editor}
+						nav={nav}
+						question={question as Question}
+						questionState={questionState}
 					/>
 				);
 			})}
-			{/* <QuestionEditorForm
-							editor={editor}
-							nav={nav}
-			/>
-			<QuestionEditorForm
-							editor={editor}
-							nav={nav}
-			/>
-			<QuestionEditorForm
-							editor={editor}
-							nav={nav}
-			/> */}
+			</Stack>
 			<Button 
 				color="inherit" 
 				startIcon={<AddCircleIcon />}

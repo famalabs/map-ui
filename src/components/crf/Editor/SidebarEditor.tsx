@@ -22,20 +22,6 @@ export function SidebarEditorForm({
     nav
     }: SidebarEditorProps) {
 
-    const renderPages = (pages: SurveyItem[]) => {
-        return (
-            <div>
-                {pages.map((page) => {
-                    return(
-                        <Button color="inherit" startIcon={<EditIcon />}>
-                            {page.text}
-                        </Button>
-                    );
-                })}
-            </div>
-        );
-    }
-
     const renderFolders = () => {
         const folders = nav.getFolders();
         const folderId = nav.getFolderId();
@@ -44,7 +30,7 @@ export function SidebarEditorForm({
                 {nav.getFolders().map((folder) => {
                     return (
                         // color={nav.getFolderId() === folder.id ? "secondary" : "inherit"}
-                        <Button variant={folderId === folder.id ? "contained" : "outlined"} color={folderId === folder.id ? "secondary" : "inherit"}  onClick={(e) => {nav.setFolder(folder)}}>
+                        <Button key={folder.id} variant={folderId === folder.id ? "contained" : "outlined"} color={folderId === folder.id ? "secondary" : "inherit"}  onClick={(e) => {nav.setFolder(folder)}}>
                         {folder.text}
                         </Button>
                     );

@@ -27,11 +27,11 @@ export function OptionsEditorForm({
                 {Object.keys(options).map((key, idx) => {
                     if (['required','inverted','toggle'].includes(key)) {
                         return (
-                            <FormControlLabel control={<Checkbox />} label={key} />
+                            <FormControlLabel key={key} control={<Checkbox />} label={key} />
                         );
                     } else if (key.includes('min') || key.includes('max') || ['step'].includes(key) ) {
                         return (
-                            <div>
+                            <div key={key}>
                                 <FormLabel component="legend">{key}</FormLabel>
                                 <TextField
                                     value=""
@@ -40,7 +40,7 @@ export function OptionsEditorForm({
                         );
                     } else {
                         return (
-                            <div>
+                            <div key={key}>
                                 <FormControl fullWidth>
                                 <InputLabel>{key}</InputLabel>
                                 <Select
@@ -53,7 +53,7 @@ export function OptionsEditorForm({
                                             return null;
                                         } else {
                                             return (
-                                                <MenuItem value={key1}>{key1}</MenuItem>
+                                                <MenuItem key={key1} value={key1}>{key1}</MenuItem>
                                             );
                                         }
                                     } )}
