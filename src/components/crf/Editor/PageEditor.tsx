@@ -11,19 +11,17 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
-import { IEditorState, IQuestionState } from './EditorBuilder';
+import { IEditorState, IUseEditorState } from './EditorBuilder';
 
 export interface PageEditorFormProps {
-	editor: IEditorState;
-	nav: INavState;
-	questionState: IQuestionState;
+	editorState: IUseEditorState;
 }
 
 export function PageEditorForm({
-	editor,
-	nav,
-	questionState
+	editorState,
 	}: PageEditorFormProps) {
+	const editor = editorState.editor;
+	const nav = editorState.nav;
 	const page = nav.getPage();
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
 	const openAddQuestion = Boolean(anchorAddQuestion);
@@ -33,7 +31,7 @@ export function PageEditorForm({
 	const handleAddQuestion = (type: string) => {
 		setAnchorAddQuestion(null);
 		if (typeof type !== 'undefined') {
-			editor.addQuestion(type, nav, questionState);
+			editor.addQuestion(type);
 		}
 	};
 	console.log('render page',page);
@@ -45,10 +43,8 @@ export function PageEditorForm({
 				return(
 					<QuestionEditorForm
 						key={question.id}
-						editor={editor}
-						nav={nav}
+						editorState={editorState}
 						question={question as Question}
-						questionState={questionState}
 					/>
 				);
 			})}

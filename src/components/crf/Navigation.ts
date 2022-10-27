@@ -1,4 +1,4 @@
-import { SurveyItem } from '@src/core/schema';
+import { Question, SurveyItem } from '@src/core/schema';
 import React from 'react'
 
 
@@ -94,11 +94,13 @@ export interface INavState {
     getFolderId: () => string;
     getFolderIdx: () => number;
 
+    getQuestions:() => SurveyItem[];
+
     getPagesOfFolder: (folder: SurveyItem) => SurveyItem[];
 }
 
 export class SurveyNav implements INavState {
-    private root: SurveyItem;
+    // private root: SurveyItem;
     private folders: FolderNav;
     private pages: PageNav;
     public constructor(value: any) {
@@ -149,6 +151,8 @@ export class SurveyNav implements INavState {
     public getFolder():SurveyItem { return this.folders.getCurItem(); }
     public getFolderId():string { return this.folders.getId(); }
     public getFolderIdx():number { return this.folders.getIdx(); }
+
+    public getQuestions():SurveyItem[] { return this.pages.getCurItem().items as Question[]; }
 
     public getPagesOfFolder(folder: SurveyItem): SurveyItem[] {
         return folder.items;
@@ -209,6 +213,8 @@ export function useNavState(root: SurveyItem): INavState {
         setFolder: (folder: SurveyItem, page?: SurveyItem) => {handleSetValue(new SurveyNav(value).setFolder(folder, page));},
         getFolderId: () => new SurveyNav(value).getFolderId(),
         getFolderIdx: () => new SurveyNav(value).getFolderIdx(),
+
+        getQuestions: () => new SurveyNav(value).getQuestions(),
 
         getPagesOfFolder: (folder: SurveyItem) => new SurveyNav(value).getPagesOfFolder(folder),
 

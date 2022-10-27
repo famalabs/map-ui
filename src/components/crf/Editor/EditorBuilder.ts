@@ -4,105 +4,13 @@ import { useFormState } from '@src/components/forms';
 import { INavState, SurveyNav, useNavState } from '../Navigation';
 import { QuestionMap } from '@src/core/schema/config-map';
 
-export interface IQuestionState {
-
-	setNormal:(question:Question) => void;
-	setHover:(question:Question) => void;
-	setEdit:(question:Question) => void;
-	setOptions:(question:Question) => void;
-	setLayout:(question:Question) => void;
-
-	onSave:(question:Question) => void;
-	onExit:(question:Question) => void;
-
-	getQuestionState:(question:Question) => IQuestionStateValue;
-
-	updateQuestions:(questions:Question[]) => void;
-}
-
-export interface IQuestionStateValue {
-	isInNormal: boolean;
-	isInHover: boolean;
-	isInEdit: boolean;
-	isInOptions: boolean;
-	isInLayout: boolean;
-}
-
-const initObj = {
-  isInNormal: true,
-  isInHover: false,
-  isInEdit: false,
-  isInOptions: false,
-  isInLayout: false,
-} as IQuestionStateValue;
-
-// export function useQuestionState(questions:Question[]): IQuestionState {
-
-
-// 	const createInitValue = (qs:Question[]) => {
-// 		var initValue = {};
-// 		for (let i = 0; i < qs.length; i++) {
-// 			initValue[qs[i].id] = initObj;
-// 		}
-// 		return initValue;
-// 	}
-// 	const [value, setValue] = React.useState(createInitValue(questions));
-
-// 	const setQuestionState = (questionId:string, state:string) => {
-// 		const newValue = value;
-// 		newValue[questionId] = initObj;
-// 		newValue[questionId].isInNormal = false;
-// 		newValue[questionId][state] = true;
-// 		setValue(newValue);
-// 		console.log('new', newValue);
-// 	}
-//   console.log("question state");
-// 	return {
-// 		setNormal:(question:Question) => {
-// 			setQuestionState(question.id, 'isInNormal');
-// 		},
-// 		setHover:(question:Question) => {
-// 			setQuestionState(question.id, 'isInHover');
-// 		},
-// 		setEdit:(question:Question) => {
-// 			setQuestionState(question.id, 'isInEdit');
-
-// 		},
-// 		setOptions:(question:Question) => {
-// 			setQuestionState(question.id, 'isInOptions');
-
-// 		},
-// 		setLayout:(question:Question) => {
-// 			setQuestionState(question.id, 'isInLayout');
-
-// 		},
-// 		onSave:(question:Question) => {
-
-// 		},
-// 		onExit:(question:Question) => {
-
-// 		},
-// 		getQuestionState(question:Question):IQuestionStateValue {
-// 			if (!Object.keys(value).includes(question.id)) throw Error('question not in QuestionState');
-// 			return value[question.id] as IQuestionStateValue;
-// 		},
-// 		updateQuestions(qs:Question[]) {
-// 			setValue(createInitValue(qs));
-// 		},
-// 	} as IQuestionState;
-// }
-
 export interface IEditorState {
   getSurvey: () => Survey;
   getRoot: () => SurveyItem;
   addFolder: () => void;
   addPage: (folder: SurveyItem) => void;
-  addQuestion: (type:string, nav: INavState, questionState:IQuestionState) => void;
-  // addQuestionText: (nav: INavState) => void;
-  // addQuestionNumber: (nav: INavState) => void;
-  // addQuestionSelect: (nav: INavState) => void;
-  // addQuestionDate: (nav: INavState) => void;
-  // addQuestionCheck: (nav: INavState) => void;
+  addQuestion: (type:string) => void;
+  onChangeValue: (itemId:string, key:string, value:any) => void;
 }
 
 const defaultPage = {
@@ -123,7 +31,8 @@ const defaultQuestion = (type:string) => {
   return {
     id: "",
     type: type,
-    text: "New " + type
+    text: "New " + type,
+    description: "Description"
   };
 }
 
@@ -163,8 +72,23 @@ export class EditorBuilder implements IEditorState {
     public getRoot(): SurveyItem{
       return this.root;
     }
-    public getQuestions(folderIdx:number,pageIdx:number):Question[] {
-      return this.root.items[folderIdx].items[pageIdx].items as Question[];
+    public getQuestions(folderIdx:number,pageIdx:number):SurveyItem[] {
+      return this.root.items[folderIdx].items[pageIdx].items;
+    }
+    public findItemById(id:string):SurveyItem {
+      if (id === this.root.id) { return this.root; }
+      for (let f = 0; f < this.root.items.length; f++) {
+        const folder = this.root.items[f];
+        if (folder.id === id) { return folder; }
+        for (let p = 0; p < folder.items.length; p++) {
+          const page = folder.items[p];
+          if (page.id === id) { return page; }
+          for (let q = 0; q < page.items.length; q++) {
+            if (page.items[q].id === id) { return page.items[q]; }
+          }
+        }
+      }
+      return undefined;
     }
     public addFolder(): SurveyItem {
       const folder = new SurveyItem(defaultFolder);
@@ -190,8 +114,8 @@ export class EditorBuilder implements IEditorState {
       }
       return null
     }
-
-    public addQuestion(type:string, nav: INavState, questionState:IQuestionState):Question {
+    
+    public addQuestionGeneral(type:string, nav: INavState):Question {
       if (type === QuestionTextMap.type) {
         return this.addQuestionText(nav);
       } else if (type === QuestionNumberMap.type) {
@@ -203,6 +127,9 @@ export class EditorBuilder implements IEditorState {
       } else if (type === QuestionDateMap.type) {
         return this.addQuestionDate(nav);
       }
+      return undefined;
+    }
+    public addQuestion(type:string):Question {
       return undefined;
     }
     public addQuestionText(nav: INavState):QuestionText {
@@ -259,12 +186,20 @@ export class EditorBuilder implements IEditorState {
       return question;
         
     }
+
+    public onChangeValue(itemId:string, key:string, value:any) {
+      const item = this.findItemById(itemId);
+      if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
+      console.log('change', item[key], value);
+      item[key] = value;
+      console.log('change root',this.root);
+      return 
+    }
 }
 
 export interface IUseEditorState {
     editor: IEditorState;
     nav: INavState;
-    questionState: IQuestionState;
 }
 
 export function useEditorState(): IUseEditorState {
@@ -283,85 +218,38 @@ export function useEditorState(): IUseEditorState {
     const root = survey.root;
 
     const surveyNav = useNavState(root);
-    // const questionState = useQuestionState(surveyNav.getPage().items as Question[]);
-    
-    const createInitValue = (qs:Question[]) => {
-      var initValue = {};
-      for (let i = 0; i < qs.length; i++) {
-        initValue[qs[i].id] = initObj;
-      }
-      return initValue;
-    }
-    const [questionState, setQuestionState] = React.useState(createInitValue(surveyNav.getPage().items as Question[]));
-    const handleSetQuestionState = (questionId:string, state:string) => {
-      const newValue = questionState;
-      newValue[questionId] = initObj;
-      newValue[questionId].isInNormal = false;
-      newValue[questionId][state] = true;
-      setQuestionState(newValue);
-      console.log('new', newValue);
-    }
     
     console.log("editor state");
     return {
-        editor: {
-            getSurvey: () => survey,
-            getRoot: () => root,
-            addFolder: () => { 
-                const editorBuilder = new EditorBuilder(survey, root); 
-                const folder = editorBuilder.addFolder();
-                setValue(editorBuilder.getValue());
-                surveyNav.updateAndSet(editorBuilder.getRoot(), folder);
-                // surveyNav.setFolder(folder);
-            },
-            addPage: (folder: SurveyItem) => { 
-                const editorBuilder = new EditorBuilder(survey, root); 
-                const page = editorBuilder.addPage(folder); 
-                setValue(editorBuilder.getValue()); 
-                surveyNav.updateAndSet(editorBuilder.getRoot(), folder, page);
-                // surveyNav.setPage(page);
-            },
-            addQuestion: (type: string, nav:INavState, questionState:IQuestionState) => {
-                const editorBuilder = new EditorBuilder(survey, root); 
-                const question = editorBuilder.addQuestion(type, nav, questionState);
-                setValue(editorBuilder.getValue());
-                surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), nav.getFolderIdx(), nav.getPageIdx());
-                questionState.updateQuestions(editorBuilder.getQuestions(nav.getFolderIdx(), nav.getPageIdx()));
-              }
-        } as IEditorState,
-        nav: surveyNav as INavState,
-        questionState: {
-          setNormal:(question:Question) => {
-            handleSetQuestionState(question.id, 'isInNormal');
+      editor: {
+        getSurvey: () => survey,
+        getRoot: () => root,
+        addFolder: () => { 
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const folder = editorBuilder.addFolder();
+          setValue(editorBuilder.getValue());
+          surveyNav.updateAndSet(editorBuilder.getRoot(), folder);
+        },
+        addPage: (folder: SurveyItem) => { 
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const page = editorBuilder.addPage(folder); 
+          setValue(editorBuilder.getValue()); 
+          surveyNav.updateAndSet(editorBuilder.getRoot(), folder, page);
+        },
+        addQuestion: (type: string) => {
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const question = editorBuilder.addQuestionGeneral(type, surveyNav);
+          setValue(editorBuilder.getValue());
+          // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), nav.getFolderIdx(), nav.getPageIdx());
+          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
           },
-          setHover:(question:Question) => {
-            handleSetQuestionState(question.id, 'isInHover');
-          },
-          setEdit:(question:Question) => {
-            handleSetQuestionState(question.id, 'isInEdit');
-      
-          },
-          setOptions:(question:Question) => {
-            handleSetQuestionState(question.id, 'isInOptions');
-      
-          },
-          setLayout:(question:Question) => {
-            handleSetQuestionState(question.id, 'isInLayout');
-      
-          },
-          onSave:(question:Question) => {
-      
-          },
-          onExit:(question:Question) => {
-      
-          },
-          getQuestionState(question:Question):IQuestionStateValue {
-            if (!Object.keys(questionState).includes(question.id)) throw Error('question not in QuestionState');
-            return questionState[question.id] as IQuestionStateValue;
-          },
-          updateQuestions(qs:Question[]) {
-            setQuestionState(createInitValue(qs));
-          },
-        } as IQuestionState,
+        onChangeValue: (itemId:string, key:string, value:any) => {
+          const editorBuilder = new EditorBuilder(survey, root); 
+          editorBuilder.onChangeValue(itemId, key, value);
+          setValue(editorBuilder.getValue());
+          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+        }
+      } as IEditorState,
+      nav: surveyNav as INavState,
     } as IUseEditorState;
 }
