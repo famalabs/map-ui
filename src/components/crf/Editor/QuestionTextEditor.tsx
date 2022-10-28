@@ -15,7 +15,7 @@ import { OptionsEditorForm } from './OptionsEditor';
 import { QuestionMap, QuestionTextMap } from '../../../core/schema';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './QuestionEditor';
+import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
 export interface QuestionTextEditorFormProps {
   editorState: IUseEditorState;
@@ -51,51 +51,12 @@ export function QuestionTextEditorForm({
     );
   }
   const renderHover = () => {
-    return (
-      <div>
-        <div>
-          <FormLabel component="legend">{question.text}</FormLabel>
-          <TextField
-            disabled
-            value={question.description ?? question.text}
-            label={question.description ?? question.text}
-            required={question.options.required}
-          />
-        </div>
-      </div>
-    );
+    return renderNormal();
   }
   const renderEdit = () => {
     return (
       <div>
-        <div>
-          <FormLabel component="legend">Title</FormLabel>
-          <TextField
-            value={question.text}
-            onChange={(e) => {editor.onChangeValue(question.id,'text', e.target.value)}}
-          />
-        </div>
-        <div>
-          <FormLabel component="legend">Description</FormLabel>
-          <TextField
-            value={question.description}
-            onChange={(e) => {editor.onChangeValue(question.id,'description', e.target.value)}}
-          />
-        </div>
-      </div>
-    );
-  }
-  const renderOptions = () => {
-    return (
-      <div>
-        <OptionsEditorForm
-          title="General options"
-          options={QuestionMap.options}
-        />
-        <OptionsEditorForm
-          title="Text options"
-          options={QuestionTextMap.options}
-        />
+        {QuestionGeneralEdit(question, editor)}
       </div>
     );
   }
@@ -112,7 +73,7 @@ export function QuestionTextEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      renderOptions()
+      renderGeneralOptions(QuestionTextMap.options,"Text options")
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : null}

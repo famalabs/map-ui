@@ -17,17 +17,17 @@ import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
-export interface QuestionNumberEditorFormProps {
+export interface QuestionDateEditorFormProps {
   editorState: IUseEditorState;
-  question: QuestionNumber;
+  question: QuestionDate;
   questionState: string;
 }
 
-export function QuestionNumberEditorForm({
+export function QuestionDateEditorForm({
   editorState,
   question,
   questionState,
-  }: QuestionNumberEditorFormProps) {
+  }: QuestionDateEditorFormProps) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
@@ -63,7 +63,7 @@ export function QuestionNumberEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render number', questionState);
+  console.log('render Date', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (
@@ -73,7 +73,7 @@ export function QuestionNumberEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      renderGeneralOptions(QuestionNumberMap.options,"Number options")
+      renderGeneralOptions(QuestionDateMap.options,"Date options")
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : null}

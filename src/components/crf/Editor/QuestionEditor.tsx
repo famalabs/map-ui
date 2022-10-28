@@ -1,5 +1,5 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck} from '../../../core/schema'
+import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
 import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -20,6 +20,9 @@ import { QuestionMap, QuestionTextMap } from '../../../core/schema';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
+import { QuestionNumberEditorForm } from './QuestionNumberEditor';
+import { QuestionSelectEditorForm } from './QuestionSelectEditor';
+import { QuestionDateEditorForm } from './QuestionDateEditor';
 
 export const QuestionStateMap = {
   normal:"normal",
@@ -32,6 +35,44 @@ export const QuestionStateMap = {
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;
   question: Question;
+}
+
+export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
+  return (
+    <div>
+      <div>
+        <FormLabel component="legend">Title</FormLabel>
+        <TextField
+          value={item.text}
+          onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
+        />
+      </div>
+      <div>
+        <FormLabel component="legend">Description</FormLabel>
+        <TextField
+          value={item.description}
+          onChange={(e) => {editor.onChangeValue(item.id,'description', e.target.value)}}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const renderGeneralOptions = (questionOptions:any,title:string) => {
+  return (
+    <div>
+      <OptionsEditorForm
+        title="General options"
+        options={QuestionMap.options}
+        useAccordion={false}
+      />
+      <OptionsEditorForm
+        title={title}
+        options={questionOptions}
+        useAccordion={false}
+      />
+    </div>
+  );
 }
 
 export function QuestionEditorForm({
@@ -92,6 +133,30 @@ export function QuestionEditorForm({
     if (question instanceof QuestionText) {
       return (
         <QuestionTextEditorForm
+          editorState={editorState}
+          question={question}
+          questionState={questionState}
+        />
+      );
+    } else if (question instanceof QuestionNumber) {
+      return (
+        <QuestionNumberEditorForm
+          editorState={editorState}
+          question={question}
+          questionState={questionState}
+        />
+      );
+    } else if (question instanceof QuestionDate) {
+      return (
+        <QuestionDateEditorForm
+          editorState={editorState}
+          question={question}
+          questionState={questionState}
+        />
+      );
+    } else if (question instanceof QuestionSelect) {
+      return (
+        <QuestionSelectEditorForm
           editorState={editorState}
           question={question}
           questionState={questionState}

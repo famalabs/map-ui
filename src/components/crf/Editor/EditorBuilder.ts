@@ -158,6 +158,7 @@ export class EditorBuilder implements IEditorState {
       const question = new QuestionSelect(defaultQuestion(type));
       question.id = this.getValidId();
       question.text = type + " " +question.id.toString();
+      question.selectOptions = [{text:"Radio 1",score:0},{text:"Radio 2",score:1}];
       const folderIdx = nav.getFolderIdx();
       const pageIdx = nav.getPageIdx();
       this.root.items[folderIdx].items[pageIdx].insertItem(question);
