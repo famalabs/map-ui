@@ -25,22 +25,20 @@ export function SurveyEditorForm({
     // const [questions, setQuestions] = React.useState<Question[]>(Object.values(initSurvey));
 
     // const [schema, setSchema] = React.useState(Object.values())
-    const { editor, nav } = useEditorState();
-    
+    const editorState = useEditorState();
+    console.log('render survey');
     return (
         <Box sx={{ display: 'flex', width:'100%' }}>
             <CssBaseline />
             <SidebarEditorForm
-                editor={editor}
-                nav={nav}
+                editorState={editorState}
             />
             <Box
                 component="main"
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${320}px)` } }}
             >
                 <FolderEditorForm
-                editor={editor}
-                nav={nav}
+                    editorState={editorState}
                 />
             </Box>
 

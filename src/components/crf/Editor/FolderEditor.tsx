@@ -7,62 +7,63 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import FolderIcon from '@mui/icons-material/Folder';
 import { PageEditorForm } from './PageEditor';
 import { INavState } from '../Navigation';
-import { IEditorState } from './EditorBuilder';
+import { IEditorState, IUseEditorState } from './EditorBuilder';
 
 export interface FolderEditorFormProps {
-    editor: IEditorState;
-    nav: INavState;
+	editorState: IUseEditorState;
 }
 
 export function FolderEditorForm({
-    editor,
-    nav
-    }: FolderEditorFormProps) {
-    const folder = nav.getFolder();
-    const pages = nav.getPages();
-    const pageId = nav.getPageId();
-    const page = nav.getPage();
-    return (
-        <div>
-        <Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
-            <Typography variant='h4'>{folder.text}</Typography>
-                    {/* <Typography>{folder.description}</Typography> */}
-                    <div>
-                        <FormLabel component="legend">Folder Name</FormLabel>
-                        <TextField
-                            value={folder.text}
-                        />
-                    </div>
-        </Paper>
-        <Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
-            <Stack direction="row" spacing={1}>
-                {pages.map((page) => {
-                    return(
-                        <Button variant={pageId === page.id ? "contained" : "outlined"} color={pageId === page.id ? "secondary" : "inherit"} onClick={(e) => {nav.setPage(page)}}>
-                            {page.text}
-                        </Button>
-                    );
-                })}
-                <Button variant="outlined" color="secondary" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addPage(folder)}}>
-                Add new page
-                </Button>
-            </Stack>
-        </Paper>
-        <Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
-        <Typography variant='h5'>{page.text}</Typography>
-            <div>
-                <FormLabel component="legend">Page Name</FormLabel>
-                <TextField
-                    value={page.text}
-                />
-            </div>
-        </Paper>
-        <Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
-            <PageEditorForm
-                    editor={editor}
-                    nav={nav}
-                />
-        </Paper>
-        </div>
-    );
+	editorState,
+	}: FolderEditorFormProps) {
+	const editor = editorState.editor;
+	const nav = editorState.nav;
+	const folder = nav.getFolder();
+	const pages = nav.getPages();
+	const pageId = nav.getPageId();
+	const page = nav.getPage();
+	console.log('render folder', folder);
+	return (
+		<div>
+		<Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
+			{/* <Typography variant='h4'>{folder.text}</Typography> */}
+				<div>
+					<FormLabel component="legend">Folder Name</FormLabel>
+					<TextField
+						value={folder.text}
+						onChange={(e) => {editor.onChangeValue(folder.id,'text', e.target.value)}}
+					/>
+				</div>
+		</Paper>
+		<Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
+			<Stack direction="row" spacing={1}>
+				{pages.map((page) => {
+					return(
+						<Button key={page.id} variant={pageId === page.id ? "contained" : "outlined"} color={pageId === page.id ? "secondary" : "inherit"} onClick={(e) => {nav.setPage(page)}}>
+							{page.text}
+						</Button>
+					);
+				})}
+				<Button variant="outlined" color="secondary" onClick={(e) => {editor.addPage(folder)}}>
+				<AddCircleIcon />
+				</Button>
+			</Stack>
+		</Paper>
+		<Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
+		{/* <Typography variant='h5'>{page.text}</Typography> */}
+			<div>
+				<FormLabel component="legend">Page Name</FormLabel>
+				<TextField
+					value={page.text}
+					onChange={(e) => {editor.onChangeValue(page.id,'text', e.target.value)}}
+				/>
+			</div>
+		</Paper>
+		<Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
+			<PageEditorForm
+					editorState={editorState}
+				/>
+		</Paper>
+			</div>
+	);
 }

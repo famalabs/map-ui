@@ -6,51 +6,98 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { OptionsEditorForm } from './OptionsEditor';
 import { FolderEditorForm } from './FolderEditor';
 import PreviewIcon from '@mui/icons-material/Preview';
-import { IEditorState } from './EditorBuilder';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { INavState } from '../Navigation';
 
 export interface SidebarEditorProps {
-    editor: IEditorState;
-    nav: INavState;
+    editorState: IUseEditorState;
 }
 
 export function SidebarEditorForm({
-    editor,
-    nav
+    editorState,
     }: SidebarEditorProps) {
 
-    const renderPages = (pages: SurveyItem[]) => {
-        return (
-            <div>
-                {pages.map((page) => {
-                    return(
-                        <Button color="inherit" startIcon={<EditIcon />}>
-                            {page.text}
-                        </Button>
-                    );
-                })}
-            </div>
-        );
-    }
+    const editor = editorState.editor;
+    const nav = editorState.nav;
+    const survey = editor.getRoot();
+    const folders = nav.getFolders();
+    const folderId = nav.getFolderId();
 
     const renderFolders = () => {
-        const folders = nav.getFolders();
-        const folderId = nav.getFolderId();
         return (
             <Stack spacing={1}>
                 {nav.getFolders().map((folder) => {
-                    return (
-                        // color={nav.getFolderId() === folder.id ? "secondary" : "inherit"}
-                        <Button variant={folderId === folder.id ? "contained" : "outlined"} color={folderId === folder.id ? "secondary" : "inherit"}  onClick={(e) => {nav.setFolder(folder)}}>
-                        {folder.text}
-                        </Button>
-                    );
+                    if (folderId === folder.id ) {
+                        return (
+                            <Stack key={folder.id} spacing={1}>
+                                <Button 
+                                variant={"contained"} 
+                                color={"secondary"}  
+                                onClick={(e) => {nav.setFolder(folder)}}>
+                                    <Stack spacing={1}>
+                                        <Typography>{folder.text}</Typography>
+                                        <Stack direction="row" spacing={1}>
+                                            <Button variant={"outlined"} 
+                                            color={"inherit"}  
+                                            onClick={(e) => {}}
+                                            >
+                                            <ArrowUpwardIcon/>
+                                            </Button>
+                                            <Button variant={"outlined"} 
+                                            color={"inherit"}  
+                                            onClick={(e) => {}}
+                                            >
+                                            <ArrowDownwardIcon/>
+                                            </Button>
+                                            <Button variant={"outlined"} 
+                                            color={"inherit"}  
+                                            onClick={(e) => {}}
+                                            >
+                                            <DeleteIcon/>
+                                            </Button>
+                                        </Stack>
+                                    </Stack>
+                                </Button>
+                                {/* <Stack direction="row" spacing={1}>
+                                    <Button variant={"outlined"} 
+                                    color={"secondary"}  
+                                    onClick={(e) => {}}
+                                    >
+                                    <ArrowUpwardIcon/>
+                                    </Button>
+                                    <Button variant={"outlined"} 
+                                    color={"secondary"}  
+                                    onClick={(e) => {}}
+                                    >
+                                    <ArrowDownwardIcon/>
+                                    </Button>
+                                    <Button variant={"outlined"} 
+                                    color={"secondary"}  
+                                    onClick={(e) => {}}
+                                    >
+                                    <DeleteIcon/>
+                                    </Button>
+                                </Stack> */}
+                            </Stack>
+                        );
+                    } else {
+                        return (
+                            <Button variant={"outlined"} 
+                            color={"inherit"}  
+                            onClick={(e) => {nav.setFolder(folder)}}>
+                            {folder.text}
+                            </Button>
+                        );
+                    }
                 })}
-                <Button variant="outlined" color="secondary" startIcon={<AddCircleIcon />} onClick={(e) => {editor.addFolder()}}>
-                Add new folder
+                <Button variant="outlined" color="secondary" onClick={(e) => {editor.addFolder()}}>
+                <AddCircleIcon />
                 </Button>
             </Stack>
         );
@@ -66,7 +113,8 @@ export function SidebarEditorForm({
                 <div>
                     <FormLabel component="legend">Survey Name</FormLabel>
                     <TextField
-                        value="My Survey 1"
+                        value={survey.text}
+                        onChange={(e) => {editor.onChangeValue(survey.id,'text', e.target.value)}}
                     />
                 </div>
                 <OptionsEditorForm

@@ -1,4 +1,4 @@
-import { SurveyItem } from '@src/core/schema';
+import { Question, SurveyItem } from '@src/core/schema';
 import React from 'react'
 
 
@@ -94,16 +94,29 @@ export interface INavState {
     getFolderId: () => string;
     getFolderIdx: () => number;
 
+    getQuestions:() => SurveyItem[];
+
     getPagesOfFolder: (folder: SurveyItem) => SurveyItem[];
 }
 
 export class SurveyNav implements INavState {
-    private root: SurveyItem;
+    // private root: SurveyItem;
     private folders: FolderNav;
     private pages: PageNav;
     public constructor(value: any) {
             this.folders = new FolderNav(value.folders, value.folder);
             this.pages = new PageNav(value.pages, value.page);
+    }
+
+    static rootToValue = (root: SurveyItem, folderIdx?:number, pageIdx?:number) => {
+        if (typeof folderIdx === 'undefined') { folderIdx = 0; }
+        if (typeof pageIdx === 'undefined') { pageIdx = 0; }
+        return {
+            folders: root.items,
+            folder: root.items[folderIdx],
+            pages: root.items[folderIdx].items,
+            page: root.items[folderIdx].items[pageIdx]
+        }
     }
 
     updateValues: (root: SurveyItem) => void;
@@ -139,6 +152,8 @@ export class SurveyNav implements INavState {
     public getFolderId():string { return this.folders.getId(); }
     public getFolderIdx():number { return this.folders.getIdx(); }
 
+    public getQuestions():SurveyItem[] { return this.pages.getCurItem().items as Question[]; }
+
     public getPagesOfFolder(folder: SurveyItem): SurveyItem[] {
         return folder.items;
     }
@@ -164,53 +179,23 @@ export class SurveyNav implements INavState {
 
 export function useNavState(root: SurveyItem): INavState {
 
-
-    const rootToValue = (root: SurveyItem, folderIdx?:number, pageIdx?:number) => {
-
-        if (typeof folderIdx === 'undefined') { folderIdx = 0; }
-        if (typeof pageIdx === 'undefined') { pageIdx = 0; }
-            // if (typeof folder !== 'undefined' || typeof page !== 'undefined') {
-            //     for (let i = 0; i < root.items.length; i++) {
-            //         if (typeof folder !== 'undefined') {
-            //             if (folder.id === root.items[i].id) {
-            //                 folderIdx = i;
-            //             }
-            //         }
-            //         if (typeof page !== 'undefined') {
-            //             for (let j = 0; j < root.items[i].items.length; j++) {
-            //                 if (page.id === root.items[i].items[j].id) {
-            //                     folderIdx = i;
-            //                     pageIdx = j;
-            //                 }
-            //             }  
-            //         }
-            //     }
-            // }
-        return {
-            folders: root.items,
-            folder: root.items[folderIdx],
-            pages: root.items[folderIdx].items,
-            page: root.items[folderIdx].items[pageIdx]
-        }
-    }
-
-    const [value, setValue] = React.useState(rootToValue(root));
+    const [value, setValue] = React.useState(SurveyNav.rootToValue(root));
     function handleSetValue(value:any) {
         setValue(value);
     }
 
     return {
         updateValues: (root: SurveyItem) => {
-            handleSetValue(rootToValue(root));
+            handleSetValue(SurveyNav.rootToValue(root));
         },
         updateAndSet: (root: SurveyItem, folder:SurveyItem, page:SurveyItem) => {
             // root for values, folder to select or page to select
-            const nav = new SurveyNav(rootToValue(root));
+            const nav = new SurveyNav(SurveyNav.rootToValue(root));
             handleSetValue(nav.setFolder(folder, page));
         },
         updateAndSetWithIds: (root: SurveyItem, folderIdx:number, pageIdx:number) => {
             // root for values, folder to select or page to select
-            handleSetValue(rootToValue(root,folderIdx,pageIdx));
+            handleSetValue(SurveyNav.rootToValue(root,folderIdx,pageIdx));
         },
 
         getPage: () => new SurveyNav(value).getPage(),
@@ -228,6 +213,8 @@ export function useNavState(root: SurveyItem): INavState {
         setFolder: (folder: SurveyItem, page?: SurveyItem) => {handleSetValue(new SurveyNav(value).setFolder(folder, page));},
         getFolderId: () => new SurveyNav(value).getFolderId(),
         getFolderIdx: () => new SurveyNav(value).getFolderIdx(),
+
+        getQuestions: () => new SurveyNav(value).getQuestions(),
 
         getPagesOfFolder: (folder: SurveyItem) => new SurveyNav(value).getPagesOfFolder(folder),
 
