@@ -51,13 +51,12 @@ export function PageEditorForm({
 			</Stack>
 			<Button 
 				color="inherit" 
-				startIcon={<AddCircleIcon />}
         aria-controls={openAddQuestion ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={openAddQuestion ? 'true' : undefined}
         onClick={handleOpenAddQuestion}
 			>
-				Add new question
+				<AddCircleIcon />
 			</Button>
 			<Menu
 				// id="basic-menu"

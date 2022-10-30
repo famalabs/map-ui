@@ -193,15 +193,15 @@ export function QuestionEditorForm({
           <EditIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.moveItemUp(question)}}>
           <ArrowUpwardIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.moveItemDown(question)}}>
           <ArrowDownwardIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.removeItem(question)}}>
           <DeleteIcon/>
           </Button>
         </Stack>

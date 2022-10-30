@@ -66,14 +66,24 @@ export class SurveyItem {
    * @param {SurveyItem} item
    * @returns {boolean}
    */
-  removeItem(item: SurveyItem): boolean {
+   removeItem(item: SurveyItem): boolean {
     let itemIndex = this.getChildIndex(item);
-    if (!(itemIndex >= 0))
-      return false;
-    this.items.splice(itemIndex, 1);
-    item.parent = undefined;
-    return true;
-  }
+    console.log('rem', item, itemIndex);
+    return this.removeItemByIdx(itemIndex);
+  }  /**
+
+  *
+  * @param {SurveyItem} item
+  * @returns {boolean}
+  */
+ removeItemByIdx(itemIndex: number): boolean {
+   if (!(itemIndex >= 0 && itemIndex < this.items.length)) {
+     return false;
+   }
+   this.items[itemIndex].parent = undefined;
+   this.items.splice(itemIndex, 1);
+   return true;
+ }
 
   /**
    *

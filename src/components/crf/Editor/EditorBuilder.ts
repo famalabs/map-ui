@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import {Survey, SurveyMap, fromMapToDefault, SurveyItem, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap, QuestionCheckMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck} from '../../../core/schema'
+import {Survey, SurveyMap, fromMapToDefault, SurveyItem, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap, QuestionCheckMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck,GroupMap, QuestionMap} from '../../../core/schema'
 import { useFormState } from '@src/components/forms';
 import { INavState, SurveyNav, useNavState } from '../Navigation';
-import { QuestionMap } from '@src/core/schema/config-map';
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -10,6 +9,9 @@ export interface IEditorState {
   addFolder: () => void;
   addPage: (folder: SurveyItem) => void;
   addQuestion: (type:string) => void;
+  removeItem: (item:SurveyItem) => void;
+  moveItemUp: (item:SurveyItem) => void;
+  moveItemDown: (item:SurveyItem) => void;
   onChangeValue: (itemId:string, key:string, value:any) => void;
 }
 
@@ -187,13 +189,61 @@ export class EditorBuilder implements IEditorState {
       return question;
         
     }
-
+    public removeItem(qs:SurveyItem) {
+    }
+    public removeItemGeneral(item:SurveyItem, nav: INavState):number {
+      const itemType = nav.getItemType(item.id);
+      const folderIdx = nav.getFolderIdx();
+      const pageIdx = nav.getPageIdx();
+      if (itemType === GroupMap.layout.style.folder && nav.getFolders().length > 1) { 
+        if (this.root.removeItem(item)) {
+          return folderIdx-1 >= 0 ? folderIdx-1 : 0;
+        }
+        return folderIdx;
+      } else if (itemType === GroupMap.layout.style.page && nav.getPages().length > 1) { 
+        if (this.root.items[folderIdx].removeItem(item)) {
+          return pageIdx-1 >= 0 ? pageIdx-1 : 0;
+        }
+        return pageIdx;
+      } else {
+        this.root.items[folderIdx].items[pageIdx].removeItem(item);
+        return -1;
+      }
+    }
+    public moveItemUp (item:SurveyItem) {}
+    /**
+     * move item prev and returns his new index
+     * @param item 
+     * @param nav 
+     * @returns 
+     */
+    public moveItemUpGeneral (item:SurveyItem, nav:INavState):number {
+      const curIdx = nav.getItemIdx(item.id);
+      const parent = this.findItemById(item.id).parent;
+      if (parent.moveItemToPosition(item, curIdx-1)){
+        return curIdx-1;
+      }
+      return curIdx;
+    }
+    public moveItemDown (item:SurveyItem) {}
+    /**
+     * moves item next and returns his new index
+     * @param item 
+     * @param nav 
+     * @returns 
+     */
+    public moveItemDownGeneral (item:SurveyItem, nav:INavState):number {
+      const curIdx = nav.getItemIdx(item.id);
+      const parent = this.findItemById(item.id).parent;
+      if (parent.moveItemToPosition(item, curIdx+1)){
+        return curIdx+1;
+      }
+      return curIdx;
+    }
     public onChangeValue(itemId:string, key:string, value:any) {
       const item = this.findItemById(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
-      console.log('change', item[key], value);
       item[key] = value;
-      console.log('change root',this.root);
       return 
     }
 }
@@ -243,7 +293,46 @@ export function useEditorState(): IUseEditorState {
           setValue(editorBuilder.getValue());
           // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), nav.getFolderIdx(), nav.getPageIdx());
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
-          },
+        },
+        removeItem: (item:SurveyItem) => {
+          const itemType = surveyNav.getItemType(item.id);
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const newIdx = editorBuilder.removeItemGeneral(item, surveyNav);
+          setValue(editorBuilder.getValue());
+          if (itemType === GroupMap.layout.style.folder) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), newIdx, 0);
+          } else if (itemType === GroupMap.layout.style.page) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), newIdx);
+          } else {
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          }
+        },
+        moveItemUp: (item:SurveyItem) => {
+          const itemType = surveyNav.getItemType(item.id);
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const newIdx = editorBuilder.moveItemUpGeneral(item, surveyNav);
+          setValue(editorBuilder.getValue());
+          if (itemType === GroupMap.layout.style.folder) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), newIdx, surveyNav.getPageIdx());
+          } else if (itemType === GroupMap.layout.style.page) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), newIdx);
+          } else {
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          }
+        },
+        moveItemDown: (item:SurveyItem) => {
+          const itemType = surveyNav.getItemType(item.id);
+          const editorBuilder = new EditorBuilder(survey, root); 
+          const newIdx = editorBuilder.moveItemDownGeneral(item, surveyNav);
+          setValue(editorBuilder.getValue());
+          if (itemType === GroupMap.layout.style.folder) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), newIdx, surveyNav.getPageIdx());
+          } else if (itemType === GroupMap.layout.style.page) { 
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), newIdx);
+          } else {
+            surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          }
+        },
         onChangeValue: (itemId:string, key:string, value:any) => {
           const editorBuilder = new EditorBuilder(survey, root); 
           editorBuilder.onChangeValue(itemId, key, value);
