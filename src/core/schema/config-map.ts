@@ -1,5 +1,14 @@
 import { MAX_FIELD_SIZE } from "./config";
 
+export function fromMapToDefault(options:any) {
+    var acc = {}
+    const keys = Object.keys(options);
+    for (let i = 0; i < keys.length; i++) {
+        acc = { ...acc, ...{ [keys[i]]: options[keys[i]].default } }
+    }
+    return acc;
+}
+
 // SURVEY
 export const SurveyMap = {
     id: "",

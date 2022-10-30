@@ -7,6 +7,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { OptionsEditorForm } from './OptionsEditor';
 import { FolderEditorForm } from './FolderEditor';
 import { SidebarEditorForm } from './SidebarEditor';
+import { useEditorState } from './EditorBuilder';
 
 export interface SurveyEditorProps {
     saveSurvey: (survey: Survey) => void;
@@ -24,20 +25,21 @@ export function SurveyEditorForm({
     // const [questions, setQuestions] = React.useState<Question[]>(Object.values(initSurvey));
 
     // const [schema, setSchema] = React.useState(Object.values())
-    
+    const editorState = useEditorState();
+    console.log('render survey');
     return (
         <Box sx={{ display: 'flex', width:'100%' }}>
             <CssBaseline />
             <SidebarEditorForm
+                editorState={editorState}
             />
             <Box
                 component="main"
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${320}px)` } }}
             >
-                <Paper style={{margin:'24px',padding:'24px'}}>
-                    <FolderEditorForm
-                    />
-                </Paper>
+                <FolderEditorForm
+                    editorState={editorState}
+                />
             </Box>
 
         </Box>
