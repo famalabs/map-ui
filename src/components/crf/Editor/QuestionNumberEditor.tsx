@@ -1,20 +1,9 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import {QuestionNumber, QuestionNumberMap} from '../../../core/schema'
+import { TextField, FormLabel, Stack, Typography, Slider } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { OptionsEditorForm } from './OptionsEditor';
-import { QuestionMap, QuestionTextMap } from '../../../core/schema';
-import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
+import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
 export interface QuestionNumberEditorFormProps {
@@ -30,15 +19,34 @@ export function QuestionNumberEditorForm({
   }: QuestionNumberEditorFormProps) {
   const editor = editorState.editor;
   const nav = editorState.nav;
+  const style = question.layout.style;
 
   const renderIcon = () => {
-    return (<PinIcon/>);
+    return (question.layout.style === QuestionNumberMap.layout.style.range 
+      ? (<LinearScaleRoundedIcon/>):(<PinIcon/>));
   }
 
   const renderNormal = () => {
     return (
-      <div>
-        <div>
+      <Stack spacing={1}>
+        {question.layout.style === QuestionNumberMap.layout.style.range ? (
+        <Stack spacing={1}>
+          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">{question.description}</FormLabel>
+          <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+            <Typography>{question.options.minValue}</Typography>
+            <Slider 
+            disabled
+            step={question.options.step}
+            marks
+            min={question.options.minValue}
+            max={question.options.maxValue}
+             />
+            <Typography>{question.options.maxValue}</Typography>
+          </Stack>
+        </Stack>
+        ):(
+          <Stack spacing={1}>
           <FormLabel component="legend">{question.text}</FormLabel>
           <TextField
             disabled
@@ -46,8 +54,9 @@ export function QuestionNumberEditorForm({
             label={question.description ?? question.text}
             required={question.options.required}
           />
-        </div>
-      </div>
+        </Stack>
+        )}
+      </Stack>
     );
   }
   const renderHover = () => {
@@ -59,6 +68,41 @@ export function QuestionNumberEditorForm({
         {QuestionGeneralEdit(question, editor)}
       </div>
     );
+  }
+  const renderNumberOptions = () => {
+    const editor = editorState.editor;
+    const nav = editorState.nav;
+    return (
+    <div>
+      {renderGeneralOptions(undefined,undefined)}
+      <Stack spacing={1}>
+      <Typography>Number Options</Typography>
+      <div>
+        <FormLabel component="legend">minValue</FormLabel>
+        <TextField
+          type={'number'}
+          value={question.options.minValue}
+          onChange={(e) => {editor.onChangeOptions(question.id,'minValue', e.target.value)}}
+        />
+      </div>
+      <div>
+        <FormLabel component="legend">maxValue</FormLabel>
+        <TextField
+          type={'number'}
+          value={question.options.maxValue}
+          onChange={(e) => {editor.onChangeOptions(question.id,'maxValue', e.target.value)}}
+        />
+      </div>
+      <div>
+        <FormLabel component="legend">step</FormLabel>
+        <TextField
+          type={'number'}
+          value={question.options.step}
+          onChange={(e) => {editor.onChangeOptions(question.id,'step', e.target.value)}}
+        />
+      </div>
+      </Stack>
+    </div>);
   }
   const renderLayout = () => {
     return null;
@@ -73,7 +117,9 @@ export function QuestionNumberEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      renderGeneralOptions(QuestionNumberMap.options,"Number options")
+      // renderGeneralOptions(QuestionNumberMap.options,"Number options")
+      // renderGeneralOptions(undefined,undefined)
+      renderNumberOptions()
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : null}

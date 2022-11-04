@@ -1,20 +1,9 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {QuestionText} from '../../../core/schema'
+import { TextField, FormLabel, Stack } from '@mui/material';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
-import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { OptionsEditorForm } from './OptionsEditor';
-import { QuestionMap, QuestionTextMap } from '../../../core/schema';
-import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import { QuestionTextMap } from '../../../core/schema';
+import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
 export interface QuestionTextEditorFormProps {
@@ -37,17 +26,27 @@ export function QuestionTextEditorForm({
 
   const renderNormal = () => {
     return (
-      <div>
-        <div>
+      <Stack spacing={1}>
+        <Stack spacing={1}>
           <FormLabel component="legend">{question.text}</FormLabel>
-          <TextField
+          {question.layout.style === QuestionTextMap.layout.style.area ? (
+            <TextField
+              disabled
+              value={question.description ?? question.text}
+              label={question.description ?? question.text}
+              required={question.options.required}
+            />
+          ):(
+            <TextField
             disabled
+            multiline
             value={question.description ?? question.text}
             label={question.description ?? question.text}
             required={question.options.required}
           />
-        </div>
-      </div>
+          )}
+        </Stack>
+      </Stack>
     );
   }
   const renderHover = () => {
@@ -73,7 +72,8 @@ export function QuestionTextEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      renderGeneralOptions(QuestionTextMap.options,"Text options")
+      // renderGeneralOptions(QuestionTextMap.options,"Text options")
+      renderGeneralOptions(question, editorState)
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : null}

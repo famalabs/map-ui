@@ -1,13 +1,17 @@
 import React from 'react';
 import {Survey, GroupMap} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Divider } from '@mui/material';
+import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Divider, Box } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderIcon from '@mui/icons-material/Folder';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { PageEditorForm } from './PageEditor';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
@@ -116,6 +120,55 @@ export function FolderEditorForm({
 					editorState={editorState}
 				/>
 		</Paper>
+		<Box sx={{ width: '100%' }}>
+			<Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+				<Button 
+				variant={"outlined"} 
+				color="secondary" 
+				disabled={nav.getPageIdx() === 0} 
+				onClick={(e) => {nav.prevPage()}} 
+				startIcon={<ArrowBackIosIcon />}
+				sx={{ mr: 1 }}
+				>
+					Back
+				</Button>
+				<Box sx={{ flex: '1 1 auto' }} />
+					{nav.getPageIdx() === nav.getPages().length-1 ? (
+						<Stack
+						direction='row'
+						>
+						<Button 
+						variant={"outlined"} 
+						color="secondary" 
+						onClick={(e)=>{editor.addPage(folder)}} 
+						// endIcon={<AddCircleIcon />}
+						sx={{ mr: 1 }}
+						>
+							<NoteAddIcon/>
+						</Button>
+							<Button 
+							variant={"outlined"} 
+							color="secondary" 
+							onClick={(e)=>{editor.addFolder()}} 
+							// endIcon={<AddCircleIcon />}
+							sx={{ mr: 1 }}
+							>
+								<CreateNewFolderIcon/>
+							</Button>
+						</Stack>
+					) : (
+						<Button 
+						variant={"outlined"} 
+						color="secondary" 
+						onClick={(e)=>{nav.nextPage()}} 
+						endIcon={<ArrowForwardIosIcon />}
+						sx={{ mr: 1 }}
+						>
+							Next
+						</Button>
+					)}
+				</Box>
+			</Box>
 			</div>
 	);
 }

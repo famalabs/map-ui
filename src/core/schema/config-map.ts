@@ -130,6 +130,12 @@ export const QuestionTextMap = {
         maxLength: {
             default: MAX_FIELD_SIZE
         }
+    },
+    layout: {
+        style: {
+            default: "default",
+            area: "area"
+        }
     }
 } as const;
 export type QuestionTextMap = keyof typeof QuestionTextMap;
@@ -149,6 +155,12 @@ export const QuestionNumberMap = {
         },
         step: {
             default: 0
+        }
+    },
+    layout: {
+        style: {
+            default:"default",
+            range:"range"
         }
     }
 } as const;
@@ -210,3 +222,24 @@ export const QuestionMap = {
     }
 } as const;
 export type QuestionMap = keyof typeof QuestionMap;
+
+export const FnMap = {
+    id: "",
+    name: "",
+    text: "",
+    type: "Fn",
+    parameters: [],
+    fnCompute: {
+        age:'age',
+        BMI:'BMI',
+        SOFA:'SOFA',
+        ISTH:'ISTH',
+        CID:'CID',
+        HScore:'HScore',
+        MeanArterialPressure:'MeanArterialPressure',
+        CrocoftGault:'CrocoftGault',
+        CDKEPI:'CDKEPI',
+        PFpercent:'PFpercent'
+    }
+} as const;
+export type FnMap = keyof typeof FnMap;
