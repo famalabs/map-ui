@@ -1,7 +1,7 @@
 import React from 'react';
 import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack } from '@mui/material';
+import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Box, Tabs, Tab, Checkbox } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -15,6 +15,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
+import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
 import { OptionsEditorForm } from './OptionsEditor';
 import { QuestionMap, QuestionTextMap } from '../../../core/schema';
 import { INavState } from '../Navigation';
@@ -23,6 +24,7 @@ import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
+import { TabList } from '@mui/lab';
 
 export const QuestionStateMap = {
   normal:"normal",
@@ -40,14 +42,14 @@ export interface QuestionEditorFormProps {
 export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   return (
     <div>
-      <div>
+      <div style={{margin:'0.25rem'}}>
         <FormLabel component="legend">Title</FormLabel>
         <TextField
           value={item.text}
           onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
         />
       </div>
-      <div>
+      <div style={{margin:'0.25rem'}}>
         <FormLabel component="legend">Description</FormLabel>
         <TextField
           value={item.description}
@@ -58,20 +60,29 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   );
 }
 
-export const renderGeneralOptions = (questionOptions:any,title:string) => {
+export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditorState) => {
+  const editor = editorState.editor;
   return (
-    <div>
-      <OptionsEditorForm
+    <Stack spacing={1}>
+      {/* <OptionsEditorForm
         title="General options"
         options={QuestionMap.options}
         useAccordion={false}
-      />
-      <OptionsEditorForm
+      /> */}
+      <Typography>General options</Typography>
+      <Stack spacing={1}>
+      <FormControlLabel control={
+        <Checkbox value={question.options.required} onChange={(event)=>{editor.onChangeOptions(question.id, 'required', event.target.value)}} />
+      } label={'Required'}/> 
+      </Stack>
+      
+      {/* {typeof questionOptions !== 'undefined' && (<OptionsEditorForm
         title={title}
         options={questionOptions}
         useAccordion={false}
-      />
-    </div>
+      />)} */}
+      
+    </Stack>
   );
 }
 
@@ -105,7 +116,6 @@ export function QuestionEditorForm({
   };
   const setLayout = () => {
     handleSetQuestionState(QuestionStateMap.layout);
-
   };
   const onSave = () => {
 
@@ -118,6 +128,9 @@ export function QuestionEditorForm({
     if (question.type === QuestionTextMap.type) {
       return (<TextFieldsIcon/>);
     } else if (question.type === QuestionNumberMap.type) {
+      if (question.layout.style === QuestionNumberMap.layout.style.range) {
+        return (<LinearScaleRoundedIcon/>);
+      }
       return (<PinIcon/>);
     } else if (question.type === QuestionSelectMap.type) {
       return (<RadioButtonCheckedIcon/>);
@@ -193,46 +206,71 @@ export function QuestionEditorForm({
           <EditIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.moveItemUp(question)}}>
           <ArrowUpwardIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.moveItemDown(question)}}>
           <ArrowDownwardIcon/>
           </Button>
           <Button variant="outlined" color="secondary"
-          onClick={(e) => {}}>
+          onClick={(e) => {editor.removeItem(question)}}>
           <DeleteIcon/>
           </Button>
         </Stack>
-        <div>
+        <div
+          onClick={(e) => {if (questionState === QuestionStateMap.hover) {setEdit()}}}
+        >
           {renderQuestion()}
         </div>
       </Stack>
       
     );
   }
+
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
+    handleSetQuestionState(newValue);
+  };
+
   const renderMenu = () => {
     return (
-      <Stack direction="row" spacing={1}>
-      {<Typography variant="h5">{renderIcon()}</Typography> }
-      <Button variant={questionState === QuestionStateMap.edit ? "contained" : "outlined"} color="secondary"
-      onClick={(e) => {setEdit()}}>
-      <EditIcon/>
-      </Button>
-      <Button variant={questionState === QuestionStateMap.options ? "contained" : "outlined"} color="secondary"
-      onClick={(e) => {setOptions()}}>
-      <SettingsIcon/>
-      </Button>
-      <Button variant={questionState === QuestionStateMap.layout ? "contained" : "outlined"} color="secondary"
-      onClick={(e) => {setLayout()}}>
-      <PreviewIcon/>
-      </Button>
-      <Button variant="outlined" color="secondary"
-      onClick={(e) => {setHover()}}>
-      <CheckCircleIcon/>
-      </Button>
-      </Stack>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2, justifyContent: 'space-around' }}>
+        <Typography variant="h5">{renderIcon()}</Typography> 
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={questionState} onChange={handleChangeTab}>
+            <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
+            <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
+            <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
+          </Tabs>
+        </Box>
+        <Box>
+          <Button variant="outlined" color="secondary"
+          onClick={(e) => {setHover()}}>
+          <CheckCircleIcon/>
+          </Button>
+        </Box>
+        </Box>
+      </Box>
+      // <Stack direction="row" spacing={1}>
+      // {<Typography variant="h5">{renderIcon()}</Typography> }
+      // <Button variant={questionState === QuestionStateMap.edit ? "contained" : "outlined"} color="secondary"
+      // onClick={(e) => {setEdit()}}>
+      // <EditIcon/>
+      // </Button>
+      // <Button variant={questionState === QuestionStateMap.options ? "contained" : "outlined"} color="secondary"
+      // onClick={(e) => {setOptions()}}>
+      // <SettingsIcon/>
+      // </Button>
+      // <Button variant={questionState === QuestionStateMap.layout ? "contained" : "outlined"} color="secondary"
+      // onClick={(e) => {setLayout()}}>
+      // <PreviewIcon/>
+      // </Button>
+      // <Button variant="outlined" color="secondary"
+      // onClick={(e) => {setHover()}}>
+      // <CheckCircleIcon/>
+      // </Button>
+      // </Stack>
     );
   }
   const renderEdit = () => {
@@ -268,8 +306,8 @@ export function QuestionEditorForm({
   console.log('render question', questionState);
   return (
     <div
-    onMouseEnter={() => setHover()}
-    onMouseLeave={() => setNormal()}
+    onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){setHover()}}}
+    onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {setNormal()}}}
     >
     <Paper style={{padding:'24px'}}>
       {questionState === QuestionStateMap.normal ? (

@@ -1,24 +1,12 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, TextScore} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, RadioGroup, Radio } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import {QuestionSelect, QuestionSelectMap, TextScore} from '../../../core/schema'
+import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { OptionsEditorForm } from './OptionsEditor';
-import { QuestionMap, QuestionTextMap } from '../../../core/schema';
-import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
 export interface QuestionSelectEditorFormProps {
@@ -36,7 +24,8 @@ export function QuestionSelectEditorForm({
   const nav = editorState.nav;
 
   const renderIcon = () => {
-    return (<PinIcon/>);
+    return (question.layout.style === QuestionSelectMap.layout.style.radio ? 
+    <PinIcon/> : <PinIcon/>);
   }
 
   const selects = question.selectOptions;
@@ -57,6 +46,13 @@ export function QuestionSelectEditorForm({
     }
     editor.onChangeValue(question.id, 'selectOptions', newSelects);
   } 
+  const moveSelect = (idx:number, move:number) => {
+    if (idx+move < 0 || idx+move >= selects.length) { return; }
+    const itemIdx = selects[idx];
+    selects[idx] = selects[idx+move];
+    selects[idx+move] = itemIdx;
+    editor.onChangeValue(question.id, 'selectOptions', selects);
+  } 
   const textSelect = (idx:number, value:string) => {
     selects[idx].text = value;
     editor.onChangeValue(question.id, 'selectOptions', selects);
@@ -66,28 +62,22 @@ export function QuestionSelectEditorForm({
     return (
       <div>
       <FormControl
-        // component="fieldset"
-        // error={showError && !!error}
-        // margin={margin}
-        // fullWidth={fullWidth}
-        // {...props}
       >
         <FormLabel component="legend">{question.text}</FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
-        <RadioGroup
-          name={question.id}
-          aria-label={question.id}
-          // value={idxValue}
-          // onChange={(e, v) => {
-          //   setValue(options[v].value);
-          // }}
-        >
-          {selects.length > 0 ? selects.map((opt, idx) => (
-            <FormControlLabel disabled key={idx} value="disabled" 
-            control={<Radio />} label={opt.text} />
-          )) : <Typography>No Radio Element</Typography>}
-        </RadioGroup>
-        {/* <FormHelperText>{showError ? error : ''}</FormHelperText> */}
+        {question.layout.style === QuestionSelectMap.layout.style.radio ? (
+          <RadioGroup
+            name={question.id}
+            aria-label={question.id}
+          >
+            {selects.length > 0 ? selects.map((opt, idx) => (
+              <FormControlLabel disabled key={idx} value="disabled" 
+              control={<Radio />} label={opt.text} />
+            )) : <Typography>No Radio Element</Typography>}
+          </RadioGroup>
+        ):(
+          <Typography>To do</Typography>
+        )}
       </FormControl>
       </div>
     );
@@ -99,24 +89,17 @@ export function QuestionSelectEditorForm({
     return (
       <div>
         {QuestionGeneralEdit(question, editor)}
+        <Divider textAlign="left">Radio Elements</Divider>
         <FormControl
-          // component="fieldset"
-          // error={showError && !!error}
-          // margin={margin}
-          // fullWidth={fullWidth}
-          // {...props}
         >
-          {/* <FormLabel component="legend">{question.text}</FormLabel> */}
           <RadioGroup
             name={question.id}
             aria-label={question.id}
-            // value={idxValue}
-            // onChange={(e, v) => {
-            //   setValue(options[v].value);
-            // }}
+            style={{margin:'0.25rem'}}
           >
             {selects.map((opt, idx) => (
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} 
+              style={{margin:'0.25rem'}}>
                 <FormControlLabel disabled 
                 key={idx} value="disabled" 
                 control={<Radio />} label=""
@@ -128,13 +111,13 @@ export function QuestionSelectEditorForm({
                 <Button 
                 variant="outlined" 
                 color="inherit" 
-                onClick={(e) => {}}>
+                onClick={(e) => {moveSelect(idx,-1)}}>
                 <ArrowUpwardIcon />
                 </Button>
                 <Button 
                 variant="outlined" 
                 color="inherit" 
-                onClick={(e) => {}}>
+                onClick={(e) => {moveSelect(idx,1)}}>
                 <ArrowDownwardIcon />
                 </Button>
                 <Button 
@@ -146,14 +129,12 @@ export function QuestionSelectEditorForm({
               </Stack> 
             ))}
           </RadioGroup>
-          <Typography></Typography>
           <Button 
           variant="outlined" 
           color="inherit" 
           onClick={(e) => {addSelect()}}>
           <AddCircleIcon />
           </Button>
-          {/* <FormHelperText>{showError ? error : ''}</FormHelperText> */}
         </FormControl>
       </div>
     );
@@ -171,7 +152,8 @@ export function QuestionSelectEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      renderGeneralOptions(QuestionSelectMap.options,"Select options")
+      // renderGeneralOptions(QuestionSelectMap.options,"Select options")
+      renderGeneralOptions(question, editorState)
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : null}

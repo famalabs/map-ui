@@ -1,4 +1,4 @@
-import { Question, SurveyItem } from '@src/core/schema';
+import { GroupMap, Question, SurveyItem, SurveyMap } from '../../core/schema';
 import React from 'react'
 
 
@@ -33,7 +33,7 @@ export class NavState {
         }
     }
     public prev() {
-        if (this.getIdx() - 1 > 0) {
+        if (this.getIdx() !== 0) {
             this.set(this.items[this.getIdx() - 1]);
         }
     }
@@ -97,6 +97,10 @@ export interface INavState {
     getQuestions:() => SurveyItem[];
 
     getPagesOfFolder: (folder: SurveyItem) => SurveyItem[];
+
+    getItemIdx: (id:string) => number;
+    findItemById: (id:string) => SurveyItem;
+    getItemType: (id:string) => string;
 }
 
 export class SurveyNav implements INavState {
@@ -158,6 +162,52 @@ export class SurveyNav implements INavState {
         return folder.items;
     }
 
+    public getItemIdx (id:string):number {
+        for (let f = 0; f < this.getFolders().length; f++) {
+            const folder = this.getFolders()[f];
+            if (folder.id === id) { return f; }
+            for (let p = 0; p < folder.items.length; p++) {
+                const page = folder.items[p];
+                if (page.id === id) { return p; }
+                    for (let q = 0; q < page.items.length; q++) {
+                    if (page.items[q].id === id) { return q; }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public findItemById(id:string):SurveyItem {
+        // if (id === this.root.id) { return this.root; }
+        for (let f = 0; f < this.getFolders().length; f++) {
+            const folder = this.getFolders()[f];
+            if (folder.id === id) { return folder; }
+            for (let p = 0; p < folder.items.length; p++) {
+                const page = folder.items[p];
+                if (page.id === id) { return page; }
+                    for (let q = 0; q < page.items.length; q++) {
+                        if (page.items[q].id === id) { return page.items[q]; }
+                    }
+                }
+        }
+        return undefined;
+    }
+    public getItemType (id:string):string {
+        if (id === this.getFolders()[0].parent.id) return SurveyMap.type;
+        for (let f = 0; f < this.getFolders().length; f++) {
+            const folder = this.getFolders()[f];
+            if (folder.id === id) { return GroupMap.layout.style.folder; }
+            for (let p = 0; p < folder.items.length; p++) {
+                const page = folder.items[p];
+                if (page.id === id) { return GroupMap.layout.style.page; }
+                    for (let q = 0; q < page.items.length; q++) {
+                        if (page.items[q].id === id) { return page.items[q].type; }
+                    }
+                }
+        }
+        throw Error('this item is not a nav type');
+    }
+
     public getValue(): any {
         return {
             folders: this.getFolders(),
@@ -217,6 +267,10 @@ export function useNavState(root: SurveyItem): INavState {
         getQuestions: () => new SurveyNav(value).getQuestions(),
 
         getPagesOfFolder: (folder: SurveyItem) => new SurveyNav(value).getPagesOfFolder(folder),
+
+        getItemIdx: (id:string) => new SurveyNav(value).getItemIdx(id),
+        findItemById: (id:string) => new SurveyNav(value).findItemById(id),
+        getItemType: (id:string) => new SurveyNav(value).getItemType(id),
 
     } as INavState;
 }
