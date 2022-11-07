@@ -74,7 +74,7 @@ export function QuestionNumberEditorForm({
     const nav = editorState.nav;
     return (
     <div>
-      {renderGeneralOptions(undefined,undefined)}
+      {renderGeneralOptions(question,editorState)}
       <Stack spacing={1}>
       <Typography>Number Options</Typography>
       <div>

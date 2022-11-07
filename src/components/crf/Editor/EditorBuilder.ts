@@ -35,7 +35,10 @@ const defaultQuestion = (type:string) => {
     id: "",
     type: type,
     text: "New " + type,
-    description: "Description"
+    description: "Description",
+    options: {
+      required: false
+    }
   };
 }
 
@@ -129,7 +132,10 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionNumberSlider(nav);
       } else if (type === QuestionSelectMap.type) {
         return this.addQuestionSelect(nav);
-      } else if (type === QuestionCheckMap.type) {
+      } else if (type === QuestionSelectMap.layout.style.dropdown) {
+        return this.addQuestionSelectDropdown(nav);
+      }
+      else if (type === QuestionCheckMap.type) {
         return this.addQuestionCheck(nav);
       } else if (type === QuestionDateMap.type) {
         return this.addQuestionDate(nav);
@@ -194,8 +200,15 @@ export class EditorBuilder implements IEditorState {
       const type = QuestionSelectMap.type;
       const question = new QuestionSelect(defaultQuestion(type));
       question.selectOptions = [{text:"Radio 1",score:0},{text:"Radio 2",score:1}];
+      question.layout = { style: QuestionSelectMap.layout.style.radio };
       return this.addInitQuestion(question, type, nav) as QuestionSelect;
-        
+    }
+    public addQuestionSelectDropdown(nav: INavState):QuestionSelect {
+      const type = QuestionSelectMap.type;
+      const question = new QuestionSelect(defaultQuestion(type));
+      question.selectOptions = [{text:"Dropdown 1",score:0},{text:"Dropdown 2",score:1}];
+      question.layout = { style: QuestionSelectMap.layout.style.dropdown };
+      return this.addInitQuestion(question, type, nav) as QuestionSelect;
     }
     public addQuestionDate(nav: INavState):QuestionDate {
       const type = QuestionDateMap.type;

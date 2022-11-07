@@ -24,7 +24,8 @@ export function QuestionSelectEditorForm({
   const nav = editorState.nav;
 
   const renderIcon = () => {
-    return (<PinIcon/>);
+    return (question.layout.style === QuestionSelectMap.layout.style.radio ? 
+    <PinIcon/> : <PinIcon/>);
   }
 
   const selects = question.selectOptions;
@@ -61,28 +62,22 @@ export function QuestionSelectEditorForm({
     return (
       <div>
       <FormControl
-        // component="fieldset"
-        // error={showError && !!error}
-        // margin={margin}
-        // fullWidth={fullWidth}
-        // {...props}
       >
         <FormLabel component="legend">{question.text}</FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
-        <RadioGroup
-          name={question.id}
-          aria-label={question.id}
-          // value={idxValue}
-          // onChange={(e, v) => {
-          //   setValue(options[v].value);
-          // }}
-        >
-          {selects.length > 0 ? selects.map((opt, idx) => (
-            <FormControlLabel disabled key={idx} value="disabled" 
-            control={<Radio />} label={opt.text} />
-          )) : <Typography>No Radio Element</Typography>}
-        </RadioGroup>
-        {/* <FormHelperText>{showError ? error : ''}</FormHelperText> */}
+        {question.layout.style === QuestionSelectMap.layout.style.radio ? (
+          <RadioGroup
+            name={question.id}
+            aria-label={question.id}
+          >
+            {selects.length > 0 ? selects.map((opt, idx) => (
+              <FormControlLabel disabled key={idx} value="disabled" 
+              control={<Radio />} label={opt.text} />
+            )) : <Typography>No Radio Element</Typography>}
+          </RadioGroup>
+        ):(
+          <Typography>To do</Typography>
+        )}
       </FormControl>
       </div>
     );
@@ -96,21 +91,11 @@ export function QuestionSelectEditorForm({
         {QuestionGeneralEdit(question, editor)}
         <Divider textAlign="left">Radio Elements</Divider>
         <FormControl
-          // component="fieldset"
-          // error={showError && !!error}
-          // margin={margin}
-          // fullWidth={fullWidth}
-          // {...props}
         >
-          {/* <FormLabel component="legend">{question.text}</FormLabel> */}
           <RadioGroup
             name={question.id}
             aria-label={question.id}
             style={{margin:'0.25rem'}}
-            // value={idxValue}
-            // onChange={(e, v) => {
-            //   setValue(options[v].value);
-            // }}
           >
             {selects.map((opt, idx) => (
               <Stack direction="row" spacing={1} 
@@ -150,7 +135,6 @@ export function QuestionSelectEditorForm({
           onClick={(e) => {addSelect()}}>
           <AddCircleIcon />
           </Button>
-          {/* <FormHelperText>{showError ? error : ''}</FormHelperText> */}
         </FormControl>
       </div>
     );

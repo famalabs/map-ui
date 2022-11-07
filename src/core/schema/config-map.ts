@@ -35,7 +35,7 @@ export const SurveyMap = {
             none: 'none'
         },
         pager: {
-            default: 'default',
+            default: 'none',
             none: 'none'
         },
         locale: {
@@ -190,8 +190,18 @@ export const QuestionSelectMap = {
     text: "",
     type: "QuestionSelect",
     options: {
+        multiSelect: {
+            default: false
+        },
         activate: {
             default: (value) => !(value instanceof Array && value.length > 0)
+        }
+    },
+    layout: {
+        style: {
+            default: "radio",
+            radio: "radio",
+            dropdown: "dropdown"
         }
     }
 } as const;

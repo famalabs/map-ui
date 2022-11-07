@@ -32,10 +32,9 @@ export function FolderEditorForm({
 	console.log('render folder', folder);
 	return (
 		<div>
-		<Paper 
+		{/* <Paper 
 			style={{margin:'24px',padding:'24px',width:'100%'}} 
 		>
-			{/* <Typography variant='h4'>{folder.text}</Typography> */}
 			<Stack direction="row" spacing={1}>
 				<div>
 					<FormLabel component="legend">Folder Name</FormLabel>
@@ -64,7 +63,7 @@ export function FolderEditorForm({
 				<DeleteIcon/>
 				</Button>
 			</Stack>
-		</Paper>
+		</Paper> */}
 		<Paper style={{margin:'24px',padding:'24px',width:'100%'}}>
 			<Stack direction="row" spacing={1}>
 				{pages.map((page,idx) => {
@@ -80,7 +79,7 @@ export function FolderEditorForm({
 					);
 				})}
 				<Button variant="outlined" color="secondary" onClick={(e) => {editor.addPage(folder)}}>
-				<AddCircleIcon />
+				<NoteAddIcon />
 				</Button>
 			</Stack>
 		</Paper>
@@ -137,6 +136,15 @@ export function FolderEditorForm({
 						<Stack
 						direction='row'
 						>
+							{/* <Button 
+							variant={"outlined"} 
+							color="secondary" 
+							onClick={(e)=>{editor.addFolder()}} 
+							// endIcon={<AddCircleIcon />}
+							sx={{ mr: 1 }}
+							>
+								<CreateNewFolderIcon/>
+							</Button> */}
 						<Button 
 						variant={"outlined"} 
 						color="secondary" 
@@ -146,15 +154,6 @@ export function FolderEditorForm({
 						>
 							<NoteAddIcon/>
 						</Button>
-							<Button 
-							variant={"outlined"} 
-							color="secondary" 
-							onClick={(e)=>{editor.addFolder()}} 
-							// endIcon={<AddCircleIcon />}
-							sx={{ mr: 1 }}
-							>
-								<CreateNewFolderIcon/>
-							</Button>
 						</Stack>
 					) : (
 						<Button 

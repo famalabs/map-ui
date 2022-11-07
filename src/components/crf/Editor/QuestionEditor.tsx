@@ -72,7 +72,7 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
       <Typography>General options</Typography>
       <Stack spacing={1}>
       <FormControlLabel control={
-        <Checkbox onChange={(event)=>{editor.onChangeValue(question.id, 'required', event.target.value)}} />
+        <Checkbox value={question.options.required} onChange={(event)=>{editor.onChangeOptions(question.id, 'required', event.target.value)}} />
       } label={'Required'}/> 
       </Stack>
       
@@ -218,7 +218,9 @@ export function QuestionEditorForm({
           <DeleteIcon/>
           </Button>
         </Stack>
-        <div>
+        <div
+          onClick={(e) => {if (questionState === QuestionStateMap.hover) {setEdit()}}}
+        >
           {renderQuestion()}
         </div>
       </Stack>
@@ -306,7 +308,6 @@ export function QuestionEditorForm({
     <div
     onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){setHover()}}}
     onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {setNormal()}}}
-    onClick={(e) => {if (questionState === QuestionStateMap.hover) {setEdit()}}}
     >
     <Paper style={{padding:'24px'}}>
       {questionState === QuestionStateMap.normal ? (

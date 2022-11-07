@@ -10,7 +10,7 @@ import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import { QuestionEditorForm } from './QuestionEditor';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 
@@ -75,13 +75,13 @@ export function PageEditorForm({
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionNumberMap.type)}><PinIcon/> <Typography>Number</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionNumberMap.layout.style.range)}><LinearScaleRoundedIcon/> <Typography>Slider</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.type)}><RadioButtonCheckedIcon/> <Typography>Radio Buttons</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionCheckMap.type)}><CheckBoxIcon/> <Typography>CheckBoxs</Typography></MenuItem>
+				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.layout.style.dropdown)}><ArrowDropDownCircleOutlinedIcon/> <Typography>Dropdown</Typography></MenuItem>
+				<MenuItem onClick={(e) =>handleAddQuestion(QuestionCheckMap.type)}><CheckBoxIcon/> <Typography>Checkboxses</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionDateMap.type)}><CalendarMonthIcon/><Typography>Date</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionDateMap.type)}><CalendarMonthIcon/><Typography>Score Table</Typography></MenuItem>
 				<Divider variant='middle'>Functions</Divider>
 				<MenuItem onClick={(e) =>handleAddQuestion(FnMap.type)}><CalendarMonthIcon/><Typography>Function</Typography></MenuItem>
-				<Divider variant='middle' >Layout</Divider>
-				<MenuItem onClick={(e) =>handleAddQuestion(undefined)}><CalendarMonthIcon/><Typography>Group</Typography></MenuItem>
+				{/* <Divider variant='middle' >Layout</Divider>
+				<MenuItem onClick={(e) =>handleAddQuestion(undefined)}><CalendarMonthIcon/><Typography>Group</Typography></MenuItem> */}
 			</Menu>
 		</div>
 	);
