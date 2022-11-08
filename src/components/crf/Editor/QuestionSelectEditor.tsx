@@ -1,11 +1,12 @@
 import React from 'react';
 import {QuestionSelect, QuestionSelectMap, TextScore} from '../../../core/schema'
-import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider } from '@mui/material';
+import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
 
@@ -25,7 +26,7 @@ export function QuestionSelectEditorForm({
 
   const renderIcon = () => {
     return (question.layout.style === QuestionSelectMap.layout.style.radio ? 
-    <PinIcon/> : <PinIcon/>);
+    <PinIcon/> : <ArrowDropDownCircleOutlinedIcon/>);
   }
 
   const selects = question.selectOptions;
@@ -62,6 +63,7 @@ export function QuestionSelectEditorForm({
     return (
       <div>
       <FormControl
+      fullWidth
       >
         <FormLabel component="legend">{question.text}</FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
@@ -76,7 +78,14 @@ export function QuestionSelectEditorForm({
             )) : <Typography>No Radio Element</Typography>}
           </RadioGroup>
         ):(
-          <Typography>To do</Typography>
+          <Select
+            disabled
+            value={selects.length > 0 ? selects[0].text : null}
+          >
+              {selects.length > 0 ? selects.map((opt, idx1) => (
+                <MenuItem key={opt.text} value={opt.text}>{opt.text}</MenuItem>
+              )) : <Typography>No Dropdown Element</Typography>}
+          </Select>
         )}
       </FormControl>
       </div>

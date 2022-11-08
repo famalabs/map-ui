@@ -29,19 +29,20 @@ export function QuestionTextEditorForm({
       <Stack spacing={1}>
         <Stack spacing={1}>
           <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">{question.description}</FormLabel>
           {question.layout.style === QuestionTextMap.layout.style.area ? (
             <TextField
               disabled
-              value={question.description ?? question.text}
-              label={question.description ?? question.text}
+              // value={question.description ?? question.text}
+              // label={question.description ?? question.text}
               required={question.options.required}
             />
           ):(
             <TextField
             disabled
             multiline
-            value={question.description ?? question.text}
-            label={question.description ?? question.text}
+            // value={question.description ?? question.text}
+            // label={question.description ?? question.text}
             required={question.options.required}
           />
           )}

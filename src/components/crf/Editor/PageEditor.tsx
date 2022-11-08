@@ -10,7 +10,8 @@ import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';import { QuestionEditorForm } from './QuestionEditor';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
+import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 

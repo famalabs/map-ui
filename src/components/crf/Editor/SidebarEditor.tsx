@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { OptionsEditorForm, renderSelectOption } from './OptionsEditor';
 import { FolderEditorForm } from './FolderEditor';
 import PreviewIcon from '@mui/icons-material/Preview';
@@ -19,7 +20,7 @@ import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { INavState } from '../Navigation';
 
 const MenuStateMap = {
-	folsers:'folders',
+	folders:'folders',
 	edit:'edit',
 	options:'options',
 	layout:'layout',
@@ -40,7 +41,7 @@ export function SidebarEditorForm({
 	const folders = nav.getFolders();
 	const folderId = nav.getFolderId();
 
-	const [menuState, setMenuState] = React.useState(MenuStateMap.folsers);
+	const [menuState, setMenuState] = React.useState(MenuStateMap.folders);
 
 	const renderMenuButton = (Icon, menuStateButton:string) => {
 		return (
@@ -62,7 +63,7 @@ export function SidebarEditorForm({
 			<Box sx={{ width: '100%' }}>
 				<nav>
 					<List>
-						{renderMenuButton(FormatListNumberedIcon, MenuStateMap.folsers)}
+						{renderMenuButton(FormatListNumberedIcon, MenuStateMap.folders)}
 						{renderMenuButton(EditIcon, MenuStateMap.edit)}
 						{renderMenuButton(SettingsIcon, MenuStateMap.options)}
 						{renderMenuButton(PreviewIcon, MenuStateMap.layout)}
@@ -71,7 +72,8 @@ export function SidebarEditorForm({
 				<Divider />
 				<nav aria-label="secondary mailbox folders">
 					<List>
-
+						{(menuState === MenuStateMap.folders || menuState === MenuStateMap.folder) ? 
+						renderMenuButton(FolderOpenIcon, MenuStateMap.folder) : null}
 					</List>
 				</nav>
 			</Box>
@@ -96,14 +98,23 @@ export function SidebarEditorForm({
 								<Typography>{folder.text}</Typography>
 								<Divider></Divider>
 								<div style={{display:'flex', justifyContent: 'center'}}>
-									{/* <Button 
+									<Button 
 									variant={"outlined"} 
 									color={"inherit"}  
-									onClick={(e) => {}}
+									onClick={(e) => {setMenuState(MenuStateMap.folder)}}
 									sx={{margin:'0px 3px'}}
 									>
 									<EditIcon/>
-									</Button> */}
+									</Button>
+									<Button variant={"outlined"} 
+									color={"inherit"}  
+									onClick={(e) => {editor.removeItem(folder)}}
+									sx={{margin:'0px 3px'}}
+									>
+									<DeleteIcon/>
+									</Button>
+								</div>
+								<div style={{display:'flex', justifyContent: 'center'}}>
 									<Button 
 									variant={"outlined"} 
 									color={"inherit"}  
@@ -118,13 +129,6 @@ export function SidebarEditorForm({
 									sx={{margin:'0px 3px'}}
 									>
 									<ArrowDownwardIcon/>
-									</Button>
-									<Button variant={"outlined"} 
-									color={"inherit"}  
-									onClick={(e) => {editor.removeItem(folder)}}
-									sx={{margin:'0px 3px'}}
-									>
-									<DeleteIcon/>
 									</Button>
 								</div>
 							</Stack>
@@ -178,6 +182,19 @@ export function SidebarEditorForm({
 			</Stack>
 		);
 	}
+
+	const renderFolder = () => {
+		const folder = nav.getFolder();
+		return (
+			<div>
+				<FormLabel component="legend">Folder Name</FormLabel>
+				<TextField
+					value={folder.text}
+					onChange={(e) => {editor.onChangeValue(folder.id,'text', e.target.value)}}
+				/>
+			</div>
+		);
+	}
     
 	return (
 		<Box
@@ -197,10 +214,12 @@ export function SidebarEditorForm({
 					<Stack spacing={2}>
 					<Divider variant='middle'></Divider>
 					<Typography variant="h5">{menuState}</Typography>
-					{menuState === MenuStateMap.folsers ? renderFolders() :
+					{menuState === MenuStateMap.folders ? renderFolders() :
 					menuState === MenuStateMap.edit ? renderEdit() :
 					menuState === MenuStateMap.options ? renderOptions() :
-					menuState === MenuStateMap.layout ? renderLayout() : null
+					menuState === MenuStateMap.layout ? renderLayout() :
+					menuState === MenuStateMap.folder ? renderFolder() :
+					null
 					}
 					</Stack>
 				</Box>
