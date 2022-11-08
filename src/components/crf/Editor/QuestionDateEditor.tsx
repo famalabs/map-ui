@@ -28,10 +28,11 @@ export function QuestionDateEditorForm({
       <div>
         <div>
           <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">{question.description}</FormLabel>
           <TextField
             disabled
-            value={question.description ?? question.text}
-            label={question.description ?? question.text}
+            // value={question.description ?? question.text}
+            // label={question.description ?? question.text}
             required={question.options.required}
           />
         </div>

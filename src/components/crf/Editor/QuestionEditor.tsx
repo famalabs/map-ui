@@ -16,6 +16,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
+import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { OptionsEditorForm } from './OptionsEditor';
 import { QuestionMap, QuestionTextMap } from '../../../core/schema';
 import { INavState } from '../Navigation';
@@ -133,6 +134,9 @@ export function QuestionEditorForm({
       }
       return (<PinIcon/>);
     } else if (question.type === QuestionSelectMap.type) {
+      if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
+        return (<ArrowDropDownCircleOutlinedIcon/>);
+      }
       return (<RadioButtonCheckedIcon/>);
     } else if (question.type === QuestionCheckMap.type) {
       return (<CheckBoxIcon/>);
