@@ -36,27 +36,40 @@ export function PageEditorForm({
 			editor.addQuestion(type);
 		}
 	};
+
 	console.log('render page',page);
 	return (
-		<div>
-			<Typography variant='h6'>Questions</Typography>
+		<div style={{padding:'24px 0px'}}>
+			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question) => {
-				return(
+				if (page.layout.style === GroupMap.layout.style.card)  
+				{
+					return (
 					<QuestionEditorForm
-						key={question.id}
-						editorState={editorState}
-						question={question as Question}
+					key={question.id}
+					editorState={editorState}
+					question={question as Question}
 					/>
+					);
+				}
+				return(
+					<Paper>
+						<QuestionEditorForm
+							key={question.id}
+							editorState={editorState}
+							question={question as Question}
+						/>
+					</Paper>
 				);
 			})}
 			</Stack>
 			<Button 
 				color="inherit" 
-        aria-controls={openAddQuestion ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={openAddQuestion ? 'true' : undefined}
-        onClick={handleOpenAddQuestion}
+				aria-controls={openAddQuestion ? 'basic-menu' : undefined}
+				aria-haspopup="true"
+				aria-expanded={openAddQuestion ? 'true' : undefined}
+				onClick={handleOpenAddQuestion}
 			>
 				<AddCircleIcon />
 			</Button>

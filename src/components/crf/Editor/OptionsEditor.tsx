@@ -4,15 +4,16 @@ import { AutoSelect } from '../../simple';
 import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Checkbox, Stack } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { render } from 'react-dom';
+import { IEditorState } from './EditorBuilder';
 
-export const renderSelectOption = (option:any, name:string) => {
+export const renderSelectOption = (option:any, name:string, value:any, editor:IEditorState, id:string, key:string) => {
     return (
     <FormControl fullWidth>
     <InputLabel>{name}</InputLabel>
     <Select
-        value={option.default}
+        value={value}
         label={name}
-        onChange={null}
+        onChange={(e) => {editor.onChangeValue(id,key, e.target.value)}}
     >
         {Object.keys(option).map((key1, idx1) => {
             if (key1 === 'default') {

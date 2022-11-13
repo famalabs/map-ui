@@ -73,7 +73,7 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
       <Typography>General options</Typography>
       <Stack spacing={1}>
       <FormControlLabel control={
-        <Checkbox value={question.options.required} onChange={(event)=>{editor.onChangeOptions(question.id, 'required', event.target.value)}} />
+        <Checkbox checked={question.options.required} onChange={(e)=>{editor.onChangeValue(question.id, 'options.required', e.target.checked)}} />
       } label={'Required'}/> 
       </Stack>
       
@@ -187,7 +187,8 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Stack direction="row" spacing={1}>
-          {<Typography variant="h5">{renderIcon()}</Typography> }
+          {question.options.required && <Typography variant="h5">*</Typography>}
+          <Typography variant="h5">{renderIcon()}</Typography>
         </Stack>
         <div>
           {renderQuestion()}
@@ -199,29 +200,28 @@ export function QuestionEditorForm({
   const renderHover = () => {
     return (
       <Stack>
-        <Stack direction="row" spacing={1}>
-          {<Typography variant="h5">{renderIcon()}</Typography> }
-          {/* <Button variant="outlined" color="secondary"
-          onClick={(e) => {setNormal()}}>
-          Exit
-          </Button> */}
-          <Button variant="outlined" color="secondary"
-          onClick={(e) => {setEdit()}}>
-          <EditIcon/>
-          </Button>
-          <Button variant="outlined" color="secondary"
-          onClick={(e) => {editor.moveItemUp(question)}}>
-          <ArrowUpwardIcon/>
-          </Button>
-          <Button variant="outlined" color="secondary"
-          onClick={(e) => {editor.moveItemDown(question)}}>
-          <ArrowDownwardIcon/>
-          </Button>
-          <Button variant="outlined" color="secondary"
-          onClick={(e) => {editor.removeItem(question)}}>
-          <DeleteIcon/>
-          </Button>
-        </Stack>
+        <Box sx={{display:'flex', justifyContent: 'space-between'}}>
+          {question.options.required && <Typography variant="h5">*</Typography>}
+          <Typography variant="h5">{renderIcon()}</Typography>
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {setEdit()}}>
+            <EditIcon/>
+            </Button>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {editor.moveItemUp(question)}}>
+            <ArrowUpwardIcon/>
+            </Button>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {editor.moveItemDown(question)}}>
+            <ArrowDownwardIcon/>
+            </Button>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {editor.removeItem(question)}}>
+            <DeleteIcon/>
+            </Button>
+          </Stack>
+        </Box>
         <div
           onClick={(e) => {if (questionState === QuestionStateMap.hover) {setEdit()}}}
         >
@@ -239,7 +239,8 @@ export function QuestionEditorForm({
   const renderMenu = () => {
     return (
       <Box sx={{ width: '100%' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2, justifyContent: 'space-around' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+        {question.options.required && <Typography variant="h5">*</Typography>}
         <Typography variant="h5">{renderIcon()}</Typography> 
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={questionState} onChange={handleChangeTab}>
@@ -256,25 +257,6 @@ export function QuestionEditorForm({
         </Box>
         </Box>
       </Box>
-      // <Stack direction="row" spacing={1}>
-      // {<Typography variant="h5">{renderIcon()}</Typography> }
-      // <Button variant={questionState === QuestionStateMap.edit ? "contained" : "outlined"} color="secondary"
-      // onClick={(e) => {setEdit()}}>
-      // <EditIcon/>
-      // </Button>
-      // <Button variant={questionState === QuestionStateMap.options ? "contained" : "outlined"} color="secondary"
-      // onClick={(e) => {setOptions()}}>
-      // <SettingsIcon/>
-      // </Button>
-      // <Button variant={questionState === QuestionStateMap.layout ? "contained" : "outlined"} color="secondary"
-      // onClick={(e) => {setLayout()}}>
-      // <PreviewIcon/>
-      // </Button>
-      // <Button variant="outlined" color="secondary"
-      // onClick={(e) => {setHover()}}>
-      // <CheckCircleIcon/>
-      // </Button>
-      // </Stack>
     );
   }
   const renderEdit = () => {
@@ -312,8 +294,8 @@ export function QuestionEditorForm({
     <div
     onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){setHover()}}}
     onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {setNormal()}}}
+    style={{padding:'24px'}}
     >
-    <Paper style={{padding:'24px'}}>
       {questionState === QuestionStateMap.normal ? (
         renderNormal()
       ) : questionState === QuestionStateMap.hover ? (
@@ -325,7 +307,6 @@ export function QuestionEditorForm({
       ) : questionState === QuestionStateMap.layout ? (
         renderLayout()
       ) : null}
-    </Paper>
     </div>
   );
 }
