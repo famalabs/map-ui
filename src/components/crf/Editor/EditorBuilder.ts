@@ -13,14 +13,17 @@ export interface IEditorState {
   moveItemUp: (item:SurveyItem) => void;
   moveItemDown: (item:SurveyItem) => void;
   onChangeValue: (itemId:string, key:string, value:any) => void;
-  onChangeOptions: (itemId:string, key:string, value:any) => void;
+  // onChangeOptions: (itemId:string, key:string, value:any) => void;
 }
 
 const defaultPage = {
   id: "3",
   type: "Group",
   text: "Page 3",
-  items: []
+  items: [],
+  layout: {
+    style: GroupMap.layout.style.card
+  }
 }
 
 const defaultFolder = {
@@ -284,20 +287,39 @@ export class EditorBuilder implements IEditorState {
       }
       return curIdx;
     }
+    /**
+     * 
+     * @param itemId 
+     * @param key could have multiple like \'layout.style\'
+     * @param value 
+     * @returns 
+     */
     public onChangeValue(itemId:string, key:string, value:any) {
       const item = this.findItemById(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
+      if (key.includes(".")) {
+        const keys = key.split(".")
+        if (keys.length == 2) {
+          item[keys[0]][keys[1]] = value;
+        } else if (keys.length == 3) {
+          item[keys[0]][keys[1]][keys[2]] = value;
+        } else if (keys.length == 4) {
+          item[keys[0]][keys[1]][keys[2]][keys[3]] = value;
+        } else {
+          throw Error('cant change value multiple keys')
+        }
+      }
       item[key] = value;
       return 
     }
-    public onChangeOptions(itemId:string, key:string, value:any) {
-      const item = this.findItemById(itemId);
-      if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
-      let val = item.options;
-      val[key] = value
-      item.options = val;
-      return 
-    }
+    // public onChangeOptions(itemId:string, key:string, value:any) {
+    //   const item = this.findItemById(itemId);
+    //   if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
+    //   let val = item.options;
+    //   val[key] = value
+    //   item.options = val;
+    //   return 
+    // }
 }
 
 export interface IUseEditorState {
@@ -390,13 +412,13 @@ export function useEditorState(): IUseEditorState {
           editorBuilder.onChangeValue(itemId, key, value);
           setValue(editorBuilder.getValue());
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
-        },
-        onChangeOptions: (itemId:string, key:string, value:any) => {
-          const editorBuilder = new EditorBuilder(survey, root); 
-          editorBuilder.onChangeOptions(itemId, key, value);
-          setValue(editorBuilder.getValue());
-          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
         }
+        // onChangeOptions: (itemId:string, key:string, value:any) => {
+        //   const editorBuilder = new EditorBuilder(survey, root); 
+        //   editorBuilder.onChangeOptions(itemId, key, value);
+        //   setValue(editorBuilder.getValue());
+        //   surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+        // }
       } as IEditorState,
       nav: surveyNav as INavState,
     } as IUseEditorState;
