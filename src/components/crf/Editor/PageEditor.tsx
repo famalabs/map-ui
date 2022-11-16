@@ -7,6 +7,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import PinIcon from '@mui/icons-material/Pin';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import TocIcon from '@mui/icons-material/Toc';
+import TocRoundedIcon from '@mui/icons-material/TocRounded';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
@@ -164,6 +166,7 @@ export function PageEditorForm({
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionNumberMap.layout.style.range)}><LinearScaleRoundedIcon/> <Typography>Slider</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.type)}><RadioButtonCheckedIcon/> <Typography>Radio Buttons</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.layout.style.dropdown)}><ArrowDropDownCircleOutlinedIcon/> <Typography>Dropdown</Typography></MenuItem>
+				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.type+GroupMap.layout.style.table)}><TocRoundedIcon/> <Typography>Table Radio Buttons</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionCheckMap.type)}><CheckBoxIcon/> <Typography>Checkboxses</Typography></MenuItem>
 				<MenuItem onClick={(e) =>handleAddQuestion(QuestionDateMap.type)}><CalendarMonthIcon/><Typography>Date</Typography></MenuItem>
 				<Divider variant='middle'>Functions</Divider>

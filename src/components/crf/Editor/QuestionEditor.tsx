@@ -14,6 +14,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import TocIcon from '@mui/icons-material/Toc';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
@@ -28,6 +29,7 @@ import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
 import { TabList } from '@mui/lab';
 import { QuestionStateMap } from './PageEditor';
+import { QuestionTableEditorForm } from './QuestionTableEditor';
 
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;
@@ -111,6 +113,12 @@ export function QuestionEditorForm({
       return (<CheckBoxIcon/>);
     } else if (question.type === QuestionDateMap.type) {
       return (<CalendarMonthIcon/>);
+    } else if (question.type === GroupMap.type) {
+      if (question.layout.style === GroupMap.layout.style.table) {
+        if (question.items[0].type === QuestionSelectMap.type) {
+          return (<TocIcon/>)
+        }
+      }
     }
     return null;
   }
@@ -148,6 +156,18 @@ export function QuestionEditorForm({
           questionState={questionState}
         />
       );
+    } else if (question.type === GroupMap.type) {
+      if (question.layout.style === GroupMap.layout.style.table) {
+        if (question.items[0].type === QuestionSelectMap.type) {
+          return (
+            <QuestionTableEditorForm
+              editorState={editorState}
+              question={question}
+              questionState={questionState}
+            />
+          );
+        }
+      }
     }
     return null;
   }
