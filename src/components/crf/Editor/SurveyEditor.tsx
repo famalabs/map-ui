@@ -35,7 +35,7 @@ export function SurveyEditorForm({
             />
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${320}px)` } }}
+                sx={{ flexGrow: 1, justifySelf: 'stretch', width: { sm: `calc(100% - ${320}px)` } }}
             >
                 <FolderEditorForm
                     editorState={editorState}

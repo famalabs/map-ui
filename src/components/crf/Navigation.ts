@@ -33,7 +33,7 @@ export class NavState {
         }
     }
     public prev() {
-        if (this.getIdx() - 1 > 0) {
+        if (this.getIdx() !== 0) {
             this.set(this.items[this.getIdx() - 1]);
         }
     }

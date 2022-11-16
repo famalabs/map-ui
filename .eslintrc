@@ -30,7 +30,8 @@
     "@typescript-eslint/no-inferrable-types":0,
     "prefer-spread":0,
     "@typescript-eslint/no-this-alias":0,
-    "react/jsx-key": 0
+    "react/jsx-key": 0,
+    "@typescript-eslint/prefer-as-const":0
 
   }
 }

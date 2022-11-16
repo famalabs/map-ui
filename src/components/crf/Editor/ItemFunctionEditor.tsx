@@ -1,41 +1,42 @@
 import React from 'react';
-import {QuestionDate, QuestionDateMap} from '../../../core/schema'
-import { TextField, FormLabel } from '@mui/material';
-import PinIcon from '@mui/icons-material/Pin';
+import {ItemFunction, FnMap} from '../../../core/schema'
+import { TextField, FormLabel, Typography } from '@mui/material';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
-export interface QuestionDateEditorFormProps {
+export interface ItemFunctionEditorFormProps<T> {
   editorState: IUseEditorState;
-  question: QuestionDate;
+  question: ItemFunction<T>;
   questionState: string;
 }
 
-export function QuestionDateEditorForm({
+export function ItemFunctionEditorForm<T>({
   editorState,
   question,
   questionState,
-  }: QuestionDateEditorFormProps) {
+  }: ItemFunctionEditorFormProps<T>) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
   const renderIcon = () => {
-    return (<PinIcon/>);
+    return (<TextFieldsIcon/>);
   }
 
   const renderNormal = () => {
     return (
       <div>
         <div>
-          <FormLabel component="legend">{question.text}</FormLabel>
-          <FormLabel component="legend">{question.description}</FormLabel>
-          <TextField
+          <Typography>{question.text}</Typography>
+          <Typography>{question.description}</Typography>
+          <Typography>{question.fnCompute.fnName}</Typography>
+          {/* <TextField
             disabled
-            // value={question.description ?? question.text}
-            // label={question.description ?? question.text}
+            value={question.description ?? question.text}
+            label={question.description ?? question.text}
             required={question.options.required}
-          />
+          /> */}
         </div>
       </div>
     );
@@ -53,7 +54,7 @@ export function QuestionDateEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render Date', questionState);
+  console.log('render fn', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (
@@ -63,8 +64,7 @@ export function QuestionDateEditorForm({
     ) : questionState === QuestionStateMap.edit ? (
       renderEdit()
     ) : questionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionDateMap.options,"Date options")
-      renderGeneralOptions(question, editorState)
+      null
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
     ) : renderNormal()}
