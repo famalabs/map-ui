@@ -3,7 +3,8 @@ import {QuestionDate, QuestionDateMap} from '../../../core/schema'
 import { TextField, FormLabel } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionDateEditorFormProps {
   editorState: IUseEditorState;
@@ -66,7 +67,7 @@ export function QuestionDateEditorForm({
       renderGeneralOptions(question, editorState)
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
-    ) : null}
+    ) : renderNormal()}
     </div>
   );
 }

@@ -8,7 +8,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionSelectEditorFormProps {
   editorState: IUseEditorState;
@@ -165,7 +166,7 @@ export function QuestionSelectEditorForm({
       renderGeneralOptions(question, editorState)
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
-    ) : null}
+    ) : renderNormal()}
     </div>
   );
 }

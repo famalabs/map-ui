@@ -13,6 +13,9 @@ export interface IEditorState {
   moveItemUp: (item:SurveyItem) => void;
   moveItemDown: (item:SurveyItem) => void;
   onChangeValue: (itemId:string, key:string, value:any) => void;
+  hasPendingChanges: () => boolean;
+  saveChanges: () => void;
+  cancelChanges: () => void;
   // onChangeOptions: (itemId:string, key:string, value:any) => void;
 }
 
@@ -312,6 +315,13 @@ export class EditorBuilder implements IEditorState {
       item[key] = value;
       return 
     }
+    public hasPendingChanges: () => boolean;
+    public saveChanges() {
+
+    }
+    public cancelChanges() {
+
+    }
     // public onChangeOptions(itemId:string, key:string, value:any) {
     //   const item = this.findItemById(itemId);
     //   if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
@@ -341,6 +351,11 @@ export function useEditorState(): IUseEditorState {
     const [value, setValue] = React.useState(initValue);
     const survey = new Survey(value);
     const root = survey.root;
+
+    // takes saved the survey before changes, if not save, restore prev values
+    // must control other actions 
+    const [hasChanges, setHasChanges] = React.useState(false);
+    const [changesValue, setChangesValue] = React.useState(initValue);
 
     const surveyNav = useNavState(root);
     
@@ -408,11 +423,30 @@ export function useEditorState(): IUseEditorState {
           }
         },
         onChangeValue: (itemId:string, key:string, value:any) => {
+          if (!hasChanges) {
+            const editorBuilder = new EditorBuilder(survey, root); 
+            setChangesValue(editorBuilder.getValue());
+            setHasChanges(true);
+          }
           const editorBuilder = new EditorBuilder(survey, root); 
           editorBuilder.onChangeValue(itemId, key, value);
           setValue(editorBuilder.getValue());
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
-        }
+        },
+        hasPendingChanges: () => hasChanges,
+        saveChanges: () => {
+          setHasChanges(false);
+        },
+        cancelChanges: () => {
+          if (!hasChanges) {
+            return
+          }
+          const changesSurvey = new Survey(changesValue);
+          const editorBuilder = new EditorBuilder(changesSurvey, changesSurvey.root); 
+          setValue(changesValue);
+          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          setHasChanges(false);
+        },
         // onChangeOptions: (itemId:string, key:string, value:any) => {
         //   const editorBuilder = new EditorBuilder(survey, root); 
         //   editorBuilder.onChangeOptions(itemId, key, value);

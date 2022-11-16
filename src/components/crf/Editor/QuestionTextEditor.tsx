@@ -4,7 +4,8 @@ import { TextField, FormLabel, Stack } from '@mui/material';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { QuestionTextMap } from '../../../core/schema';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionTextEditorFormProps {
   editorState: IUseEditorState;
@@ -77,7 +78,7 @@ export function QuestionTextEditorForm({
       renderGeneralOptions(question, editorState)
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
-    ) : null}
+    ) : renderNormal()}
     </div>
   );
 }

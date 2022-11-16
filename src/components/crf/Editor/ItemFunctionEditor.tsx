@@ -3,7 +3,8 @@ import {ItemFunction, FnMap} from '../../../core/schema'
 import { TextField, FormLabel, Typography } from '@mui/material';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface ItemFunctionEditorFormProps<T> {
   editorState: IUseEditorState;
@@ -66,7 +67,7 @@ export function ItemFunctionEditorForm<T>({
       null
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
-    ) : null}
+    ) : renderNormal()}
     </div>
   );
 }

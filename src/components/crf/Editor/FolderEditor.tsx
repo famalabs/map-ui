@@ -8,6 +8,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FolderIcon from '@mui/icons-material/Folder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -95,6 +97,18 @@ export function FolderEditorForm({
 						</div>
 						<Typography>Layout</Typography>
 						{renderSelectOption(pageOptions,'style',page.layout.style,editor, page.id, 'layout.style')}
+						<Box>
+						<Stack direction='row' spacing={1}>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {setModalPage(PageStateMap.normal); editor.saveChanges()}}>
+            <CheckCircleIcon/>
+            </Button>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {setModalPage(PageStateMap.normal); editor.cancelChanges()}}>
+            <CancelIcon/>
+            </Button>
+          </Stack>
+						</Box>
 						</Stack>
 						</Paper>
 					</Modal>

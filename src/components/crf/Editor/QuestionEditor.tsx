@@ -9,6 +9,7 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 import PinIcon from '@mui/icons-material/Pin';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CancelIcon from '@mui/icons-material/Cancel';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -26,18 +27,13 @@ import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
 import { TabList } from '@mui/lab';
-
-export const QuestionStateMap = {
-  normal:"normal",
-  hover:"hover",
-  edit:"edit",
-  options:"options",
-  layout:"layout"
-}
+import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;
   question: Question;
+  questionState: any;
+  handleSetQuestionState: (id:string, state:string) => void;
 }
 
 export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
@@ -65,24 +61,12 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
   const editor = editorState.editor;
   return (
     <Stack spacing={1}>
-      {/* <OptionsEditorForm
-        title="General options"
-        options={QuestionMap.options}
-        useAccordion={false}
-      /> */}
       <Typography>General options</Typography>
       <Stack spacing={1}>
       <FormControlLabel control={
         <Checkbox checked={question.options.required} onChange={(e)=>{editor.onChangeValue(question.id, 'options.required', e.target.checked)}} />
       } label={'Required'}/> 
       </Stack>
-      
-      {/* {typeof questionOptions !== 'undefined' && (<OptionsEditorForm
-        title={title}
-        options={questionOptions}
-        useAccordion={false}
-      />)} */}
-      
     </Stack>
   );
 }
@@ -90,40 +74,25 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
 export function QuestionEditorForm({
   editorState,
   question,
+  questionState,
+  handleSetQuestionState,
   }: QuestionEditorFormProps) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-	const [questionState, setQuestionState] = React.useState(QuestionStateMap.normal);
-
-	const handleSetQuestionState = (state:string) => {
-		setQuestionState(state);
-		console.log('new', state);
-	}
-
-  const setNormal = () => {
-    handleSetQuestionState(QuestionStateMap.normal);
-  };
-  const setHover = () => {
-    handleSetQuestionState(QuestionStateMap.hover);
-  };
-  const setEdit = () => {
-    handleSetQuestionState(QuestionStateMap.edit);
-
-  };
-  const setOptions = () => {
-    handleSetQuestionState(QuestionStateMap.options);
-
-  };
-  const setLayout = () => {
-    handleSetQuestionState(QuestionStateMap.layout);
-  };
-  const onSave = () => {
-
-  };
-  const onExit = () => {
-
-  };
+  // const setNormal = (id:string) => {
+  //   handleSetQuestionState(id, QuestionStateMap.normal);
+  // };
+  // const setHover = (id:string) => {
+  //   handleSetQuestionState(id, QuestionStateMap.hover);
+  // };
+  // const setEdit = (id:string) => {
+  //   editor.cancelChanges();
+  //   handleSetQuestionState(id, QuestionStateMap.edit);
+  // };
+  // const onExit = (id:string) => {
+  //   handleSetQuestionState(id, QuestionStateMap.normal);
+  // }
 
   const renderIcon = () => {
     if (question.type === QuestionTextMap.type) {
@@ -187,8 +156,7 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Stack direction="row" spacing={1}>
-          {question.options.required && <Typography variant="h5">*</Typography>}
-          <Typography variant="h5">{renderIcon()}</Typography>
+          <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
         </Stack>
         <div>
           {renderQuestion()}
@@ -201,29 +169,28 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Box sx={{display:'flex', justifyContent: 'space-between'}}>
-          {question.options.required && <Typography variant="h5">*</Typography>}
-          <Typography variant="h5">{renderIcon()}</Typography>
+          <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" color="secondary"
-            onClick={(e) => {setEdit()}}>
+            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.edit)}}>
             <EditIcon/>
             </Button>
             <Button variant="outlined" color="secondary"
-            onClick={(e) => {editor.moveItemUp(question)}}>
+            onClick={(e) => {editor.cancelChanges(); editor.moveItemUp(question)}}>
             <ArrowUpwardIcon/>
             </Button>
             <Button variant="outlined" color="secondary"
-            onClick={(e) => {editor.moveItemDown(question)}}>
+            onClick={(e) => {editor.cancelChanges(); editor.moveItemDown(question)}}>
             <ArrowDownwardIcon/>
             </Button>
             <Button variant="outlined" color="secondary"
-            onClick={(e) => {editor.removeItem(question)}}>
+            onClick={(e) => {editor.cancelChanges(); editor.removeItem(question)}}>
             <DeleteIcon/>
             </Button>
           </Stack>
         </Box>
         <div
-          onClick={(e) => {if (questionState === QuestionStateMap.hover) {setEdit()}}}
+          onClick={(e) => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
         >
           {renderQuestion()}
         </div>
@@ -233,15 +200,14 @@ export function QuestionEditorForm({
   }
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: string) => {
-    handleSetQuestionState(newValue);
+    handleSetQuestionState(question.id, newValue);
   };
 
   const renderMenu = () => {
     return (
       <Box sx={{ width: '100%' }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-        {question.options.required && <Typography variant="h5">*</Typography>}
-        <Typography variant="h5">{renderIcon()}</Typography> 
+        <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography> 
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={questionState} onChange={handleChangeTab}>
             <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
@@ -250,10 +216,16 @@ export function QuestionEditorForm({
           </Tabs>
         </Box>
         <Box>
-          <Button variant="outlined" color="secondary"
-          onClick={(e) => {setHover()}}>
-          <CheckCircleIcon/>
-          </Button>
+          <Stack direction='row' spacing={1}>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
+            <CheckCircleIcon/>
+            </Button>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
+            <CancelIcon/>
+            </Button>
+          </Stack>
         </Box>
         </Box>
       </Box>
@@ -292,21 +264,21 @@ export function QuestionEditorForm({
   console.log('render question', questionState);
   return (
     <div
-    onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){setHover()}}}
-    onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {setNormal()}}}
+    onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
+    onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
     style={{padding:'24px'}}
     >
       {questionState === QuestionStateMap.normal ? (
         renderNormal()
       ) : questionState === QuestionStateMap.hover ? (
         renderHover()
-      ) : questionState === QuestionStateMap.edit ? (
+      ) : (questionState === QuestionStateMap.edit) ? (
         renderEdit()
-      ) : questionState === QuestionStateMap.options ? (
+      ) : (questionState === QuestionStateMap.options) ? (
         renderOptions()
-      ) : questionState === QuestionStateMap.layout ? (
+      ) : (questionState === QuestionStateMap.layout) ? (
         renderLayout()
-      ) : null}
+      ) : renderNormal()}
     </div>
   );
 }

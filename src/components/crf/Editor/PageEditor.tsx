@@ -15,6 +15,44 @@ import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 
+export const QuestionStateMap = {
+  normal:"normal",
+  hover:"hover",
+  edit:"edit",
+  options:"options",
+  layout:"layout"
+}
+
+const isEditState = (state:string) => {
+	if (state === QuestionStateMap.edit) {
+		return true;
+	} else if (state === QuestionStateMap.options) {
+		return true;
+	} else if (state === QuestionStateMap.layout) {
+		return true;
+	}
+	return false;
+}
+
+const createQuestionState = (nav:INavState) => {
+	let qs = {}
+	const questions = nav.getPage().items;
+	for (let i = 0; i < questions.length; i++) {
+		qs[questions[i].id] = QuestionStateMap.normal;
+	}
+	console.log('createQuestionState',qs);
+	return qs;
+}
+const getInEditQuestion = (qs:any):[string,string] => {
+	let keys = Object.keys(qs);
+	for (let i = 0; i < keys.length; i++) {
+		if (isEditState(qs[keys[i]])) {
+			return [keys[i],qs[keys[i]]];
+		}
+	}
+	return [null,null];
+}
+
 export interface PageEditorFormProps {
 	editorState: IUseEditorState;
 }
@@ -36,13 +74,45 @@ export function PageEditorForm({
 			editor.addQuestion(type);
 		}
 	};
+	// for handling hover / edit questions
+	const [questionState, setQuestionState] = React.useState(createQuestionState(nav));
+	const handleSetQuestionState = (id:string, state:string) => {
+		if (id === null && state === null) {
+			setQuestionState(createQuestionState(nav));
+		}
+		let curInEdit = getInEditQuestion(questionState);
+		let qs = createQuestionState(nav);
+		if (!Object.keys(qs).includes(curInEdit[0])) {
+			curInEdit = [null,null];
+		}
+		if (!Object.keys(qs).includes(id)) {
+			return
+		}
+		if (isEditState(state)) {
+			if (curInEdit[0] !== null) {
+				editor.cancelChanges();
+			}
+		} else {
+			if (curInEdit[0] !== null) {
+				qs[curInEdit[0]] = curInEdit[1];
+			}
+		}
+		qs[id] = state;
+		setQuestionState(qs);
+		console.log('new questionState', qs);
+	}
+	// to update if changes the question numbers
+	if (nav.getQuestions().length !== Object.keys(questionState).length) {
+		handleSetQuestionState(null, null);
+	}
 
-	console.log('render page',page);
+	console.log('render page',page, questionState);
 	return (
 		<div style={{padding:'24px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question) => {
+				console.log('before render qs', question.id, questionState, questionState[question.id]);
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
@@ -50,6 +120,8 @@ export function PageEditorForm({
 					key={question.id}
 					editorState={editorState}
 					question={question as Question}
+					questionState={questionState[question.id]}
+					handleSetQuestionState={handleSetQuestionState}
 					/>
 					);
 				}
@@ -59,6 +131,8 @@ export function PageEditorForm({
 							key={question.id}
 							editorState={editorState}
 							question={question as Question}
+							questionState={questionState[question.id]}
+							handleSetQuestionState={handleSetQuestionState}
 						/>
 					</Paper>
 				);
