@@ -4,7 +4,8 @@ import { TextField, FormLabel, Stack, Typography, Slider } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './QuestionEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionNumberEditorFormProps {
   editorState: IUseEditorState;
@@ -123,7 +124,7 @@ export function QuestionNumberEditorForm({
       renderNumberOptions()
     ) : questionState === QuestionStateMap.layout ? (
       renderLayout()
-    ) : null}
+    ) : renderNormal()}
     </div>
   );
 }
