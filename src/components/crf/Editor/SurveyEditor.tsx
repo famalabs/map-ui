@@ -26,7 +26,7 @@ export function SurveyEditorForm({
 
     // const [schema, setSchema] = React.useState(Object.values())
     const editorState = useEditorState();
-    console.log('render survey');
+    console.log('render survey', editorState.editor.getRoot());
     return (
         <Box sx={{ display: 'flex', width:'100%' }}>
             <CssBaseline />

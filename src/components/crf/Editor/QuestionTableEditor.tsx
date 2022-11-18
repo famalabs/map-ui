@@ -118,7 +118,7 @@ export function QuestionTableEditorForm({
   }
 
   const addSelect = () => {
-    const editorBuilder = new EditorBuilder(editor.getSurvey(), editor.getRoot()); 
+    const editorBuilder = new EditorBuilder(editor.getSurvey()); 
     const newSelect = editorBuilder.addQuestionSelect(nav) as QuestionSelect;
     editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItem(newSelect);
     newSelect.selectOptions = options;
@@ -126,7 +126,7 @@ export function QuestionTableEditorForm({
     editor.onChangeValue(question.id, 'items', question.items);
   } 
   const removeSelect = (idx:number) => {
-    const editorBuilder = new EditorBuilder(editor.getSurvey(), editor.getRoot()); 
+    const editorBuilder = new EditorBuilder(editor.getSurvey()); 
     editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItemByIdx(idx);
     question.items = editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].items;
     editor.onChangeValue(question.id, 'items', question.items);

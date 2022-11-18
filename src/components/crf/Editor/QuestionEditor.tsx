@@ -28,7 +28,7 @@ import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
 import { TabList } from '@mui/lab';
-import { QuestionStateMap } from './PageEditor';
+import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
 
 export interface QuestionEditorFormProps {
@@ -54,6 +54,23 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
           value={item.description}
           onChange={(e) => {editor.onChangeValue(item.id,'description', e.target.value)}}
         />
+      </div>
+      <div style={{margin:'0.25rem'}}>
+        <FormControl>
+        <FormLabel component="legend">Type</FormLabel>
+        <Select
+          value={getQuestionMenuType(item)}
+          onChange={(e) => {editor.changeQuestionType(item, e.target.value)}}
+        >
+            {Object.keys(QuestionMenuTypesMap).map((key, idx) => (
+              <MenuItem key={key} value={key}
+              >
+                {QuestionMenuTypesMap[key].icon}
+							  <Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+              </MenuItem>
+            ))}
+        </Select>
+        </FormControl>
       </div>
     </div>
   );
@@ -82,45 +99,31 @@ export function QuestionEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  // const setNormal = (id:string) => {
-  //   handleSetQuestionState(id, QuestionStateMap.normal);
-  // };
-  // const setHover = (id:string) => {
-  //   handleSetQuestionState(id, QuestionStateMap.hover);
-  // };
-  // const setEdit = (id:string) => {
-  //   editor.cancelChanges();
-  //   handleSetQuestionState(id, QuestionStateMap.edit);
-  // };
-  // const onExit = (id:string) => {
-  //   handleSetQuestionState(id, QuestionStateMap.normal);
-  // }
-
   const renderIcon = () => {
-    if (question.type === QuestionTextMap.type) {
-      return (<TextFieldsIcon/>);
-    } else if (question.type === QuestionNumberMap.type) {
-      if (question.layout.style === QuestionNumberMap.layout.style.range) {
-        return (<LinearScaleRoundedIcon/>);
-      }
-      return (<PinIcon/>);
-    } else if (question.type === QuestionSelectMap.type) {
-      if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
-        return (<ArrowDropDownCircleOutlinedIcon/>);
-      }
-      return (<RadioButtonCheckedIcon/>);
-    } else if (question.type === QuestionCheckMap.type) {
-      return (<CheckBoxIcon/>);
-    } else if (question.type === QuestionDateMap.type) {
-      return (<CalendarMonthIcon/>);
-    } else if (question.type === GroupMap.type) {
-      if (question.layout.style === GroupMap.layout.style.table) {
-        if (question.items[0].type === QuestionSelectMap.type) {
-          return (<TocIcon/>)
-        }
-      }
-    }
-    return null;
+    // if (question.type === QuestionTextMap.type) {
+    //   return (<TextFieldsIcon/>);
+    // } else if (question.type === QuestionNumberMap.type) {
+    //   if (question.layout.style === QuestionNumberMap.layout.style.range) {
+    //     return (<LinearScaleRoundedIcon/>);
+    //   }
+    //   return (<PinIcon/>);
+    // } else if (question.type === QuestionSelectMap.type) {
+    //   if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
+    //     return (<ArrowDropDownCircleOutlinedIcon/>);
+    //   }
+    //   return (<RadioButtonCheckedIcon/>);
+    // } else if (question.type === QuestionCheckMap.type) {
+    //   return (<CheckBoxIcon/>);
+    // } else if (question.type === QuestionDateMap.type) {
+    //   return (<CalendarMonthIcon/>);
+    // } else if (question.type === GroupMap.type) {
+    //   if (question.layout.style === GroupMap.layout.style.table) {
+    //     if (question.items[0].type === QuestionSelectMap.type) {
+    //       return (<TocRoundedIcon/>)
+    //     }
+    //   }
+    // }
+    return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
   }
 
   const renderQuestion = () => {
@@ -227,15 +230,20 @@ export function QuestionEditorForm({
     return (
       <Box sx={{ width: '100%' }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography> 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={questionState} onChange={handleChangeTab}>
-            <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
-            <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
-            <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
-          </Tabs>
-        </Box>
-        <Box>
+          {/* <Typography variant="h5">
+            {question.options.required && '*'}
+          </Typography>  */}
+          <Button variant="outlined" color="secondary"
+            onClick={(e) => {}}>
+            {renderIcon()}
+          </Button>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={questionState} onChange={handleChangeTab}>
+              <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
+              <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
+              <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
+            </Tabs>
+          </Box>
           <Stack direction='row' spacing={1}>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
@@ -246,7 +254,6 @@ export function QuestionEditorForm({
             <CancelIcon/>
             </Button>
           </Stack>
-        </Box>
         </Box>
       </Box>
     );

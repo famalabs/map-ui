@@ -147,8 +147,12 @@ export class SurveyItem {
     if (this.layout && Object.keys(this.layout).length > 0) {
       schema.layout = this.layout;
     }
-    if (isValidField(this.description))
+    if (isValidField(this.description)) {
       schema.description = this.description;
+    }
+    if (this.options && Object.keys(this.options).length > 0) {
+      schema.options = this.options
+    }
     return schema;
   }
 
