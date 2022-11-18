@@ -167,7 +167,9 @@ export function SidebarEditorForm({
 		return(
 			<Stack spacing={2}>
 				{Object.keys(SurveyMap.options).map((val,idx) => {
-					return renderSelectOption(SurveyMap.options[val],val, survey.options[val], editor, survey.id, 'options.'+val);
+					return (
+						<div key={val}>{renderSelectOption(SurveyMap.options[val],val, survey.options[val] ?? SurveyMap.options[val].default, editor, survey.id, 'options.'+val)}</div>
+					);
 				})}
 			</Stack>
 		);
@@ -177,7 +179,9 @@ export function SidebarEditorForm({
 		return(
 			<Stack spacing={2}>
 				{Object.keys(SurveyMap.layout).map((val,idx) => {
-					return renderSelectOption(SurveyMap.layout[val],val, survey.layout[val], editor, survey.id, 'layout.'+val);
+					return (
+						<div key={val}>{renderSelectOption(SurveyMap.layout[val],val, survey.layout[val] ?? SurveyMap.layout[val].default, editor, survey.id, 'layout.'+val)}</div>
+					);
 				})}
 			</Stack>
 		);
