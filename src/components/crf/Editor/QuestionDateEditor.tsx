@@ -53,7 +53,7 @@ export function QuestionDateEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render Date', questionState);
+  // console.log('render Date', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (

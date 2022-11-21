@@ -25,11 +25,6 @@ export function QuestionSelectEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderIcon = () => {
-    return (question.layout.style === QuestionSelectMap.layout.style.radio ? 
-    <PinIcon/> : <ArrowDropDownCircleOutlinedIcon/>);
-  }
-
   const selects = question.selectOptions;
   const addSelect = () => {
     selects.push({text:"New Radio",score:selects.length} as TextScore);
@@ -152,7 +147,7 @@ export function QuestionSelectEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render Select', questionState);
+  // console.log('render Select', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (

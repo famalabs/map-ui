@@ -248,7 +248,7 @@ export function QuestionTableEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render text', questionState);
+  // console.log('render text', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (

@@ -50,6 +50,17 @@ const defaultQuestion = (type:string) => {
   };
 }
 
+const defaultFn = () => {
+  return {
+    id: "778",
+    type: FnMap.type,
+    text: "New Function",
+    parameters: [
+    ],
+    fnCompute: FnMap.fnCompute.sum,
+}
+}
+
 const defaultQuestionTableSelect = () => {
   return {
     id: "",
@@ -163,6 +174,8 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionDate(nav);
       } else if (type === QuestionMenuTypesMap.selectTable.type) {
         return this.addQuestionSelectTable(nav);
+      } else if (type === QuestionMenuTypesMap.fn.type) {
+        return this.addFnItem(nav);
       }
       return undefined;
     }
@@ -264,17 +277,12 @@ export class EditorBuilder implements IEditorState {
       return this.addInitQuestion(question, type, nav) as SurveyItem;
         
     }
-    public addFnItem<T>(nav: INavState):ItemFunction<T> {
+    public addFnItem<T>(nav: INavState):SurveyItem {
       const type = FnMap.type;
-      const question = new ItemFunction<T>(defaultQuestion(type));
-      question.id = this.getValidId();
-      question.text = FnMap.type + " " +question.id.toString();
-      const folderIdx = nav.getFolderIdx();
-      const pageIdx = nav.getPageIdx();
-      this.root.items[folderIdx].items[pageIdx].insertItem(question);
-      return question;
-        
+      const question = new ItemFunction<T>(defaultFn());
+      return this.addInitQuestion(question, type, nav) as SurveyItem;
     }
+
     public changeQuestionType: (item: SurveyItem, newType: string) => void;
     public changeQuestionTypeGeneral (item:SurveyItem, newType:string, nav:INavState) {
       const id = item.id;
@@ -360,8 +368,18 @@ export class EditorBuilder implements IEditorState {
      * @returns 
      */
     public onChangeValue(itemId:string, key:string, value:any) {
+      console.log('before change value', itemId, key, value)
       const item = this.findItemById(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
+      if (key === 'parameters' && item instanceof ItemFunction) {
+        item.parameters = value;
+        console.log('change fn parameters',item, value);
+        return
+      } else if (key === 'fnCompute' && item instanceof ItemFunction) {
+        item.setFnCompute(value);
+        console.log('change fn compute',item, value);
+        return
+      }
       if (key.includes(".")) {
         const keys = key.split(".")
         if (keys.length == 2) {
@@ -373,8 +391,10 @@ export class EditorBuilder implements IEditorState {
         } else {
           throw Error('cant change value multiple keys')
         }
+      } else {
+        item[key] = value;
       }
-      item[key] = value;
+      console.log('change value',item)
       return 
     }
     public hasPendingChanges: () => boolean;

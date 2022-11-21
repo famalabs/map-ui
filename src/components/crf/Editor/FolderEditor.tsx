@@ -117,7 +117,7 @@ export function FolderEditorForm({
 		}
 	}
 
-	console.log('render folder', folder);
+	// console.log('render folder', folder);
 	return (
 		<Box style={{margin:'0px 24px',width:'100%'}}>
 

@@ -5,6 +5,7 @@ import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
+import FunctionsIcon from '@mui/icons-material/Functions';
 import PinIcon from '@mui/icons-material/Pin';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import TocIcon from '@mui/icons-material/Toc';
@@ -92,7 +93,7 @@ export const QuestionMenuTypesMap = {
 	},
 	fn: {
 		'type': 'fn',
-		'icon': <TextFieldsIcon/>,
+		'icon': <FunctionsIcon/>,
 		'locale': {
 			'it': 'Funzione',
 			'en': 'Function',

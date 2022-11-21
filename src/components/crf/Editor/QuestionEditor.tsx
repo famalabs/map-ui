@@ -1,7 +1,7 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem} from '../../../core/schema'
+import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem, FnMap, ItemFunction} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Box, Tabs, Tab, Checkbox } from '@mui/material';
+import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Box, Tabs, Tab, Checkbox, Divider } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -30,6 +30,7 @@ import { QuestionDateEditorForm } from './QuestionDateEditor';
 import { TabList } from '@mui/lab';
 import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
+import { ItemFunctionEditorForm } from './ItemFunctionEditor';
 
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;
@@ -159,6 +160,14 @@ export function QuestionEditorForm({
           questionState={questionState}
         />
       );
+    } else if (question instanceof ItemFunction) {
+      return (
+        <ItemFunctionEditorForm
+          editorState={editorState}
+          question={question}
+          questionState={questionState}
+        />
+      );
     } else if (question.type === GroupMap.type) {
       if (question.layout.style === GroupMap.layout.style.table) {
         if (question.items[0].type === QuestionSelectMap.type) {
@@ -265,6 +274,7 @@ export function QuestionEditorForm({
         <div>
         {renderQuestion()}
         </div>
+        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
       </Stack>
     );
   }
@@ -275,6 +285,7 @@ export function QuestionEditorForm({
         <div>
         {renderQuestion()}
         </div>
+        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
       </Stack>
     );
   }
@@ -285,10 +296,11 @@ export function QuestionEditorForm({
         <div>
         {renderQuestion()}
         </div>
+        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
       </Stack>
     );
   }
-  console.log('render question', questionState);
+  // console.log('render question', questionState);
   return (
     <div
     onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}

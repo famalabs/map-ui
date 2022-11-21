@@ -95,6 +95,15 @@ export class ItemFunction<T> extends SurveyItem {
     return true;
   }
 
+  removeNotValidParams(): string[] {
+    for (let i = 0; i < this.parameters.length; i++) {
+      let item = this.renderer.get(this.parameters[i]);
+      if (!(item instanceof SurveyItem && item.isValid()))
+        this.parameters.splice(i, 1);
+    }
+    return this.parameters;
+  }
+
   getParam(id) {
     let item = this.renderer.get(id);
     if (item instanceof Question) {
@@ -102,6 +111,9 @@ export class ItemFunction<T> extends SurveyItem {
     } else if (item instanceof ItemFunction) {
       return item.compute();
     }
+  }
+  setParams(ids:Array<string>) {
+    this.parameters = ids;
   }
 
   getSchema(): any {
