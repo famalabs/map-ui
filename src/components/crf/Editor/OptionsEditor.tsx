@@ -17,7 +17,7 @@ export const renderSelectOption = (option:any, name:string, value:any, editor:IE
     >
         {Object.keys(option).map((key1, idx1) => {
             if (key1 === 'default') {
-                return null;
+                // return null;
             } else {
                 return (
                     <MenuItem key={key1} value={key1}>{key1}</MenuItem>

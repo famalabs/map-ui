@@ -109,7 +109,7 @@ export function QuestionNumberEditorForm({
   const renderLayout = () => {
     return null;
   }
-  console.log('render number', questionState);
+  // console.log('render number', questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (

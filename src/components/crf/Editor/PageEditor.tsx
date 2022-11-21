@@ -1,12 +1,15 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionMap, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, FnMap} from '../../../core/schema'
+import {Survey, GroupMap, Question, QuestionMap, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, FnMap, SurveyItem} from '../../../core/schema'
 import { AutoSelect } from '../../simple';
 import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Menu, Stack, Divider } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
+import FunctionsIcon from '@mui/icons-material/Functions';
 import PinIcon from '@mui/icons-material/Pin';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
+import TocIcon from '@mui/icons-material/Toc';
+import TocRoundedIcon from '@mui/icons-material/TocRounded';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
@@ -14,6 +17,118 @@ import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCi
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
+
+export const QuestionMenuTypesMap = {
+	text: {
+		'type': 'text',
+		'icon': <TextFieldsIcon/>,
+		'locale': {
+			'it': 'Testo',
+			'en': 'Text',
+		}
+	},
+	textMulti: {
+		'type': 'textMulti',
+		'icon': <TextFieldsIcon/>,
+		'locale': {
+			'it': 'Testo Multiriga',
+			'en': 'Text Multiline',
+		}
+	},
+	number: {
+		'type': 'number',
+		'icon': <PinIcon/>,
+		'locale': {
+			'it': 'Numero',
+			'en': 'Number',
+		}
+	},
+	range: {
+		'type': 'range',
+		'icon': <LinearScaleRoundedIcon/>,
+		'locale': {
+			'it': 'Intervallo',
+			'en': 'Range',
+		}
+	},
+	select: {
+		'type': 'select',
+		'icon': <RadioButtonCheckedIcon/>,
+		'locale': {
+			'it': 'Selezione',
+			'en': 'Select',
+		}
+	},
+	dropdown: {
+		'type': 'dropdown',
+		'icon': <ArrowDropDownCircleOutlinedIcon/>,
+		'locale': {
+			'it': 'Selezione a Tendina',
+			'en': 'Dropdown',
+		}
+	},
+	selectTable: {
+		'type': 'selectTable',
+		'icon': <TocRoundedIcon/>,
+		'locale': {
+			'it': 'Tavolo di Selezione',
+			'en': 'Select Table',
+		}
+	},
+	check: {
+		'type': 'check',
+		'icon': <CheckBoxIcon/>,
+		'locale': {
+			'it': 'Selezione Multipla',
+			'en': 'Checkboxes',
+		}
+	},
+	date: {
+		'type': 'date',
+		'icon': <CalendarMonthIcon/>,
+		'locale': {
+			'it': 'Data',
+			'en': 'Date',
+		}
+	},
+	fn: {
+		'type': 'fn',
+		'icon': <FunctionsIcon/>,
+		'locale': {
+			'it': 'Funzione',
+			'en': 'Function',
+		}
+	},
+}
+
+export const getQuestionMenuType = (question:SurveyItem):string => {
+		if (question.type === QuestionTextMap.type) {
+      return QuestionMenuTypesMap.text.type;
+    } else if (question.type === QuestionNumberMap.type) {
+      if (question.layout.style === QuestionNumberMap.layout.style.range) {
+        return QuestionMenuTypesMap.range.type;
+      }
+      return QuestionMenuTypesMap.number.type;
+    } else if (question.type === QuestionSelectMap.type) {
+      if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
+        return QuestionMenuTypesMap.dropdown.type;
+      }
+      return QuestionMenuTypesMap.select.type;
+    } else if (question.type === QuestionCheckMap.type) {
+      return QuestionMenuTypesMap.check.type;
+    } else if (question.type === QuestionDateMap.type) {
+      return QuestionMenuTypesMap.date.type;
+    } else if (question.type === GroupMap.type) {
+      if (question.layout.style === GroupMap.layout.style.table) {
+        if (question.items[0].type === QuestionSelectMap.type) {
+          return QuestionMenuTypesMap.selectTable.type;
+        }
+      }
+    } else if (question.type === FnMap.type) {
+			return QuestionMenuTypesMap.fn.type;
+		}
+		return null;
+}
 
 export const QuestionStateMap = {
   normal:"normal",
@@ -148,28 +263,18 @@ export function PageEditorForm({
 				<AddCircleIcon />
 			</Button>
 			<Menu
-				// id="basic-menu"
 				anchorEl={anchorAddQuestion}
 				open={openAddQuestion}
 				onClose={(e) =>handleAddQuestion(undefined)}
-				// MenuListProps={{
-				// 'aria-labelledby': 'basic-button',
-				// }}
 			>
-				{/* <Stack direction="row"></Stack> */}
-				<Divider variant='middle'>Questions</Divider>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionTextMap.type)}><TextFieldsIcon/> <Typography>Text</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionTextMap.layout.style.area)}><TextFieldsIcon/> <Typography>Text Multiline</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionNumberMap.type)}><PinIcon/> <Typography>Number</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionNumberMap.layout.style.range)}><LinearScaleRoundedIcon/> <Typography>Slider</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.type)}><RadioButtonCheckedIcon/> <Typography>Radio Buttons</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionSelectMap.layout.style.dropdown)}><ArrowDropDownCircleOutlinedIcon/> <Typography>Dropdown</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionCheckMap.type)}><CheckBoxIcon/> <Typography>Checkboxses</Typography></MenuItem>
-				<MenuItem onClick={(e) =>handleAddQuestion(QuestionDateMap.type)}><CalendarMonthIcon/><Typography>Date</Typography></MenuItem>
-				<Divider variant='middle'>Functions</Divider>
-				<MenuItem onClick={(e) =>handleAddQuestion(FnMap.type)}><CalendarMonthIcon/><Typography>Function</Typography></MenuItem>
-				{/* <Divider variant='middle' >Layout</Divider>
-				<MenuItem onClick={(e) =>handleAddQuestion(undefined)}><CalendarMonthIcon/><Typography>Group</Typography></MenuItem> */}
+				{Object.keys(QuestionMenuTypesMap).map((key,idx) => {
+					return (
+						<MenuItem key={key} onClick={(e) =>handleAddQuestion(key)}>
+							{QuestionMenuTypesMap[key].icon}
+							<Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+						</MenuItem>
+					);
+				})}
 			</Menu>
 		</div>
 	);

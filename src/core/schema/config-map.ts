@@ -240,6 +240,12 @@ export const FnMap = {
     type: "Fn",
     parameters: [],
     fnCompute: {
+        sum:'sum',
+        diff:'diff',
+        multiply:'multiply',
+        division:'division',
+        average:'average',
+        CountIf:'CountIf',
         age:'age',
         BMI:'BMI',
         SOFA:'SOFA',
