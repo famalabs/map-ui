@@ -30,10 +30,6 @@ export function QuestionTableEditorForm({
   const select = question.items[0] as QuestionSelect;
   const options = select.selectOptions;
 
-  const renderIcon = () => {
-    return (<TocRoundedIcon/>);
-  }
-
   const renderNormal = () => {
 
     return (

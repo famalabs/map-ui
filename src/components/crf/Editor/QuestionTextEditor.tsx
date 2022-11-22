@@ -21,10 +21,6 @@ export function QuestionTextEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderIcon = () => {
-    return (<TextFieldsIcon/>);
-  }
-
   const renderNormal = () => {
     return (
       <Stack spacing={1}>
