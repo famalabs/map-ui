@@ -51,6 +51,7 @@ export function FolderEditorForm({
 		if (modalPage == PageStateMap.normal) {
 			return(
 				<Box sx={{ width: '100%'}}
+				style={{minHeight:'36px'}}
 				onMouseEnter={() =>  setModalPage(PageStateMap.hover)}
 				>
 					<Typography variant='h5'>{page.text}</Typography>
@@ -119,7 +120,10 @@ export function FolderEditorForm({
 
 	// console.log('render folder', folder);
 	return (
-		<Box style={{margin:'0px 24px',width:'100%'}}>
+		<Box 
+		// style={{margin:'0px 24px',width:'100%',minWidth:'614px'}}
+		style={{width:'100%',minWidth:'614px'}}
+		>
 
 		
 		{/* PAGE NAVIGATION */}
@@ -205,6 +209,13 @@ export function FolderEditorForm({
 				startIcon={<ArrowBackIosIcon />}
 				>
 					Back
+				</Button>
+				<Button 
+				variant={"contained"} 
+				color="secondary" 
+				onClick={(e) => {console.log(JSON.stringify(editor.getRoot().getSchema()))}} 
+				>
+					Print JSON
 				</Button>
 				<Box/>
 					{nav.getPageIdx() === nav.getPages().length-1 ? (

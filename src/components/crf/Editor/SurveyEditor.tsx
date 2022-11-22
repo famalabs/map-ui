@@ -28,14 +28,18 @@ export function SurveyEditorForm({
     const editorState = useEditorState();
     console.log('render survey', editorState.editor.getRoot());
     return (
-        <Box sx={{ display: 'flex', width:'100%' }}>
+        <Box 
+        // sx={{ display: 'flex', width:'100%' }}
+        sx={{ width:'100%' }}
+        >
             <CssBaseline />
             <SidebarEditorForm
                 editorState={editorState}
             />
             <Box
                 component="main"
-                sx={{ flexGrow: 1, justifySelf: 'stretch', width: { sm: `calc(100% - ${320}px)` } }}
+                // sx={{ flexGrow: 1, justifySelf: 'stretch', width: { sm: `calc(100% - ${320}px)` } }}
+                style={{position:'absolute',left:320+64,top:0,right:0, padding:'0px 24px'}}
             >
                 <FolderEditorForm
                     editorState={editorState}

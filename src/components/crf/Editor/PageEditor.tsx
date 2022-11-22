@@ -9,6 +9,7 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import PinIcon from '@mui/icons-material/Pin';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import TocIcon from '@mui/icons-material/Toc';
+import ToggleOnOutlinedIcon from '@mui/icons-material/ToggleOnOutlined';
 import TocRoundedIcon from '@mui/icons-material/TocRounded';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -79,8 +80,16 @@ export const QuestionMenuTypesMap = {
 		'type': 'check',
 		'icon': <CheckBoxIcon/>,
 		'locale': {
-			'it': 'Selezione Multipla',
-			'en': 'Checkboxes',
+			'it': 'Casella di Spunta',
+			'en': 'Checkbox',
+		}
+	},
+	switch: {
+		'type': 'switch',
+		'icon': <ToggleOnOutlinedIcon/>,
+		'locale': {
+			'it': 'Interruttore',
+			'en': 'Switch',
 		}
 	},
 	date: {
@@ -115,6 +124,9 @@ export const getQuestionMenuType = (question:SurveyItem):string => {
       }
       return QuestionMenuTypesMap.select.type;
     } else if (question.type === QuestionCheckMap.type) {
+			if (question.layout.style === QuestionCheckMap.layout.style.switch) {
+				return QuestionMenuTypesMap.switch.type;
+			}
       return QuestionMenuTypesMap.check.type;
     } else if (question.type === QuestionDateMap.type) {
       return QuestionMenuTypesMap.date.type;
@@ -155,7 +167,7 @@ const createQuestionState = (nav:INavState) => {
 	for (let i = 0; i < questions.length; i++) {
 		qs[questions[i].id] = QuestionStateMap.normal;
 	}
-	console.log('createQuestionState',qs);
+	// console.log('createQuestionState',qs);
 	return qs;
 }
 const getInEditQuestion = (qs:any):[string,string] => {
@@ -186,7 +198,9 @@ export function PageEditorForm({
 	const handleAddQuestion = (type: string) => {
 		setAnchorAddQuestion(null);
 		if (typeof type !== 'undefined') {
-			editor.addQuestion(type);
+			const qs = editor.addQuestion(type);
+			handleSetQuestionState(qs.id, QuestionStateMap.edit)
+			console.log("add question", qs.id);
 		}
 	};
 	// for handling hover / edit questions
@@ -200,9 +214,9 @@ export function PageEditorForm({
 		if (!Object.keys(qs).includes(curInEdit[0])) {
 			curInEdit = [null,null];
 		}
-		if (!Object.keys(qs).includes(id)) {
-			return
-		}
+		// if (!Object.keys(qs).includes(id)) {
+		// 	return
+		// }
 		if (isEditState(state)) {
 			if (curInEdit[0] !== null) {
 				editor.cancelChanges();
@@ -214,20 +228,20 @@ export function PageEditorForm({
 		}
 		qs[id] = state;
 		setQuestionState(qs);
-		console.log('new questionState', qs);
+		// console.log('new questionState', qs);
 	}
 	// to update if changes the question numbers
 	if (nav.getQuestions().length !== Object.keys(questionState).length) {
 		handleSetQuestionState(null, null);
 	}
 
-	console.log('render page',page, questionState);
+	// console.log('render page',page, questionState);
 	return (
 		<div style={{padding:'24px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question) => {
-				console.log('before render qs', question.id, questionState, questionState[question.id]);
+				// console.log('before render qs', question.id, questionState, questionState[question.id]);
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (

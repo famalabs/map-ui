@@ -1,8 +1,6 @@
 import React from 'react';
-import { useFormState, InputString, InputNumber, InputRadio, Option, Form, FormNodeType, InputDate  } from '../forms';
-import { ButtonLoading } from '../simple';
 import { Button, FormLabel, Typography } from '@mui/material';
-import {AdapterUseFormStateSurvey, ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Survey, SurveyItem} from '../../core/schema'
+import { AdapterUseFormStateSurvey, ItemFunction } from '@src/core/schema';
 
 
 export interface ItemFunctionProps<T> {

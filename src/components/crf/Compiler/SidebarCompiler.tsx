@@ -1,7 +1,7 @@
 import { AppBar, Box, Link, Paper, Typography } from "@mui/material";
 import { SurveyItem } from "@src/core/schema";
 import React from "react";
-import { INavState, SurveyNav } from './Navigation';
+import { INavState, SurveyNav } from '../Navigation';
 
 export interface BaseSidebarLayoutProps {
     drawerWidth: number;

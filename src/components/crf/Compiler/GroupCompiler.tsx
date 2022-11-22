@@ -1,11 +1,9 @@
 import React from 'react';
-import { useFormState, InputString, InputNumber, InputRadio, Option, Form } from '../forms';
-import { ButtonLoading } from '../simple';
 import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Typography } from '@mui/material';
-import {Question, QuestionCheck, Survey, SurveyItem} from '../../core/schema'
-import { QuestionForm } from './Question';
+import {Question, QuestionCheck, Survey, SurveyItem} from '@src/core/schema'
+import { QuestionForm } from './QuestionCompiler';
 // import { SurveyItemForm } from './SurveyItem';
-import { PageForm } from './Page';
+import { PageForm } from './PageCompiler';
 
 
 export interface GroupProps {

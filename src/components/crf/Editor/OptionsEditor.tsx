@@ -20,7 +20,7 @@ export const renderSelectOption = (option:any, name:string, value:any, editor:IE
                 // return null;
             } else {
                 return (
-                    <MenuItem key={key1} value={key1}>{key1}</MenuItem>
+                    <MenuItem key={key1} value={key1}>{option[key1]}</MenuItem>
                 );
             }
         } )}

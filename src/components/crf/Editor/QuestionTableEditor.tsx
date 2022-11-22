@@ -142,12 +142,102 @@ export function QuestionTableEditorForm({
     selects[idx].text = value;
     editor.onChangeValue(question.id, 'items', selects);
   }
+
+  const renderSelectOption = (opt:TextScore, idx:number) => {
+    return (
+      <TableCell align="center">
+        {/* {opt.text} */}
+        <TextField
+          value={opt.text}
+          onChange={(e) => {textOption(idx, e.target.value)}}
+        />
+      </TableCell>
+    );
+  }
+
+  const renderSelectQuestion = (sel:QuestionSelect, idx:number) => {
+    return (
+      <TableCell component="th" scope="row">
+        {/* {sel.text} */}
+        <Stack spacing={2}>
+        <TextField
+          value={sel.text}
+          onChange={(e) => {textSelect(idx, e.target.value)}}
+        />
+        {/* <Stack direction='row' style={{justifyContent: 'space-between'}}>
+          <Button 
+          variant="outlined" 
+          color="inherit" 
+          onClick={(e) => {moveSelect(idx,-1)}}>
+          <ArrowUpwardIcon />
+          </Button>
+          <Button 
+          variant="outlined" 
+          color="inherit" 
+          onClick={(e) => {moveSelect(idx,1)}}>
+          <ArrowDownwardIcon />
+          </Button>
+          <Button 
+          variant="outlined" 
+          color="inherit" 
+          onClick={(e) => {removeSelect(idx)}}>
+          <DeleteIcon />
+          </Button>
+        </Stack> */}
+        </Stack>
+      </TableCell>
+    );
+  }
   
   const renderEdit = () => {
     return (
       <div>
         {QuestionGeneralEdit(question, editor)}
-        <Divider textAlign="left">Radio Buttons</Divider>
+        <Divider textAlign="left"></Divider>
+        <TableContainer>
+        <Table sx={{ width: '100%' }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Questions</TableCell>
+              {options.map((opt, idx) => renderSelectOption(opt,idx))}
+              <TableCell>
+              <Button 
+              variant="outlined" 
+              color="inherit" 
+              onClick={(e) => {addOption()}}>
+              <AddCircleIcon />
+              </Button>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selects.map((sel,idx) => (
+              <TableRow
+                key={idx}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                {renderSelectQuestion(sel,idx)}
+                {options.map((opt, idx) => {
+                  return (
+                    <TableCell align="right"><Radio disabled/></TableCell>
+                  );
+                })}
+              </TableRow>
+            ))}
+            <TableRow>
+            <TableCell>
+            <Button 
+            variant="outlined" 
+            color="inherit" 
+            onClick={(e) => {addSelect()}}>
+            <AddCircleIcon />
+            </Button>
+            </TableCell>
+            </TableRow>
+          </TableBody>
+      </Table>
+    </TableContainer>
+        {/* <Divider textAlign="left">Radio Buttons</Divider>
         <FormControl
         >
           <RadioGroup
@@ -240,7 +330,7 @@ export function QuestionTableEditorForm({
           onClick={(e) => {addSelect()}}>
           <AddCircleIcon />
           </Button>
-        </FormControl>
+        </FormControl> */}
 
       </div>
     );

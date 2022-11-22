@@ -113,6 +113,13 @@ export const QuestionCheckMap = {
             false: false,
             true: true
         }
+    },
+    layout: {
+        style: {
+            default: 'check',
+            check:'check',
+            switch:'switch'
+        }
     }
 } as const;
 export type QuestionCheckMap = keyof typeof QuestionCheckMap;
@@ -155,6 +162,16 @@ export const QuestionNumberMap = {
         },
         step: {
             default: 0
+        },
+        unit: {
+            default:"none",
+            none:"none",
+            kg:"kg",
+            g:"g",
+            l:"l",
+            ml:"ml",
+            dollar:"$",
+            euro:"€"
         }
     },
     layout: {

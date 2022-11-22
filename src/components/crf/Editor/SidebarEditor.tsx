@@ -136,7 +136,9 @@ export function SidebarEditorForm({
 						);
 					} else {
 						return (
-							<Button variant={"outlined"} 
+							<Button 
+							key={folder.id}
+							variant={"outlined"} 
 							color={"inherit"}  
 							onClick={(e) => {nav.setFolder(folder)}}>
 							{folder.text}
@@ -203,9 +205,10 @@ export function SidebarEditorForm({
 	return (
 		<Box
 			component="nav"
-			sx={{ width: { sm: 320+64 }, flexShrink: { sm: 0 } }}
+			// sx={{ width: { sm: 320+64 }, flexShrink: { sm: 0 } }}
+			style={{position:'fixed',top:'0',left:'0',bottom:'0', width: 320+64}}
 		>
-			<Paper style={{ display: 'flex', justifyContent: 'flex-start' }}>
+			<Paper style={{ display: 'flex', justifyContent: 'flex-start', height:'100%' }}>
 				<Box
 				sx={{ width:'64px', borderRight: 1, borderColor: 'divider' }}
 				>

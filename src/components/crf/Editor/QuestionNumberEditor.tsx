@@ -1,11 +1,12 @@
 import React from 'react';
 import {QuestionNumber, QuestionNumberMap} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Slider } from '@mui/material';
+import { TextField, FormLabel, Stack, Typography, Slider, FormControl, Select, MenuItem, InputAdornment } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { renderSelectOption } from './OptionsEditor';
 
 export interface QuestionNumberEditorFormProps {
   editorState: IUseEditorState;
@@ -22,11 +23,6 @@ export function QuestionNumberEditorForm({
   const nav = editorState.nav;
   const style = question.layout.style;
 
-  const renderIcon = () => {
-    return (question.layout.style === QuestionNumberMap.layout.style.range 
-      ? (<LinearScaleRoundedIcon/>):(<PinIcon/>));
-  }
-
   const renderNormal = () => {
     return (
       <Stack spacing={1}>
@@ -35,6 +31,9 @@ export function QuestionNumberEditorForm({
           <FormLabel component="legend">{question.text}</FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+            <Typography>{
+            question.options.unit === QuestionNumberMap.options.unit.none ?
+            '' : QuestionNumberMap.options.unit[question.options.unit]}</Typography>
             <Typography>{question.options.minValue}</Typography>
             <Slider 
             disabled
@@ -55,6 +54,11 @@ export function QuestionNumberEditorForm({
             // value={question.description ?? question.text}
             // label={question.description ?? question.text}
             required={question.options.required}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{
+                question.options.unit === QuestionNumberMap.options.unit.none ?
+                '' : QuestionNumberMap.options.unit[question.options.unit]}</InputAdornment>,
+            }}
           />
         </Stack>
         )}
@@ -72,13 +76,13 @@ export function QuestionNumberEditorForm({
     );
   }
   const renderNumberOptions = () => {
-    const editor = editorState.editor;
-    const nav = editorState.nav;
+    
     return (
     <div>
       {renderGeneralOptions(question,editorState)}
       <Stack spacing={1}>
       <Typography>Number Options</Typography>
+      {renderSelectOption(QuestionNumberMap.options.unit, 'Unit', question.options.unit, editor, question.id, 'options.unit')}
       <div>
         <FormLabel component="legend">minValue</FormLabel>
         <TextField

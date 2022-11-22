@@ -2,7 +2,7 @@ import { Box, Button, Step, StepButton, Stepper, Typography } from '@mui/materia
 import { SurveyItem } from '@src/core/schema';
 import { debug } from 'console';
 import * as React from 'react';
-import { SurveyNav, INavState } from './Navigation'
+import { SurveyNav, INavState } from '../Navigation'
 
 export interface NavigationButtonsProps {
     root: SurveyItem;

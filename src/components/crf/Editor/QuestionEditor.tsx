@@ -31,6 +31,7 @@ import { TabList } from '@mui/lab';
 import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
 import { ItemFunctionEditorForm } from './ItemFunctionEditor';
+import { QuestionCheckEditorForm } from './QuestionCheckEditor';
 
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;
@@ -42,20 +43,6 @@ export interface QuestionEditorFormProps {
 export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   return (
     <div>
-      <div style={{margin:'0.25rem'}}>
-        <FormLabel component="legend">Title</FormLabel>
-        <TextField
-          value={item.text}
-          onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
-        />
-      </div>
-      <div style={{margin:'0.25rem'}}>
-        <FormLabel component="legend">Description</FormLabel>
-        <TextField
-          value={item.description}
-          onChange={(e) => {editor.onChangeValue(item.id,'description', e.target.value)}}
-        />
-      </div>
       <div style={{margin:'0.25rem'}}>
         <FormControl>
         <FormLabel component="legend">Type</FormLabel>
@@ -72,6 +59,20 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
             ))}
         </Select>
         </FormControl>
+      </div>
+      <div style={{margin:'0.25rem'}}>
+        <FormLabel component="legend">Title</FormLabel>
+        <TextField
+          value={item.text}
+          onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
+        />
+      </div>
+      <div style={{margin:'0.25rem'}}>
+        <FormLabel component="legend">Description</FormLabel>
+        <TextField
+          value={item.description}
+          onChange={(e) => {editor.onChangeValue(item.id,'description', e.target.value)}}
+        />
       </div>
     </div>
   );
@@ -101,29 +102,6 @@ export function QuestionEditorForm({
   const nav = editorState.nav;
 
   const renderIcon = () => {
-    // if (question.type === QuestionTextMap.type) {
-    //   return (<TextFieldsIcon/>);
-    // } else if (question.type === QuestionNumberMap.type) {
-    //   if (question.layout.style === QuestionNumberMap.layout.style.range) {
-    //     return (<LinearScaleRoundedIcon/>);
-    //   }
-    //   return (<PinIcon/>);
-    // } else if (question.type === QuestionSelectMap.type) {
-    //   if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
-    //     return (<ArrowDropDownCircleOutlinedIcon/>);
-    //   }
-    //   return (<RadioButtonCheckedIcon/>);
-    // } else if (question.type === QuestionCheckMap.type) {
-    //   return (<CheckBoxIcon/>);
-    // } else if (question.type === QuestionDateMap.type) {
-    //   return (<CalendarMonthIcon/>);
-    // } else if (question.type === GroupMap.type) {
-    //   if (question.layout.style === GroupMap.layout.style.table) {
-    //     if (question.items[0].type === QuestionSelectMap.type) {
-    //       return (<TocRoundedIcon/>)
-    //     }
-    //   }
-    // }
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
   }
 
@@ -147,6 +125,14 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionDate) {
       return (
         <QuestionDateEditorForm
+          editorState={editorState}
+          question={question}
+          questionState={questionState}
+        />
+      );
+    } else if (question instanceof QuestionCheck) {
+      return (
+        <QuestionCheckEditorForm
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -187,7 +173,7 @@ export function QuestionEditorForm({
   const renderNormal = () => {
     return (
       <Stack>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} style={{minHeight:'36px',minWidth:'376px'}}>
           <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
         </Stack>
         <div>
