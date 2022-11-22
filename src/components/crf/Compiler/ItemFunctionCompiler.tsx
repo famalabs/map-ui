@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, FormLabel, Typography } from '@mui/material';
-import { AdapterUseFormStateSurvey, ItemFunction } from '@src/core/schema';
+import { AdapterUseFormStateSurvey, ItemFunction } from '../../../core/schema';
 
 
 export interface ItemFunctionProps<T> {

@@ -3,7 +3,7 @@ import { Paper, Typography } from '@mui/material';
 import { QuestionForm } from './QuestionCompiler';
 import { GroupForm } from './GroupCompiler';
 import { ItemFunctionForm } from './ItemFunctionCompiler';
-import { ItemFunction, Question, SurveyItem } from '@src/core/schema';
+import { ItemFunction, Question, SurveyItem } from '../../../core/schema';
 
 export interface PageProps {
     item: SurveyItem;

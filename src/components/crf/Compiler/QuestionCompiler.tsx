@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, FormLabel, Typography } from '@mui/material';
-import { ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText } from '@src/core/schema';
-import { InputDate, InputNumber, InputRadio, InputString } from '@src/components/forms';
+import { ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText } from '../../../core/schema';
+import { InputDate, InputNumber, InputRadio, InputString } from '../../forms';
 
 
 export interface QuestionProps {

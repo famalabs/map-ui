@@ -1,5 +1,5 @@
 import { Box, Button, Step, StepButton, Stepper, Typography } from '@mui/material';
-import { SurveyItem } from '@src/core/schema';
+import { SurveyItem } from '../../../core/schema';
 import { debug } from 'console';
 import * as React from 'react';
 import { SurveyNav, INavState } from '../Navigation'

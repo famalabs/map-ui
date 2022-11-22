@@ -4,11 +4,11 @@ import { BaseSidebarLayout } from './SidebarCompiler';
 import { Box, CssBaseline, Paper, Typography } from '@mui/material';
 import { useState, useEffect } from "react";
 import { HorizontalStepper } from './StepperCompiler';
-import { NavigationButtons } from './NavigationCompiler';
+import { NavigationButtons } from './NavigationButtonsCompiler';
 import { PageForm } from './PageCompiler';
 import { SurveyNav, useNavState } from '../Navigation';
-import { Survey, SurveyMap } from '@src/core/schema';
-import { useFormState } from '@src/components/forms';
+import { Survey, SurveyMap } from '../../../core/schema';
+import { useFormState } from '../../forms';
 
 export interface SurveyFormProps {
     survey: Survey;

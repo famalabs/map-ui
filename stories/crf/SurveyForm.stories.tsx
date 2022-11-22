@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SurveyForm, SurveyFormProps } from '../../src/components/crf/Compiler/SurveyForm';
+import { SurveyForm, SurveyFormProps } from '../../src/components/crf/Compiler/';
 import {Survey} from '../../src/core/schema'
 import surveyFormExmple from './SurveyFormExample.json'
 

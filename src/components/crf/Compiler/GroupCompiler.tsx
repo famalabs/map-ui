@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Paper, Typography } from '@mui/material';
-import {Question, QuestionCheck, Survey, SurveyItem} from '@src/core/schema'
+import {Question, QuestionCheck, Survey, SurveyItem} from '../../../core/schema'
 import { QuestionForm } from './QuestionCompiler';
 // import { SurveyItemForm } from './SurveyItem';
 import { PageForm } from './PageCompiler';
