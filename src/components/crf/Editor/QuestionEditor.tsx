@@ -43,18 +43,22 @@ export interface QuestionEditorFormProps {
 export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   return (
     <div>
-      <div style={{margin:'0.25rem'}}>
+      <div style={{margin:'0.25rem', width: '100%'}}>
         <FormControl>
         <FormLabel component="legend">Type</FormLabel>
         <Select
+          fullWidth
+          style={{width: '100%'}}
           value={getQuestionMenuType(item)}
           onChange={(e) => {editor.changeQuestionType(item, e.target.value)}}
         >
             {Object.keys(QuestionMenuTypesMap).map((key, idx) => (
               <MenuItem key={key} value={key}
               >
-                {QuestionMenuTypesMap[key].icon}
-							  <Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+                <div style={{display: 'flex'}}>
+                  {QuestionMenuTypesMap[key].icon}
+                  <Typography mr={2}>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+                </div>
               </MenuItem>
             ))}
         </Select>
