@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {Survey, SurveyMap, fromMapToDefault, SurveyItem, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap, QuestionCheckMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck,GroupMap, QuestionMap, FnMap, ItemFunction} from '../../../core/schema'
 import { useFormState } from '@src/components/forms';
 import { INavState, SurveyNav, useNavState } from '../Navigation';
-import { getQuestionMenuType, QuestionMenuTypesMap } from './PageEditor';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export interface IEditorState {
   getSurvey: () => Survey;
