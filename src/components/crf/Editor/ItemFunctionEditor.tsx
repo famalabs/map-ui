@@ -28,14 +28,13 @@ export function ItemFunctionEditorForm({
     const nav = editorState.nav;
 
     const getParameters = ():string[] => {
-      return question.removeNotValidParams();
+      return question.parameters;
     }
 
     const handleAddParam = (id:string) => {
-      // let params:Array<string> = [];
-      // params.concat(question.parameters)
-      // params.push(id);
+     
       question.parameters.push(id);
+
       editor.onChangeValue(question.id, 'parameters', question.parameters);
     }
     const handleRemoveParam = (id:string) => {
