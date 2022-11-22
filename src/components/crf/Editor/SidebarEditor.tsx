@@ -1,23 +1,17 @@
 import React from 'react';
-import {Survey, SurveyItem, SurveyMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box, Stack, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {SurveyMap} from '../../../core/schema'
+import { Button, Paper, TextField, Typography, FormLabel, Box, Stack, List, ListItem, Divider } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import { OptionsEditorForm, renderSelectOption } from './OptionsEditor';
-import { FolderEditorForm } from './FolderEditor';
+import { renderSelectOption } from './OptionsEditor';
 import PreviewIcon from '@mui/icons-material/Preview';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
-import { INavState } from '../Navigation';
+import { IUseEditorState } from './EditorBuilder';
 
 const MenuStateMap = {
 	folders:'folders',

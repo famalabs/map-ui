@@ -1,10 +1,6 @@
 import React from 'react';
-import {Survey, SurveyMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box, CssBaseline } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { OptionsEditorForm } from './OptionsEditor';
+import {Survey} from '../../../core/schema'
+import { Box, CssBaseline } from '@mui/material';
 import { FolderEditorForm } from './FolderEditor';
 import { SidebarEditorForm } from './SidebarEditor';
 import { useEditorState } from './EditorBuilder';

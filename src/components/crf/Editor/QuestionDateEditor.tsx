@@ -20,10 +20,6 @@ export function QuestionDateEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderIcon = () => {
-    return (<PinIcon/>);
-  }
-
   const renderNormal = () => {
     return (
       <div>

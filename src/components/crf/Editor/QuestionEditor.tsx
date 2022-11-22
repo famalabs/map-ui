@@ -1,37 +1,24 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem, FnMap, ItemFunction} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Box, Tabs, Tab, Checkbox, Divider } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {GroupMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionCheck, SurveyItem, ItemFunction } from '../../../core/schema'
+import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import TocIcon from '@mui/icons-material/Toc';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
-import { OptionsEditorForm } from './OptionsEditor';
-import { QuestionMap, QuestionTextMap } from '../../../core/schema';
-import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
-import { TabList } from '@mui/lab';
-import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
 import { ItemFunctionEditorForm } from './ItemFunctionEditor';
 import { QuestionCheckEditorForm } from './QuestionCheckEditor';
+import { QuestionStateMap } from './PageEditor';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export interface QuestionEditorFormProps {
   editorState: IUseEditorState;

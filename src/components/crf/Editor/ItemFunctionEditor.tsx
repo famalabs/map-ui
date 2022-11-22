@@ -1,14 +1,12 @@
 import React from 'react';
-import {FnMap, ItemFunction, SurveyItem} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import {FnMap, getQuestionMenuType, ItemFunction, QuestionMenuTypesMap, SurveyItem} from '../../../core/schema'
+import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { QuestionTextMap } from '../../../core/schema';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
-import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface ItemFunctionEditorFormProps {
   editorState: IUseEditorState;
@@ -22,7 +20,6 @@ export function ItemFunctionEditorForm({
   questionState,
   }: ItemFunctionEditorFormProps) {
 
-  console.log('pre render function', questionState);
   if (question instanceof ItemFunction) {
     const editor = editorState.editor;
     const nav = editorState.nav;

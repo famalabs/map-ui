@@ -1,8 +1,6 @@
 import React from 'react';
 import {QuestionNumber, QuestionNumberMap} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Slider, FormControl, Select, MenuItem, InputAdornment } from '@mui/material';
-import PinIcon from '@mui/icons-material/Pin';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
+import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
