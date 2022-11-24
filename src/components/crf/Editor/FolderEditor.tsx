@@ -122,14 +122,14 @@ export function FolderEditorForm({
 	return (
 		<Box 
 		// style={{margin:'0px 24px',width:'100%',minWidth:'614px'}}
-		style={{width:'100%',minWidth:'614px'}}
+		style={{width:'100%'}}
 		>
 
 		
 		{/* PAGE NAVIGATION */}
 		<Paper style={{marginBottom:'24px',padding:'24px',width:'100%'}}>
 			<Stack spacing={2}>
-				<Stack direction="row" spacing={1} style={{justifyContent:'center', flexWrap: 'nowrap'}}>
+				<Stack direction="row" spacing={1} style={{justifyContent:'center', flexWrap: 'wrap'}}>
 					{pages.map((page,idx) => {
 						return(
 							<Button key={page.id} 

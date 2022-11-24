@@ -1,74 +1,46 @@
 import React from 'react';
-import { Paper, Typography } from '@mui/material';
-import { QuestionForm } from './QuestionCompiler';
-import { GroupForm } from './GroupCompiler';
-import { ItemFunctionForm } from './ItemFunctionCompiler';
-import { ItemFunction, Question, SurveyItem } from '../../../core/schema';
+import { Paper, Stack, Typography } from '@mui/material';
+import { QuestionCompilerForm } from './QuestionCompiler';
+import { GroupMap } from '../../../core/schema';
+import { IUseFormCompiler } from './FormCompiler';
 
-export interface PageProps {
-    item: SurveyItem;
-    value: any;
-    setValue: any;
-    validators: any;
-    requires: any;
-    showError: boolean;
-    // onSubmit: (answers: any, allValid: boolean) => void;
+export interface PageCompilerFormProps {
+  formCompiler:IUseFormCompiler;
 }
 
-export function PageForm({
-    item,
-    value,
-    setValue,
-    validators,
-    requires,
-    showError,
-    // onSubmit,
-}: PageProps) {
-
-    return (
-        <Paper style={{margin:'24px',padding:'24px'}}>
-            <Typography variant={'h4'}>{item.text}</Typography>
-            <Typography>{item.description}</Typography>
-            {item.items.map((itm) => (
-                <div key={itm.id}>
-                    {itm instanceof Question ? (
-                        <QuestionForm 
-                            item={itm}
-                            value={value}
-                            setValue={setValue}
-                            validators={validators}
-                            requires={requires}
-                            showError={showError}
-                        />
-                    ) : itm instanceof ItemFunction ? (
-                        <ItemFunctionForm 
-                            item={itm}
-                            value={value}
-                            setValue={setValue}
-                            validators={validators}
-                            requires={requires}
-                            showError={showError}
-                        />
-                    ) : itm.type === 'Group' ? (
-                        <GroupForm 
-                            item={itm}
-                            value={value[itm.id]}
-                            setValue={setValue[itm.id]}
-                            validators={validators[itm.id]}
-                            requires={requires[itm.id]}
-                            showError={showError} 
-                        />
-                    ) : null}
-                    {/* <SurveyItemForm 
-                        item={itm}
-                        value={value}
-                        setValue={setValue}
-                        validators={validators}
-                        requires={requires}
-                        showError={showError}
-                    /> */}
-                </div>
-            ))}
-        </Paper>
-    );
+export function PageCompilerForm ({
+  formCompiler,
+}:PageCompilerFormProps) {
+	const form = formCompiler.form;
+	const nav = formCompiler.nav;
+	const page = nav.getPage();
+	return (
+		<div>
+			<Stack spacing={2}>
+			<Typography variant='h3'>{page.text}</Typography>
+			{page.items.map((question) => {
+				// console.log('before render qs', question.id, questionState, questionState[question.id]);
+				if (page.layout.style === GroupMap.layout.style.card)  
+				{
+					return (
+					<QuestionCompilerForm
+					key={question.id}
+					item={question}
+					formCompiler={formCompiler}
+					/>
+					);
+				}
+				return(
+					<Paper style={{padding:24}}>
+						<QuestionCompilerForm
+						key={question.id}
+						item={question}
+						formCompiler={formCompiler}
+						/>
+					</Paper>
+				);
+			})}
+			</Stack>
+		</div>
+	);
 }

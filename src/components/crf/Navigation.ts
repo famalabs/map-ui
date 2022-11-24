@@ -1,5 +1,5 @@
-import { GroupMap, Question, SurveyItem, SurveyMap } from '../../core/schema';
 import React from 'react'
+import { GroupMap, Question, SurveyItem, SurveyMap } from '../../core/schema';
 
 
 export class NavState {
@@ -101,6 +101,7 @@ export interface INavState {
     getItemIdx: (id:string) => number;
     findItemById: (id:string) => SurveyItem;
     getItemType: (id:string) => string;
+    getIdsToId: (id:string) => string[];
 }
 
 export class SurveyNav implements INavState {
@@ -178,7 +179,14 @@ export class SurveyNav implements INavState {
     }
 
     public findItemById(id:string):SurveyItem {
-        // if (id === this.root.id) { return this.root; }
+
+				// let stack:SurveyItem[] = this.getFolders()
+				// while (stack.length !== 0) {
+				// 	const item = stack.pop()
+				// 	if (item.id === id) { return item; }
+				// 	stack = stack.concat(item.items);
+				// }
+
         for (let f = 0; f < this.getFolders().length; f++) {
             const folder = this.getFolders()[f];
             if (folder.id === id) { return folder; }
@@ -207,6 +215,17 @@ export class SurveyNav implements INavState {
         }
         throw Error('this item is not a nav type');
     }
+
+    public getIdsToId (id: string):string[] {
+			let item = this.findItemById(id).parent;
+			if (typeof item === 'undefined') { return []; }
+			const ids = []
+			while (typeof item.parent !== 'undefined' && item.parent !== null) {
+				ids.push(item.id);
+				item = item.parent;
+			}
+			return ids.reverse();
+		}
 
     public getValue(): any {
         return {
@@ -271,6 +290,7 @@ export function useNavState(root: SurveyItem): INavState {
         getItemIdx: (id:string) => new SurveyNav(value).getItemIdx(id),
         findItemById: (id:string) => new SurveyNav(value).findItemById(id),
         getItemType: (id:string) => new SurveyNav(value).getItemType(id),
+				getIdsToId: (id:string) => new SurveyNav(value).getIdsToId(id),
 
     } as INavState;
 }

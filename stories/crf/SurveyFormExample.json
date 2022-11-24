@@ -71,7 +71,7 @@
                         }
                     ],
                     "layout": {
-                        "style": "card",
+                        "style": "page",
                         "index": "numeric"
                     }
                 },

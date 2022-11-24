@@ -433,9 +433,9 @@ export interface IUseEditorState {
     nav: INavState;
 }
 
-export function useEditorState(): IUseEditorState {
+export function useEditorState(initSurvey:any): IUseEditorState {
 
-    const initValue = {
+    const initValue = initSurvey ?? {
         id: "1",
         type: "Survey",
         text: "Survey 1",

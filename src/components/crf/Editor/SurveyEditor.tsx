@@ -7,35 +7,29 @@ import { useEditorState } from './EditorBuilder';
 
 export interface SurveyEditorProps {
     saveSurvey: (survey: Survey) => void;
-    // initSurvey?: Survey;
-    // addQuestionLabel?: string;
-    // saveSurveyLabel?: string;
+    initSurvey: any;
 }
 
 export function SurveyEditorForm({
     saveSurvey,
-    // initSurvey = emptyObj,
-    // addQuestionLabel = 'Add question',
-    // saveSurveyLabel = 'Save survey',
+    initSurvey,
     }: SurveyEditorProps) {
-    // const [questions, setQuestions] = React.useState<Question[]>(Object.values(initSurvey));
-
-    // const [schema, setSchema] = React.useState(Object.values())
-    const editorState = useEditorState();
-    console.log('render survey', editorState.editor.getRoot());
+        
+    const editorState = useEditorState(initSurvey);
+    // console.log('render survey', editorState.editor.getRoot());
     return (
         <Box 
-        // sx={{ display: 'flex', width:'100%' }}
+        // sx={{ display: 'flex', width:'100%', m:0, justifyContent: 'flex-end' }}
         sx={{ width:'100%' }}
         >
-            <CssBaseline />
+            {/* <CssBaseline /> */}
             <SidebarEditorForm
                 editorState={editorState}
             />
             <Box
                 component="main"
-                // sx={{ flexGrow: 1, justifySelf: 'stretch', width: { sm: `calc(100% - ${320}px)` } }}
-                style={{position:'absolute',left:320+64,top:0,right:0, padding:'0px 24px'}}
+                // sx={{ flexGrow: 1, p:'0px 24px',ml:`${320+64}px`,mt:0,mr:0, minWidth:`calc(100% - ${320+64}px)`, maxWidth:`calc(100% - ${320+64}px)`}}
+                style={{position:'absolute',left:320+64,top:0,right:0, padding:24}}
             >
                 <FolderEditorForm
                     editorState={editorState}

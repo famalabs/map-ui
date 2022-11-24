@@ -2,39 +2,29 @@ import { Box, Button, Step, StepButton, StepLabel, Stepper, Typography } from '@
 import { SurveyItem } from '../../../core/schema';
 import React from 'react';
 import { INavState, SurveyNav } from '../Navigation';
+import { IUseFormCompiler } from './FormCompiler';
 
 export interface HorizontalStepperProps {
-    root: SurveyItem;
-    surveyNav: INavState;
-    // folder:[string, number];
-    // handleSetFolder:any;
-    // page:[string, number];
-    // handleSetPage:any;
-    valid:any;
-    // visited: any;
+    formCompiler:IUseFormCompiler;
 }
 
 export function HorizontalStepper({
-    root,
-    surveyNav,
-    // folder,
-    // handleSetFolder,
-    // page,
-    // handleSetPage,
-    valid,
-    // visited
+    formCompiler,
 }: HorizontalStepperProps) {
     // const pages = root.items[folder[1]].items;
+    const form = formCompiler.form;
+    const nav = formCompiler.nav;
+
     const isStepFailed = (pg: SurveyItem, idx: number) => {
-        return valid.children[surveyNav.getFolderId()].children[pg.id].allValid ? false : (idx < surveyNav.getPageIdx());
+        return form.getValid(pg.id) ? false : (idx < nav.getPageIdx());
     };
     return (
         <Box sx={{ width: '100%' }}>
         <Stepper alternativeLabel nonLinear 
             // activeStep={page[1]}
-            activeStep={surveyNav.getPageIdx()}
+            activeStep={nav.getPageIdx()}
         >
-            {surveyNav.getPages().map((pg, idx) => {
+            {nav.getPages().map((pg, idx) => {
             const labelProps: {
                 optional?: React.ReactNode;
                 error?: boolean;
@@ -43,9 +33,8 @@ export function HorizontalStepper({
                 labelProps.optional = (<Typography variant="caption" color="error"></Typography>);
                 labelProps.error = true;
             }
-            return (<Step key={pg.id} completed={valid.children[surveyNav.getFolderId()].children[pg.id].allValid}>
-            {/* <StepButton color="inherit" onClick={(e) => {handleSetPage([itm.id,idx]);}}> */}
-                <StepButton color="inherit" onClick={(e) => {surveyNav.setPage(pg)}}>
+            return (<Step key={pg.id} completed={form.getValid(pg.id)}>
+                <StepButton color="inherit" onClick={(e) => {nav.setPage(pg)}}>
                     <StepLabel {...labelProps}>{pg.text}</StepLabel>
                 </StepButton>
             </Step>)

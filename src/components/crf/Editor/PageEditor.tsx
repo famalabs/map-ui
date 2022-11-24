@@ -73,20 +73,30 @@ export function PageEditorForm({
 	const handleSetQuestionState = (id:string, state:string) => {
 		if (id === null && state === null) {
 			setQuestionState(createQuestionState(nav));
+			return;
 		}
-		let curInEdit = getInEditQuestion(questionState);
-		let qs = createQuestionState(nav);
+		let curInEdit = getInEditQuestion(questionState); // (id,state)
+		let qs = createQuestionState(nav); // empty qs
+		// cur in edit not in items
 		if (!Object.keys(qs).includes(curInEdit[0])) {
 			curInEdit = [null,null];
 		}
-		// if (!Object.keys(qs).includes(id)) {
-		// 	return
-		// }
+		// if next state is edit
 		if (isEditState(state)) {
+			// has cur in edit
 			if (curInEdit[0] !== null) {
-				editor.cancelChanges();
+				// cur in edit is next
+				if (curInEdit[0] === id) {
+
+				} else {
+					editor.cancelChanges();
+					return;
+				}
 			}
-		} else {
+		} 
+		// if next state not is edit
+		else {
+			// if cur in edit
 			if (curInEdit[0] !== null) {
 				qs[curInEdit[0]] = curInEdit[1];
 			}

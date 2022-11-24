@@ -54,9 +54,12 @@ export function ItemFunctionEditorForm({
             <FormLabel component="legend">{question.description}</FormLabel>
             <Typography>Function Name: {question.fnCompute.fnName}</Typography>
             <Typography>Function Params:
-              {getParameters().map((val,idx) => {
-                return nav.findItemById(val).text;
-              })}
+              {getParameters().length > 0 ? getParameters().map((id,idx) => {
+              const item = nav.findItemById(id);  
+              return (
+                  <Chip disabled key={id} label={item.text}/>
+                );
+              }) : (<Typography>No Parameters</Typography>)}
             </Typography>
           </Stack>
         </Stack>
@@ -136,11 +139,13 @@ export function ItemFunctionEditorForm({
             </Select>
             </FormControl>
             <div>
-            {renderChipParams()}
-            <Button variant="outlined" color="secondary"
-            onClick={(e) => {setModalParams(true)}}>
-            <AddCircleIcon />
-            </Button>
+              <Stack direction={'row'} spacing={2} style={{	flexWrap: 'wrap'}}>
+                {renderChipParams()}
+                <Button variant="outlined" color="secondary"
+                onClick={(e) => {setModalParams(true)}}>
+                <AddCircleIcon />
+                </Button>
+              </Stack>
             <Modal
             open={modalPrams}
             onClose={(e) => setModalParams(false)}
@@ -153,8 +158,8 @@ export function ItemFunctionEditorForm({
                 width: 320,
                 p: '24px',
               }}>
-              <Stack spacing={1}>
-                {renderChipParams()}
+              <Stack spacing={2}>
+                <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>{renderChipParams()}</Stack>
                 <Divider variant='middle'>Add Parameter</Divider>
                 {renderAddParams()}
               </Stack>

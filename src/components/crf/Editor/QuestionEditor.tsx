@@ -226,6 +226,23 @@ export function QuestionEditorForm({
     );
   }
 
+  const renderSaveOrCancel = () => {
+    return (
+      <Box sx={{mt: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
+        <Stack direction='row' spacing={1}>
+        <Button variant="outlined" color="secondary"
+          onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
+          <CancelIcon/>
+          </Button>
+          <Button variant="contained" color="primary"
+          onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
+          <CheckCircleIcon/>
+          </Button>
+        </Stack>
+      </Box>
+    );
+  }
+
   //TODO: usare un unico template per le 3 tab
   const renderEdit = () => {
     return (
@@ -234,19 +251,7 @@ export function QuestionEditorForm({
         <Box>
         {renderQuestion()}
         </Box>
-
-        <Box sx={{mt: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
-          <Stack direction='row' spacing={1}>
-          <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
-            <CancelIcon/>
-            </Button>
-            <Button variant="contained" color="primary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
-            <CheckCircleIcon/>
-            </Button>
-          </Stack>
-        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
@@ -257,19 +262,7 @@ export function QuestionEditorForm({
         <Box>
         {renderQuestion()}
         </Box>
-
-        <Box sx={{mt: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
-          <Stack direction='row' spacing={1}>
-          <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
-            <CancelIcon/>
-            </Button>
-            <Button variant="contained" color="primary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
-            <CheckCircleIcon/>
-            </Button>
-          </Stack>
-        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
@@ -280,19 +273,7 @@ export function QuestionEditorForm({
         <Box>
         {renderQuestion()}
         </Box>
-
-        <Box sx={{mt: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
-          <Stack direction='row' spacing={1}>
-          <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
-            <CancelIcon/>
-            </Button>
-            <Button variant="contained" color="primary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
-            <CheckCircleIcon/>
-            </Button>
-          </Stack>
-        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
