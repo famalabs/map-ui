@@ -168,7 +168,11 @@ export const QuestionNumberMap = {
             none:"none",
             kg:"kg",
             g:"g",
+            m:"m",
+            cm:"cm",
+            mm:"mm",
             l:"l",
+            cl:"cl",
             ml:"ml",
             dollar:"$",
             euro:"€"

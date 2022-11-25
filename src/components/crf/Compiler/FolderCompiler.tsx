@@ -1,4 +1,4 @@
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { GroupMap } from "../../../core/schema";
 import React from "react";
 import { IUseFormCompiler } from "./FormCompiler";
@@ -16,23 +16,25 @@ export function FolderCompilerForm ({
   const page = nav.getPage();
   return (
     <Box
-    style={{width:'100%'}}
+    style={{width:'100%',margin:'24px 0px'}}
     >
     {page.layout.style === GroupMap.layout.style.card ? 
 			(
-				<Paper style={{padding:'24px',margin:'24px 0px',width:'100%'}}>
+				<Paper style={{width:'100%',padding:'24px'}}>
 					<PageCompilerForm
           formCompiler={formCompiler}
           />
 				</Paper>
 			):(
-				<Box style={{padding:'24px',margin:'24px 0px',width:'100%'}}>
+				<Box style={{width:'100%',padding:'24px'}}>
 					<PageCompilerForm
           formCompiler={formCompiler}
           />
 				</Box>
 			)
 		}
+    <Typography>{JSON.stringify(form.getValidObj(nav.getPageId()), null, 2)}</Typography>
+    <Typography>{JSON.stringify(form.getValue(nav.getPageId()), null, 2)}</Typography>
     </Box>
   );
 }

@@ -1,23 +1,17 @@
 import React from 'react';
-import {Survey, GroupMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Divider, Box, Modal } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {GroupMap} from '../../../core/schema'
+import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import FolderIcon from '@mui/icons-material/Folder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { PageEditorForm } from './PageEditor';
-import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import { IUseEditorState } from './EditorBuilder';
 import { renderSelectOption } from './OptionsEditor';
 
 const PageStateMap = {
@@ -213,7 +207,9 @@ export function FolderEditorForm({
 				<Button 
 				variant={"contained"} 
 				color="secondary" 
-				onClick={(e) => {console.log(JSON.stringify(editor.getRoot().getSchema()))}} 
+				onClick={(e) => {
+					console.log(JSON.stringify(editor.getRoot().getSchema()));
+				}} 
 				>
 					Print JSON
 				</Button>

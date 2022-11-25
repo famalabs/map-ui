@@ -86,7 +86,7 @@ export function QuestionNumberEditorForm({
         <TextField
           type={'number'}
           value={question.options.minValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.minValue', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.minValue', Number(e.target.value))}}
         />
       </div>
       <div>
@@ -94,7 +94,7 @@ export function QuestionNumberEditorForm({
         <TextField
           type={'number'}
           value={question.options.maxValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.maxValue', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.maxValue', Number(e.target.value))}}
         />
       </div>
       <div>
@@ -102,7 +102,7 @@ export function QuestionNumberEditorForm({
         <TextField
           type={'number'}
           value={question.options.step}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.step', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.step', Number(e.target.value))}}
         />
       </div>
       </Stack>

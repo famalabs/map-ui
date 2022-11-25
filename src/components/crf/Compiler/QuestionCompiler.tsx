@@ -3,6 +3,9 @@ import { Button, FormLabel, Typography } from '@mui/material';
 import { GroupMap, ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionText, SurveyItem } from '../../../core/schema';
 import { InputDate, InputNumber, InputRadio, InputString } from '../../forms';
 import { IUseFormCompiler } from './FormCompiler';
+import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
+import { QuestionSelectCompilerForm } from './QuestionSelectCompiler';
+import { QuestionTextCompilerForm } from './QuestionTextCompiler';
 
 export interface QuestionCompilerFormProps {
 	item: SurveyItem;
@@ -18,17 +21,21 @@ export function QuestionCompilerForm({
 
 	if (item instanceof QuestionText) {
 		return (
-			<InputString
-			nameid={item.id}
-			title={item.text}
-			label={item.description ?? item.text}
-			value={form.getValue(item.id)}
-			setValue={(text) => form.setValue(item.id)(text)}
-			required={form.getRequired(item.id)}
-			// required={item.options.required}
-			// emptyMessage={'empty message'}
-			showError={form.getShowError(item.id)}
+			<QuestionTextCompilerForm
+			formCompiler={formCompiler}
+			question={item}
 			/>
+			// <InputString
+			// nameid={item.id}
+			// title={item.text}
+			// label={item.description ?? item.text}
+			// value={form.getValue(item.id)}
+			// setValue={(text) => form.getSetValue(item.id)(text)}
+			// required={form.getRequired(item.id)}
+			// // required={item.options.required}
+			// // emptyMessage={'empty message'}
+			// showError={form.getShowError(item.id)}
+			// />
 		);
 	} else if (item instanceof QuestionDate) {
 		return (
@@ -37,7 +44,7 @@ export function QuestionCompilerForm({
 				title={item.text}
 				label={item.description ?? item.text}
 				value={form.getValue(item.id)}
-				setValue={(text) => form.setValue(item.id)(text)}
+				setValue={(text) => form.getSetValue(item.id)(text)}
 				required={form.getRequired(item.id)}
 				// required={item.options.required}
 				// emptyMessage={'empty message'}
@@ -45,37 +52,47 @@ export function QuestionCompilerForm({
 			/>
 		);
 	} else if (item instanceof QuestionNumber) {
-		if (item.layout.style === QuestionNumberMap.layout.style.default) {
-			return null;
-		}
 		return (
-			<InputNumber
-			nameid={item.id}
-			title={item.text}
-			label={item.description ?? item.text}
-			value={form.getValue(item.id)}
-			setValue={(number) => form.setValue(item.id)(number)}
-			required={form.getRequired(item.id)}
-			// required={item.options.required}
-			// emptyMessage={'empty message'}
-			showError={form.getShowError(item.id)}
+			<QuestionNumberCompilerForm
+			formCompiler={formCompiler}
+			question={item}
 			/>
 		);
+		// if (item.layout.style === QuestionNumberMap.layout.style.default) {
+		// 	return null;
+		// }
+		// return (
+		// 	<InputNumber
+		// 	nameid={item.id}
+		// 	title={item.text}
+		// 	label={item.description ?? item.text}
+		// 	value={form.getValue(item.id)}
+		// 	setValue={(number) => form.setValue(item.id)(number)}
+		// 	required={form.getRequired(item.id)}
+		// 	// required={item.options.required}
+		// 	// emptyMessage={'empty message'}
+		// 	showError={form.getShowError(item.id)}
+		// 	/>
+		// );
 	} else if (item instanceof QuestionCheck) {
 		return null;
 	} else if (item instanceof QuestionSelect) {
 		return (
-			<InputRadio
-				nameid={item.id}
-				title={item.text}
-				value={form.getValue(item.id)}
-				options={item.textScoreToOption() as any}
-				setValue={(radio) => form.setValue(item.id)(radio)}
-				required={form.getRequired(item.id)}
-				// required={item.options.required}
-				// emptyMessage={'empty message'}
-				showError={form.getShowError(item.id)}
+			<QuestionSelectCompilerForm
+			formCompiler={formCompiler}
+			question={item}
 			/>
+			// <InputRadio
+			// 	nameid={item.id}
+			// 	title={item.text}
+			// 	value={form.getValue(item.id)}
+			// 	options={item.textScoreToOption() as any}
+			// 	setValue={(radio) => form.getSetValue(item.id)(radio)}
+			// 	required={form.getRequired(item.id)}
+			// 	// required={item.options.required}
+			// 	// emptyMessage={'empty message'}
+			// 	showError={form.getShowError(item.id)}
+			// />
 		);
 	} else if (item instanceof ItemFunction) {
 		return null;
