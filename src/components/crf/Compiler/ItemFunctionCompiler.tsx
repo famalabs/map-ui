@@ -1,29 +1,27 @@
 import React from 'react';
 import { Button, FormLabel, Typography } from '@mui/material';
-import { AdapterUseFormStateSurvey, ItemFunction } from '../../../core/schema';
+import { AdapterUseFormStateSurvey, ItemFunction, SurveyItem } from '../../../core/schema';
+import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 
-export interface ItemFunctionProps<T> {
-    item: ItemFunction<T>;
-    value: any;
-    setValue: any;
-    validators: any;
-    requires: any;
-    showError: boolean;
+export interface ItemFunctionCompilerProps {
+    formCompiler: IUseFormCompiler;
+    item: SurveyItem;
 }
 
-export function ItemFunctionForm<T>({
+export function ItemFunctionCompilerForm({
+    formCompiler,
     item,
-    value,
-    setValue,
-    validators,
-    requires,
-    showError,
-}: ItemFunctionProps<T>) {
+}: ItemFunctionCompilerProps) {
+    const form = formCompiler.form;
+    const nav = formCompiler.nav;
+  
+    const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(item, formCompiler);
+  
     if (item instanceof ItemFunction) {
-        const computeValue = (res) => setValue[item.id](res);
+        const computeValue = (res) => form.getSetValue(item.id)(res);
         const computeFnValue = () => {
-            AdapterUseFormStateSurvey.setValuesFromUseFormState(item.parent, value);
+            // AdapterUseFormStateSurvey.setValuesFromUseFormState(item.parent, value);
             console.log(item.toUseFormState());
             if (item.hasValidParams()) computeValue(item.compute());
         };
@@ -33,7 +31,7 @@ export function ItemFunctionForm<T>({
                 <Button color="inherit" onClick={(e) => {computeFnValue();}}>
                     Calcola {item.text}
                 </Button>
-                <Typography>{value[item.id].toString()}</Typography>
+                <Typography>{value.toString()}</Typography>
             </div>
         );
     } 

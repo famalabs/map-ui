@@ -127,7 +127,7 @@ export function useQuestionHandler(item:SurveyItem, formCompiler:IUseFormCompile
   }, [showError]);
   const validate = React.useCallback(
     (input: any): boolean => {
-      if (required && input == null) {
+      if (required && (input == null || input == '')) {
         setError(emptyMessage);
         return false;
       }
@@ -146,7 +146,7 @@ export function useQuestionHandler(item:SurveyItem, formCompiler:IUseFormCompile
     if (setValid) setValid(validate(value));
     else validate(value);
   }, [value, validate, setValid]);
-  const handleOnBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => {
+  const handleOnBlur = (e: any) => {
     setShowErr(true);
     if (onBlur) onBlur(e);
   }

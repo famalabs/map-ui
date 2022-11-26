@@ -33,6 +33,7 @@ export function QuestionSelectCompilerForm({
           name={question.id}
           value={value ?? ''}
           onChange={(e,v) => handleOnChange(v)}
+          onBlur={handleOnBlur}
         >
           {selects.length > 0 ? selects.map((opt, idx) => (
             <FormControlLabel key={idx} value={opt.text} 
@@ -44,6 +45,7 @@ export function QuestionSelectCompilerForm({
           value={value ?? ''}
           onChange={(e,v) => handleOnChange(e.target.value)}
           required={required}
+          onBlur={handleOnBlur}
         >
             {selects.length > 0 ? selects.map((opt, idx1) => (
               <MenuItem key={opt.text} value={opt.text}>{opt.text}</MenuItem>

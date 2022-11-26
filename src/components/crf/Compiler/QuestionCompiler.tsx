@@ -6,6 +6,9 @@ import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
 import { QuestionSelectCompilerForm } from './QuestionSelectCompiler';
 import { QuestionTextCompilerForm } from './QuestionTextCompiler';
+import { ItemFunctionCompilerForm } from './ItemFunctionCompiler';
+import { QuestionCheckCompilerForm } from './QuestionCheckCompiler';
+import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 
 export interface QuestionCompilerFormProps {
 	item: SurveyItem;
@@ -75,7 +78,12 @@ export function QuestionCompilerForm({
 		// 	/>
 		// );
 	} else if (item instanceof QuestionCheck) {
-		return null;
+		return (
+			<QuestionCheckCompilerForm
+			formCompiler={formCompiler}
+			question={item}
+			/>
+			);
 	} else if (item instanceof QuestionSelect) {
 		return (
 			<QuestionSelectCompilerForm
@@ -95,11 +103,21 @@ export function QuestionCompilerForm({
 			// />
 		);
 	} else if (item instanceof ItemFunction) {
-		return null;
+		return (
+			<ItemFunctionCompilerForm
+			formCompiler={formCompiler}
+			item={item}
+			/>
+		);
 	} else if (item.type === GroupMap.type) {
 		if (item.layout.style === GroupMap.layout.style.table) {
 			if (item.items[0].type === QuestionSelectMap.type) {
-				return null;
+				return (
+					<QuestionTableCompilerForm
+					formCompiler={formCompiler}
+					question={item}
+					/>
+				);
 			}
 		}
 	}
