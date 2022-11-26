@@ -1,6 +1,6 @@
 import React from 'react';
 import {QuestionSelect, SurveyItem} from '../../../core/schema'
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography } from '@mui/material';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, FormLabel, RadioGroup, FormControl } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionTableCompilerFormProps {
@@ -15,16 +15,16 @@ export function QuestionTableCompilerForm({
   const form = formCompiler.form;
   const nav = formCompiler.nav;
 
-  const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
-
   const selects = question.items as QuestionSelect[];
   const select = question.items[0] as QuestionSelect;
   const options = select.selectOptions;
 
   return (
     <TableContainer>
-      <Typography>{question.text}</Typography>
-      <Typography>{question.description}</Typography>
+      {/* <Typography>{question.text}</Typography>
+      <Typography>{question.description}</Typography> */}
+      <FormLabel component="legend">{question.text}</FormLabel>
+      <FormLabel component="legend">{question.description}</FormLabel>
       <Table sx={{ width: '100%' }}>
         <TableHead>
           <TableRow>
@@ -37,21 +37,42 @@ export function QuestionTableCompilerForm({
           </TableRow>
         </TableHead>
         <TableBody>
-          {selects.map((sel,idx) => (
-            <TableRow
-              key={idx}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {sel.text}
-              </TableCell>
-              {options.map((opt, idx) => {
-              return (
-                <TableCell align="right"><Radio disabled/></TableCell>
-              );
-            })}
-            </TableRow>
-          ))}
+          {selects.map((sel,idx) => {
+
+            const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(sel, formCompiler);
+            
+            return (
+            // <FormControl>
+            //   <RadioGroup
+            //   value={value}
+            //   onChange={(e,v)=>handleOnChange(v)}
+            //   >
+              <TableRow
+                key={idx}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {sel.text}
+                </TableCell>
+                {options.map((opt, idx) => {
+                return (
+                  <TableCell align="center">
+                    {/* <FormControlLabel value={opt.text} control={<Radio />} /> */}
+                    <Radio
+                      checked={value === opt.text}
+                      value={opt.text}
+                      onChange={(e,v) => {
+                        if (v) { handleOnChange(opt.text) }
+                      }}
+                    />
+                  </TableCell>
+                );
+              })}
+              </TableRow>
+            //   </RadioGroup>
+            // </FormControl>
+            );
+          })}
         </TableBody>
     </Table>
   </TableContainer>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Stack, Typography } from '@mui/material';
+import { Divider, Paper, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
 import { GroupMap } from '../../../core/schema';
 import { IUseFormCompiler } from './FormCompiler';
@@ -16,18 +16,26 @@ export function PageCompilerForm ({
 	const page = nav.getPage();
 	return (
 		<div>
-			<Stack spacing={2}>
+			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 6 : 2}>
 			<Typography variant='h3'>{page.text}</Typography>
-			{page.items.map((question) => {
+			{page.items.map((question,idx) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
-					<QuestionCompilerForm
-					key={question.id}
-					item={question}
-					formCompiler={formCompiler}
-					/>
+						// <Stack spacing={2}>
+						// 	<QuestionCompilerForm
+						// 	key={question.id}
+						// 	item={question}
+						// 	formCompiler={formCompiler}
+						// 	/>
+						// 	{idx+1 !== page.items.length && (<Divider variant="middle"></Divider>)}
+						// </Stack>
+						<QuestionCompilerForm
+							key={question.id}
+							item={question}
+							formCompiler={formCompiler}
+							/>
 					);
 				}
 				return(
