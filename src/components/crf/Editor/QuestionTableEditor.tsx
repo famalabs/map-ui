@@ -13,12 +13,14 @@ import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionTableEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: SurveyItem;
   questionState: string;
 }
 
 export function QuestionTableEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -34,7 +36,7 @@ export function QuestionTableEditorForm({
 
     return (
       <TableContainer>
-        <Typography>{question.text}</Typography>
+        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
         <Typography>{question.description}</Typography>
         <Table sx={{ width: '100%' }}>
           <TableHead>

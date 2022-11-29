@@ -7,12 +7,14 @@ import { QuestionStateMap } from './PageEditor';
 import { renderSelectOption } from './OptionsEditor';
 
 export interface QuestionNumberEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionNumber;
   questionState: string;
 }
 
 export function QuestionNumberEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -26,7 +28,9 @@ export function QuestionNumberEditorForm({
       <Stack spacing={1}>
         {question.layout.style === QuestionNumberMap.layout.style.range ? (
         <Stack spacing={1}>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
             <Typography>{
@@ -45,7 +49,9 @@ export function QuestionNumberEditorForm({
         </Stack>
         ):(
           <Stack spacing={1}>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <TextField
             disabled
@@ -82,7 +88,7 @@ export function QuestionNumberEditorForm({
       <Typography>Number Options</Typography>
       {renderSelectOption(QuestionNumberMap.options.unit, 'Unit', question.options.unit, editor, question.id, 'options.unit')}
       <div>
-        <FormLabel component="legend">minValue</FormLabel>
+        <FormLabel component="legend">Min Value</FormLabel>
         <TextField
           type={'number'}
           value={question.options.minValue}
@@ -90,7 +96,7 @@ export function QuestionNumberEditorForm({
         />
       </div>
       <div>
-        <FormLabel component="legend">maxValue</FormLabel>
+        <FormLabel component="legend">Max Value</FormLabel>
         <TextField
           type={'number'}
           value={question.options.maxValue}
@@ -98,7 +104,7 @@ export function QuestionNumberEditorForm({
         />
       </div>
       <div>
-        <FormLabel component="legend">step</FormLabel>
+        <FormLabel component="legend">Step</FormLabel>
         <TextField
           type={'number'}
           value={question.options.step}

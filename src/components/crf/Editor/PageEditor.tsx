@@ -115,13 +115,14 @@ export function PageEditorForm({
 		<div style={{padding:'24px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
-			{page.items.map((question) => {
+			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
 					<QuestionEditorForm
 					key={question.id}
+					index={index+1}
 					editorState={editorState}
 					question={question as Question}
 					questionState={questionState[question.id]}
@@ -133,6 +134,7 @@ export function PageEditorForm({
 					<Paper>
 						<QuestionEditorForm
 							key={question.id}
+							index={index+1}
 							editorState={editorState}
 							question={question as Question}
 							questionState={questionState[question.id]}

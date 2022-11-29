@@ -1,18 +1,20 @@
 import React from 'react';
 import {QuestionDate, QuestionDateMap} from '../../../core/schema'
-import { TextField, FormLabel } from '@mui/material';
+import { TextField, FormLabel, Typography } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionDateEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionDate;
   questionState: string;
 }
 
 export function QuestionDateEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -24,7 +26,9 @@ export function QuestionDateEditorForm({
     return (
       <div>
         <div>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <TextField
             disabled
