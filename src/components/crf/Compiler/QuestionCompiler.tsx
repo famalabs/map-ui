@@ -11,11 +11,13 @@ import { QuestionCheckCompilerForm } from './QuestionCheckCompiler';
 import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 
 export interface QuestionCompilerFormProps {
+	index?: number;
 	item: SurveyItem;
 	formCompiler: IUseFormCompiler;
 }
 
 export function QuestionCompilerForm({
+	index,
 	item,
 	formCompiler,
 }: QuestionCompilerFormProps) {
@@ -25,6 +27,7 @@ export function QuestionCompilerForm({
 	if (item instanceof QuestionText) {
 		return (
 			<QuestionTextCompilerForm
+			index={index}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -57,6 +60,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionNumber) {
 		return (
 			<QuestionNumberCompilerForm
+			index={index}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -87,6 +91,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionSelect) {
 		return (
 			<QuestionSelectCompilerForm
+			index={index}
 			formCompiler={formCompiler}
 			question={item}
 			/>

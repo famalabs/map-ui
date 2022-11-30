@@ -18,7 +18,7 @@ export function PageCompilerForm ({
 		<div>
 			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 6 : 2}>
 			<Typography variant='h3'>{page.text}</Typography>
-			{page.items.map((question,idx) => {
+			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
@@ -33,6 +33,7 @@ export function PageCompilerForm ({
 						// </Stack>
 						<QuestionCompilerForm
 							key={question.id}
+							index={index+1}
 							item={question}
 							formCompiler={formCompiler}
 							/>
@@ -42,6 +43,7 @@ export function PageCompilerForm ({
 					<Paper style={{padding:24}}>
 						<QuestionCompilerForm
 						key={question.id}
+						index={index+1}
 						item={question}
 						formCompiler={formCompiler}
 						/>

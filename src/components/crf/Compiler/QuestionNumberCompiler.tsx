@@ -4,11 +4,13 @@ import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment, FormHe
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionNumberCompilerFormProps {
+  index: number;
   formCompiler: IUseFormCompiler;
   question: SurveyItem;
 }
 
 export function QuestionNumberCompilerForm({
+  index,
   formCompiler,
   question,
   }: QuestionNumberCompilerFormProps) {
@@ -22,7 +24,9 @@ export function QuestionNumberCompilerForm({
     <Stack spacing={1}>
       {question.layout.style === QuestionNumberMap.layout.style.range ? (
       <Stack spacing={1}>
-        <FormLabel component="legend">{question.text}</FormLabel>
+        <FormLabel component="legend">
+        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+        </FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
         <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
           {required && (<Typography>*</Typography>)}
@@ -48,7 +52,9 @@ export function QuestionNumberCompilerForm({
       </Stack>
       ):(
         <Stack spacing={1}>
-        <FormLabel component="legend">{question.text}</FormLabel>
+        <FormLabel component="legend">
+        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>    
+        </FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
         <TextField
           type="number"
