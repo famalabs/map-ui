@@ -74,6 +74,15 @@ export class ItemFunction<T> extends SurveyItem {
     return this.result = undefined;
   }
 
+  computeWithValues(values:any[]): T {
+    if (typeof this.fnCompute === 'function') {
+      let params = values;
+      params = this.staticParams.concat(params);
+      return this.result = this.fnCompute.apply(this, params);
+    }
+    return this.result = undefined;
+  }
+
   getResult(): DBAnswer {
     return {
       id: this.id,
