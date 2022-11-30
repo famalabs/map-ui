@@ -4,11 +4,13 @@ import { FormControlLabel, FormControl, Typography, FormLabel, RadioGroup, Radio
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionSelectCompilerFormProps {
+  index: number;
   formCompiler: IUseFormCompiler;
   question: QuestionSelect;
 }
 
 export function QuestionSelectCompilerForm({
+  index,
   formCompiler,
   question,
   }: QuestionSelectCompilerFormProps) {
@@ -26,7 +28,9 @@ export function QuestionSelectCompilerForm({
     fullWidth
     >
       
-      <FormLabel component="legend">{required && "*"} {question.text}</FormLabel>
+      <FormLabel component="legend">
+      <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+      </FormLabel>
       <FormLabel component="legend">{question.description}</FormLabel>
       {question.layout.style === QuestionSelectMap.layout.style.radio ? (
         <RadioGroup

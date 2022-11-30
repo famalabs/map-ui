@@ -8,12 +8,14 @@ import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionCheckEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionCheck;
   questionState: string;
 }
 
 export function QuestionCheckEditorForm({
+  index,
   editorState,
   question,
   questionState,

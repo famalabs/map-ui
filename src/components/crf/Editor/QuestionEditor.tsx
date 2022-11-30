@@ -21,6 +21,7 @@ import { QuestionStateMap } from './PageEditor';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export interface QuestionEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: Question;
   questionState: any;
@@ -86,6 +87,7 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
 }
 
 export function QuestionEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -102,6 +104,7 @@ export function QuestionEditorForm({
     if (question instanceof QuestionText) {
       return (
         <QuestionTextEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -110,6 +113,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionNumber) {
       return (
         <QuestionNumberEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -118,6 +122,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionDate) {
       return (
         <QuestionDateEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -126,6 +131,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionCheck) {
       return (
         <QuestionCheckEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -134,6 +140,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionSelect) {
       return (
         <QuestionSelectEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -142,6 +149,7 @@ export function QuestionEditorForm({
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
+          index={index}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -152,6 +160,7 @@ export function QuestionEditorForm({
         if (question.items[0].type === QuestionSelectMap.type) {
           return (
             <QuestionTableEditorForm
+              index={index}
               editorState={editorState}
               question={question}
               questionState={questionState}
@@ -167,7 +176,7 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Stack direction="row" spacing={1} style={{minHeight:'36px',minWidth:'376px'}}>
-          <Typography variant="h5">{question.options.required && '*'}{/* renderIcon()*/}</Typography>
+         {/* <Typography variant="h5">{question.options.required && '*'} renderIcon()</Typography>*/}
         </Stack>
         <Box>
           {renderQuestion()}
@@ -180,7 +189,7 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Box sx={{display:'flex', justifyContent: 'space-between'}}>
-          <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
+          <Typography variant="h5">{renderIcon()}</Typography>
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.edit)}}>

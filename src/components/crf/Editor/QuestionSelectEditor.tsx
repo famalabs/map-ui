@@ -10,12 +10,14 @@ import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionSelectEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionSelect;
   questionState: string;
 }
 
 export function QuestionSelectEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -59,7 +61,9 @@ export function QuestionSelectEditorForm({
       <FormControl
       fullWidth
       >
-        <FormLabel component="legend">{question.text}</FormLabel>
+        <FormLabel component="legend">
+        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+        </FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
         {question.layout.style === QuestionSelectMap.layout.style.radio ? (
           <RadioGroup
@@ -92,7 +96,7 @@ export function QuestionSelectEditorForm({
     return (
       <div>
         {QuestionGeneralEdit(question, editor)}
-        <Divider textAlign="left">Radio Elements</Divider>
+        <Divider textAlign="left">Options</Divider>
         <FormControl
         >
           <RadioGroup

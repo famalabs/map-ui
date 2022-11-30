@@ -18,6 +18,11 @@ export function HorizontalStepper({
     const isStepFailed = (pg: SurveyItem, idx: number) => {
         return form.getValid(pg.id) ? false : (idx < nav.getPageIdx());
     };
+
+    if (nav.getPages().length <= 1) {
+        return null;
+    }
+
     return (
         <Box sx={{ width: '100%' }}>
         <Stepper alternativeLabel nonLinear 

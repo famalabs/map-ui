@@ -9,12 +9,14 @@ import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface ItemFunctionEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: SurveyItem;
   questionState: string;
 }
 
 export function ItemFunctionEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -50,7 +52,9 @@ export function ItemFunctionEditorForm({
       return (
         <Stack spacing={1}>
           <Stack spacing={1}>
-            <FormLabel component="legend">{question.text}</FormLabel>
+            <FormLabel component="legend">
+            <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+              </FormLabel>
             <FormLabel component="legend">{question.description}</FormLabel>
             <Typography>Function Name: {question.fnCompute.fnName}</Typography>
             <Typography>Function Params:

@@ -55,15 +55,37 @@ export function FolderEditorForm({
 			return (
 				<Box sx={{ width: '100%'}}
 				onMouseLeave={() => setModalPage(PageStateMap.normal)}
-				onClick={(e) => {setModalPage(PageStateMap.modal)}}
 				>
-					<Stack direction="row" spacing={2}>
-						<Typography variant='h5'>{page.text}</Typography>
-            <Button variant="outlined" color="secondary"
-            	onClick={(e) => {setModalPage(PageStateMap.modal)}}>
-            <EditIcon/>
-            </Button>
-          </Stack>
+					
+					<Stack direction='row' spacing={1}>
+					<Typography  onClick={(e) => {setModalPage(PageStateMap.modal)}} variant='h5'>{page.text}</Typography>
+
+					<Button variant="outlined" 
+					color="secondary"
+          onClick={(e) => {setModalPage(PageStateMap.modal)}}
+					>
+					<EditIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.moveItemUp(page)}}
+					>
+					<ArrowUpwardIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.moveItemDown(page)}}
+					>
+					<ArrowDownwardIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.removeItem(page)}}
+					>
+					<DeleteIcon/>
+					</Button>
+				</Stack>
+					
 				</Box>
 				);
 		} else {
@@ -121,9 +143,9 @@ export function FolderEditorForm({
 
 		
 		{/* PAGE NAVIGATION */}
-		<Paper style={{marginBottom:'24px',padding:'24px',width:'100%'}}>
 			<Stack spacing={2}>
-				<Stack direction="row" spacing={1} style={{justifyContent:'center', flexWrap: 'wrap'}}>
+				<Stack direction="row" spacing={1} style={{ flexWrap: 'wrap', alignItems: 'center'}}>
+				<Box><Typography>{folder.text} /</Typography></Box>
 					{pages.map((page,idx) => {
 						return(
 							<Button key={page.id} 
@@ -142,36 +164,8 @@ export function FolderEditorForm({
 					>
 					<NoteAddIcon />
 					</Button>
-				</Stack>
-				<Divider variant='middle'>{page.text}</Divider>
-				<Stack direction='row' spacing={1} style={{justifyContent:'center'}}>
-					<Button variant="outlined" 
-					color="secondary"
-          onClick={(e) => {setModalPage(PageStateMap.modal)}}
-					>
-					<EditIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.moveItemUp(page)}}
-					>
-					<ArrowUpwardIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.moveItemDown(page)}}
-					>
-					<ArrowDownwardIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.removeItem(page)}}
-					>
-					<DeleteIcon/>
-					</Button>
-				</Stack>
+				</Stack>				
 			</Stack>
-		</Paper>
 
 		{/* PAGE RENDER */}
 		{page.layout.style === GroupMap.layout.style.card ? 
