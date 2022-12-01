@@ -6,6 +6,7 @@ import ToggleOnOutlinedIcon from '@mui/icons-material/ToggleOnOutlined';
 import TocRoundedIcon from '@mui/icons-material/TocRounded';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import WebAssetIcon from '@mui/icons-material/WebAsset';
 import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import React from "react";
@@ -101,6 +102,14 @@ export const QuestionMenuTypesMap = {
 			'en': 'Function',
 		}
 	},
+	section: {
+		'type': 'section',
+		'icon': <WebAssetIcon/>,
+		'locale': {
+			'it': 'Sezione',
+			'en': 'Section',
+		},
+	}
 }
 
 export const getQuestionMenuType = (question:SurveyItem):string => {
@@ -128,7 +137,9 @@ export const getQuestionMenuType = (question:SurveyItem):string => {
         if (question.items[0].type === QuestionSelectMap.type) {
           return QuestionMenuTypesMap.selectTable.type;
         }
-      }
+      } else if (question.layout.style === GroupMap.layout.style.section) {
+				return QuestionMenuTypesMap.section.type;
+			}
     } else if (question.type === FnMap.type) {
 			return QuestionMenuTypesMap.fn.type;
 		}

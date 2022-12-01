@@ -1,11 +1,11 @@
 import React from 'react';
-import {GroupMap, Question} from '../../../core/schema'
+import {GroupMap, Question} from '../../../core/schema';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionMenuTypesMap } from '../../../core/schema/config-types';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export const QuestionStateMap = {
   normal:"normal",
@@ -30,7 +30,17 @@ const createQuestionState = (nav:INavState) => {
 	let qs = {}
 	const questions = nav.getPage().items;
 	for (let i = 0; i < questions.length; i++) {
-		qs[questions[i].id] = QuestionStateMap.normal;
+		if (getQuestionMenuType(questions[i]) === QuestionMenuTypesMap.section.type) {
+			// qs[questions[i].id] = {
+			// 	state: QuestionStateMap.normal,
+			// };
+			qs[questions[i].id] = QuestionStateMap.normal;
+			for (let j = 0; j < questions[i].items.length; j++) {
+				qs[questions[i].items[j].id] = QuestionStateMap.normal;
+			}
+		} else {
+			qs[questions[i].id] = QuestionStateMap.normal;
+		}
 	}
 	// console.log('createQuestionState',qs);
 	return qs;
@@ -106,9 +116,9 @@ export function PageEditorForm({
 		// console.log('new questionState', qs);
 	}
 	// to update if changes the question numbers
-	if (nav.getQuestions().length !== Object.keys(questionState).length) {
-		handleSetQuestionState(null, null);
-	}
+	// if (nav.getQuestions().length !== Object.keys(questionState).length) {
+	// 	handleSetQuestionState(null, null);
+	// }
 
 	// console.log('render page',page, questionState);
 	return (
@@ -117,6 +127,7 @@ export function PageEditorForm({
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
+				const realQuestionState = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type ? questionState : questionState[question.id];
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
@@ -124,8 +135,8 @@ export function PageEditorForm({
 					key={question.id}
 					index={index+1}
 					editorState={editorState}
-					question={question as Question}
-					questionState={questionState[question.id]}
+					question={question}
+					questionState={realQuestionState}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 					);
@@ -136,14 +147,13 @@ export function PageEditorForm({
 							key={question.id}
 							index={index+1}
 							editorState={editorState}
-							question={question as Question}
-							questionState={questionState[question.id]}
+							question={question}
+							questionState={realQuestionState}
 							handleSetQuestionState={handleSetQuestionState}
 						/>
 					</Paper>
 				);
 			})}
-			</Stack>
 			<Button 
 				color="inherit" 
 				aria-controls={openAddQuestion ? 'basic-menu' : undefined}
@@ -167,6 +177,7 @@ export function PageEditorForm({
 					);
 				})}
 			</Menu>
+			</Stack>
 		</div>
 	);
 }

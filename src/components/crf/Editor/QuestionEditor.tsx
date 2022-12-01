@@ -1,6 +1,6 @@
 import React from 'react';
 import {GroupMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionCheck, SurveyItem, ItemFunction } from '../../../core/schema'
-import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider } from '@mui/material';
+import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -19,11 +19,12 @@ import { ItemFunctionEditorForm } from './ItemFunctionEditor';
 import { QuestionCheckEditorForm } from './QuestionCheckEditor';
 import { QuestionStateMap } from './PageEditor';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
+import { SectionEditorForm } from './SectionEditor';
 
 export interface QuestionEditorFormProps {
   index?: number;
   editorState: IUseEditorState;
-  question: Question;
+  question: SurveyItem;
   questionState: any;
   handleSetQuestionState: (id:string, state:string) => void;
 }
@@ -40,7 +41,8 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
           value={item.text}
           onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
         />
-        <FormControl fullWidth>
+        {QuestionMenuTypesMap.section.type !== getQuestionMenuType(item) && (
+          <FormControl fullWidth>
           <Select
             
             style={{width: '100%'}}
@@ -58,6 +60,7 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
               ))}
           </Select>
         </FormControl>
+        )}
       </Box>
       <Box sx={{margin:'0.25rem'}}>
         <TextField
@@ -96,6 +99,10 @@ export function QuestionEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
+  const isSection = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type;
+  const thisQuestionState = isSection ? questionState[question.id] : questionState;
+  // const thisQuestionState = questionState;
+
   const renderIcon = () => {
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
   }
@@ -107,7 +114,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionNumber) {
@@ -116,7 +123,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionDate) {
@@ -125,7 +132,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionCheck) {
@@ -134,7 +141,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionSelect) {
@@ -143,7 +150,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof ItemFunction) {
@@ -152,7 +159,7 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question.type === GroupMap.type) {
@@ -163,10 +170,35 @@ export function QuestionEditorForm({
               index={index}
               editorState={editorState}
               question={question}
-              questionState={questionState}
+              questionState={thisQuestionState}
             />
           );
         }
+      } else if (question.layout.style === GroupMap.layout.style.section) {
+        if (nav.getPage().layout.style === GroupMap.layout.style.card) {
+          return (
+            <Paper style={{padding:24}}>
+              <SectionEditorForm
+              key={question.id}
+              index={index+1}
+              editorState={editorState}
+              section={question}
+              questionState={questionState}
+              handleSetQuestionState={handleSetQuestionState}
+              />
+            </Paper>
+          );
+        }
+        return (
+          <SectionEditorForm
+          key={question.id}
+					index={index+1}
+					editorState={editorState}
+					section={question}
+					questionState={questionState}
+					handleSetQuestionState={handleSetQuestionState}
+          />
+        );
       }
     }
     return null;
@@ -210,7 +242,7 @@ export function QuestionEditorForm({
           </Stack>
         </Box>
         <div
-          onClick={(e) => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
+          onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
         >
           {renderQuestion()}
         </div>
@@ -226,10 +258,14 @@ export function QuestionEditorForm({
   const renderMenu = () => {
     return (
       <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={questionState} onChange={handleChangeTab}>
+            <Tabs value={thisQuestionState} onChange={handleChangeTab}>
               <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
+              {!isSection && (
               <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
+              )}
+              {!isSection && (
               <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
+              )}
             </Tabs>
       </Box>
     );
@@ -289,19 +325,19 @@ export function QuestionEditorForm({
   // console.log('render question', questionState);
   return (
     <div
-    onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
-    onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
+    onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal && !isSection){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
+    onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
     style={{padding:'18px'}}
     >
-      {questionState === QuestionStateMap.normal ? (
+      {thisQuestionState === QuestionStateMap.normal ? (
         renderNormal()
-      ) : questionState === QuestionStateMap.hover ? (
+      ) : thisQuestionState === QuestionStateMap.hover ? (
         renderHover()
-      ) : (questionState === QuestionStateMap.edit) ? (
+      ) : (thisQuestionState === QuestionStateMap.edit) ? (
         renderEdit()
-      ) : (questionState === QuestionStateMap.options) ? (
+      ) : (thisQuestionState === QuestionStateMap.options) ? (
         renderOptions()
-      ) : (questionState === QuestionStateMap.layout) ? (
+      ) : (thisQuestionState === QuestionStateMap.layout) ? (
         renderLayout()
       ) : renderNormal()}
     </div>

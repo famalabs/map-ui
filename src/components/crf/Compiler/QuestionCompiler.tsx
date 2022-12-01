@@ -9,6 +9,7 @@ import { QuestionTextCompilerForm } from './QuestionTextCompiler';
 import { ItemFunctionCompilerForm } from './ItemFunctionCompiler';
 import { QuestionCheckCompilerForm } from './QuestionCheckCompiler';
 import { QuestionTableCompilerForm } from './QuestionTableCompiler';
+import { SectionCompilerForm } from './SectionCompiler';
 
 export interface QuestionCompilerFormProps {
 	index?: number;
@@ -124,6 +125,21 @@ export function QuestionCompilerForm({
 					/>
 				);
 			}
+		} else if (item.layout.style === GroupMap.layout.style.section) {
+			// if (nav.getPage().layout.style === GroupMap.layout.style.card) {
+			// 	return (
+			// 		<SectionCompilerForm
+			// 		formCompiler={formCompiler}
+			// 		section={item}
+			// 		/>
+			// 	);
+			// }
+			// return (
+			// 	<SectionCompilerForm
+			// 	formCompiler={formCompiler}
+			// 	section={item}
+			// 	/>
+			// );
 		}
 	}
 	return null;

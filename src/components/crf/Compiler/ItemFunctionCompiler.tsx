@@ -39,12 +39,12 @@ export function ItemFunctionCompilerForm({
 					Calcola {item.text}
 				</Button>
 				<Typography>{value.toString()}</Typography> */}
-				<Typography>{item.text}: {value.toString()}</Typography>
+				<Typography>{item.text}: {value ? value.toString() : ''}</Typography>
 				{item.parameters.map((id,idx) => {
 					const param = nav.findItemById(id);
 					const value = form.getValue(id);
 					return (
-						<Typography>{param.text}: {value.toString()}</Typography>
+						<Typography>{param.text}: {value ? value.toString() : ''}</Typography>
 					);
 				})}
 				{/* <Typography>Parameters: {item.parameters.map((id) => id+",")}</Typography>

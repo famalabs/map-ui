@@ -106,6 +106,7 @@ export function QuestionSelectEditorForm({
           >
             {selects.map((opt, idx) => (
               <Stack direction="row" spacing={1} 
+              key={idx}
               style={{margin:'0.25rem'}}>
                 <FormControlLabel disabled 
                 key={idx} value="disabled" 
