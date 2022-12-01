@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, FormLabel, Typography } from '@mui/material';
 import { AdapterUseFormStateSurvey, ItemFunction, SurveyItem } from '../../../core/schema';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 
@@ -21,10 +22,11 @@ export function ItemFunctionCompilerForm({
 	if (item instanceof ItemFunction) {
 
 		const paramValues:any[] = item.parameters.map((id,idx) => form.getValue(item.parameters[idx]))
-		const computeValue = (res) => form.getSetValue(item.id)(res);
+		// const computeValue = (res) => form.getSetValue(item.id)(res);
 		const computedValue = item.computeWithValues(paramValues);
 		if (value !== computedValue) {
-			computeValue(computedValue);
+			// handleOnChange(computedValue);
+			// computeValue(computedValue);
 		}
 		
 		// const computeValue = (res) => form.getSetValue(item.id)(res);
@@ -40,6 +42,9 @@ export function ItemFunctionCompilerForm({
 				</Button>
 				<Typography>{value.toString()}</Typography> */}
 				<Typography>{item.text}: {value ? value.toString() : ''}</Typography>
+				<Button color="primary" variant="contained" onClick={(e) => {handleOnChange(computedValue);}}>
+					<RefreshIcon/>
+				</Button>
 				{item.parameters.map((id,idx) => {
 					const param = nav.findItemById(id);
 					const value = form.getValue(id);

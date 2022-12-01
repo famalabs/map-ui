@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLabel, Typography } from '@mui/material';
+import { Button, FormLabel, Paper, Typography } from '@mui/material';
 import { GroupMap, ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionText, SurveyItem } from '../../../core/schema';
 import { InputDate, InputNumber, InputRadio, InputString } from '../../forms';
 import { IUseFormCompiler } from './FormCompiler';
@@ -25,6 +25,7 @@ export function QuestionCompilerForm({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 
+	console.log('rendering',item);
 	if (item instanceof QuestionText) {
 		return (
 			<QuestionTextCompilerForm
@@ -126,20 +127,22 @@ export function QuestionCompilerForm({
 				);
 			}
 		} else if (item.layout.style === GroupMap.layout.style.section) {
-			// if (nav.getPage().layout.style === GroupMap.layout.style.card) {
-			// 	return (
-			// 		<SectionCompilerForm
-			// 		formCompiler={formCompiler}
-			// 		section={item}
-			// 		/>
-			// 	);
-			// }
-			// return (
-			// 	<SectionCompilerForm
-			// 	formCompiler={formCompiler}
-			// 	section={item}
-			// 	/>
-			// );
+			if (nav.getPage().layout.style === GroupMap.layout.style.card) {
+				return (
+					<Paper style={{padding:24}}>
+						<SectionCompilerForm
+						formCompiler={formCompiler}
+						section={item}
+						/>
+					</Paper>
+				);
+			}
+			return (
+				<SectionCompilerForm
+				formCompiler={formCompiler}
+				section={item}
+				/>
+			);
 		}
 	}
 	return null;

@@ -80,6 +80,28 @@ export function ItemFunctionEditorForm({
           );
         }) : (<Typography>No Parameters</Typography>);
     }
+
+    const renderSingleAddParam = (qs:SurveyItem, params:string[]) => {
+      return (
+        <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
+        <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
+        {qs.id !== question.id ? (
+          params.includes(qs.id) ? (
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {handleRemoveParam(qs.id)}}>
+            <CancelIcon/>
+            </Button>
+          ) : (
+            <Button variant="outlined" color="primary"
+            onClick={(e) => {handleAddParam(qs.id)}}>
+            <AddCircleIcon />
+            </Button>
+          )
+        ) : (null)}
+        </div>
+      );
+    }
+    
     const renderAddParams = () => {
       const params = getParameters();
       return (
@@ -95,24 +117,24 @@ export function ItemFunctionEditorForm({
                 <AccordionDetails>
                   {page.items.map((qs,idx) => {
                     // if (!params.includes(qs.id)) {
-                    return (
-                      <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
-                      <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
-                      {qs.id !== question.id ? (
-                        params.includes(qs.id) ? (
-                          <Button variant="outlined" color="secondary"
-                          onClick={(e) => {handleRemoveParam(qs.id)}}>
-                          <CancelIcon/>
-                          </Button>
-                        ) : (
-                          <Button variant="outlined" color="secondary"
-                          onClick={(e) => {handleAddParam(qs.id)}}>
-                          <AddCircleIcon />
-                          </Button>
-                        )
-                      ) : (null)}
-                      </div>
-                    );
+                    if (getQuestionMenuType(qs) === QuestionMenuTypesMap.section.type) {
+                      return (
+                        <Accordion key={qs.id}>
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                          >
+                            <Typography>{qs.text}</Typography>
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            {qs.items.map((qss,idx) => {
+                              return renderSingleAddParam(qss,params);
+                              // }
+                            })}
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    }
+                    return renderSingleAddParam(qs,params);
                     // }
                   })}
                 </AccordionDetails>
