@@ -175,20 +175,20 @@ export function QuestionEditorForm({
           );
         }
       } else if (question.layout.style === GroupMap.layout.style.section) {
-        if (nav.getPage().layout.style === GroupMap.layout.style.card) {
-          return (
-            <Paper style={{padding:24}}>
-              <SectionEditorForm
-              key={question.id}
-              index={index+1}
-              editorState={editorState}
-              section={question}
-              questionState={questionState}
-              handleSetQuestionState={handleSetQuestionState}
-              />
-            </Paper>
-          );
-        }
+        // if (nav.getPage().layout.style === GroupMap.layout.style.card) {
+        //   return (
+        //     <Paper style={{padding:24}}>
+        //       <SectionEditorForm
+        //       key={question.id}
+        //       index={index+1}
+        //       editorState={editorState}
+        //       section={question}
+        //       questionState={questionState}
+        //       handleSetQuestionState={handleSetQuestionState}
+        //       />
+        //     </Paper>
+        //   );
+        // }
         return (
           <SectionEditorForm
           key={question.id}

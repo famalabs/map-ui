@@ -74,8 +74,7 @@ export function PageEditorForm({
 		setAnchorAddQuestion(null);
 		if (typeof type !== 'undefined') {
 			const qs = editor.addQuestion(type);
-			handleSetQuestionState(qs.id, QuestionStateMap.edit)
-			console.log("add question", qs.id);
+			handleSetQuestionState(qs.id, QuestionStateMap.edit);
 		}
 	};
 	// for handling hover / edit questions
@@ -83,6 +82,12 @@ export function PageEditorForm({
 	const handleSetQuestionState = (id:string, state:string) => {
 		if (id === null && state === null) {
 			setQuestionState(createQuestionState(nav));
+			return;
+		}
+		if (!Object.keys(questionState).includes(id)) {
+			let qs = createQuestionState(nav);
+			qs[id] = state;
+			setQuestionState(qs);
 			return;
 		}
 		let curInEdit = getInEditQuestion(questionState); // (id,state)
@@ -127,7 +132,7 @@ export function PageEditorForm({
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
-				const realQuestionState = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type ? questionState : questionState[question.id];
+				const realQuestionState = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type ? questionState : questionState[question.id]??QuestionStateMap.normal;
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
