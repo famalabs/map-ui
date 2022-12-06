@@ -1,5 +1,5 @@
 import React from 'react'
-import { GroupMap, Question, SurveyItem, SurveyMap } from '../../core/schema';
+import { getQuestionMenuType, GroupMap, Question, QuestionMenuTypesMap, SurveyItem, SurveyMap } from '../../core/schema';
 
 
 export class NavState {
@@ -102,6 +102,10 @@ export interface INavState {
 	findItemById: (id:string) => SurveyItem;
 	getItemType: (id:string) => string;
 	getIdsToId: (id:string) => string[];
+	/**
+	 *  returns a obj with key = question.id, value = idx || obj if question is section
+	 */
+	getItemsGlobalOrderIndex: () => any;
 }
 
 export class SurveyNav implements INavState {
@@ -230,6 +234,36 @@ export class SurveyNav implements INavState {
 			return ids.reverse();
 		}
 
+	/**
+	 * 
+	 * @returns a obj with key = question.id, value = idx || obj if question is section
+	 */
+	public getItemsGlobalOrderIndex():any {
+		const order = {}
+		let idx = 1
+		for (let f = 0; f < this.getFolders().length; f++) {
+			const folder = this.getFolders()[f];
+			for (let p = 0; p < folder.items.length; p++) {
+				const page = folder.items[p];
+					for (let q = 0; q < page.items.length; q++) {
+						const question = page.items[q];
+						if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
+							order[question.id] = {};
+							for (let s = 0; s < question.items.length; s++) {
+								const secQs = question.items[s];
+								order[question.id][secQs.id] = idx;
+								idx+=1;
+							}
+						} else {
+							order[question.id] = idx;
+							idx+=1;
+						}
+					}
+				}
+		}
+		return order;
+	}
+
 	public getValue(): any {
 		return {
 			folders: this.getFolders(),
@@ -293,7 +327,8 @@ export function useNavState(root: SurveyItem): INavState {
 		getItemIdx: (id:string) => new SurveyNav(value).getItemIdx(id),
 		findItemById: (id:string) => new SurveyNav(value).findItemById(id),
 		getItemType: (id:string) => new SurveyNav(value).getItemType(id),
-				getIdsToId: (id:string) => new SurveyNav(value).getIdsToId(id),
+		getIdsToId: (id:string) => new SurveyNav(value).getIdsToId(id),
+		getItemsGlobalOrderIndex: () => new SurveyNav(value).getItemsGlobalOrderIndex(),
 
 	} as INavState;
 }

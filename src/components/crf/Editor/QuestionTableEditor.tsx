@@ -44,7 +44,7 @@ export function QuestionTableEditorForm({
               <TableCell>Questions</TableCell>
               {options.map((opt, idx) => {
                 return (
-                  <TableCell align="center">{opt.text}</TableCell>
+                  <TableCell key={opt.text} align="center">{opt.text}</TableCell>
                 );
               })}
             </TableRow>
@@ -60,7 +60,7 @@ export function QuestionTableEditorForm({
                 </TableCell>
                 {options.map((opt, idx) => {
                 return (
-                  <TableCell align="right"><Radio disabled/></TableCell>
+                  <TableCell key={idx} align="right"><Radio disabled/></TableCell>
                 );
               })}
               </TableRow>
@@ -143,7 +143,7 @@ export function QuestionTableEditorForm({
 
   const renderSelectOption = (opt:TextScore, idx:number) => {
     return (
-      <TableCell align="center">
+      <TableCell align="center" key={idx}>
         {/* {opt.text} */}
         <TextField
           value={opt.text}
@@ -217,7 +217,7 @@ export function QuestionTableEditorForm({
                 {renderSelectQuestion(sel,idx)}
                 {options.map((opt, idx) => {
                   return (
-                    <TableCell align="right"><Radio disabled/></TableCell>
+                    <TableCell key={idx} align="right"><Radio disabled/></TableCell>
                   );
                 })}
               </TableRow>

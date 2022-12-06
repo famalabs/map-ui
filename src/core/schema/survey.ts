@@ -11,7 +11,6 @@ import {ItemFunction} from './item-function';
 import {ItemTable} from './item-table';
 import {isId} from './config';
 import {FeaturesMap, Field, FieldsMap, IterationContext} from "./interfaces";
-import { Form } from '@src/components/forms';
 
 export class Survey {
   root: SurveyItem;
@@ -24,11 +23,11 @@ export class Survey {
       this.root.parent = null;
     }
   }
-  public static schemaFromJSON = (json: Object): Object => {
-    // console.log(json);
-    const jsonObject = JSON.parse(JSON.stringify(json));
-    return jsonObject;
-  };  
+  // public static schemaFromJSON = (json: Object): Object => {
+  //   // console.log(json);
+  //   const jsonObject = JSON.parse(JSON.stringify(json));
+  //   return jsonObject;
+  // };  
 
   isInitialized(): boolean {
     return this.root instanceof SurveyItem;
@@ -286,12 +285,8 @@ export class Survey {
     });
   }
 
-  toUseFormState(): Form {
-    // var _childState = this.root.toUseFormState();
-    var _res = this.root.toUseFormState();
-    // console.log(_res)
-    // return JSON.parse(_childState)
-    return _res as Form;
+  toUseFormState():any {
+    return this.root.toUseFormState();
   }
 
 }

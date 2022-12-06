@@ -1,4 +1,4 @@
-import { useFormState } from "../../../components/forms";
+import { Form, useFormState } from "../../../components/forms";
 import { QuestionNumber, Survey, SurveyItem } from "../../../core/schema";
 import React from "react";
 import { INavState, useNavState } from "../Navigation";
@@ -37,7 +37,7 @@ export function useFormCompiler(survey:Survey) {
 
   const [showAllErrors, setShowAllErrors] = React.useState(false);
   const { Value, setValue, validators, requires, Valid } = useFormState(
-    survey.toUseFormState()
+    survey.toUseFormState() as Form
   );
   const onSubmit = (answers, allValid) => console.log(answers);
   const nav = useNavState(survey.root);

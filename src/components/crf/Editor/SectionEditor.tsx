@@ -9,7 +9,7 @@ import { QuestionEditorForm, QuestionGeneralEdit, renderGeneralOptions } from '.
 import { QuestionStateMap } from './PageEditor';
 
 export interface SectionEditorFormProps {
-  index?: number;
+  index?: any;
   editorState: IUseEditorState;
   section: SurveyItem;
   questionState: string;
@@ -53,11 +53,11 @@ export function SectionEditorForm({
         <Typography variant='h4'>{section.text}</Typography>
         <Typography>{section.description}</Typography>
         </Stack>
-			{section.items.map((question, index) => {
+			{section.items.map((question, idx) => {
 				return(
           <QuestionEditorForm
 					key={question.id}
-					index={index+1}
+					index={index[question.id]}
 					editorState={editorState}
 					question={question}
 					questionState={questionState[question.id]}

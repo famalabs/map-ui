@@ -6,11 +6,13 @@ import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 export interface QuestionTableCompilerFormProps {
   formCompiler: IUseFormCompiler;
   question: SurveyItem;
+  index?: number;
 }
 
 export function QuestionTableCompilerForm({
   formCompiler,
   question,
+  index,
   }: QuestionTableCompilerFormProps) {
   const form = formCompiler.form;
   const nav = formCompiler.nav;
@@ -23,7 +25,7 @@ export function QuestionTableCompilerForm({
     <TableContainer>
       {/* <Typography>{question.text}</Typography>
       <Typography>{question.description}</Typography> */}
-      <FormLabel component="legend">{question.text}</FormLabel>
+      <FormLabel component="legend">{index && (index + '.')} {question.text}</FormLabel>
       <FormLabel component="legend">{question.description}</FormLabel>
       <Table sx={{ width: '100%' }}>
         <TableHead>

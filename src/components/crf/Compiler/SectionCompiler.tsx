@@ -5,7 +5,7 @@ import { GroupMap, SurveyItem } from '../../../core/schema';
 import { IUseFormCompiler } from './FormCompiler';
 
 export interface SectionCompilerFormProps {
-	index?: number;
+	index?: any;
 	section: SurveyItem;
 	formCompiler: IUseFormCompiler;
 }
@@ -23,11 +23,11 @@ export function SectionCompilerForm ({
 			<Typography variant='h4'>{section.text}</Typography>
 			<Typography>{section.description}</Typography>
         </Stack>
-			{section.items.map((question, index) => {
+			{section.items.map((question, idx) => {
 				return(
 						<QuestionCompilerForm
 						key={question.id}
-						index={index+1}
+						index={index[question.id]}
 						item={question}
 						formCompiler={formCompiler}
 						/>

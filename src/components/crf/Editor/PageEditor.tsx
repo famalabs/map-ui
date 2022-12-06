@@ -65,6 +65,7 @@ export function PageEditorForm({
 	const editor = editorState.editor;
 	const nav = editorState.nav;
 	const page = nav.getPage();
+	const orders = nav.getItemsGlobalOrderIndex();
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
 	const openAddQuestion = Boolean(anchorAddQuestion);
 	const handleOpenAddQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -138,7 +139,7 @@ export function PageEditorForm({
 					return (
 					<QuestionEditorForm
 					key={question.id}
-					index={index+1}
+					index={orders[question.id]}
 					editorState={editorState}
 					question={question}
 					questionState={realQuestionState}
@@ -150,7 +151,7 @@ export function PageEditorForm({
 					<Paper>
 						<QuestionEditorForm
 							key={question.id}
-							index={index+1}
+							index={orders[question.id]}
 							editorState={editorState}
 							question={question}
 							questionState={realQuestionState}

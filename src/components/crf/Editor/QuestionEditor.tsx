@@ -22,7 +22,7 @@ import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/
 import { SectionEditorForm } from './SectionEditor';
 
 export interface QuestionEditorFormProps {
-  index?: number;
+  index?: any;
   editorState: IUseEditorState;
   question: SurveyItem;
   questionState: any;
@@ -192,7 +192,7 @@ export function QuestionEditorForm({
         return (
           <SectionEditorForm
           key={question.id}
-					index={index+1}
+					index={index}
 					editorState={editorState}
 					section={question}
 					questionState={questionState}

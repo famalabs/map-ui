@@ -12,7 +12,7 @@ import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 import { SectionCompilerForm } from './SectionCompiler';
 
 export interface QuestionCompilerFormProps {
-	index?: number;
+	index?: any;
 	item: SurveyItem;
 	formCompiler: IUseFormCompiler;
 }
@@ -25,7 +25,7 @@ export function QuestionCompilerForm({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 
-	console.log('rendering',item);
+	// console.log('rendering',item);
 	if (item instanceof QuestionText) {
 		return (
 			<QuestionTextCompilerForm
@@ -123,6 +123,7 @@ export function QuestionCompilerForm({
 					<QuestionTableCompilerForm
 					formCompiler={formCompiler}
 					question={item}
+					index={index}
 					/>
 				);
 			}
@@ -141,6 +142,7 @@ export function QuestionCompilerForm({
 				<SectionCompilerForm
 				formCompiler={formCompiler}
 				section={item}
+				index={index}
 				/>
 			);
 		}
