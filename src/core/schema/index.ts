@@ -25,4 +25,3 @@ export * from './interfaces';
 export * from './adapter'
 export * from './config-map'
 export * from './config-types'
-// export * from './config-map-types'
