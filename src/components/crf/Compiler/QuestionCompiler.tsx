@@ -10,6 +10,7 @@ import { ItemFunctionCompilerForm } from './ItemFunctionCompiler';
 import { QuestionCheckCompilerForm } from './QuestionCheckCompiler';
 import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 import { SectionCompilerForm } from './SectionCompiler';
+import { QuestionDateCompilerForm } from './QuestionDateCompiler';
 
 export interface QuestionCompilerFormProps {
 	index?: any;
@@ -47,17 +48,22 @@ export function QuestionCompilerForm({
 		);
 	} else if (item instanceof QuestionDate) {
 		return (
-			<InputDate
-				nameid={item.id}
-				title={item.text}
-				label={item.description ?? item.text}
-				value={form.getValue(item.id)}
-				setValue={(text) => form.getSetValue(item.id)(text)}
-				required={form.getRequired(item.id)}
-				// required={item.options.required}
-				// emptyMessage={'empty message'}
-				showError={form.getShowError(item.id)}
+			<QuestionDateCompilerForm
+			index={index}
+			formCompiler={formCompiler}
+			question={item}
 			/>
+			// <InputDate
+			// 	nameid={item.id}
+			// 	title={item.text}
+			// 	label={item.description ?? item.text}
+			// 	value={form.getValue(item.id)}
+			// 	setValue={(text) => form.getSetValue(item.id)(text)}
+			// 	required={form.getRequired(item.id)}
+			// 	// required={item.options.required}
+			// 	// emptyMessage={'empty message'}
+			// 	showError={form.getShowError(item.id)}
+			// />
 		);
 	} else if (item instanceof QuestionNumber) {
 		return (

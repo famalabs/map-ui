@@ -6,11 +6,13 @@ import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 export interface QuestionCheckCompilerFormProps {
   formCompiler: IUseFormCompiler;
   question: SurveyItem;
+	index?: any;
 }
 
 export function QuestionCheckCompilerForm({
   formCompiler,
   question,
+	index,
   }: QuestionCheckCompilerFormProps) {
   const form = formCompiler.form;
   const nav = formCompiler.nav;
@@ -21,7 +23,7 @@ export function QuestionCheckCompilerForm({
     <Stack spacing={1}>
       <Stack spacing={1}>
         {/* <FormLabel component="legend">{question.text}</FormLabel> */}
-        <FormLabel component="legend">{question.description}</FormLabel>
+        <FormLabel component="legend">{index && (index + '.')} {question.description}</FormLabel>
         {question.layout.style === QuestionCheckMap.layout.style.switch ? (
           <FormControlLabel
            control={

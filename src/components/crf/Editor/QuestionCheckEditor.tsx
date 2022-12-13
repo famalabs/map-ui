@@ -29,7 +29,7 @@ export function QuestionCheckEditorForm({
       <Stack spacing={1}>
         <Stack spacing={1}>
           {/* <FormLabel component="legend">{question.text}</FormLabel> */}
-          <FormLabel component="legend">{question.description}</FormLabel>
+          <FormLabel component="legend">{index && (index + '.')} {question.description}</FormLabel>
           {question.layout.style === QuestionCheckMap.layout.style.switch ? (
             <FormControlLabel disabled control={<Switch />} label={question.text} />
           ):(
