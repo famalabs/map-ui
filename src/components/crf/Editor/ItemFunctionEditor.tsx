@@ -57,14 +57,17 @@ export function ItemFunctionEditorForm({
               </FormLabel>
             <FormLabel component="legend">{question.description}</FormLabel>
             <Typography>Function Name: {question.fnCompute.fnName}</Typography>
-            <Typography>Function Params:
-              {getParameters().length > 0 ? getParameters().map((id,idx) => {
-              const item = nav.findItemById(id);  
-              return (
-                  <Chip disabled key={id} label={item.text}/>
-                );
-              }) : (<Typography>No Parameters</Typography>)}
-            </Typography>
+            <Stack spacing={1}>
+              <Typography>Function Params:</Typography>
+              <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
+                {getParameters().length > 0 ? getParameters().map((id,idx) => {
+                const item = nav.findItemById(id);  
+                return (
+                    <Chip disabled key={id} label={item.text}/>
+                  );
+                }) : (<Typography>No Parameters</Typography>)}
+              </Stack>
+            </Stack>
           </Stack>
         </Stack>
       );

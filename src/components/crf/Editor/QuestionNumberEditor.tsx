@@ -1,5 +1,5 @@
 import React from 'react';
-import {QuestionNumber, QuestionNumberMap} from '../../../core/schema'
+import {QuestionNumber, QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../../core/schema'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
@@ -39,10 +39,10 @@ export function QuestionNumberEditorForm({
             <Typography>{question.options.minValue}</Typography>
             <Slider 
             disabled
-            step={question.options.step}
+            step={toValidQuestionNumberStep(question.options.step)}
             marks
-            min={question.options.minValue}
-            max={question.options.maxValue}
+            min={toValidQuestionNumberMinValue(question.options.minValue)}
+            max={toValidQuestionNumberMaxValue(question.options.maxValue)}
              />
             <Typography>{question.options.maxValue}</Typography>
           </Stack>

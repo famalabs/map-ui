@@ -245,9 +245,9 @@ export class EditorBuilder implements IEditorState {
       const type = QuestionNumberMap.type;
       const question = new QuestionNumber(defaultQuestion(type));
       question.options = {
-        minValue: 0,
-        maxValue: 10,
-        step: 1,
+        minValue: QuestionNumberMap.options.minValue.default,
+        maxValue: QuestionNumberMap.options.maxValue.default,
+        step: QuestionNumberMap.options.step.default,
         unit: QuestionNumberMap.options.unit.none
       }
       question.layout = {
@@ -259,9 +259,9 @@ export class EditorBuilder implements IEditorState {
       const type = QuestionNumberMap.type;
       const question = new QuestionNumber(defaultQuestion(type));
       question.options = {
-        minValue: 0,
-        maxValue: 10,
-        step: 1,
+        minValue: QuestionNumberMap.options.minValue.default,
+        maxValue: QuestionNumberMap.options.maxValue.default,
+        step: QuestionNumberMap.options.step.default,
         unit: QuestionNumberMap.options.unit.none
       }
       question.layout = {
