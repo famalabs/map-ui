@@ -68,7 +68,6 @@ export class SurveyItem {
    */
    removeItem(item: SurveyItem): boolean {
     let itemIndex = this.getChildIndex(item);
-    console.log('rem', item, itemIndex);
     return this.removeItemByIdx(itemIndex);
   }  /**
 

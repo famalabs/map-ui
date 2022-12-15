@@ -1,41 +1,39 @@
 import React from 'react';
-import {FnMap, ItemFunction, SurveyItem} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import {FnMap, getQuestionMenuType, ItemFunction, QuestionMenuTypesMap, SurveyItem} from '../../../core/schema'
+import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { QuestionTextMap } from '../../../core/schema';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
-import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
+import { QuestionStateMap } from './PageEditor';
 
 export interface ItemFunctionEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: SurveyItem;
   questionState: string;
 }
 
 export function ItemFunctionEditorForm({
+  index,
   editorState,
   question,
   questionState,
   }: ItemFunctionEditorFormProps) {
 
-  console.log('pre render function', questionState);
   if (question instanceof ItemFunction) {
     const editor = editorState.editor;
     const nav = editorState.nav;
 
     const getParameters = ():string[] => {
-      return question.removeNotValidParams();
+      return question.parameters;
     }
 
     const handleAddParam = (id:string) => {
-      // let params:Array<string> = [];
-      // params.concat(question.parameters)
-      // params.push(id);
+     
       question.parameters.push(id);
+
       editor.onChangeValue(question.id, 'parameters', question.parameters);
     }
     const handleRemoveParam = (id:string) => {
@@ -54,14 +52,22 @@ export function ItemFunctionEditorForm({
       return (
         <Stack spacing={1}>
           <Stack spacing={1}>
-            <FormLabel component="legend">{question.text}</FormLabel>
+            <FormLabel component="legend">
+            <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+              </FormLabel>
             <FormLabel component="legend">{question.description}</FormLabel>
             <Typography>Function Name: {question.fnCompute.fnName}</Typography>
-            <Typography>Function Params:
-              {getParameters().map((val,idx) => {
-                return nav.findItemById(val).text;
-              })}
-            </Typography>
+            <Stack spacing={1}>
+              <Typography>Function Params:</Typography>
+              <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
+                {getParameters().length > 0 ? getParameters().map((id,idx) => {
+                const item = nav.findItemById(id);  
+                return (
+                    <Chip disabled key={id} label={item.text}/>
+                  );
+                }) : (<Typography>No Parameters</Typography>)}
+              </Stack>
+            </Stack>
           </Stack>
         </Stack>
       );
@@ -77,6 +83,28 @@ export function ItemFunctionEditorForm({
           );
         }) : (<Typography>No Parameters</Typography>);
     }
+
+    const renderSingleAddParam = (qs:SurveyItem, params:string[]) => {
+      return (
+        <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
+        <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
+        {qs.id !== question.id ? (
+          params.includes(qs.id) ? (
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {handleRemoveParam(qs.id)}}>
+            <CancelIcon/>
+            </Button>
+          ) : (
+            <Button variant="outlined" color="primary"
+            onClick={(e) => {handleAddParam(qs.id)}}>
+            <AddCircleIcon />
+            </Button>
+          )
+        ) : (null)}
+        </div>
+      );
+    }
+    
     const renderAddParams = () => {
       const params = getParameters();
       return (
@@ -92,24 +120,24 @@ export function ItemFunctionEditorForm({
                 <AccordionDetails>
                   {page.items.map((qs,idx) => {
                     // if (!params.includes(qs.id)) {
-                    return (
-                      <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
-                      <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
-                      {qs.id !== question.id ? (
-                        params.includes(qs.id) ? (
-                          <Button variant="outlined" color="secondary"
-                          onClick={(e) => {handleRemoveParam(qs.id)}}>
-                          <CancelIcon/>
-                          </Button>
-                        ) : (
-                          <Button variant="outlined" color="secondary"
-                          onClick={(e) => {handleAddParam(qs.id)}}>
-                          <AddCircleIcon />
-                          </Button>
-                        )
-                      ) : (null)}
-                      </div>
-                    );
+                    if (getQuestionMenuType(qs) === QuestionMenuTypesMap.section.type) {
+                      return (
+                        <Accordion key={qs.id}>
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                          >
+                            <Typography>{qs.text}</Typography>
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            {qs.items.map((qss,idx) => {
+                              return renderSingleAddParam(qss,params);
+                              // }
+                            })}
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    }
+                    return renderSingleAddParam(qs,params);
                     // }
                   })}
                 </AccordionDetails>
@@ -140,11 +168,13 @@ export function ItemFunctionEditorForm({
             </Select>
             </FormControl>
             <div>
-            {renderChipParams()}
-            <Button variant="outlined" color="secondary"
-            onClick={(e) => {setModalParams(true)}}>
-            <AddCircleIcon />
-            </Button>
+              <Stack direction={'row'} spacing={2} style={{	flexWrap: 'wrap'}}>
+                {renderChipParams()}
+                <Button variant="outlined" color="secondary"
+                onClick={(e) => {setModalParams(true)}}>
+                <AddCircleIcon />
+                </Button>
+              </Stack>
             <Modal
             open={modalPrams}
             onClose={(e) => setModalParams(false)}
@@ -157,8 +187,8 @@ export function ItemFunctionEditorForm({
                 width: 320,
                 p: '24px',
               }}>
-              <Stack spacing={1}>
-                {renderChipParams()}
+              <Stack spacing={2}>
+                <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>{renderChipParams()}</Stack>
                 <Divider variant='middle'>Add Parameter</Divider>
                 {renderAddParams()}
               </Stack>

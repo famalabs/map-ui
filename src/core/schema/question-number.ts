@@ -15,7 +15,8 @@ export class QuestionNumber extends Question {
       this.options.maxValue = data.options.maxValue;
     if (!isDefault(data.options.step, QuestionNumberMap.options.step.default))
       this.options.step = data.options.step;
-    this.unit = data.unit;
+    // if (!isDefault(data.options.unit, QuestionNumberMap.options.unit.default))
+    this.options.unit = data.options.unit;
   }
 
   setAnswer(answer) {
@@ -62,9 +63,11 @@ export class QuestionNumber extends Question {
         schema.options = schema.options || {};
         schema.options.step = this.options.step;
       }
+      // if (!isDefault(this.options.unit, QuestionNumberMap.options.unit.default)) {
+      //     schema.options = schema.options || {};
+      // }
+      schema.options.unit = this.options.unit;
     }
-    if (this.unit)
-      schema.unit = this.unit;
     return schema;
   }
   

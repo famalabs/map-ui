@@ -1,23 +1,23 @@
 import React from 'react';
 import {QuestionSelect, QuestionSelectMap, TextScore} from '../../../core/schema'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
-import PinIcon from '@mui/icons-material/Pin';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionSelectEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionSelect;
   questionState: string;
 }
 
 export function QuestionSelectEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -61,7 +61,9 @@ export function QuestionSelectEditorForm({
       <FormControl
       fullWidth
       >
-        <FormLabel component="legend">{question.text}</FormLabel>
+        <FormLabel component="legend">
+        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+        </FormLabel>
         <FormLabel component="legend">{question.description}</FormLabel>
         {question.layout.style === QuestionSelectMap.layout.style.radio ? (
           <RadioGroup
@@ -94,7 +96,7 @@ export function QuestionSelectEditorForm({
     return (
       <div>
         {QuestionGeneralEdit(question, editor)}
-        <Divider textAlign="left">Radio Elements</Divider>
+        <Divider textAlign="left">Options</Divider>
         <FormControl
         >
           <RadioGroup
@@ -104,6 +106,7 @@ export function QuestionSelectEditorForm({
           >
             {selects.map((opt, idx) => (
               <Stack direction="row" spacing={1} 
+              key={idx}
               style={{margin:'0.25rem'}}>
                 <FormControlLabel disabled 
                 key={idx} value="disabled" 

@@ -1,23 +1,17 @@
 import React from 'react';
-import {Survey, GroupMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Divider, Box, Modal } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {GroupMap} from '../../../core/schema'
+import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import FolderIcon from '@mui/icons-material/Folder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { PageEditorForm } from './PageEditor';
-import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import { IUseEditorState } from './EditorBuilder';
 import { renderSelectOption } from './OptionsEditor';
 
 const PageStateMap = {
@@ -51,6 +45,7 @@ export function FolderEditorForm({
 		if (modalPage == PageStateMap.normal) {
 			return(
 				<Box sx={{ width: '100%'}}
+				style={{minHeight:'36px'}}
 				onMouseEnter={() =>  setModalPage(PageStateMap.hover)}
 				>
 					<Typography variant='h5'>{page.text}</Typography>
@@ -60,15 +55,37 @@ export function FolderEditorForm({
 			return (
 				<Box sx={{ width: '100%'}}
 				onMouseLeave={() => setModalPage(PageStateMap.normal)}
-				onClick={(e) => {setModalPage(PageStateMap.modal)}}
 				>
-					<Stack direction="row" spacing={2}>
-						<Typography variant='h5'>{page.text}</Typography>
-            <Button variant="outlined" color="secondary"
-            	onClick={(e) => {setModalPage(PageStateMap.modal)}}>
-            <EditIcon/>
-            </Button>
-          </Stack>
+					
+					<Stack direction='row' spacing={1}>
+					<Typography  onClick={(e) => {setModalPage(PageStateMap.modal)}} variant='h5'>{page.text}</Typography>
+
+					<Button variant="outlined" 
+					color="secondary"
+          onClick={(e) => {setModalPage(PageStateMap.modal)}}
+					>
+					<EditIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.moveItemUp(page)}}
+					>
+					<ArrowUpwardIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.moveItemDown(page)}}
+					>
+					<ArrowDownwardIcon/>
+					</Button>
+					<Button variant={"outlined"} 
+					color={"secondary"}  
+					onClick={(e) => {editor.removeItem(page)}}
+					>
+					<DeleteIcon/>
+					</Button>
+				</Stack>
+					
 				</Box>
 				);
 		} else {
@@ -119,13 +136,16 @@ export function FolderEditorForm({
 
 	// console.log('render folder', folder);
 	return (
-		<Box style={{margin:'0px 24px',width:'100%'}}>
+		<Box 
+		// style={{margin:'0px 24px',width:'100%',minWidth:'614px'}}
+		style={{width:'100%'}}
+		>
 
 		
 		{/* PAGE NAVIGATION */}
-		<Paper style={{marginBottom:'24px',padding:'24px',width:'100%'}}>
 			<Stack spacing={2}>
-				<Stack direction="row" spacing={1} style={{justifyContent:'center', flexWrap: 'nowrap'}}>
+				<Stack direction="row" spacing={1} style={{ flexWrap: 'wrap', alignItems: 'center'}}>
+				<Box><Typography>{folder.text} /</Typography></Box>
 					{pages.map((page,idx) => {
 						return(
 							<Button key={page.id} 
@@ -144,36 +164,8 @@ export function FolderEditorForm({
 					>
 					<NoteAddIcon />
 					</Button>
-				</Stack>
-				<Divider variant='middle'>{page.text}</Divider>
-				<Stack direction='row' spacing={1} style={{justifyContent:'center'}}>
-					<Button variant="outlined" 
-					color="secondary"
-          onClick={(e) => {setModalPage(PageStateMap.modal)}}
-					>
-					<EditIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.moveItemUp(page)}}
-					>
-					<ArrowUpwardIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.moveItemDown(page)}}
-					>
-					<ArrowDownwardIcon/>
-					</Button>
-					<Button variant={"outlined"} 
-					color={"secondary"}  
-					onClick={(e) => {editor.removeItem(page)}}
-					>
-					<DeleteIcon/>
-					</Button>
-				</Stack>
+				</Stack>				
 			</Stack>
-		</Paper>
 
 		{/* PAGE RENDER */}
 		{page.layout.style === GroupMap.layout.style.card ? 
@@ -205,6 +197,15 @@ export function FolderEditorForm({
 				startIcon={<ArrowBackIosIcon />}
 				>
 					Back
+				</Button>
+				<Button 
+				variant={"contained"} 
+				color="secondary" 
+				onClick={(e) => {
+					console.log(JSON.stringify(editor.getRoot().getSchema()));
+				}} 
+				>
+					Print JSON
 				</Button>
 				<Box/>
 					{nav.getPageIdx() === nav.getPages().length-1 ? (

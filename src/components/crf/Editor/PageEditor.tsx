@@ -1,134 +1,11 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionMap, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, FnMap, SurveyItem} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Menu, Stack, Divider } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {GroupMap, Question} from '../../../core/schema';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import TocIcon from '@mui/icons-material/Toc';
-import TocRoundedIcon from '@mui/icons-material/TocRounded';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
+import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
-
-export const QuestionMenuTypesMap = {
-	text: {
-		'type': 'text',
-		'icon': <TextFieldsIcon/>,
-		'locale': {
-			'it': 'Testo',
-			'en': 'Text',
-		}
-	},
-	textMulti: {
-		'type': 'textMulti',
-		'icon': <TextFieldsIcon/>,
-		'locale': {
-			'it': 'Testo Multiriga',
-			'en': 'Text Multiline',
-		}
-	},
-	number: {
-		'type': 'number',
-		'icon': <PinIcon/>,
-		'locale': {
-			'it': 'Numero',
-			'en': 'Number',
-		}
-	},
-	range: {
-		'type': 'range',
-		'icon': <LinearScaleRoundedIcon/>,
-		'locale': {
-			'it': 'Intervallo',
-			'en': 'Range',
-		}
-	},
-	select: {
-		'type': 'select',
-		'icon': <RadioButtonCheckedIcon/>,
-		'locale': {
-			'it': 'Selezione',
-			'en': 'Select',
-		}
-	},
-	dropdown: {
-		'type': 'dropdown',
-		'icon': <ArrowDropDownCircleOutlinedIcon/>,
-		'locale': {
-			'it': 'Selezione a Tendina',
-			'en': 'Dropdown',
-		}
-	},
-	selectTable: {
-		'type': 'selectTable',
-		'icon': <TocRoundedIcon/>,
-		'locale': {
-			'it': 'Tavolo di Selezione',
-			'en': 'Select Table',
-		}
-	},
-	check: {
-		'type': 'check',
-		'icon': <CheckBoxIcon/>,
-		'locale': {
-			'it': 'Selezione Multipla',
-			'en': 'Checkboxes',
-		}
-	},
-	date: {
-		'type': 'date',
-		'icon': <CalendarMonthIcon/>,
-		'locale': {
-			'it': 'Data',
-			'en': 'Date',
-		}
-	},
-	fn: {
-		'type': 'fn',
-		'icon': <FunctionsIcon/>,
-		'locale': {
-			'it': 'Funzione',
-			'en': 'Function',
-		}
-	},
-}
-
-export const getQuestionMenuType = (question:SurveyItem):string => {
-		if (question.type === QuestionTextMap.type) {
-      return QuestionMenuTypesMap.text.type;
-    } else if (question.type === QuestionNumberMap.type) {
-      if (question.layout.style === QuestionNumberMap.layout.style.range) {
-        return QuestionMenuTypesMap.range.type;
-      }
-      return QuestionMenuTypesMap.number.type;
-    } else if (question.type === QuestionSelectMap.type) {
-      if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
-        return QuestionMenuTypesMap.dropdown.type;
-      }
-      return QuestionMenuTypesMap.select.type;
-    } else if (question.type === QuestionCheckMap.type) {
-      return QuestionMenuTypesMap.check.type;
-    } else if (question.type === QuestionDateMap.type) {
-      return QuestionMenuTypesMap.date.type;
-    } else if (question.type === GroupMap.type) {
-      if (question.layout.style === GroupMap.layout.style.table) {
-        if (question.items[0].type === QuestionSelectMap.type) {
-          return QuestionMenuTypesMap.selectTable.type;
-        }
-      }
-    } else if (question.type === FnMap.type) {
-			return QuestionMenuTypesMap.fn.type;
-		}
-		return null;
-}
+import { IUseEditorState } from './EditorBuilder';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export const QuestionStateMap = {
   normal:"normal",
@@ -153,9 +30,19 @@ const createQuestionState = (nav:INavState) => {
 	let qs = {}
 	const questions = nav.getPage().items;
 	for (let i = 0; i < questions.length; i++) {
-		qs[questions[i].id] = QuestionStateMap.normal;
+		if (getQuestionMenuType(questions[i]) === QuestionMenuTypesMap.section.type) {
+			// qs[questions[i].id] = {
+			// 	state: QuestionStateMap.normal,
+			// };
+			qs[questions[i].id] = QuestionStateMap.normal;
+			for (let j = 0; j < questions[i].items.length; j++) {
+				qs[questions[i].items[j].id] = QuestionStateMap.normal;
+			}
+		} else {
+			qs[questions[i].id] = QuestionStateMap.normal;
+		}
 	}
-	console.log('createQuestionState',qs);
+	// console.log('createQuestionState',qs);
 	return qs;
 }
 const getInEditQuestion = (qs:any):[string,string] => {
@@ -178,6 +65,7 @@ export function PageEditorForm({
 	const editor = editorState.editor;
 	const nav = editorState.nav;
 	const page = nav.getPage();
+	const orders = nav.getItemsGlobalOrderIndex();
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
 	const openAddQuestion = Boolean(anchorAddQuestion);
 	const handleOpenAddQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -186,7 +74,8 @@ export function PageEditorForm({
 	const handleAddQuestion = (type: string) => {
 		setAnchorAddQuestion(null);
 		if (typeof type !== 'undefined') {
-			editor.addQuestion(type);
+			const qs = editor.addQuestion(type);
+			handleSetQuestionState(qs.id, QuestionStateMap.edit);
 		}
 	};
 	// for handling hover / edit questions
@@ -194,48 +83,66 @@ export function PageEditorForm({
 	const handleSetQuestionState = (id:string, state:string) => {
 		if (id === null && state === null) {
 			setQuestionState(createQuestionState(nav));
+			return;
 		}
-		let curInEdit = getInEditQuestion(questionState);
-		let qs = createQuestionState(nav);
+		if (!Object.keys(questionState).includes(id)) {
+			let qs = createQuestionState(nav);
+			qs[id] = state;
+			setQuestionState(qs);
+			return;
+		}
+		let curInEdit = getInEditQuestion(questionState); // (id,state)
+		let qs = createQuestionState(nav); // empty qs
+		// cur in edit not in items
 		if (!Object.keys(qs).includes(curInEdit[0])) {
 			curInEdit = [null,null];
 		}
-		if (!Object.keys(qs).includes(id)) {
-			return
-		}
+		// if next state is edit
 		if (isEditState(state)) {
+			// has cur in edit
 			if (curInEdit[0] !== null) {
-				editor.cancelChanges();
+				// cur in edit is next
+				if (curInEdit[0] === id) {
+
+				} else {
+					editor.cancelChanges();
+					return;
+				}
 			}
-		} else {
+		} 
+		// if next state not is edit
+		else {
+			// if cur in edit
 			if (curInEdit[0] !== null) {
 				qs[curInEdit[0]] = curInEdit[1];
 			}
 		}
 		qs[id] = state;
 		setQuestionState(qs);
-		console.log('new questionState', qs);
+		// console.log('new questionState', qs);
 	}
 	// to update if changes the question numbers
-	if (nav.getQuestions().length !== Object.keys(questionState).length) {
-		handleSetQuestionState(null, null);
-	}
+	// if (nav.getQuestions().length !== Object.keys(questionState).length) {
+	// 	handleSetQuestionState(null, null);
+	// }
 
-	console.log('render page',page, questionState);
+	// console.log('render page',page, questionState);
 	return (
 		<div style={{padding:'24px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
-			{page.items.map((question) => {
-				console.log('before render qs', question.id, questionState, questionState[question.id]);
+			{page.items.map((question, index) => {
+				// console.log('before render qs', question.id, questionState, questionState[question.id]);
+				const realQuestionState = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type ? questionState : questionState[question.id]??QuestionStateMap.normal;
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
 					<QuestionEditorForm
 					key={question.id}
+					index={orders[question.id]}
 					editorState={editorState}
-					question={question as Question}
-					questionState={questionState[question.id]}
+					question={question}
+					questionState={realQuestionState}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 					);
@@ -244,15 +151,15 @@ export function PageEditorForm({
 					<Paper>
 						<QuestionEditorForm
 							key={question.id}
+							index={orders[question.id]}
 							editorState={editorState}
-							question={question as Question}
-							questionState={questionState[question.id]}
+							question={question}
+							questionState={realQuestionState}
 							handleSetQuestionState={handleSetQuestionState}
 						/>
 					</Paper>
 				);
 			})}
-			</Stack>
 			<Button 
 				color="inherit" 
 				aria-controls={openAddQuestion ? 'basic-menu' : undefined}
@@ -276,6 +183,7 @@ export function PageEditorForm({
 					);
 				})}
 			</Menu>
+			</Stack>
 		</div>
 	);
 }

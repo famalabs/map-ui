@@ -1,6 +1,6 @@
 import React from 'react';
 import {QuestionText} from '../../../core/schema'
-import { TextField, FormLabel, Stack } from '@mui/material';
+import { TextField, FormLabel, Stack, Typography } from '@mui/material';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { QuestionTextMap } from '../../../core/schema';
 import { IUseEditorState } from './EditorBuilder';
@@ -8,12 +8,14 @@ import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
 export interface QuestionTextEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionText;
   questionState: string;
 }
 
 export function QuestionTextEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -21,15 +23,13 @@ export function QuestionTextEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderIcon = () => {
-    return (<TextFieldsIcon/>);
-  }
-
   const renderNormal = () => {
     return (
       <Stack spacing={1}>
         <Stack spacing={1}>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">          
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+         </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           {question.layout.style === QuestionTextMap.layout.style.area ? (
             <TextField

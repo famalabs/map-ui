@@ -1,79 +1,77 @@
 import React from 'react';
-import {Survey, GroupMap, Question, QuestionText, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionDateMap, QuestionCheckMap, QuestionCheck, SurveyItem, FnMap, ItemFunction} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Stack, Box, Tabs, Tab, Checkbox, Divider } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {GroupMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionCheck, SurveyItem, ItemFunction } from '../../../core/schema'
+import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import TocIcon from '@mui/icons-material/Toc';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
-import { OptionsEditorForm } from './OptionsEditor';
-import { QuestionMap, QuestionTextMap } from '../../../core/schema';
-import { INavState } from '../Navigation';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
 import { QuestionDateEditorForm } from './QuestionDateEditor';
-import { TabList } from '@mui/lab';
-import { getQuestionMenuType, QuestionMenuTypesMap, QuestionStateMap } from './PageEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
 import { ItemFunctionEditorForm } from './ItemFunctionEditor';
+import { QuestionCheckEditorForm } from './QuestionCheckEditor';
+import { QuestionStateMap } from './PageEditor';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
+import { SectionEditorForm } from './SectionEditor';
 
 export interface QuestionEditorFormProps {
+  index?: any;
   editorState: IUseEditorState;
-  question: Question;
+  question: SurveyItem;
   questionState: any;
   handleSetQuestionState: (id:string, state:string) => void;
 }
 
 export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   return (
-    <div>
-      <div style={{margin:'0.25rem'}}>
-        <FormLabel component="legend">Title</FormLabel>
+    <Box>
+      <Box sx={{m:'2rem 0.25rem 1rem 0.25rem', width: '100%', display: 'flex'}}>
         <TextField
+          autoFocus
+          fullWidth
+          variant='outlined'
+          label='Title'
           value={item.text}
           onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
         />
-      </div>
-      <div style={{margin:'0.25rem'}}>
-        <FormLabel component="legend">Description</FormLabel>
+        {QuestionMenuTypesMap.section.type !== getQuestionMenuType(item) && (
+          <FormControl fullWidth>
+          <Select
+            
+            style={{width: '100%'}}
+            value={getQuestionMenuType(item)}
+            onChange={(e) => {editor.changeQuestionType(item, e.target.value)}}
+          >
+              {Object.keys(QuestionMenuTypesMap).map((key, idx) => (
+                <MenuItem key={key} value={key}
+                >
+                  <div style={{display: 'flex'}}>
+                    {QuestionMenuTypesMap[key].icon}
+                    <Typography sx={{ml: 2}}>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+                  </div>
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+        )}
+      </Box>
+      <Box sx={{margin:'0.25rem'}}>
         <TextField
+        fullWidth
+        variant='outlined'
+        label='Description'
           value={item.description}
           onChange={(e) => {editor.onChangeValue(item.id,'description', e.target.value)}}
         />
-      </div>
-      <div style={{margin:'0.25rem'}}>
-        <FormControl>
-        <FormLabel component="legend">Type</FormLabel>
-        <Select
-          value={getQuestionMenuType(item)}
-          onChange={(e) => {editor.changeQuestionType(item, e.target.value)}}
-        >
-            {Object.keys(QuestionMenuTypesMap).map((key, idx) => (
-              <MenuItem key={key} value={key}
-              >
-                {QuestionMenuTypesMap[key].icon}
-							  <Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
-              </MenuItem>
-            ))}
-        </Select>
-        </FormControl>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -92,6 +90,7 @@ export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditor
 }
 
 export function QuestionEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -100,30 +99,11 @@ export function QuestionEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
+  const isSection = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type;
+  const thisQuestionState = isSection ? questionState[question.id] : questionState;
+  // const thisQuestionState = questionState;
+
   const renderIcon = () => {
-    // if (question.type === QuestionTextMap.type) {
-    //   return (<TextFieldsIcon/>);
-    // } else if (question.type === QuestionNumberMap.type) {
-    //   if (question.layout.style === QuestionNumberMap.layout.style.range) {
-    //     return (<LinearScaleRoundedIcon/>);
-    //   }
-    //   return (<PinIcon/>);
-    // } else if (question.type === QuestionSelectMap.type) {
-    //   if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
-    //     return (<ArrowDropDownCircleOutlinedIcon/>);
-    //   }
-    //   return (<RadioButtonCheckedIcon/>);
-    // } else if (question.type === QuestionCheckMap.type) {
-    //   return (<CheckBoxIcon/>);
-    // } else if (question.type === QuestionDateMap.type) {
-    //   return (<CalendarMonthIcon/>);
-    // } else if (question.type === GroupMap.type) {
-    //   if (question.layout.style === GroupMap.layout.style.table) {
-    //     if (question.items[0].type === QuestionSelectMap.type) {
-    //       return (<TocRoundedIcon/>)
-    //     }
-    //   }
-    // }
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
   }
 
@@ -131,41 +111,55 @@ export function QuestionEditorForm({
     if (question instanceof QuestionText) {
       return (
         <QuestionTextEditorForm
+          index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionNumber) {
       return (
         <QuestionNumberEditorForm
+          index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionDate) {
       return (
         <QuestionDateEditorForm
+          index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
+        />
+      );
+    } else if (question instanceof QuestionCheck) {
+      return (
+        <QuestionCheckEditorForm
+          index={index}
+          editorState={editorState}
+          question={question}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof QuestionSelect) {
       return (
         <QuestionSelectEditorForm
+          index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
+          index={index}
           editorState={editorState}
           question={question}
-          questionState={questionState}
+          questionState={thisQuestionState}
         />
       );
     } else if (question.type === GroupMap.type) {
@@ -173,12 +167,38 @@ export function QuestionEditorForm({
         if (question.items[0].type === QuestionSelectMap.type) {
           return (
             <QuestionTableEditorForm
+              index={index}
               editorState={editorState}
               question={question}
-              questionState={questionState}
+              questionState={thisQuestionState}
             />
           );
         }
+      } else if (question.layout.style === GroupMap.layout.style.section) {
+        // if (nav.getPage().layout.style === GroupMap.layout.style.card) {
+        //   return (
+        //     <Paper style={{padding:24}}>
+        //       <SectionEditorForm
+        //       key={question.id}
+        //       index={index+1}
+        //       editorState={editorState}
+        //       section={question}
+        //       questionState={questionState}
+        //       handleSetQuestionState={handleSetQuestionState}
+        //       />
+        //     </Paper>
+        //   );
+        // }
+        return (
+          <SectionEditorForm
+          key={question.id}
+					index={index}
+					editorState={editorState}
+					section={question}
+					questionState={questionState}
+					handleSetQuestionState={handleSetQuestionState}
+          />
+        );
       }
     }
     return null;
@@ -187,12 +207,12 @@ export function QuestionEditorForm({
   const renderNormal = () => {
     return (
       <Stack>
-        <Stack direction="row" spacing={1}>
-          <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
+        <Stack direction="row" spacing={1} style={{minHeight:'36px',minWidth:'376px'}}>
+         {/* <Typography variant="h5">{question.options.required && '*'} renderIcon()</Typography>*/}
         </Stack>
-        <div>
+        <Box>
           {renderQuestion()}
-        </div>
+        </Box>
       </Stack>
       
     );
@@ -201,7 +221,7 @@ export function QuestionEditorForm({
     return (
       <Stack>
         <Box sx={{display:'flex', justifyContent: 'space-between'}}>
-          <Typography variant="h5">{question.options.required && '*'}{renderIcon()}</Typography>
+          <Typography variant="h5">{renderIcon()}</Typography>
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.edit)}}>
@@ -222,7 +242,7 @@ export function QuestionEditorForm({
           </Stack>
         </Box>
         <div
-          onClick={(e) => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
+          onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
         >
           {renderQuestion()}
         </div>
@@ -237,85 +257,87 @@ export function QuestionEditorForm({
 
   const renderMenu = () => {
     return (
-      <Box sx={{ width: '100%' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-          {/* <Typography variant="h5">
-            {question.options.required && '*'}
-          </Typography>  */}
-          <Button variant="outlined" color="secondary"
-            onClick={(e) => {}}>
-            {renderIcon()}
-          </Button>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={questionState} onChange={handleChangeTab}>
+      <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={thisQuestionState} onChange={handleChangeTab}>
               <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
+              {!isSection && (
               <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
+              )}
+              {!isSection && (
               <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
+              )}
             </Tabs>
-          </Box>
-          <Stack direction='row' spacing={1}>
-            <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
-            <CheckCircleIcon/>
-            </Button>
-            <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
-            <CancelIcon/>
-            </Button>
-          </Stack>
-        </Box>
       </Box>
     );
   }
+
+  const renderSaveOrCancel = () => {
+    return (
+      <Box sx={{mt: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
+        <Stack direction='row' spacing={1}>
+        <Button variant="outlined" color="secondary"
+          onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
+          <CancelIcon/>
+          </Button>
+          <Button variant="contained" color="primary"
+          onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
+          <CheckCircleIcon/>
+          </Button>
+        </Stack>
+      </Box>
+    );
+  }
+
+  //TODO: usare un unico template per le 3 tab
   const renderEdit = () => {
     return (
-      <Stack>
+      <Stack sx={{ borderRadius: 3, border: '1px solid black', p: '1rem', minHeight: '20vh'}}>
         {renderMenu()}
-        <div>
+        <Box>
         {renderQuestion()}
-        </div>
-        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
+        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
   const renderOptions = () => {
     return (
-      <Stack>
+      <Stack sx={{ borderRadius: 3, border: '1px solid black', p: '1rem', minHeight: '20vh'}}>
         {renderMenu()}
-        <div>
+        <Box>
         {renderQuestion()}
-        </div>
-        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
+        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
   const renderLayout = () => {
     return (
-      <Stack>
+      <Stack sx={{ borderRadius: 3, border: '1px solid black', p: '1rem', minHeight: '20vh'}}>
         {renderMenu()}
-        <div>
+        <Box>
         {renderQuestion()}
-        </div>
-        <Divider style={{margin:'1rem'}} variant="middle"></Divider>
+        </Box>
+        {renderSaveOrCancel()}
       </Stack>
     );
   }
   // console.log('render question', questionState);
   return (
     <div
-    onMouseEnter={() =>  {if (questionState === QuestionStateMap.normal){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
-    onMouseLeave={() => {if (questionState === QuestionStateMap.hover) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
-    style={{padding:'24px'}}
+    onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal && !isSection){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
+    onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
+    style={{padding:'18px'}}
     >
-      {questionState === QuestionStateMap.normal ? (
+      {thisQuestionState === QuestionStateMap.normal ? (
         renderNormal()
-      ) : questionState === QuestionStateMap.hover ? (
+      ) : thisQuestionState === QuestionStateMap.hover ? (
         renderHover()
-      ) : (questionState === QuestionStateMap.edit) ? (
+      ) : (thisQuestionState === QuestionStateMap.edit) ? (
         renderEdit()
-      ) : (questionState === QuestionStateMap.options) ? (
+      ) : (thisQuestionState === QuestionStateMap.options) ? (
         renderOptions()
-      ) : (questionState === QuestionStateMap.layout) ? (
+      ) : (thisQuestionState === QuestionStateMap.layout) ? (
         renderLayout()
       ) : renderNormal()}
     </div>

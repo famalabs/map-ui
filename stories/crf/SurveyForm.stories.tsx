@@ -1,8 +1,8 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { SurveyForm, SurveyFormProps } from '../../src/components/crf/SurveyForm';
+import { SurveyForm, SurveyFormProps } from '../../src/components/crf/Compiler/';
 import {Survey} from '../../src/core/schema'
-import surveyFormExmple from './SurveyFormExample.json'
+import surveyFormExmple from './asdf.json'
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

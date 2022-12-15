@@ -1,41 +1,35 @@
 import React from 'react';
-import {Survey, SurveyMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Box, CssBaseline } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { OptionsEditorForm } from './OptionsEditor';
+import {Survey} from '../../../core/schema'
+import { Box, CssBaseline } from '@mui/material';
 import { FolderEditorForm } from './FolderEditor';
 import { SidebarEditorForm } from './SidebarEditor';
 import { useEditorState } from './EditorBuilder';
 
 export interface SurveyEditorProps {
     saveSurvey: (survey: Survey) => void;
-    // initSurvey?: Survey;
-    // addQuestionLabel?: string;
-    // saveSurveyLabel?: string;
+    initSurvey: any;
 }
 
 export function SurveyEditorForm({
     saveSurvey,
-    // initSurvey = emptyObj,
-    // addQuestionLabel = 'Add question',
-    // saveSurveyLabel = 'Save survey',
+    initSurvey,
     }: SurveyEditorProps) {
-    // const [questions, setQuestions] = React.useState<Question[]>(Object.values(initSurvey));
-
-    // const [schema, setSchema] = React.useState(Object.values())
-    const editorState = useEditorState();
-    console.log('render survey', editorState.editor.getRoot());
+        
+    const editorState = useEditorState(initSurvey);
+    // console.log('render survey', editorState.editor.getRoot());
     return (
-        <Box sx={{ display: 'flex', width:'100%' }}>
-            <CssBaseline />
+        <Box 
+        // sx={{ display: 'flex', width:'100%', m:0, justifyContent: 'flex-end' }}
+        sx={{ width:'100%' }}
+        >
+            {/* <CssBaseline /> */}
             <SidebarEditorForm
                 editorState={editorState}
             />
             <Box
                 component="main"
-                sx={{ flexGrow: 1, justifySelf: 'stretch', width: { sm: `calc(100% - ${320}px)` } }}
+                // sx={{ flexGrow: 1, p:'0px 24px',ml:`${320+64}px`,mt:0,mr:0, minWidth:`calc(100% - ${320+64}px)`, maxWidth:`calc(100% - ${320+64}px)`}}
+                style={{position:'absolute',left:320+64,top:0,right:0, padding:24}}
             >
                 <FolderEditorForm
                     editorState={editorState}

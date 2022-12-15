@@ -1,18 +1,25 @@
 import React from 'react';
 import {QuestionDate, QuestionDateMap} from '../../../core/schema'
-import { TextField, FormLabel } from '@mui/material';
+// import * as dayjs from 'dayjs'
+// import 'dayjs/locale/it';
+// import 'dayjs/locale/en';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { FormLabel, TextField, Typography } from '@mui/material';
 import PinIcon from '@mui/icons-material/Pin';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 
 export interface QuestionDateEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionDate;
   questionState: string;
 }
 
 export function QuestionDateEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -20,24 +27,26 @@ export function QuestionDateEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderIcon = () => {
-    return (<PinIcon/>);
-  }
-
   const renderNormal = () => {
     return (
-      <div>
         <div>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
-          <TextField
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={editor.getRoot().options.locale}> */}
+            <DatePicker
             disabled
+            views={['year', 'month', 'day']}
             // value={question.description ?? question.text}
             // label={question.description ?? question.text}
-            required={question.options.required}
-          />
+            // required={question.options.required}
+            renderInput={(params) => <TextField {...params} />} 
+            onChange={(v,k)=> {}}
+            value={undefined}
+            />
+          {/* </LocalizationProvider> */}
         </div>
-      </div>
     );
   }
   const renderHover = () => {

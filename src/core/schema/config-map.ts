@@ -113,6 +113,13 @@ export const QuestionCheckMap = {
             false: false,
             true: true
         }
+    },
+    layout: {
+        style: {
+            default: 'check',
+            check:'check',
+            switch:'switch'
+        }
     }
 } as const;
 export type QuestionCheckMap = keyof typeof QuestionCheckMap;
@@ -148,13 +155,27 @@ export const QuestionNumberMap = {
     type: "QuestionNumber",
     options: {
         minValue: {
-            default: -Infinity
+            default: 0
         },
         maxValue: {
-            default: +Infinity
+            default: 10
         },
         step: {
-            default: 0
+            default: 1
+        },
+        unit: {
+            default:"none",
+            none:"none",
+            kg:"kg",
+            g:"g",
+            m:"m",
+            cm:"cm",
+            mm:"mm",
+            l:"l",
+            cl:"cl",
+            ml:"ml",
+            dollar:"$",
+            euro:"€"
         }
     },
     layout: {
@@ -165,6 +186,17 @@ export const QuestionNumberMap = {
     }
 } as const;
 export type QuestionNumberMap = keyof typeof QuestionNumberMap;
+
+const toValidQuestionNumber = (value: any, def: number) => {
+    if (typeof value === 'undefined') {
+        return def;
+    }
+    const n = Number(value) ?? def;
+    return Number.isNaN(n) ? def : n;
+}
+export const toValidQuestionNumberMinValue = (value: any) => toValidQuestionNumber(value, QuestionNumberMap.options.minValue.default);
+export const toValidQuestionNumberMaxValue = (value: any) => toValidQuestionNumber(value, QuestionNumberMap.options.maxValue.default);
+export const toValidQuestionNumberStep = (value: any) => toValidQuestionNumber(value, QuestionNumberMap.options.step.default);
 
 // QuestionDate
 export const QuestionDateMap = {

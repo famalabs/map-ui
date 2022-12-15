@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import {Survey, SurveyMap, fromMapToDefault, SurveyItem, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap, QuestionCheckMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck,GroupMap, QuestionMap, FnMap, ItemFunction} from '../../../core/schema'
 import { useFormState } from '@src/components/forms';
 import { INavState, SurveyNav, useNavState } from '../Navigation';
-import { getQuestionMenuType, QuestionMenuTypesMap } from './PageEditor';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export interface IEditorState {
   getSurvey: () => Survey;
   getRoot: () => SurveyItem;
   addFolder: () => void;
   addPage: (folder: SurveyItem) => void;
-  addQuestion: (type:string) => void;
+  addQuestion: (type:string, parentId?:string) => SurveyItem;
   changeQuestionType: (item: SurveyItem, newType: string) => void;
   removeItem: (item:SurveyItem) => void;
   moveItemUp: (item:SurveyItem) => void;
@@ -42,8 +42,10 @@ const defaultQuestion = (type:string) => {
   return {
     id: "",
     type: type,
-    text: "New " + type,
-    description: "Description",
+    // text: "New " + type,
+    // description: "Description",
+    text: "",
+    description: "",
     options: {
       required: false
     }
@@ -65,14 +67,30 @@ const defaultQuestionTableSelect = () => {
   return {
     id: "",
     type: GroupMap.type,
-    text: "New Table Select",
-    description: "Description",
+    text: "",
+    description: "",
     options: {
       required: false
     },
     items: [],
     layout: {
       style: GroupMap.layout.style.table
+    }
+  };
+}
+
+const defaultSection = () => {
+  return {
+    id: "",
+    type: GroupMap.type,
+    text: "",
+    description: "",
+    options: {
+      required: false
+    },
+    items: [],
+    layout: {
+      style: GroupMap.layout.style.section
     }
   };
 }
@@ -115,18 +133,28 @@ export class EditorBuilder implements IEditorState {
       return this.root.items[folderIdx].items[pageIdx].items;
     }
     public findItemById(id:string):SurveyItem {
-      if (id === this.root.id) { return this.root; }
-      for (let f = 0; f < this.root.items.length; f++) {
-        const folder = this.root.items[f];
-        if (folder.id === id) { return folder; }
-        for (let p = 0; p < folder.items.length; p++) {
-          const page = folder.items[p];
-          if (page.id === id) { return page; }
-          for (let q = 0; q < page.items.length; q++) {
-            if (page.items[q].id === id) { return page.items[q]; }
-          }
+      // DFS
+      const queue:SurveyItem[] = [this.root]
+      while (queue.length !== 0) {
+        const item = queue.shift()
+        if (item.id === id) { return item; }
+        for (let i = 0; i < item.items.length; i++) {
+          queue.push(item.items[i]);
         }
       }
+
+      // if (id === this.root.id) { return this.root; }
+      // for (let f = 0; f < this.root.items.length; f++) {
+      //   const folder = this.root.items[f];
+      //   if (folder.id === id) { return folder; }
+      //   for (let p = 0; p < folder.items.length; p++) {
+      //     const page = folder.items[p];
+      //     if (page.id === id) { return page; }
+      //     for (let q = 0; q < page.items.length; q++) {
+      //       if (page.items[q].id === id) { return page.items[q]; }
+      //     }
+      //   }
+      // }
       return undefined;
     }
     public addFolder(): SurveyItem {
@@ -154,133 +182,155 @@ export class EditorBuilder implements IEditorState {
       return null
     }
     
-    public addQuestionGeneral(type:string, nav: INavState):SurveyItem {
+    public addQuestionGeneral(type:string, nav: INavState, parentId?:string):SurveyItem {
       if (type === QuestionMenuTypesMap.text.type) {
-        return this.addQuestionText(nav);
+        return this.addQuestionText(nav, parentId);
       } else if (type === QuestionMenuTypesMap.textMulti.type) {
-        return this.addQuestionTextArea(nav);
+        return this.addQuestionTextArea(nav, parentId);
       } else if (type === QuestionMenuTypesMap.number.type) {
-        return this.addQuestionNumber(nav);
+        return this.addQuestionNumber(nav, parentId);
       } else if (type === QuestionMenuTypesMap.range.type) {
-        return this.addQuestionNumberSlider(nav);
+        return this.addQuestionNumberSlider(nav, parentId);
       } else if (type === QuestionMenuTypesMap.select.type) {
-        return this.addQuestionSelect(nav);
+        return this.addQuestionSelect(nav, parentId);
       } else if (type === QuestionMenuTypesMap.dropdown.type) {
-        return this.addQuestionSelectDropdown(nav);
-      }
-      else if (type === QuestionMenuTypesMap.check.type) {
-        return this.addQuestionCheck(nav);
+        return this.addQuestionSelectDropdown(nav, parentId);
+      } else if (type === QuestionMenuTypesMap.check.type) {
+        return this.addQuestionCheck(nav, parentId);
+      } else if (type === QuestionMenuTypesMap.switch.type) {
+        return this.addQuestionSwitch(nav, parentId);
       } else if (type === QuestionMenuTypesMap.date.type) {
-        return this.addQuestionDate(nav);
+        return this.addQuestionDate(nav, parentId);
       } else if (type === QuestionMenuTypesMap.selectTable.type) {
-        return this.addQuestionSelectTable(nav);
+        return this.addQuestionSelectTable(nav, parentId);
       } else if (type === QuestionMenuTypesMap.fn.type) {
-        return this.addFnItem(nav);
+        return this.addFnItem(nav, parentId);
+      } else if (type === QuestionMenuTypesMap.section.type) {
+        return this.addSection(nav);
       }
       return undefined;
     }
-    public addQuestion(type:string):Question {
+    public addQuestion(type:string, parentId?:string):SurveyItem {
       return undefined;
     }
-    private addInitQuestion(question:SurveyItem, type:string, nav:INavState):SurveyItem {
+    private addInitQuestion(question:SurveyItem, type:string, nav:INavState, parentId?:string):SurveyItem {
       question.id = this.getValidId();
-      question.text = type + " " +question.id.toString();
+      // question.text = type + " " +question.id.toString();
       const folderIdx = nav.getFolderIdx();
       const pageIdx = nav.getPageIdx();
+      if (typeof parentId !== 'undefined') {
+        this.root.items[folderIdx].items[pageIdx].items[nav.getItemIdx(parentId)].insertItem(question);
+        return question
+      }
       this.root.items[folderIdx].items[pageIdx].insertItem(question);
       return question;
     }
-    public addQuestionText(nav: INavState):SurveyItem {
+    public addQuestionText(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionTextMap.type;
       const question = new QuestionText(defaultQuestion(type));
       question.layout = {
         style: QuestionTextMap.layout.style.default
       }
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
     }
-    public addQuestionTextArea(nav: INavState):SurveyItem {
+    public addQuestionTextArea(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionTextMap.type;
       const question = new QuestionText(defaultQuestion(type));
       question.layout = {
         style: QuestionTextMap.layout.style.area
       }
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
     }
-    public addQuestionNumber(nav: INavState):SurveyItem {
+    public addQuestionNumber(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionNumberMap.type;
       const question = new QuestionNumber(defaultQuestion(type));
       question.options = {
-        minValue: 0,
-        maxValue: 10,
-        step: 1
+        minValue: QuestionNumberMap.options.minValue.default,
+        maxValue: QuestionNumberMap.options.maxValue.default,
+        step: QuestionNumberMap.options.step.default,
+        unit: QuestionNumberMap.options.unit.none
       }
       question.layout = {
         style: QuestionNumberMap.layout.style.default
       }
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
     }
-    public addQuestionNumberSlider(nav: INavState):SurveyItem {
+    public addQuestionNumberSlider(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionNumberMap.type;
       const question = new QuestionNumber(defaultQuestion(type));
       question.options = {
-        minValue: 0,
-        maxValue: 10,
-        step: 1
+        minValue: QuestionNumberMap.options.minValue.default,
+        maxValue: QuestionNumberMap.options.maxValue.default,
+        step: QuestionNumberMap.options.step.default,
+        unit: QuestionNumberMap.options.unit.none
       }
       question.layout = {
         style: QuestionNumberMap.layout.style.range
       }
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
         
     }
-    public addQuestionSelect(nav: INavState):SurveyItem {
+    public addQuestionSelect(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionSelectMap.type;
       const question = new QuestionSelect(defaultQuestion(type));
       question.selectOptions = [{text:"Radio 1",score:0},{text:"Radio 2",score:1}];
       question.layout = { style: QuestionSelectMap.layout.style.radio };
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
     }
-    public addQuestionSelectDropdown(nav: INavState):SurveyItem {
+    public addQuestionSelectDropdown(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionSelectMap.type;
       const question = new QuestionSelect(defaultQuestion(type));
       question.selectOptions = [{text:"Dropdown 1",score:0},{text:"Dropdown 2",score:1}];
       question.layout = { style: QuestionSelectMap.layout.style.dropdown };
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
     }
-    public addQuestionSelectTable(nav: INavState):SurveyItem {
+    public addQuestionSelectTable(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionSelectMap.type+GroupMap.layout.style.table;
       const group = new SurveyItem(defaultQuestionTableSelect());
       for (let i = 0; i < 2; i++) {
         const question = new QuestionSelect(defaultQuestion(QuestionSelectMap.type));
         question.selectOptions = [{text:"Radio 1",score:0},{text:"Radio 2",score:1}];
         question.layout = { style: QuestionSelectMap.layout.style.radio };
-        this.addInitQuestion(question, QuestionSelectMap.type, nav);
+        this.addInitQuestion(question, QuestionSelectMap.type, nav, undefined);
       }
-      const toReturn = this.addInitQuestion(group, type, nav) as SurveyItem;
+      const toReturn = this.addInitQuestion(group, type, nav, parentId) as SurveyItem;
       const length = this.root.items[nav.getFolderIdx()].items[nav.getPageIdx()].items.length;
+      const lastIsTable = typeof parentId === 'undefined'? 2:1;
       for (let i = 0; i < 2; i++) {
-        const item = this.root.items[nav.getFolderIdx()].items[nav.getPageIdx()].items[length-i-2]
+        const item = this.root.items[nav.getFolderIdx()].items[nav.getPageIdx()].items[length-i-lastIsTable]
         this.root.items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItem(item);
         toReturn.insertItem(item);
       }
       return toReturn
     }
-    public addQuestionDate(nav: INavState):SurveyItem {
+    public addQuestionDate(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionDateMap.type;
       const question = new QuestionDate(defaultQuestion(type));
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
         
     }
-    public addQuestionCheck(nav: INavState):SurveyItem {
+    public addQuestionCheck(nav: INavState, parentId?:string):SurveyItem {
       const type = QuestionCheckMap.type;
       const question = new QuestionCheck(defaultQuestion(type));
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      question.layout = { style: QuestionCheckMap.layout.style.default };
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
         
     }
-    public addFnItem<T>(nav: INavState):SurveyItem {
+    public addQuestionSwitch(nav: INavState, parentId?:string):SurveyItem {
+      const type = QuestionCheckMap.type;
+      const question = new QuestionCheck(defaultQuestion(type));
+      question.layout = { style: QuestionCheckMap.layout.style.switch };
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
+        
+    }
+    public addFnItem<T>(nav: INavState, parentId?:string):SurveyItem {
       const type = FnMap.type;
       const question = new ItemFunction<T>(defaultFn());
-      return this.addInitQuestion(question, type, nav) as SurveyItem;
+      return this.addInitQuestion(question, type, nav, parentId) as SurveyItem;
+    }
+    public addSection(nav: INavState):SurveyItem {
+      const group = new SurveyItem(defaultSection());
+      return this.addInitQuestion(group, group.type, nav, undefined) as SurveyItem;
     }
 
     public changeQuestionType: (item: SurveyItem, newType: string) => void;
@@ -299,8 +349,9 @@ export class EditorBuilder implements IEditorState {
 
       if (newItem instanceof QuestionNumber && item instanceof QuestionNumber) {
         newItem.options.minValue = item.options.minValue;
-          newItem.options.step = item.options.step;
-          newItem.options.maxValue = item.options.maxValue;
+        newItem.options.step = item.options.step;
+        newItem.options.maxValue = item.options.maxValue;
+        newItem.options.unit = item.options.unit;
       } else if (newItem instanceof QuestionSelect && item instanceof QuestionSelect) {
         newItem.selectOptions = item.selectOptions;
       }
@@ -315,13 +366,13 @@ export class EditorBuilder implements IEditorState {
       const itemType = nav.getItemType(item.id);
       const folderIdx = nav.getFolderIdx();
       const pageIdx = nav.getPageIdx();
-      if (itemType === GroupMap.layout.style.folder && nav.getFolders().length > 1) { 
-        if (this.root.removeItem(item)) {
+      if (itemType === GroupMap.layout.style.folder) { 
+        if (nav.getFolders().length > 1 && this.root.removeItem(item)) {
           return folderIdx-1 >= 0 ? folderIdx-1 : 0;
         }
         return folderIdx;
-      } else if (itemType === GroupMap.layout.style.page && nav.getPages().length > 1) { 
-        if (this.root.items[folderIdx].removeItem(item)) {
+      } else if (itemType === GroupMap.layout.style.page) { 
+        if (nav.getPages().length > 1 && this.root.items[folderIdx].removeItem(item)) {
           return pageIdx-1 >= 0 ? pageIdx-1 : 0;
         }
         return pageIdx;
@@ -368,7 +419,7 @@ export class EditorBuilder implements IEditorState {
      * @returns 
      */
     public onChangeValue(itemId:string, key:string, value:any) {
-      console.log('before change value', itemId, key, value)
+      // console.log('before change value', itemId, key, value)
       const item = this.findItemById(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
       if (key === 'parameters' && item instanceof ItemFunction) {
@@ -394,7 +445,7 @@ export class EditorBuilder implements IEditorState {
       } else {
         item[key] = value;
       }
-      console.log('change value',item)
+      // console.log('change value',item)
       return 
     }
     public hasPendingChanges: () => boolean;
@@ -419,9 +470,9 @@ export interface IUseEditorState {
     nav: INavState;
 }
 
-export function useEditorState(): IUseEditorState {
+export function useEditorState(initSurvey:any): IUseEditorState {
 
-    const initValue = {
+    const initValue = initSurvey ?? {
         id: "1",
         type: "Survey",
         text: "Survey 1",
@@ -429,10 +480,8 @@ export function useEditorState(): IUseEditorState {
         options: fromMapToDefault(SurveyMap.options),
         layout: fromMapToDefault(SurveyMap.layout)
     }
-    console.log('initValue',initValue);
+    // console.log('initValue',initValue);
     const [value, setValue] = React.useState(initValue);
-    // const survey = new Survey(value);
-    // const root = survey.root;
 
     // takes saved the survey before changes, if not save, restore prev values
     // must control other actions 
@@ -441,7 +490,6 @@ export function useEditorState(): IUseEditorState {
 
     const surveyNav = useNavState(new Survey(value).root);
     
-    console.log("editor state");
     return {
       editor: {
         getSurvey: () => new Survey(value),
@@ -458,11 +506,12 @@ export function useEditorState(): IUseEditorState {
           setValue(editorBuilder.getValue()); 
           surveyNav.updateAndSet(editorBuilder.getRoot(), folder, page);
         },
-        addQuestion: (type: string, params?: any) => {
+        addQuestion: (type: string, parentId?: any) => {
           const editorBuilder = new EditorBuilder(new Survey(value)); 
-          const question = editorBuilder.addQuestionGeneral(type, surveyNav);
+          const question = editorBuilder.addQuestionGeneral(type, surveyNav, parentId);
           setValue(editorBuilder.getValue());
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          return question;
         },
         changeQuestionType(item:SurveyItem, newType:string) {
           if (newType === getQuestionMenuType(item)) {

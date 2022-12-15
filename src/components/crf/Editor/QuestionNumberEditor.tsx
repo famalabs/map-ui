@@ -1,19 +1,20 @@
 import React from 'react';
-import {QuestionNumber, QuestionNumberMap} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Slider } from '@mui/material';
-import PinIcon from '@mui/icons-material/Pin';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
+import {QuestionNumber, QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../../core/schema'
+import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { renderSelectOption } from './OptionsEditor';
 
 export interface QuestionNumberEditorFormProps {
+  index?: number;
   editorState: IUseEditorState;
   question: QuestionNumber;
   questionState: string;
 }
 
 export function QuestionNumberEditorForm({
+  index,
   editorState,
   question,
   questionState,
@@ -22,39 +23,46 @@ export function QuestionNumberEditorForm({
   const nav = editorState.nav;
   const style = question.layout.style;
 
-  const renderIcon = () => {
-    return (question.layout.style === QuestionNumberMap.layout.style.range 
-      ? (<LinearScaleRoundedIcon/>):(<PinIcon/>));
-  }
-
   const renderNormal = () => {
     return (
       <Stack spacing={1}>
         {question.layout.style === QuestionNumberMap.layout.style.range ? (
         <Stack spacing={1}>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+            <Typography>{
+            question.options.unit === QuestionNumberMap.options.unit.none ?
+            '' : QuestionNumberMap.options.unit[question.options.unit]}</Typography>
             <Typography>{question.options.minValue}</Typography>
             <Slider 
             disabled
-            step={question.options.step}
+            step={toValidQuestionNumberStep(question.options.step)}
             marks
-            min={question.options.minValue}
-            max={question.options.maxValue}
+            min={toValidQuestionNumberMinValue(question.options.minValue)}
+            max={toValidQuestionNumberMaxValue(question.options.maxValue)}
              />
             <Typography>{question.options.maxValue}</Typography>
           </Stack>
         </Stack>
         ):(
           <Stack spacing={1}>
-          <FormLabel component="legend">{question.text}</FormLabel>
+          <FormLabel component="legend">
+          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
+          </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <TextField
             disabled
             // value={question.description ?? question.text}
             // label={question.description ?? question.text}
             required={question.options.required}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{
+                question.options.unit === QuestionNumberMap.options.unit.none ?
+                '' : QuestionNumberMap.options.unit[question.options.unit]}</InputAdornment>,
+            }}
           />
         </Stack>
         )}
@@ -72,35 +80,35 @@ export function QuestionNumberEditorForm({
     );
   }
   const renderNumberOptions = () => {
-    const editor = editorState.editor;
-    const nav = editorState.nav;
+    
     return (
     <div>
       {renderGeneralOptions(question,editorState)}
       <Stack spacing={1}>
       <Typography>Number Options</Typography>
+      {renderSelectOption(QuestionNumberMap.options.unit, 'Unit', question.options.unit, editor, question.id, 'options.unit')}
       <div>
-        <FormLabel component="legend">minValue</FormLabel>
+        <FormLabel component="legend">Min Value</FormLabel>
         <TextField
           type={'number'}
           value={question.options.minValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.minValue', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.minValue', Number(e.target.value))}}
         />
       </div>
       <div>
-        <FormLabel component="legend">maxValue</FormLabel>
+        <FormLabel component="legend">Max Value</FormLabel>
         <TextField
           type={'number'}
           value={question.options.maxValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.maxValue', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.maxValue', Number(e.target.value))}}
         />
       </div>
       <div>
-        <FormLabel component="legend">step</FormLabel>
+        <FormLabel component="legend">Step</FormLabel>
         <TextField
           type={'number'}
           value={question.options.step}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.step', e.target.value)}}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.step', Number(e.target.value))}}
         />
       </div>
       </Stack>
