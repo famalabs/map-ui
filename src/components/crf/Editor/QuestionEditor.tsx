@@ -302,7 +302,7 @@ export function QuestionEditorForm({
       </Stack>
     );
   }
-  // console.log('render question', questionState);
+  console.log('render question', questionState, JSON.stringify(question.getSchema()));
   return (
     <div
     onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal && !isSection){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}

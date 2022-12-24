@@ -161,8 +161,8 @@ export class EditorBuilder implements IEditorState {
       const data = {
         type:QuestionNumber.TYPE,
         options: {
-          minValue: QuestionNumberMap.options.minValue.default,
-          maxValue: QuestionNumberMap.options.maxValue.default,
+          min: QuestionNumberMap.options.minValue.default,
+          max: QuestionNumberMap.options.maxValue.default,
           step: QuestionNumberMap.options.step.default,
           unit: undefined,
           required: true,
@@ -177,8 +177,8 @@ export class EditorBuilder implements IEditorState {
       const data = {
         type:QuestionNumber.TYPE,
         options: {
-          minValue: QuestionNumberMap.options.minValue.default,
-          maxValue: QuestionNumberMap.options.maxValue.default,
+          min: QuestionNumberMap.options.minValue.default,
+          max: QuestionNumberMap.options.maxValue.default,
           step: QuestionNumberMap.options.step.default,
           unit: undefined,
           required: true,
@@ -359,23 +359,23 @@ export class EditorBuilder implements IEditorState {
       this.survey.update(item.id, item.getSchema(), curIdx+1);
       return curIdx+1;
     }
-    private createDBSchemaFromPath(path:string, value:any):DBSchema {
+    private createDBSchemaFromPath(path:string, value:any, oldSchema:DBSchema):DBSchema {
       const schema = {};  
       const keys = path.split(".");
       //! must do this way better
       if (keys.length == 1) {
         schema[keys[0]] = value;
       } else if (keys.length == 2) {
-        schema[keys[0]] = {};
+        schema[keys[0]] = oldSchema[keys[0]];
         schema[keys[0]][keys[1]] = value;
       } else if (keys.length == 3) {
-        schema[keys[0]] = {};
-        schema[keys[0]][keys[1]] = {};
+        schema[keys[0]] = oldSchema[keys[0]];
+        schema[keys[0]][keys[1]] = oldSchema[keys[0]][keys[1]];
         schema[keys[0]][keys[1]][keys[2]] = value;
       } else if (keys.length == 4) {
-        schema[keys[0]] = {};
-        schema[keys[0]][keys[1]] = {};
-        schema[keys[0]][keys[1]][keys[2]] = {};
+        schema[keys[0]] = oldSchema[keys[0]];
+        schema[keys[0]][keys[1]] = oldSchema[keys[0]][keys[1]];
+        schema[keys[0]][keys[1]][keys[2]] = oldSchema[keys[0]][keys[1]][keys[2]];
         schema[keys[0]][keys[1]][keys[2]][keys[3]] = value;
       } else {
         throw Error('cant change value multiple keys')
@@ -393,7 +393,7 @@ export class EditorBuilder implements IEditorState {
       console.log('before change value', itemId, key, newValue);
       const item = this.survey.get(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
-      const newData = this.createDBSchemaFromPath(key, newValue);
+      const newData = this.createDBSchemaFromPath(key, newValue, item.getSchema());
       const newSchema = Object.assign({}, item.getSchema(), newData) as DBSchema;
       this.survey.update(itemId, newSchema, -1);
       console.log('onChangeValue new data, schema', newData, newSchema);
@@ -469,7 +469,7 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     const initSurvey = new Survey();
     initSurvey.load(initValue);
     const [survey, setSurvey] = React.useState<Survey>(initSurvey);
-    const getRoot = () => survey.get(survey.getSchema().id);
+    const getRoot = (s:Survey) => s.get(s.getSchema().id);
     // const value:DBSchema = survey.getSchema();
     // const setValue = (a:any) => {}
 
@@ -480,14 +480,14 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     const [hasChanges, setHasChanges] = React.useState<boolean>(false);
     const [changesValueSurvey, setChangesValueSurvey] = React.useState<Survey>(initSurvey);
 
-    const surveyNav = useNavState(getRoot());
+    const surveyNav = useNavState(getRoot(survey));
 
     console.log('editor survey', survey);
     
     return {
       editor: {
         getSurvey: () => survey,
-        getRoot: () => getRoot(),
+        getRoot: () => getRoot(survey),
         addFolder: () => { 
           const editorBuilder = new EditorBuilder(survey); 
           const folder = editorBuilder.addFolder();

@@ -15,7 +15,7 @@ export function SurveyEditorForm({
     initSurvey,
     }: SurveyEditorProps) {
         
-    const editorState = useEditorState(undefined);
+    const editorState = useEditorState(initSurvey);
     // console.log('render survey survey', editorState.editor.getSurvey());
     // console.log('render survey root', editorState.editor.getRoot());
     // console.log('render survey schema', editorState.editor.getRoot().getSchema());
