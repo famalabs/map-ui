@@ -449,15 +449,15 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     const initValue = initSchema ?? {
       id: "1",
       type: Group.TYPE,
-      name: "Survey",
+      text: "Survey",
       items: [{
         id: "2",
         type: Group.TYPE,
-        name: "Folder",
+        text: "Folder",
         items: [{
           id: "3",
           type: Group.TYPE,
-          name:"Page",
+          text:"Page",
           items:[],
           layout: {
             style: "card",

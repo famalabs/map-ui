@@ -82,7 +82,7 @@ export function SidebarEditorForm({
 							}}
 							>
 							<Stack spacing={1}>
-								<Typography>{folder.name}</Typography>
+								<Typography>{folder.text}</Typography>
 								<Divider></Divider>
 								<div style={{display:'flex', justifyContent: 'center'}}>
 									<Button 
@@ -128,7 +128,7 @@ export function SidebarEditorForm({
 							variant={"outlined"} 
 							color={"inherit"}  
 							onClick={(e) => {nav.setFolder(folder)}}>
-							{folder.name}
+							{folder.text}
 							</Button>
 						);
 					}
@@ -145,8 +145,8 @@ export function SidebarEditorForm({
 			<div>
 				<FormLabel component="legend">Survey Name</FormLabel>
 				<TextField
-					value={survey.name}
-					onChange={(e) => {editor.onChangeValue(survey.id,'name', e.target.value)}}
+					value={survey.text}
+					onChange={(e) => {editor.onChangeValue(survey.id,'text', e.target.value)}}
 				/>
 			</div>
 		);
@@ -182,8 +182,8 @@ export function SidebarEditorForm({
 			<div>
 				<FormLabel component="legend">Folder Name</FormLabel>
 				<TextField
-					value={folder.name}
-					onChange={(e) => {editor.onChangeValue(folder.id,'name', e.target.value)}}
+					value={folder.text}
+					onChange={(e) => {editor.onChangeValue(folder.id,'text', e.target.value)}}
 				/>
 			</div>
 		);
@@ -204,7 +204,7 @@ export function SidebarEditorForm({
 				<Box
 				sx={{ width:'100%', padding:'24px' }}
 				>
-					<Typography variant="h3">{survey.name}</Typography>
+					<Typography variant="h3">{survey.text}</Typography>
 					<Stack spacing={2}>
 					<Divider variant='middle'></Divider>
 					<Typography variant="h5">{menuState}</Typography>

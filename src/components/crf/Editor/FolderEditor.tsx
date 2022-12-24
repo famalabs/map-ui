@@ -102,7 +102,7 @@ export function FolderEditorForm({
 							<FormLabel component="legend">Page Name</FormLabel>
 							<TextField
 								value={page.text}
-								onChange={(e) => {editor.onChangeValue(page.id,'name', e.target.value)}}
+								onChange={(e) => {editor.onChangeValue(page.id,'text', e.target.value)}}
 							/>
 						</div>
 						<Typography>Layout</Typography>
@@ -195,7 +195,7 @@ export function FolderEditorForm({
 				variant={"contained"} 
 				color="secondary" 
 				onClick={(e) => {
-					console.log(JSON.stringify(editor.getRoot().getSchema()));
+					console.log(JSON.stringify(editor.getSurvey().getSchema()), editor.getSurvey().getSchema());
 				}} 
 				>
 					Print JSON
