@@ -1,15 +1,10 @@
 import React from 'react';
-import {QuestionDate, QuestionDateMap} from '../../../core/schema'
-// import * as dayjs from 'dayjs'
-// import 'dayjs/locale/it';
-// import 'dayjs/locale/en';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import {QuestionDate} from '../../../survey'
 import { FormLabel, TextField, Typography } from '@mui/material';
-import PinIcon from '@mui/icons-material/Pin';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 
 export interface QuestionDateEditorFormProps {
   index?: number;

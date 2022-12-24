@@ -1,14 +1,8 @@
 import React from 'react';
-import {GroupMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionSelectMap, QuestionDate, QuestionCheck, SurveyItem, ItemFunction } from '../../../core/schema'
+import { GroupMap, QuestionSelectMap } from '../../../core/schema'
+import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, Group } from '../../../survey'
 import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PreviewIcon from '@mui/icons-material/Preview';
+import {Edit, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined} from '@mui/icons-material';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
@@ -24,12 +18,14 @@ import { SectionEditorForm } from './SectionEditor';
 export interface QuestionEditorFormProps {
   index?: any;
   editorState: IUseEditorState;
-  question: SurveyItem;
+  question: Item;
   questionState: any;
   handleSetQuestionState: (id:string, state:string) => void;
 }
 
-export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
+const locale = "en";
+
+export function QuestionGeneralEdit(item:Item, editor:IEditorState) {
   return (
     <Box>
       <Box sx={{m:'2rem 0.25rem 1rem 0.25rem', width: '100%', display: 'flex'}}>
@@ -54,7 +50,7 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
                 >
                   <div style={{display: 'flex'}}>
                     {QuestionMenuTypesMap[key].icon}
-                    <Typography sx={{ml: 2}}>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+                    <Typography sx={{ml: 2}}>{QuestionMenuTypesMap[key].locale[locale]}</Typography>
                   </div>
                 </MenuItem>
               ))}
@@ -75,15 +71,15 @@ export function QuestionGeneralEdit(item:SurveyItem, editor:IEditorState) {
   );
 }
 
-export const renderGeneralOptions = (question:SurveyItem, editorState:IUseEditorState) => {
+export const renderGeneralOptions = (question:Item, editorState:IUseEditorState) => {
   const editor = editorState.editor;
   return (
     <Stack spacing={1}>
       <Typography>General options</Typography>
       <Stack spacing={1}>
-      <FormControlLabel control={
-        <Checkbox checked={question.options.required} onChange={(e)=>{editor.onChangeValue(question.id, 'options.required', e.target.checked)}} />
-      } label={'Required'}/> 
+      {question instanceof Question && <FormControlLabel control={
+        <Checkbox checked={question.required} onChange={(e)=>{editor.onChangeValue(question.id, 'options.required', e.target.checked)}} />
+      } label={'Required'}/>}
       </Stack>
     </Stack>
   );
@@ -162,33 +158,17 @@ export function QuestionEditorForm({
           questionState={thisQuestionState}
         />
       );
-    } else if (question.type === GroupMap.type) {
-      if (question.layout.style === GroupMap.layout.style.table) {
-        if (question.items[0].type === QuestionSelectMap.type) {
-          return (
-            <QuestionTableEditorForm
-              index={index}
-              editorState={editorState}
-              question={question}
-              questionState={thisQuestionState}
-            />
-          );
-        }
-      } else if (question.layout.style === GroupMap.layout.style.section) {
-        // if (nav.getPage().layout.style === GroupMap.layout.style.card) {
-        //   return (
-        //     <Paper style={{padding:24}}>
-        //       <SectionEditorForm
-        //       key={question.id}
-        //       index={index+1}
-        //       editorState={editorState}
-        //       section={question}
-        //       questionState={questionState}
-        //       handleSetQuestionState={handleSetQuestionState}
-        //       />
-        //     </Paper>
-        //   );
-        // }
+    } else if (question.type === Group.TYPE) {
+      if (QuestionMenuTypesMap.selectTable.type === getQuestionMenuType(question)) {
+        return (
+          <QuestionTableEditorForm
+            index={index}
+            editorState={editorState}
+            question={question}
+            questionState={thisQuestionState}
+          />
+        );
+      } else if (QuestionMenuTypesMap.section.type === getQuestionMenuType(question)) {
         return (
           <SectionEditorForm
           key={question.id}
@@ -225,19 +205,19 @@ export function QuestionEditorForm({
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.edit)}}>
-            <EditIcon/>
+            <Edit/>
             </Button>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {editor.cancelChanges(); editor.moveItemUp(question)}}>
-            <ArrowUpwardIcon/>
+            <ArrowUpward/>
             </Button>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {editor.cancelChanges(); editor.moveItemDown(question)}}>
-            <ArrowDownwardIcon/>
+            <ArrowDownward/>
             </Button>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {editor.cancelChanges(); editor.removeItem(question)}}>
-            <DeleteIcon/>
+            <Delete/>
             </Button>
           </Stack>
         </Box>
@@ -259,12 +239,12 @@ export function QuestionEditorForm({
     return (
       <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={thisQuestionState} onChange={handleChangeTab}>
-              <Tab icon={<EditIcon />} value={QuestionStateMap.edit} />
+              <Tab icon={<Edit />} value={QuestionStateMap.edit} />
               {!isSection && (
-              <Tab icon={<SettingsIcon />} value={QuestionStateMap.options} />
+              <Tab icon={<Settings />} value={QuestionStateMap.options} />
               )}
               {!isSection && (
-              <Tab icon={<PreviewIcon />} value={QuestionStateMap.layout} />
+              <Tab icon={<Preview />} value={QuestionStateMap.layout} />
               )}
             </Tabs>
       </Box>
@@ -277,11 +257,11 @@ export function QuestionEditorForm({
         <Stack direction='row' spacing={1}>
         <Button variant="outlined" color="secondary"
           onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.cancelChanges()}}>
-          <CancelIcon/>
+          <Cancel/>
           </Button>
           <Button variant="contained" color="primary"
           onClick={(e) => {handleSetQuestionState(question.id, QuestionStateMap.hover); editor.saveChanges()}}>
-          <CheckCircleIcon/>
+          <CheckCircle/>
           </Button>
         </Stack>
       </Box>

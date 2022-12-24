@@ -15,8 +15,10 @@ export function SurveyEditorForm({
     initSurvey,
     }: SurveyEditorProps) {
         
-    const editorState = useEditorState(initSurvey);
-    // console.log('render survey', editorState.editor.getRoot());
+    const editorState = useEditorState(undefined);
+    // console.log('render survey survey', editorState.editor.getSurvey());
+    // console.log('render survey root', editorState.editor.getRoot());
+    // console.log('render survey schema', editorState.editor.getRoot().getSchema());
     return (
         <Box 
         // sx={{ display: 'flex', width:'100%', m:0, justifyContent: 'flex-end' }}

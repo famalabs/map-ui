@@ -1,5 +1,6 @@
 import React from 'react';
-import {FnMap, getQuestionMenuType, ItemFunction, QuestionMenuTypesMap, SurveyItem} from '../../../core/schema'
+import { ItemFunction, Item } from '../../../survey'
+import { getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
 import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -8,10 +9,22 @@ import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 
+enum FnMedicine {
+  BodyMassIndex = 'BMI',
+  SofaScore = 'SOFA',
+  ISTHScore = 'ISTH',
+  CIDScore = 'CID',
+  HScore = 'HScore',
+  MeanArterialPressure = 'MeanArterialPressure',
+  GFRCockcroftGault = 'CrocoftGault',
+  CKD_EPI_CREATININE = 'CDKEPI',
+  PF_Percent = 'PFpercent',
+}
+
 export interface ItemFunctionEditorFormProps {
   index?: number;
   editorState: IUseEditorState;
-  question: SurveyItem;
+  question: ItemFunction;
   questionState: string;
 }
 
@@ -22,7 +35,7 @@ export function ItemFunctionEditorForm({
   questionState,
   }: ItemFunctionEditorFormProps) {
 
-  if (question instanceof ItemFunction) {
+  // if (question instanceof ItemFunction) {
     const editor = editorState.editor;
     const nav = editorState.nav;
 
@@ -31,9 +44,7 @@ export function ItemFunctionEditorForm({
     }
 
     const handleAddParam = (id:string) => {
-     
       question.parameters.push(id);
-
       editor.onChangeValue(question.id, 'parameters', question.parameters);
     }
     const handleRemoveParam = (id:string) => {
@@ -53,10 +64,10 @@ export function ItemFunctionEditorForm({
         <Stack spacing={1}>
           <Stack spacing={1}>
             <FormLabel component="legend">
-            <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
+            <Typography>{index && (index + '.')} {question.text}</Typography>
               </FormLabel>
             <FormLabel component="legend">{question.description}</FormLabel>
-            <Typography>Function Name: {question.fnCompute.fnName}</Typography>
+            <Typography>Function Name: {question.getSchema().fnCompute}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
@@ -84,7 +95,7 @@ export function ItemFunctionEditorForm({
         }) : (<Typography>No Parameters</Typography>);
     }
 
-    const renderSingleAddParam = (qs:SurveyItem, params:string[]) => {
+    const renderSingleAddParam = (qs:Item, params:string[]) => {
       return (
         <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
         <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
@@ -156,10 +167,10 @@ export function ItemFunctionEditorForm({
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
             <Select
-              value={question.fnCompute.fnName}
+              value={question.getSchema().fnCompute}
               onChange={(e) => {handleChangeFunction(e.target.value)}}
             >
-                {Object.keys(FnMap.fnCompute).map((key, idx) => (
+                {Object.values(FnMedicine).map((key, idx) => (
                   <MenuItem key={key} value={key}
                   >
                     <Typography>{key}</Typography>
@@ -220,6 +231,6 @@ export function ItemFunctionEditorForm({
       ) : renderNormal()}
       </div>
     );
-    }
-  return null;
+  //   }
+  // return null;
 }

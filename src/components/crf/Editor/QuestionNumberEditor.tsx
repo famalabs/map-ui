@@ -1,5 +1,6 @@
 import React from 'react';
-import {QuestionNumber, QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../../core/schema'
+import {QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../../core/schema'
+import {QuestionNumber,Unit} from '../../../survey'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
@@ -33,18 +34,20 @@ export function QuestionNumberEditorForm({
           </FormLabel>
           <FormLabel component="legend">{question.description}</FormLabel>
           <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-            <Typography>{
-            question.options.unit === QuestionNumberMap.options.unit.none ?
-            '' : QuestionNumberMap.options.unit[question.options.unit]}</Typography>
-            <Typography>{question.options.minValue}</Typography>
+            {/* <Typography>{
+            question.options.unit === undefined ?
+            '' : QuestionNumberMap.options.unit[question.options.unit]}</Typography> */}
+            <Typography>{`Unit: ${question.options.unit}`}</Typography>
+            <Typography>{`Min: ${question.options.min}`}</Typography>
             <Slider 
             disabled
             step={toValidQuestionNumberStep(question.options.step)}
             marks
-            min={toValidQuestionNumberMinValue(question.options.minValue)}
-            max={toValidQuestionNumberMaxValue(question.options.maxValue)}
+            min={toValidQuestionNumberMinValue(question.options.min)}
+            max={toValidQuestionNumberMaxValue(question.options.max)}
              />
-            <Typography>{question.options.maxValue}</Typography>
+            <Typography>{`Max: ${question.options.max}`}</Typography>
+            <Typography>{`Step: ${question.options.step}`}</Typography>
           </Stack>
         </Stack>
         ):(
@@ -56,12 +59,13 @@ export function QuestionNumberEditorForm({
           <TextField
             disabled
             // value={question.description ?? question.text}
-            // label={question.description ?? question.text}
+            label={
+              `( Min: ${question.options.min}
+                , Max: ${question.options.max}
+                , Step: ${question.options.step} )`}
             required={question.options.required}
             InputProps={{
-              startAdornment: <InputAdornment position="start">{
-                question.options.unit === QuestionNumberMap.options.unit.none ?
-                '' : QuestionNumberMap.options.unit[question.options.unit]}</InputAdornment>,
+              startAdornment: <InputAdornment position="start">{`Unit: ${question.options.unit}`}</InputAdornment>,
             }}
           />
         </Stack>
@@ -91,16 +95,16 @@ export function QuestionNumberEditorForm({
         <FormLabel component="legend">Min Value</FormLabel>
         <TextField
           type={'number'}
-          value={question.options.minValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.minValue', Number(e.target.value))}}
+          value={question.options.min}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.min', Number(e.target.value))}}
         />
       </div>
       <div>
         <FormLabel component="legend">Max Value</FormLabel>
         <TextField
           type={'number'}
-          value={question.options.maxValue}
-          onChange={(e) => {editor.onChangeValue(question.id,'options.maxValue', Number(e.target.value))}}
+          value={question.options.max}
+          onChange={(e) => {editor.onChangeValue(question.id,'options.max', Number(e.target.value))}}
         />
       </div>
       <div>

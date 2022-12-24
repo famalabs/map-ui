@@ -54,7 +54,7 @@ class Item {
         const s = {
             id: this.id,
             type: this.type,
-            items: this.items.map((el) => el.getSchema()), //TODO: not recursive
+            items: this.items.map((el) => el ?? el.getSchema()), //TODO: not recursive
         };
         if (this.name !== undefined)
             s.name = this.name;

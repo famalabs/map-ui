@@ -1,8 +1,7 @@
 import React from 'react';
-import {QuestionCheck, QuestionCheckMap} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Switch, Checkbox, FormControlLabel } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import { QuestionTextMap } from '../../../core/schema';
+import { QuestionCheckMap} from '../../../core/schema'
+import {QuestionCheck} from '../../../survey'
+import { FormLabel, Stack, Switch, Checkbox, FormControlLabel } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';

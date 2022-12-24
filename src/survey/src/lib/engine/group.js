@@ -32,7 +32,7 @@ class Group extends item_1.Item {
      */
     getSchema() {
         const schema = super.getSchema();
-        schema.items = this.items.map((el) => el.getSchema()); //TODO: not recursive
+        schema.items = this.items.map((el) => el ?? el.getSchema()); //TODO: not recursive
         return schema;
     }
     /**

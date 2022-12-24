@@ -1,7 +1,6 @@
 import React from 'react';
-import {QuestionText} from '../../../core/schema'
+import {QuestionText} from '../../../survey'
 import { TextField, FormLabel, Stack, Typography } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
 import { QuestionTextMap } from '../../../core/schema';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';

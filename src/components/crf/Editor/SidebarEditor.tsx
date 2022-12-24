@@ -1,16 +1,8 @@
 import React from 'react';
 import {SurveyMap} from '../../../core/schema'
 import { Button, Paper, TextField, Typography, FormLabel, Box, Stack, List, ListItem, Divider } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SettingsIcon from '@mui/icons-material/Settings';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import {Edit, Delete, Settings, FormatListNumbered, FolderOpen, CreateNewFolder, Preview, ArrowUpward, ArrowDownward} from '@mui/icons-material';
 import { renderSelectOption } from './OptionsEditor';
-import PreviewIcon from '@mui/icons-material/Preview';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { IUseEditorState } from './EditorBuilder';
 
 const MenuStateMap = {
@@ -34,6 +26,7 @@ export function SidebarEditorForm({
 	const survey = editor.getRoot();
 	const folders = nav.getFolders();
 	const folderId = nav.getFolderId();
+	console.log('sidebar', folders)
 
 	const [menuState, setMenuState] = React.useState(MenuStateMap.folders);
 
@@ -57,17 +50,17 @@ export function SidebarEditorForm({
 			<Box sx={{ width: '100%' }}>
 				<nav>
 					<List>
-						{renderMenuButton(FormatListNumberedIcon, MenuStateMap.folders)}
-						{renderMenuButton(EditIcon, MenuStateMap.edit)}
-						{renderMenuButton(SettingsIcon, MenuStateMap.options)}
-						{renderMenuButton(PreviewIcon, MenuStateMap.layout)}
+						{renderMenuButton(FormatListNumbered, MenuStateMap.folders)}
+						{renderMenuButton(Edit, MenuStateMap.edit)}
+						{renderMenuButton(Settings, MenuStateMap.options)}
+						{renderMenuButton(Preview, MenuStateMap.layout)}
 					</List>
 				</nav>
 				<Divider />
 				<nav aria-label="secondary mailbox folders">
 					<List>
 						{(menuState === MenuStateMap.folders || menuState === MenuStateMap.folder) ? 
-						renderMenuButton(FolderOpenIcon, MenuStateMap.folder) : null}
+						renderMenuButton(FolderOpen, MenuStateMap.folder) : null}
 					</List>
 				</nav>
 			</Box>
@@ -77,7 +70,7 @@ export function SidebarEditorForm({
 	const renderFolders = () => {
 		return (
 			<Stack spacing={1}>
-				{nav.getFolders().map((folder,idx) => {
+				{folders.map((folder,idx) => {
 					if (folderId === folder.id ) {
 						return (
 							<Box key={folder.id} 
@@ -89,7 +82,7 @@ export function SidebarEditorForm({
 							}}
 							>
 							<Stack spacing={1}>
-								<Typography>{folder.text}</Typography>
+								<Typography>{folder.name}</Typography>
 								<Divider></Divider>
 								<div style={{display:'flex', justifyContent: 'center'}}>
 									<Button 
@@ -98,14 +91,14 @@ export function SidebarEditorForm({
 									onClick={(e) => {setMenuState(MenuStateMap.folder)}}
 									sx={{margin:'0px 3px'}}
 									>
-									<EditIcon/>
+									<Edit/>
 									</Button>
 									<Button variant={"outlined"} 
 									color={"inherit"}  
 									onClick={(e) => {editor.removeItem(folder)}}
 									sx={{margin:'0px 3px'}}
 									>
-									<DeleteIcon/>
+									<Delete/>
 									</Button>
 								</div>
 								<div style={{display:'flex', justifyContent: 'center'}}>
@@ -115,14 +108,14 @@ export function SidebarEditorForm({
 									onClick={(e) => {editor.moveItemUp(folder)}}
 									sx={{margin:'0px 3px'}}
 									>
-									<ArrowUpwardIcon/>
+									<ArrowUpward/>
 									</Button>
 									<Button variant={"outlined"} 
 									color={"inherit"}  
 									onClick={(e) => {editor.moveItemDown(folder)}}
 									sx={{margin:'0px 3px'}}
 									>
-									<ArrowDownwardIcon/>
+									<ArrowDownward/>
 									</Button>
 								</div>
 							</Stack>
@@ -135,13 +128,13 @@ export function SidebarEditorForm({
 							variant={"outlined"} 
 							color={"inherit"}  
 							onClick={(e) => {nav.setFolder(folder)}}>
-							{folder.text}
+							{folder.name}
 							</Button>
 						);
 					}
 				})}
 				<Button variant="outlined" color="secondary" onClick={(e) => {editor.addFolder()}}>
-				<CreateNewFolderIcon />
+				<CreateNewFolder />
 				</Button>
 			</Stack>
 		);
@@ -152,8 +145,8 @@ export function SidebarEditorForm({
 			<div>
 				<FormLabel component="legend">Survey Name</FormLabel>
 				<TextField
-					value={survey.text}
-					onChange={(e) => {editor.onChangeValue(survey.id,'text', e.target.value)}}
+					value={survey.name}
+					onChange={(e) => {editor.onChangeValue(survey.id,'name', e.target.value)}}
 				/>
 			</div>
 		);
@@ -162,11 +155,11 @@ export function SidebarEditorForm({
 	const renderOptions = () => {
 		return(
 			<Stack spacing={2}>
-				{Object.keys(SurveyMap.options).map((val,idx) => {
+				{/* {Object.keys(SurveyMap.options).map((val,idx) => {
 					return (
 						<div key={val}>{renderSelectOption(SurveyMap.options[val],val, survey.options[val] ?? SurveyMap.options[val].default, editor, survey.id, 'options.'+val)}</div>
 					);
-				})}
+				})} */}
 			</Stack>
 		);
 	}
@@ -189,8 +182,8 @@ export function SidebarEditorForm({
 			<div>
 				<FormLabel component="legend">Folder Name</FormLabel>
 				<TextField
-					value={folder.text}
-					onChange={(e) => {editor.onChangeValue(folder.id,'text', e.target.value)}}
+					value={folder.name}
+					onChange={(e) => {editor.onChangeValue(folder.id,'name', e.target.value)}}
 				/>
 			</div>
 		);
@@ -211,7 +204,7 @@ export function SidebarEditorForm({
 				<Box
 				sx={{ width:'100%', padding:'24px' }}
 				>
-					<Typography variant="h3">{survey.text}</Typography>
+					<Typography variant="h3">{survey.name}</Typography>
 					<Stack spacing={2}>
 					<Divider variant='middle'></Divider>
 					<Typography variant="h5">{menuState}</Typography>

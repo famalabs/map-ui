@@ -1,10 +1,8 @@
 import React from 'react';
-import {QuestionSelect, QuestionSelectMap, TextScore} from '../../../core/schema'
+import {QuestionSelect, TextScore} from '../../../survey'
+import {QuestionSelectMap} from '../../../core/schema'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
@@ -25,7 +23,7 @@ export function QuestionSelectEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const selects = question.selectOptions;
+  const selects = question.options.select;
   const addSelect = () => {
     selects.push({text:"New Radio",score:selects.length} as TextScore);
     editor.onChangeValue(question.id, 'selectOptions', selects);
@@ -120,19 +118,19 @@ export function QuestionSelectEditorForm({
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {moveSelect(idx,-1)}}>
-                <ArrowUpwardIcon />
+                <ArrowUpward />
                 </Button>
                 <Button 
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {moveSelect(idx,1)}}>
-                <ArrowDownwardIcon />
+                <ArrowDownward />
                 </Button>
                 <Button 
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {removeSelect(idx)}}>
-                <DeleteIcon />
+                <Delete />
                 </Button>
               </Stack> 
             ))}
@@ -141,7 +139,7 @@ export function QuestionSelectEditorForm({
           variant="outlined" 
           color="inherit" 
           onClick={(e) => {addSelect()}}>
-          <AddCircleIcon />
+          <AddCircle />
           </Button>
         </FormControl>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {GroupMap, Question} from '../../../core/schema';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {AddCircle} from '@mui/icons-material';
 import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
@@ -14,6 +14,8 @@ export const QuestionStateMap = {
   options:"options",
   layout:"layout"
 }
+
+const locale = "en";
 
 const isEditState = (state:string) => {
 	if (state === QuestionStateMap.edit) {
@@ -167,7 +169,7 @@ export function PageEditorForm({
 				aria-expanded={openAddQuestion ? 'true' : undefined}
 				onClick={handleOpenAddQuestion}
 			>
-				<AddCircleIcon />
+				<AddCircle />
 			</Button>
 			<Menu
 				anchorEl={anchorAddQuestion}
@@ -178,7 +180,7 @@ export function PageEditorForm({
 					return (
 						<MenuItem key={key} onClick={(e) =>handleAddQuestion(key)}>
 							{QuestionMenuTypesMap[key].icon}
-							<Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+							<Typography>{QuestionMenuTypesMap[key].locale[locale]}</Typography>
 						</MenuItem>
 					);
 				})}

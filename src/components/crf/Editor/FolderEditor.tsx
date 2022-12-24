@@ -1,15 +1,7 @@
 import React from 'react';
 import {GroupMap} from '../../../core/schema'
 import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { ArrowUpward, ArrowDownward, Edit, Delete, Cancel, CheckCircle, NoteAdd, ArrowBackIos, ArrowForwardIos} from '@mui/icons-material';
 import { PageEditorForm } from './PageEditor';
 import { IUseEditorState } from './EditorBuilder';
 import { renderSelectOption } from './OptionsEditor';
@@ -33,6 +25,7 @@ export function FolderEditorForm({
 	const pages = nav.getPages();
 	const pageId = nav.getPageId();
 	const page = nav.getPage();
+	// console.log('folder', folder, pages, page);
 
 	const pageOptions = {
 		default:GroupMap.layout.style.page,
@@ -64,25 +57,25 @@ export function FolderEditorForm({
 					color="secondary"
           onClick={(e) => {setModalPage(PageStateMap.modal)}}
 					>
-					<EditIcon/>
+					<Edit/>
 					</Button>
 					<Button variant={"outlined"} 
 					color={"secondary"}  
 					onClick={(e) => {editor.moveItemUp(page)}}
 					>
-					<ArrowUpwardIcon/>
+					<ArrowUpward/>
 					</Button>
 					<Button variant={"outlined"} 
 					color={"secondary"}  
 					onClick={(e) => {editor.moveItemDown(page)}}
 					>
-					<ArrowDownwardIcon/>
+					<ArrowDownward/>
 					</Button>
 					<Button variant={"outlined"} 
 					color={"secondary"}  
 					onClick={(e) => {editor.removeItem(page)}}
 					>
-					<DeleteIcon/>
+					<Delete/>
 					</Button>
 				</Stack>
 					
@@ -109,7 +102,7 @@ export function FolderEditorForm({
 							<FormLabel component="legend">Page Name</FormLabel>
 							<TextField
 								value={page.text}
-								onChange={(e) => {editor.onChangeValue(page.id,'text', e.target.value)}}
+								onChange={(e) => {editor.onChangeValue(page.id,'name', e.target.value)}}
 							/>
 						</div>
 						<Typography>Layout</Typography>
@@ -118,11 +111,11 @@ export function FolderEditorForm({
 						<Stack direction='row' spacing={1}>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {setModalPage(PageStateMap.normal); editor.saveChanges()}}>
-            <CheckCircleIcon/>
+            <CheckCircle/>
             </Button>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {setModalPage(PageStateMap.normal); editor.cancelChanges()}}>
-            <CancelIcon/>
+            <Cancel/>
             </Button>
           </Stack>
 						</Box>
@@ -162,7 +155,7 @@ export function FolderEditorForm({
 					color="secondary" 
 					onClick={(e) => {editor.addPage(folder)}}
 					>
-					<NoteAddIcon />
+					<NoteAdd />
 					</Button>
 				</Stack>				
 			</Stack>
@@ -194,7 +187,7 @@ export function FolderEditorForm({
 				color="secondary" 
 				disabled={nav.getPageIdx() === 0} 
 				onClick={(e) => {nav.prevPage()}} 
-				startIcon={<ArrowBackIosIcon />}
+				startIcon={<ArrowBackIos />}
 				>
 					Back
 				</Button>
@@ -228,7 +221,7 @@ export function FolderEditorForm({
 						// endIcon={<AddCircleIcon />}
 						sx={{ mr: 1 }}
 						>
-							<NoteAddIcon/>
+							<NoteAdd/>
 						</Button>
 						</Stack>
 					) : (
@@ -236,7 +229,7 @@ export function FolderEditorForm({
 						variant={"contained"} 
 						color="secondary" 
 						onClick={(e)=>{nav.nextPage()}} 
-						endIcon={<ArrowForwardIosIcon />}
+						endIcon={<ArrowForwardIos />}
 						sx={{ mr: 1 }}
 						>
 							Next

@@ -131,12 +131,13 @@ export class SurveyNav implements INavState {
 	static rootToValue = (root: Item, folderIdx?:number, pageIdx?:number) => {
 		if (typeof folderIdx === 'undefined') { folderIdx = 0; }
 		if (typeof pageIdx === 'undefined') { pageIdx = 0; }
+		const schema = root.getSchema();
 		return {
 			root: root,
-			folders: root.items,
-			folder: root.items[folderIdx],
-			pages: root.items[folderIdx].items,
-			page: root.items[folderIdx].items[pageIdx]
+			folders: schema.items,
+			folder: schema.items[folderIdx],
+			pages: schema.items[folderIdx].items,
+			page: schema.items[folderIdx].items[pageIdx]
 		} as INavValue;
 	}
 
@@ -180,27 +181,18 @@ export class SurveyNav implements INavState {
 	}
 
 	public getItemIdx (id:string):number {
-		// BFS
-		const queue:[Item,number][] = [[this.root,0]]
-		while (queue.length !== 0) {
-			const item = queue.shift()
-			if (item[0].id === id) { return item[1]; }
-			for (let i = 0; i < item[0].items.length; i++) {
-				queue.push([item[0].items[i],i]);
+		for (let f = 0; f < this.getFolders().length; f++) {
+			const folder = this.getFolders()[f];
+			if (folder.id === id) { return f; }
+			for (let p = 0; p < folder.items.length; p++) {
+				const page = folder.items[p];
+				if (page.id === id) { return p; }
+					for (let q = 0; q < page.items.length; q++) {
+					if (page.items[q].id === id) { return q; }
+				}
 			}
 		}
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	if (folder.id === id) { return f; }
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 		if (page.id === id) { return p; }
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 			if (page.items[q].id === id) { return q; }
-		// 		}
-		// 	}
-		// }
-		// return -1;
+		return -1;
 	}
 
 	public findItemById(id:string):Item {
@@ -308,17 +300,15 @@ export class SurveyNav implements INavState {
 		return order;
 	}
 
-	public getValue(): INavValue {
+	public getValue(): any {
 		return {
-			root: this.root,
 			folders: this.getFolders(),
 			folder: this.getFolder(),
 			pages: this.getPages(),
 			page: this.getPage()
-		} as INavValue;
+		}
 	}
-	public setValue(value:INavValue) {
-		this.root = value.root;
+	public setValue(value:any) {
 		this.folders = new FolderNav(value.folders);
 		this.folders.set(value.folder);
 		this.pages = new PageNav(value.pages);
@@ -329,14 +319,12 @@ export class SurveyNav implements INavState {
 
 
 
-export function useNavState(surveyRoot: Item): INavState {
-
-	const [value, setValue] = React.useState(SurveyNav.rootToValue(surveyRoot));
-
-	// console.log('nav value', value);
-
-	function handleSetValue(val:any) {
-		setValue(val);
+export function useNavState(root: Item): INavState {
+	console.log('nav root',root);
+	const [value, setValue] = React.useState(SurveyNav.rootToValue(root));
+	console.log('nav value', value);
+	function handleSetValue(value:any) {
+		setValue(value);
 	}
 
 	return {
