@@ -3,21 +3,21 @@ import { BaseSidebarLayout } from './SidebarCompiler';
 import { Box, CssBaseline } from '@mui/material';
 import { HorizontalStepper } from './StepperCompiler';
 import { NavigationButtons } from './NavigationButtonsCompiler';
-import { Survey } from '../../../core/schema';
+import { Survey } from '../../../survey';
 import { useFormCompiler } from './FormCompiler';
 import { FolderCompilerForm } from './FolderCompiler';
 
 export interface SurveyFormProps {
-	survey: Survey;
+	initSurvey: any;
 }
 
 export function SurveyForm({
-	survey,
+	initSurvey,
 }: SurveyFormProps) {
 
 	const drawerWidth = 320;
 
-	const formCompiler = useFormCompiler(survey);
+	const formCompiler = useFormCompiler(initSurvey);
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 

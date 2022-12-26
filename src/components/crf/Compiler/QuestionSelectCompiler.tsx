@@ -1,5 +1,6 @@
 import React from 'react';
-import {QuestionSelect, QuestionSelectMap} from '../../../core/schema'
+import {QuestionSelectMap} from '../../../core/schema'
+import {QuestionSelect} from '../../../survey'
 import { FormControlLabel, FormControl, Typography, FormLabel, RadioGroup, Radio, Select, MenuItem, FormHelperText } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
@@ -17,7 +18,7 @@ export function QuestionSelectCompilerForm({
   const form = formCompiler.form;
   const nav = formCompiler.nav;
 
-  const selects = question.selectOptions;
+  const selects = question.getSchema().options.select;
 
   const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
 

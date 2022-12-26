@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { SurveyForm, SurveyFormProps } from '../../src/components/crf/Compiler/';
-import {Survey} from '../../src/core/schema'
+import {Survey} from '../../src/survey'
 import surveyFormExmple from './asdf.json'
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
@@ -19,7 +19,7 @@ const SurveyFormExample: React.VFC = (args) => {
   return (
     <SurveyForm
       {...args}
-      survey={new Survey(surveyFormExmple)}
+      initSurvey={surveyFormExmple}
     />
   );
 };

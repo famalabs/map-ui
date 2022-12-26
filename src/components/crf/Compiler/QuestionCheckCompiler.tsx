@@ -1,11 +1,12 @@
 import React from 'react';
-import {QuestionCheckMap, SurveyItem} from '../../../core/schema'
+import {QuestionCheckMap} from '../../../core/schema'
+import {Item} from '../../../survey'
 import { FormLabel, Stack, Switch, Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionCheckCompilerFormProps {
   formCompiler: IUseFormCompiler;
-  question: SurveyItem;
+  question: Item;
 	index?: any;
 }
 

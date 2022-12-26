@@ -1,11 +1,11 @@
 import React from 'react';
-import {QuestionSelect, SurveyItem} from '../../../core/schema'
+import {QuestionSelect, Item} from '../../../survey'
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, FormLabel, RadioGroup, FormControl } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionTableCompilerFormProps {
   formCompiler: IUseFormCompiler;
-  question: SurveyItem;
+  question: Item;
   index?: number;
 }
 
@@ -19,7 +19,7 @@ export function QuestionTableCompilerForm({
 
   const selects = question.items as QuestionSelect[];
   const select = question.items[0] as QuestionSelect;
-  const options = select.selectOptions;
+  const options = select.getSchema().options.select;
 
   return (
     <TableContainer>

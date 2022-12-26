@@ -1,5 +1,6 @@
 import React from 'react';
-import {QuestionNumberMap, QuestionDateMap, SurveyItem} from '../../../core/schema'
+import {QuestionNumberMap, QuestionDateMap} from '../../../core/schema'
+import {Item} from '../../../survey'
 import { FormLabel, Stack, Typography, Slider, InputAdornment, TextField } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 // import * as dayjs from 'dayjs'
@@ -11,7 +12,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 export interface QuestionDateCompilerFormProps {
   index?: number;
   formCompiler: IUseFormCompiler;
-  question: SurveyItem;
+  question: Item;
 }
 
 export function QuestionDateCompilerForm({

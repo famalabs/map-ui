@@ -1,12 +1,12 @@
 import React from 'react';
 import { Divider, Paper, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
-import { GroupMap, SurveyItem } from '../../../core/schema';
+import { Item } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 
 export interface SectionCompilerFormProps {
 	index?: any;
-	section: SurveyItem;
+	section: Item;
 	formCompiler: IUseFormCompiler;
 }
 

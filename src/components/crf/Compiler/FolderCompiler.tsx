@@ -14,6 +14,8 @@ export function FolderCompilerForm ({
   const form = formCompiler.form;
   const nav = formCompiler.nav;
   const page = nav.getPage();
+
+  console.log("render folder", page)
   return (
     <Box
     style={{width:'100%',margin:'24px 0px'}}

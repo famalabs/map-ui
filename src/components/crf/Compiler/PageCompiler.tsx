@@ -3,7 +3,6 @@ import { Divider, Paper, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
 import { GroupMap } from '../../../core/schema';
 import { IUseFormCompiler } from './FormCompiler';
-import { debug } from 'console';
 
 export interface PageCompilerFormProps {
   formCompiler:IUseFormCompiler;

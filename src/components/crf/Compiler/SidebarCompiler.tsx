@@ -1,11 +1,8 @@
-import { Accordion, AccordionDetails, AccordionSummary, AppBar, Box, Button, Collapse, Divider, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
-import { SurveyItem } from "../../../core/schema";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, ListItemButton, ListItemText, Paper, Stack, Typography } from "@mui/material";
+import { Item } from "../../../survey";
 import React from "react";
-import { INavState, SurveyNav } from '../Navigation';
 import { IUseFormCompiler } from "./FormCompiler";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import {ExpandMore, CheckCircle, Cancel} from '@mui/icons-material';
 
 export interface BaseSidebarLayoutProps {
 	drawerWidth: number;
@@ -20,7 +17,7 @@ export function BaseSidebarLayout ({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 
-	const renderFolder = (folder:SurveyItem) => {
+	const renderFolder = (folder:Item) => {
 		return (
 			<ListItemButton onClick={(e) => {nav.setFolder(folder); }}>
         {/* <ListItemIcon>
@@ -30,7 +27,7 @@ export function BaseSidebarLayout ({
       </ListItemButton>
 		);
 	}
-	const renderPage = (folder:SurveyItem, page:SurveyItem) => {
+	const renderPage = (folder:Item, page:Item) => {
 		return (
 			<ListItemButton onClick={(e) => {nav.setFolder(folder, page); }}>
         {/* <ListItemIcon>
@@ -57,10 +54,10 @@ export function BaseSidebarLayout ({
 						defaultExpanded={folder.id===nav.getFolderId()}
 						sx={{border: folder.id===nav.getFolderId()?'1px solid black':0}}
 						>
-							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+							<AccordionSummary expandIcon={<ExpandMore />}>
 							{form.getValid(folder.id)?
-												(<CheckCircleIcon color="success"/>)
-												:(<CancelIcon color="error"/>)}
+												(<CheckCircle color="success"/>)
+												:(<Cancel color="error"/>)}
 							{folder.text}
 							{/* <Button onClick={(e) => {nav.setFolder(folder); }}>
 								{folder.text}
@@ -75,8 +72,8 @@ export function BaseSidebarLayout ({
 											onClick={(e) => {nav.setFolder(folder, page);}}
 											startIcon={page.id===nav.getPageId()?null
 												:form.getValid(page.id)?
-												(<CheckCircleIcon color="success"/>)
-												:(<CancelIcon color="error"/>)}
+												(<CheckCircle color="success"/>)
+												:(<Cancel color="error"/>)}
 											>
 												{page.text}
 											</Button>

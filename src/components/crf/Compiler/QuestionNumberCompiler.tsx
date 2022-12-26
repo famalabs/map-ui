@@ -1,12 +1,13 @@
 import React from 'react';
-import {QuestionNumber, QuestionNumberMap, SurveyItem} from '../../../core/schema'
+import {QuestionNumber, QuestionNumberMap } from '../../../core/schema'
+import {Item} from '../../../core/schema'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment, FormHelperText } from '@mui/material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 
 export interface QuestionNumberCompilerFormProps {
   index: number;
   formCompiler: IUseFormCompiler;
-  question: SurveyItem;
+  question: Item;
 }
 
 export function QuestionNumberCompilerForm({
