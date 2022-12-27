@@ -189,18 +189,7 @@ export class SurveyNav implements INavState {
 				queue.push([item[0].items[i],i]);
 			}
 		}
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	if (folder.id === id) { return f; }
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 		if (page.id === id) { return p; }
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 			if (page.items[q].id === id) { return q; }
-		// 		}
-		// 	}
-		// }
-		// return -1;
+		return -1;
 	}
 
 	public findItemById(id:string):Item {
@@ -213,18 +202,6 @@ export class SurveyNav implements INavState {
 				queue.push(item.items[i]);
 			}
 		}
-
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	if (folder.id === id) { return folder; }
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 		if (page.id === id) { return page; }
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 				if (page.items[q].id === id) { return page.items[q]; }
-		// 			}
-		// 		}
-		// }
 		return undefined;
 	}
 	public getItemType (id:string):string {

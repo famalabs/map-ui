@@ -390,36 +390,11 @@ export class EditorBuilder implements IEditorState {
      * @returns 
      */
     public onChangeValue(itemId:string, key:string, newValue:any) {
-      console.log('before change value', itemId, key, newValue);
       const item = this.survey.get(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
       const newData = this.createDBSchemaFromPath(key, newValue, item.getSchema());
       const newSchema = Object.assign({}, item.getSchema(), newData) as DBSchema;
       this.survey.update(itemId, newSchema, -1);
-      console.log('onChangeValue new data, schema', newData, newSchema);
-      // if (key === 'parameters' && item instanceof ItemFunction) {
-      //   item.parameters = value;
-      //   console.log('change fn parameters',item, value);
-      //   return
-      // } else if (key === 'fnCompute' && item instanceof ItemFunction) {
-      //   item.setFn(FunctionType.Compute, value);
-      //   console.log('change fn compute',item, value);
-      //   return
-      // }
-      // if (key.includes(".")) {
-      //   const keys = key.split(".")
-      //   if (keys.length == 2) {
-      //     item[keys[0]][keys[1]] = value;
-      //   } else if (keys.length == 3) {
-      //     item[keys[0]][keys[1]][keys[2]] = value;
-      //   } else if (keys.length == 4) {
-      //     item[keys[0]][keys[1]][keys[2]][keys[3]] = value;
-      //   } else {
-      //     throw Error('cant change value multiple keys')
-      //   }
-      // } else {
-      //   item[key] = value;
-      // }
       return 
     }
     public hasPendingChanges: () => boolean;
@@ -429,14 +404,6 @@ export class EditorBuilder implements IEditorState {
     public cancelChanges() {
 
     }
-    // public onChangeOptions(itemId:string, key:string, value:any) {
-    //   const item = this.findItemById(itemId);
-    //   if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
-    //   let val = item.options;
-    //   val[key] = value
-    //   item.options = val;
-    //   return 
-    // }
 }
 
 export interface IUseEditorState {
