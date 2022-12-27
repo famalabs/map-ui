@@ -217,7 +217,8 @@ export class SurveyNav implements INavState {
 					}
 				}
 		}
-		throw Error('this item is not a nav type');
+		// throw Error('this item is not a nav type');
+		return this.findItemById(id).type;
 	}
 
 	public getPathToId (id: string):string[] {
@@ -272,11 +273,11 @@ export class SurveyNav implements INavState {
 							order[question.id] = {};
 							for (let s = 0; s < question.items.length; s++) {
 								const secQs = question.items[s];
-								order[question.id][secQs.id] = idx;
+								order[question.id][secQs.id] = idx.toString() + '. ';
 								idx+=1;
 							}
 						} else {
-							order[question.id] = idx;
+							order[question.id] = idx.toString() + '. ';
 							idx+=1;
 						}
 					}

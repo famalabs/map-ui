@@ -6,20 +6,15 @@ import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-materi
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionSelectEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: QuestionSelect;
-  questionState: string;
-}
+import { QuestionSelectCommon } from '../common';
+import { QuestionCommonEditorProps } from './CommonEditor';
 
 export function QuestionSelectEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionSelectEditorFormProps) {
+  }: QuestionCommonEditorProps<QuestionSelect>) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
@@ -55,36 +50,12 @@ export function QuestionSelectEditorForm({
 
   const renderNormal = () => {
     return (
-      <div>
-      <FormControl
-      fullWidth
-      >
-        <FormLabel component="legend">
-        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
-        </FormLabel>
-        <FormLabel component="legend">{question.description}</FormLabel>
-        {question.layout.style === QuestionSelectMap.layout.style.radio ? (
-          <RadioGroup
-            name={question.id}
-            aria-label={question.id}
-          >
-            {selects.length > 0 ? selects.map((opt, idx) => (
-              <FormControlLabel disabled key={idx} value="disabled" 
-              control={<Radio />} label={opt.text} />
-            )) : <Typography>No Radio Element</Typography>}
-          </RadioGroup>
-        ):(
-          <Select
-            disabled
-            value={selects.length > 0 ? selects[0].text : null}
-          >
-              {selects.length > 0 ? selects.map((opt, idx1) => (
-                <MenuItem key={opt.text} value={opt.text}>{opt.text}</MenuItem>
-              )) : <Typography>No Dropdown Element</Typography>}
-          </Select>
-        )}
-      </FormControl>
-      </div>
+      <QuestionSelectCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {

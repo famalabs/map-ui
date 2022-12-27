@@ -5,20 +5,15 @@ import {AddCircle} from '@mui/icons-material';
 import { EditorBuilder, IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionTableEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: Item;
-  questionState: string;
-}
+import { QuestionTableCommon } from '../common';
+import { QuestionCommonEditorProps } from './CommonEditor';
 
 export function QuestionTableEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionTableEditorFormProps) {
+  }: QuestionCommonEditorProps<Item>) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
@@ -29,40 +24,12 @@ export function QuestionTableEditorForm({
   const renderNormal = () => {
 
     return (
-      <TableContainer>
-      <Typography>{index && (index + '.')} {question.text}</Typography>
-        {/* <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography> */}
-        <Typography>{question.description}</Typography>
-        <Table sx={{ width: '100%' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Questions</TableCell>
-              {options.map((opt, idx) => {
-                return (
-                  <TableCell key={opt.text} align="center">{opt.text}</TableCell>
-                );
-              })}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {selects.map((sel,idx) => (
-              <TableRow
-                key={idx}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {sel.text}
-                </TableCell>
-                {options.map((opt, idx) => {
-                return (
-                  <TableCell key={idx} align="right"><Radio disabled/></TableCell>
-                );
-              })}
-              </TableRow>
-            ))}
-          </TableBody>
-      </Table>
-    </TableContainer>
+      <QuestionTableCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {

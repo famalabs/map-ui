@@ -432,6 +432,7 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     //     }]
     //   }],
     // } as DBSchema;
+
     const initValue = {
       id: "1",
       type: "group",

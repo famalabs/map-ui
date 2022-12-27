@@ -53,6 +53,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionCheck) {
 		return (
 			<QuestionCheckCompilerForm
+			index={index}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -86,9 +87,9 @@ export function QuestionCompilerForm({
 		} else if (item.layout.style === GroupMap.layout.style.section) {
 			return (
 				<SectionCompilerForm
-				formCompiler={formCompiler}
-				section={item}
 				index={index}
+				formCompiler={formCompiler}
+				question={item}
 				/>
 			);
 		}

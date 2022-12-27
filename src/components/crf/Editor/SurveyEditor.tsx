@@ -1,5 +1,5 @@
 import React from 'react';
-import {Survey} from '../../../core/schema'
+import { DBSchema, Survey } from '../../../survey'
 import { Box, CssBaseline } from '@mui/material';
 import { FolderEditorForm } from './FolderEditor';
 import { SidebarEditorForm } from './SidebarEditor';
@@ -7,7 +7,7 @@ import { useEditorState } from './EditorBuilder';
 
 export interface SurveyEditorProps {
     saveSurvey: (survey: Survey) => void;
-    initSurvey: any;
+    initSurvey: DBSchema;
 }
 
 export function SurveyEditorForm({

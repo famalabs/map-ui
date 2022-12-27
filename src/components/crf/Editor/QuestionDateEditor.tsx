@@ -5,43 +5,27 @@ import { IUseEditorState } from './EditorBuilder';
 import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { DatePicker } from '@mui/x-date-pickers';
-
-export interface QuestionDateEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: QuestionDate;
-  questionState: string;
-}
+import { QuestionDateCommon } from '../common';
+import { QuestionCommonEditorProps } from './CommonEditor';
 
 export function QuestionDateEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionDateEditorFormProps) {
+  }: QuestionCommonEditorProps<QuestionDate>) {
+
   const editor = editorState.editor;
   const nav = editorState.nav;
 
   const renderNormal = () => {
     return (
-        <div>
-          <FormLabel component="legend">
-          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>  
-          </FormLabel>
-          <FormLabel component="legend">{question.description}</FormLabel>
-          {/* <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={editor.getRoot().options.locale}> */}
-            <DatePicker
-            disabled
-            views={['year', 'month', 'day']}
-            // value={question.description ?? question.text}
-            // label={question.description ?? question.text}
-            // required={question.options.required}
-            renderInput={(params) => <TextField {...params} />} 
-            onChange={(v,k)=> {}}
-            value={undefined}
-            />
-          {/* </LocalizationProvider> */}
-        </div>
+      <QuestionDateCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {
