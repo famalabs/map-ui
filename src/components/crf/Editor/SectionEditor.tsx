@@ -4,8 +4,9 @@ import {Item} from '../../../survey'
 import { Stack, Typography, Button, Menu, MenuItem } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionEditorForm } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export interface SectionEditorFormProps {
   index?: any;

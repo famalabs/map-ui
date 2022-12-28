@@ -107,6 +107,7 @@ export interface INavState {
 	 *  returns a obj with key = question.id, value = idx || obj if question is section
 	 */
 	getItemsGlobalOrderIndex: () => any;
+	getItemsGroupedOrderIndex: () => any;
 }
 
 interface INavValue {
@@ -286,6 +287,33 @@ export class SurveyNav implements INavState {
 		return order;
 	}
 
+	public getItemsGroupedOrderIndex():any {
+		const order = {}
+		for (let f = 0; f < this.getFolders().length; f++) {
+			const folder = this.getFolders()[f];
+			for (let p = 0; p < folder.items.length; p++) {
+				const page = folder.items[p];
+				let idx = 1
+					for (let q = 0; q < page.items.length; q++) {
+						const question = page.items[q];
+						if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
+							order[question.id] = {};
+							for (let s = 0; s < question.items.length; s++) {
+								const secQs = question.items[s];
+								order[question.id][secQs.id] = idx.toString() + '.' + (s+1).toString() + '. ';
+								// idx+=1;
+							}
+							idx+=1;
+						} else {
+							order[question.id] = idx.toString() + '. ';
+							idx+=1;
+						}
+					}
+				}
+		}
+		return order;
+	}
+
 	public getValue(): INavValue {
 		return {
 			root: this.root,
@@ -356,6 +384,7 @@ export function useNavState(surveyRoot: Item): INavState {
 		getItemType: (id:string) => new SurveyNav(value).getItemType(id),
 		getPathToId: (id:string) => new SurveyNav(value).getPathToId(id),
 		getItemsGlobalOrderIndex: () => new SurveyNav(value).getItemsGlobalOrderIndex(),
+		getItemsGroupedOrderIndex: () => new SurveyNav(value).getItemsGroupedOrderIndex(),
 
 	} as INavState;
 }

@@ -1,10 +1,9 @@
 import React from 'react';
 import {QuestionText} from '../../../survey'
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionTextCommon } from '../common';
-import { QuestionCommonEditorProps } from './CommonEditor';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTextEditorForm({
   index,

@@ -3,10 +3,9 @@ import {QuestionSelect, Item, TextScore,QuestionSelectOptions} from '../../../su
 import { TextField, Stack, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, Divider, Button } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
 import { EditorBuilder, IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionTableCommon } from '../common';
-import { QuestionCommonEditorProps } from './CommonEditor';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTableEditorForm({
   index,

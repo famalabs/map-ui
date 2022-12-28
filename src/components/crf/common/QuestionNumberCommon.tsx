@@ -58,7 +58,7 @@ export function QuestionNumberCommon({
           error={error}
           helperText={helperText}
           InputProps={{
-            startAdornment: <InputAdornment position="start">{
+            endAdornment: <InputAdornment position="end">{
               question.options.unit === undefined ?
               '' : QuestionNumberMap.options.unit[question.options.unit]}</InputAdornment>,
           }}

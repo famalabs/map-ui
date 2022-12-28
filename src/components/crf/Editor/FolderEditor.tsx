@@ -1,6 +1,6 @@
 import React from 'react';
 import {GroupMap} from '../../../core/schema'
-import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal } from '@mui/material';
+import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal, Select, MenuItem } from '@mui/material';
 import { ArrowUpward, ArrowDownward, Edit, Delete, Cancel, CheckCircle, NoteAdd, ArrowBackIos, ArrowForwardIos} from '@mui/icons-material';
 import { PageEditorForm } from './PageEditor';
 import { IUseEditorState } from './EditorBuilder';
@@ -127,7 +127,7 @@ export function FolderEditorForm({
 		}
 	}
 
-	console.log('render folder page', folder, page);
+	// console.log('render folder page', folder, page);
 	return (
 		<Box 
 		// style={{margin:'0px 24px',width:'100%',minWidth:'614px'}}
@@ -138,7 +138,15 @@ export function FolderEditorForm({
 		{/* PAGE NAVIGATION */}
 			<Stack spacing={2}>
 				<Stack direction="row" spacing={1} style={{ flexWrap: 'wrap', alignItems: 'center'}}>
-				<Box><Typography>{folder.text} /</Typography></Box>
+        <Select
+          value={folder.id}
+          onChange={(e,v) => nav.setFolder(nav.findItemById(e.target.value))}
+        >
+            {nav.getFolders().map((f, idx1) => (
+              <MenuItem key={f.id} value={f.id}>{f.text}</MenuItem>
+            ))}
+        </Select>
+				<Box><Typography>/</Typography></Box>
 					{pages.map((page,idx) => {
 						return(
 							<Button key={page.id} 

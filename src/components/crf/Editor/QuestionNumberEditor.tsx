@@ -3,11 +3,10 @@ import {QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberM
 import {QuestionNumber,Unit} from '../../../survey'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { renderSelectOption } from './OptionsEditor';
 import { QuestionNumberCommon } from '../common';
-import { QuestionCommonEditorProps } from './CommonEditor';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionNumberEditorForm({
   index,

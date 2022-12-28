@@ -6,8 +6,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 enum FnMedicine {
   BodyMassIndex = 'BMI',
@@ -21,19 +21,15 @@ enum FnMedicine {
   PF_Percent = 'PFpercent',
 }
 
-export interface ItemFunctionEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: ItemFunction;
-  questionState: string;
-}
+import { QuestionHeaderCommon } from '../common';
+import { QuestionCommonEditorProps } from './CommonEditor';
 
 export function ItemFunctionEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: ItemFunctionEditorFormProps) {
+  }: QuestionCommonEditorProps<ItemFunction>) {
 
   // if (question instanceof ItemFunction) {
     const editor = editorState.editor;
@@ -62,11 +58,11 @@ export function ItemFunctionEditorForm({
     const renderNormal = () => {
       return (
         <Stack spacing={1}>
-          <Stack spacing={1}>
-            <FormLabel component="legend">
-            <Typography>{index && (index + '.')} {question.text}</Typography>
-              </FormLabel>
-            <FormLabel component="legend">{question.description}</FormLabel>
+            <QuestionHeaderCommon
+            index={index}
+            question={question}
+            required={false}            
+            />
             <Typography>Function Name: {question.getSchema().fnCompute}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
@@ -79,7 +75,6 @@ export function ItemFunctionEditorForm({
                 }) : (<Typography>No Parameters</Typography>)}
               </Stack>
             </Stack>
-          </Stack>
         </Stack>
       );
     }

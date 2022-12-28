@@ -14,7 +14,7 @@ export function PageCompilerForm ({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 	const page = nav.getPage();
-	const orders = nav.getItemsGlobalOrderIndex();
+	const orders = nav.getItemsGroupedOrderIndex();
 	return (
 		<div>
 			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 6 : 2}>

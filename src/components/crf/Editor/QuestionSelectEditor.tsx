@@ -4,10 +4,9 @@ import {QuestionSelectMap} from '../../../core/schema'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
 import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionSelectCommon } from '../common';
-import { QuestionCommonEditorProps } from './CommonEditor';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionSelectEditorForm({
   index,

@@ -2,11 +2,10 @@ import React from 'react';
 import {QuestionDate} from '../../../survey'
 import { FormLabel, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { DatePicker } from '@mui/x-date-pickers';
 import { QuestionDateCommon } from '../common';
-import { QuestionCommonEditorProps } from './CommonEditor';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionDateEditorForm({
   index,

@@ -32,7 +32,7 @@ export function QuestionCheckCommon({
           onChange={(e,c)=>handleOnChange(c)}
           onBlur={handleOnBlur}
           />} 
-          label={question.text} 
+          label={value ? 'Si' : 'No'} 
         />
       ):(
         <FormControlLabel
@@ -43,7 +43,7 @@ export function QuestionCheckCommon({
           onChange={(e,c)=>handleOnChange(c)}
           onBlur={handleOnBlur}
           />} 
-          label={question.text} 
+          label={value ? 'Si' : 'No'} 
         />
       )}
       <FormHelperText>{error && helperText}</FormHelperText>
