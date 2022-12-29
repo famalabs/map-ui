@@ -30,8 +30,8 @@ class QuestionCheck extends question_1.Question {
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         if (this.options.inverted !== undefined)
             schema.options.inverted = this.options.inverted;
         return schema;

@@ -3,9 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionList = void 0;
 const question_1 = require("./question");
 /**
- * Open ended question
+ * Fields list question
  */
 class QuestionList extends question_1.Question {
+    /**
+     * @override
+     */
+    isValid() {
+        if (!super.isValid())
+            return false;
+        if (typeof this.options.min === 'number' &&
+            typeof this.options.max === 'number' &&
+            !(this.options.min <= this.options.max))
+            return false;
+        return true;
+    }
     /**
      * @override
      */
@@ -37,16 +49,14 @@ class QuestionList extends question_1.Question {
      * @returns
      */
     source() {
-        const resolver = this.resolver; // can improve from form-item
-        return resolver
-            && resolver.sources
-            && resolver.sources.get(this.options.source);
+        const resolver = this._resolver;
+        return (resolver && resolver.sources && resolver.sources.get(this.options.source));
     }
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         if (this.options.min > 0)
             schema.options.min = this.options.min;
         if (this.options.max > 0)
@@ -55,7 +65,15 @@ class QuestionList extends question_1.Question {
             schema.options.source = this.options.source;
         return schema;
     }
+    values() {
+        const keys = this.answer;
+        const source = this.source();
+        if (keys instanceof Array && source) {
+            return keys.map((k) => source.get(k));
+        }
+        return undefined;
+    }
 }
 exports.QuestionList = QuestionList;
-QuestionList.TYPE = 'array';
+QuestionList.TYPE = 'list';
 //# sourceMappingURL=question-list.js.map

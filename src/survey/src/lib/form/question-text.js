@@ -6,6 +6,23 @@ const question_1 = require("./question");
  * Open ended question
  */
 class QuestionText extends question_1.Question {
+    constructor(data) {
+        super(data);
+        if (typeof this.options.format === 'string')
+            this.options.format = new RegExp(this.options.format);
+    }
+    /**
+     * @override
+     */
+    isValid() {
+        if (!super.isValid())
+            return false;
+        if (typeof this.options.min === 'number' &&
+            typeof this.options.max === 'number' &&
+            !(this.options.min <= this.options.max))
+            return false;
+        return true;
+    }
     /**
      * @override
      */
@@ -30,14 +47,14 @@ class QuestionText extends question_1.Question {
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         if (this.options.min > 0)
             schema.options.min = this.options.min;
         if (this.options.max > 0)
             schema.options.max = this.options.max;
         if (this.options.format)
-            schema.options.format = this.options.format;
+            schema.options.format = this.options.format; // .source
         return schema;
     }
 }

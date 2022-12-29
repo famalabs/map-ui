@@ -1,6 +1,9 @@
-declare type male = 0;
-declare type female = 1;
-export declare type gender = male | female;
+export declare enum Gender {
+    NotKnown = 0,
+    Male = 1,
+    Female = 2,
+    NotApplicable = 9
+}
 /**
  * This function returns the Body Mass Index
  * @param mass, the weight in Kg
@@ -31,7 +34,7 @@ export declare function PF_Percent(po2: number, fio2: number): number;
  * @param gender - 0: male, 1: female
  * @returns, GFR as ml / min
  */
-export declare function GFRCockcroftGault(weight: number, age: number, creatinine: number, gender: gender): number | undefined;
+export declare function GFRCockcroftGault(weight: number, age: number, creatinine: number, gender: Gender): number | undefined;
 /**
  * This function returns the an estimation of GFR with CK-EPI-Creatine equation
  * @param age the age of the patient (year)
@@ -39,7 +42,7 @@ export declare function GFRCockcroftGault(weight: number, age: number, creatinin
  * @param gender - 0: male, 1:female
  * @returns GFR in ml/min
  */
-export declare function CKD_EPI_CREATININE(age: number, creatinine: number, gender: gender): number;
+export declare function CKD_EPI_CREATININE(age: number, creatinine: number, gender: Gender): number;
 /**
  * This function returns the Sequential Organ Failure Assestment Score
  * @param p_divided_f - Pa0_2 / Fi0_2  mmHg
@@ -86,4 +89,3 @@ export declare function CIDScore(platelets: number, inr: number, fibrinogen: num
  * @returns the HScore
  */
 export declare function HScore(temperature: number, emoglobina: number, g_bianchi: number, platelets: number, triglyceride: number, got: number, fibrinogen: number, ferritin: number, haemofagocytosis: boolean, immunosuppression: boolean, hepatomegaly: boolean, splenomegaly: boolean): number;
-export {};

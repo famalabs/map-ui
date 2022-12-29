@@ -16,7 +16,7 @@ export function QuestionSelectCommon({
   disabled
   }: QuestionCommonProps<QuestionSelect>) {
 
-  const selects = question.getSchema().options.select;
+  const selects = question.toJSON().options.select;
   
   return (
     <div>

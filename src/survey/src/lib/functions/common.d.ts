@@ -1,6 +1,7 @@
 /**
- * This function returns the age, given the birth date
- * @param birth_date, the birth date
+ * Computes the age at a given date
+ * @param birth_date
+ * @param at given date, defaults to now
  * @returns the age
  */
-export declare function Age(birth_date: Date): number;
+export declare function Age(birth_date: Date, at?: Date): number;

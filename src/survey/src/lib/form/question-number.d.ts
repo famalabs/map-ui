@@ -5,11 +5,11 @@ import { Question, QuestionData, QuestionOptions } from './question';
  */
 export interface QuestionNumberOptions extends QuestionOptions<number> {
     /**
-     * MinValue: the minimum number allowed (included)
+     * minimum number allowed (included)
      */
     min?: number;
     /**
-     * MaxValue: the maximum number allowed (included)
+     * maximum number allowed (included)
      */
     max?: number;
     /**
@@ -33,6 +33,10 @@ export declare class QuestionNumber extends Question<number, QuestionNumberOptio
     /**
      * @override
      */
+    isValid(): boolean;
+    /**
+     * @override
+     */
     setAnswer(answer: number): boolean;
     /**
      * @override
@@ -41,5 +45,5 @@ export declare class QuestionNumber extends Question<number, QuestionNumberOptio
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionNumberOptions>;
+    toJSON(): QuestionData<QuestionNumberOptions>;
 }

@@ -24,15 +24,15 @@ export function useFormCompiler(initSurvey:DBSchema) {
 
 
   const initValue = {
-    id: "1",
+    id: "0",
     type: "group",
     text: "Survey",
     items: [{
-      id: "2",
+      id: "1",
       type: "group",
       text: "Folder",
       items: [{
-        id: "3",
+        id: "2",
         type: "group",
         text:"Page",
         items:[
@@ -55,13 +55,11 @@ export function useFormCompiler(initSurvey:DBSchema) {
     }]
   } as DBSchema;
 
-  const survey = new Survey();
-  survey.load(initValue);
-
-  console.log("useFormCompiler", survey, survey.getSchema());
+  const survey = new Survey(initValue);
+  // survey.load(initValue);
 
   const [showAllErrors, setShowAllErrors] = React.useState(false);
-  const root = survey.get(survey.getSchema().id);
+  const root = survey.root;
   const { Value, setValue, validators, requires, Valid } = useFormState(
     toUseFormState(root)
   );

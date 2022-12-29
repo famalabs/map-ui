@@ -1,71 +1,92 @@
 import { IEngine, IResolver } from './engine';
 import { Operation } from './operation';
 import { Item } from './item';
-import { DBSchema } from '../db';
+import { ExtendedSchema } from '../db';
 export declare class TreeException extends Error {
 }
+export declare class ItemNotFoundException extends TreeException {
+    readonly id: string;
+    constructor(id: string);
+}
 export declare class InvalidOperationException extends TreeException {
+    readonly operation: any;
+    constructor(operation: any);
+}
+export declare class CircularPathException extends TreeException {
+    constructor();
 }
 export declare class Tree implements IEngine, IResolver {
-    protected engine: import("./engine").ItemFactory;
-    protected root: Item | null;
-    protected items: Record<string, Item>;
-    protected parents: Record<string, string>;
+    protected _engine: import("./engine").ItemFactory;
+    protected _items: Record<string, Item>;
+    protected _parents: Record<string, string>;
     protected _id: number;
-    constructor();
+    get root(): Item;
+    get size(): number;
+    constructor(schema?: ExtendedSchema);
     /**
      * Get an item by its id
      * @param id of the item
-     * @returns item if exists
+     * @returns item
      */
     get<T extends Item = Item>(id: string): T;
+    /**
+     * Get the parent of an item by its id
+     * @param id of the item
+     * @returns parent
+     */
     parent<T extends Item = Item>(id: string): T;
     /**
-     * Loads the schema of the tree: builds the item and assign it to this.root
-     * @param schema of the tree
-     * @returns the root
+     * Loads the schema of the tree, replacing items if already present
+     * @param schema
+     * @returns the root of the loaded schema
      */
-    load(schema: DBSchema): Item;
-    /**
-     * This function executes one ore more operation on the tree
-     * @param ops the operation or an array of operation to be executed: Add, Update, Remove
-     * @returns the item(s) added/updated/removed by this operation
-     */
-    exec(ops: Operation | Operation[]): Item | Item[];
+    protected load(schema: ExtendedSchema): Item;
     /**
      * Creates a new item or one of its subtypes given the data
      * @param data of the new otem
      * @returns the new item
      */
-    build<T extends Item>(data: Partial<DBSchema>): T;
+    build<T extends Item>(data: Omit<ExtendedSchema, 'id'>): T;
     /**
-     * This function execute a single operation and returns the result (item)
+     * Execute an operation returning the result Item
      * @param op the operation to be executed: Add, Update, Remove
      * @returns the added/updated/removed item
+     * @throws {InvalidOperationException}
      */
     execute(op: Operation): Item;
     /**
-     * Add an item to tree assigning it a unique id
-     * @param id of the parent of the new item
+     * Adds an item to the tree assigning it a unique id
+     * @param id of the parent
      * @param data of the new item
-     * @param index
+     * @param index position
      * @returns the new item
      */
-    add(id: string, data: Partial<DBSchema>, index?: number): Item;
+    add(id: string, data: Omit<ExtendedSchema, 'id' | 'items'>, index?: number): Item;
     /**
-     * Update an item with new data and position
+     * Update an item data
      * @param id of the item to update
      * @param data the new data of the item
-     * @param index of the new position
-     * @returns the updated item
+     * @returns the item
+     * @throws {ItemNotFoundException}
      */
-    update(id: string, data?: Partial<DBSchema>, index?: number): Item;
+    update(id: string, data: Omit<ExtendedSchema, 'id' | 'type' | 'items'>): Item;
     /**
-     * Remove an item and all its child from the tree
-     * @param id of the item to be removed
-     * @returns the removed item
+     * Remove an item hierarchy from the tree
+     * @param id of the item
+     * @returns the removed item hierarchy
+     * @throws {ItemNotFoundException}
      */
     remove(id: string): Item;
+    /**
+     * Moves an item hierarchy to a new position or parent
+     * @param id of the item
+     * @param index position
+     * @param parent new parent
+     * @throws {ItemNotFoundException}
+     * @throws {CircularPathException}
+     * @returns the item
+     */
+    move(id: string, index?: number, parent?: string): Item;
     /**
      * This function returns the array of all items matching a predicate
      * @param predicate a function with boolean return type which will be executed on all the items
@@ -76,19 +97,21 @@ export declare class Tree implements IEngine, IResolver {
      * Gets the serialization of the tree
      * @returns the schema of the tree
      */
-    getSchema(): DBSchema;
+    toJSON(): ExtendedSchema;
     /**
-     * Returns the first shared parent of two nodes (inverse DFS)
+     * Gets the shared root of two items (inverse DFS)
      * @param id1
      * @param id2
-     * @returns parent id
+     * @returns id
+     * @throws {ItemNotFoundException}
      */
-    parentOf(id1: string, id2: string): string;
+    rootOf(id1: string, id2: string): string;
     /**
-     * Checks if an item is child of a parent
-     * @param id
-     * @param parent
-     * @returns true if id is in parent hierarchy
+     * Gets the path between two items
+     * @param id1
+     * @param id2
+     * @returns id path
+     * @throws {ItemNotFoundException}
      */
-    isChild(id: string, parent: string): boolean;
+    path(id1: string, id2: string): string[];
 }

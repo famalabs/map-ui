@@ -26,7 +26,8 @@ export function QuestionTableEditorForm({
       <QuestionTableCommon
       index={index}
       question={question}
-      required={question.options.required}
+      required={false}
+      // required={question.options.required}
       disabled={true}
       />
     );

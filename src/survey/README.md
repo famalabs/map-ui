@@ -4,13 +4,20 @@ Survey core library [doc](https://docs.google.com/drawings/d/1f79jlG8rZ8pIGQoxZ5
 
 ## Roadmap
 
-- [✓] fix unit tests (engine, item, tree, survey, item-function)
-- [✓] feature: conditional branch
-- [] add integration tests
-- [✓] improve testing coverage
-- [] improve documentation
-- [ ] feature: db-source questions
-- [ ] functions implementations unit test
+- [✓] form-item
+- [✓] db-source questions
+- [✓] conditional items
+- [] survey integration tests
+- [] documentation
+- [] medicine functions refactor and coverage
+
+- question options validatable
+
+TODO:
+Item represents a single item -> Questions, ItemFunction (are always leaves)
+Group is an ItemConditional with childs (recursive)
+
+Score lib -> functions executable
 
 ## Testing
 

@@ -1,18 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Survey = exports.SurveyModeException = exports.SurveyException = exports.SurveyMode = void 0;
+exports.Survey = exports.SurveyModeException = exports.SurveyMode = void 0;
 const engine_1 = require("./engine");
 const form_1 = require("./form");
 var SurveyMode;
 (function (SurveyMode) {
     SurveyMode[SurveyMode["EDIT"] = 0] = "EDIT";
     SurveyMode[SurveyMode["COMPILE"] = 1] = "COMPILE";
-    SurveyMode[SurveyMode["READONLY"] = 2] = "READONLY";
 })(SurveyMode = exports.SurveyMode || (exports.SurveyMode = {}));
-class SurveyException extends Error {
-}
-exports.SurveyException = SurveyException;
-class SurveyModeException extends SurveyException {
+class SurveyModeException extends engine_1.TreeException {
     constructor(current, required) {
         super('Invalid Survey Mode');
         this.current = current;
@@ -20,20 +16,10 @@ class SurveyModeException extends SurveyException {
     }
 }
 exports.SurveyModeException = SurveyModeException;
-/**
- * TODO:
- * Item represents a single item -> Questions, ItemFunction (are always leaves)
- * Group is a ConditionalItem with childs (recursive)
- * Add caching (question lookups)
- *
- * - select other <- conditionalItem?
- * dynamic (non input) should have constraints on how far they can fetch values
- *
- * Scores lib -> functions executable
- */
 class Survey extends engine_1.Tree {
-    constructor() {
-        super();
+    constructor(schema) {
+        super(schema);
+        this._mode = SurveyMode.EDIT;
         Object.defineProperty(this, '_sources', {
             value: new form_1.DataSourceRepository(),
             enumerable: false,
@@ -49,20 +35,7 @@ class Survey extends engine_1.Tree {
      * Survey current mode. Enables functionalities based on this value
      */
     get mode() {
-        return this.mode;
-    }
-    /**
-     * @override
-     * @param schema
-     * @returns
-     */
-    load(schema, mode) {
-        if (this._mode !== undefined) {
-            throw new SurveyModeException(this._mode, undefined);
-        }
-        const root = super.load(schema);
-        Object.defineProperty(this, '_mode', { value: mode, enumerable: false });
-        return root;
+        return this._mode;
     }
     /**
      * Sets answers from a list returning questions
@@ -70,6 +43,9 @@ class Survey extends engine_1.Tree {
      * @returns list of questions set
      */
     setAnswers(answers) {
+        if (this.mode !== SurveyMode.COMPILE) {
+            throw new SurveyModeException(this.mode, SurveyMode.COMPILE);
+        }
         const questions = [];
         answers.forEach((a) => {
             const q = this.get(a.id);
@@ -95,8 +71,8 @@ class Survey extends engine_1.Tree {
      * Reset all submittable or dynamic fields
      */
     reset() {
-        for (const id in this.items) {
-            const item = this.items[id];
+        for (const id in this._items) {
+            const item = this._items[id];
             if (item instanceof form_1.FormItem) {
                 item.reset();
             }
@@ -104,30 +80,20 @@ class Survey extends engine_1.Tree {
     }
     /**
      * Caches tree informations for faster lookups.
-     * NOTE: this implies that no subsequent modifications will happen
+     * NOTE: this implies that no more tree operations are allowed
      */
-    _cache() {
-        if (!(this.mode === SurveyMode.COMPILE || this.mode === SurveyMode.READONLY))
-            return;
-        // load answerables
-        if (!this._questions) {
-            Object.freeze(this.items);
-            Object.defineProperty(this, '_questions', {
-                value: [],
-                enumerable: false,
-            });
-            for (const id in this.items) {
-                const item = this.items[id];
-                if (item instanceof form_1.Question) {
-                    this._questions.push(item);
-                }
-            }
-            Object.freeze(this._questions);
-        }
-        // load sources
-        if (!this._sources) {
-            Object.freeze(this._sources);
-        }
+    prepare() {
+        // state must be edit?
+        // cache values and freeze
+        Object.freeze(this._items);
+        Object.freeze(this._parents);
+        Object.defineProperty(this, '_questions', {
+            value: this.filter((item) => item instanceof form_1.Question),
+            enumerable: false,
+        });
+        Object.freeze(this._questions);
+        Object.freeze(this._sources);
+        this._mode = SurveyMode.COMPILE;
     }
     /**
      * Checks if an item and it's parent hierarchy is active
@@ -137,8 +103,6 @@ class Survey extends engine_1.Tree {
      */
     isActive(id, activeMap = {}) {
         let item = this.get(id);
-        if (!item)
-            return undefined;
         while (item) {
             id = item.id;
             if (activeMap[id] !== undefined)
@@ -147,6 +111,21 @@ class Survey extends engine_1.Tree {
             if (!activeMap[id])
                 return false;
             item = this.parent(id);
+        }
+        return true;
+    }
+    /**
+     * Checks if all the active questions has been submitted
+     * @returns
+     */
+    isSumbitted() {
+        if (this.mode !== SurveyMode.COMPILE) {
+            throw new SurveyModeException(this.mode, SurveyMode.COMPILE);
+        }
+        const activeMap = {};
+        for (const q of this.questions) {
+            if (this.isActive(q.id, activeMap) && !q.isSubmitted())
+                return false;
         }
         return true;
     }

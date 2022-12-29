@@ -4,29 +4,33 @@ import { Question, QuestionData, QuestionOptions } from './question';
  * Interface which represent the optional parameters that can be specified
  * @interface
  */
-export interface QuestionListOptions extends QuestionOptions<[]> {
-    /**
-     * minimum number of answers
-     */
-    min?: number;
-    /**
-     * maximum number of answers
-     */
-    max?: number;
+export interface QuestionListOptions extends QuestionOptions<any[]> {
     /**
      * source id
      */
     source?: string;
+    /**
+     * minimum answers count
+     */
+    min?: number;
+    /**
+     * maximum answers count
+     */
+    max?: number;
 }
 /**
- * Open ended question
+ * Fields list question
  */
-export declare class QuestionList extends Question<[], QuestionListOptions> {
+export declare class QuestionList extends Question<any[], QuestionListOptions> {
     static readonly TYPE: string;
     /**
      * @override
      */
-    setAnswer(answers: []): boolean;
+    isValid(): boolean;
+    /**
+     * @override
+     */
+    setAnswer(answers: any[]): boolean;
     /**
      * Gets the DataSource instance from the resolver
      * @returns
@@ -35,5 +39,6 @@ export declare class QuestionList extends Question<[], QuestionListOptions> {
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionListOptions>;
+    toJSON(): QuestionData<QuestionListOptions>;
+    values(): any[];
 }

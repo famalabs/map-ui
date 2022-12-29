@@ -70,7 +70,8 @@ export function QuestionCompilerForm({
 		return (
 			<ItemFunctionCompilerForm
 			formCompiler={formCompiler}
-			item={item}
+			question={item}
+			index={index}
 			/>
 		);
 	} else if (item.type === Group.TYPE) {

@@ -23,7 +23,7 @@ export function QuestionTableCommon({
   
   const selects = question.items as QuestionSelect[];
   const select = question.items[0] as QuestionSelect;
-  const options = select.getSchema().options.select;
+  const options = select.toJSON().options.select;
 
   return (
     <Stack spacing={1}>

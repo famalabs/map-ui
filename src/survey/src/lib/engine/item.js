@@ -1,86 +1,177 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Item = void 0;
+exports.Item = exports.IteratorMode = void 0;
+const tslib_1 = require("tslib");
+var IteratorMode;
+(function (IteratorMode) {
+    IteratorMode[IteratorMode["DFS"] = 0] = "DFS";
+    IteratorMode[IteratorMode["BFS"] = 1] = "BFS";
+})(IteratorMode = exports.IteratorMode || (exports.IteratorMode = {}));
+/* class decorator */
+function staticImplements() {
+    return (constructor) => {
+        constructor;
+    };
+}
 /**
  * Represents a node of the Tree
  */
-class Item {
+let Item = class Item {
     constructor(data) {
-        Object.defineProperty(this, '_data', {
-            value: Object.create(null),
-            enumerable: false,
+        Object.defineProperties(this, {
+            _data: {
+                value: Object.create(null),
+                enumerable: false,
+            },
         });
         this.update(data);
-        this._data.items = (this._data.items instanceof Array) ? this._data.items : [];
+        this._data.items =
+            this._data.items instanceof Array ? this._data.items : [];
     }
-    get id() { return this._data.id; }
-    get type() { return this.constructor.TYPE; } // FIX: can be improved
-    get name() { return this._data.name; }
-    set name(value) { this._data.name = value; }
-    get text() { return this._data.text; }
-    set text(value) { this._data.text = value; }
-    get items() { return this._data.items; } // FIX: can we avoid cast?
+    get id() {
+        return this._data.id;
+    }
+    get type() {
+        return this.constructor.TYPE;
+    }
+    get name() {
+        return this._data.name;
+    }
+    set name(value) {
+        this._data.name = value;
+    }
+    get text() {
+        return this._data.text;
+    }
+    set text(value) {
+        this._data.text = value;
+    }
+    get description() {
+        return this._data.description;
+    }
+    set description(value) {
+        this._data.description = value;
+    }
+    get items() {
+        return this._data.items;
+    } // FIX: can we avoid cast?
     // set items(value: Item[]) { this._data.items = value; }
-    get layout() { return this._data.layout; }
-    set layout(value) { this._data.layout = value; }
-    get resolver() { return this._resolver; }
-    set resolver(value) { Object.defineProperty(this, '_resolver', { value, enumerable: false }); }
+    get layout() {
+        return this._data.layout;
+    }
+    set layout(value) {
+        this._data.layout = value;
+    }
+    get resolver() {
+        return this._resolver;
+    }
+    set resolver(value) {
+        Object.defineProperty(this, '_resolver', { value, enumerable: false });
+    }
     /**
-     * This method checks whether the item is considered active
-     * @returns true if the item is active, false otherwise
+     * Checks if item should be considered active
+     * @returns true if the item is active
      * @virtual
      */
     isActive() {
         return true; // !!this.enabled;
     }
     /**
-     * Checks if the hierarchy is considered valid
-     * @returns {boolean} true if all items are valid
+     * Checks if the item should be considered valid
+     * @returns true if the item is valid
+     * @virtual
      */
     isValid() {
-        if (this.items instanceof Array) {
-            for (let i = 0; i < this.items.length; i++) {
-                if (!this.items[i].isValid())
-                    return false;
-            }
-        }
         return true;
     }
     /**
      * Serializes the item
-     * @returns {DBSchema} on object representing the schema of the item
+     * @returns an object representing the schema of the item
+     * @virtual
      */
-    getSchema() {
-        const s = {
+    toJSON() {
+        const schema = {
             id: this.id,
             type: this.type,
-            items: this.items.map((el) => el ?? el.getSchema()), //TODO: not recursive
+            items: this.items.map((el) => el.toJSON()), //TODO: not recursive
         };
         if (this.name !== undefined)
-            s.name = this.name;
+            schema.name = this.name;
         if (this.text !== undefined)
-            s.text = this.text;
+            schema.text = this.text;
+        if (this.description !== undefined)
+            schema.description = this.description;
         if (this.layout !== undefined)
-            s.layout = this.layout;
-        return s;
-    }
-    /**
-     * Apply iterator to element and all its child in a Depth-First manner
-     * @param iterator
-     * @param context
-     */
-    iterate(iterator, context = {}) {
-        iterator(this, context);
-        if (this.items instanceof Array) {
-            for (const child of this.items) {
-                child.iterate(iterator, Object.assign({}, context)); // clone context before passing
-            }
-        }
+            schema.layout = this.layout;
+        return schema;
     }
     update(data) {
-        Object.assign(this._data, data);
+        if (data) {
+            Object.assign(this._data, data);
+        }
+    }
+    get(id) {
+        return this.resolver && this.resolver.get(id);
+    }
+    parent() {
+        return this.resolver && this.resolver.parent(this.id);
+    }
+    // childs(): Item[] {
+    //   return this._data.items as any[]; // this.resolver.childs(this.id);
+    // }
+    /**
+     * Recursively checks if parent is a certain item
+     * @param item
+     * @returns true if inside parent hierarchy
+     */
+    isChildOf(item) {
+        let parent = this;
+        if (!item)
+            return false;
+        while (parent) {
+            parent = parent.parent();
+            if (parent === item)
+                return true;
+        }
+        return false;
+    }
+    /**
+     * Iterate item and all its child
+     * @param mode depth-first-search by default
+     */
+    hierarchy(mode) {
+        return new ItemIterator(this, mode);
+    }
+};
+Item.TYPE = 'item';
+Item = tslib_1.__decorate([
+    staticImplements(),
+    tslib_1.__metadata("design:paramtypes", [Object])
+], Item);
+exports.Item = Item;
+class ItemIterator {
+    constructor(item, mode) {
+        this.item = item;
+        this.mode = mode;
+        this.i = 0;
+        this.entries = [this.item];
+    }
+    next() {
+        const item = this.entries[this.i++];
+        if (item && item.items instanceof Array) {
+            if (this.mode === IteratorMode.BFS)
+                Array.prototype.push.apply(this.entries, item.items);
+            // DFS
+            else
+                this.entries.splice(this.i, 0, ...item.items);
+        }
+        return {
+            done: item === undefined,
+            value: item,
+        };
+    }
+    [Symbol.iterator]() {
+        return this;
     }
 }
-exports.Item = Item;
-Item.TYPE = 'item';
 //# sourceMappingURL=item.js.map

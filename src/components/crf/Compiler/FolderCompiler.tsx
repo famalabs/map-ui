@@ -18,7 +18,7 @@ export function FolderCompilerForm ({
   console.log("render folder", page)
   return (
     <Box
-    style={{width:'100%',margin:'24px 0px'}}
+    style={{width:'100%'}}
     >
     {page.layout.style === GroupMap.layout.style.card ? 
 			(

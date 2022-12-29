@@ -22,5 +22,5 @@ export declare class QuestionCheck extends Question<boolean, QuestionCheckOption
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionCheckOptions>;
+    toJSON(): QuestionData<QuestionCheckOptions>;
 }

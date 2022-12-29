@@ -22,6 +22,10 @@ export declare class QuestionSelect extends Question<number, QuestionSelectOptio
     protected get select(): TextScore[];
     constructor(data: Partial<QuestionData<QuestionSelectOptions>>);
     /**
+     * @override
+     */
+    isValid(): boolean;
+    /**
      * @returns the selected option, undefined otherwise
      */
     selectedOption(): TextScore;
@@ -37,7 +41,7 @@ export declare class QuestionSelect extends Question<number, QuestionSelectOptio
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionSelectOptions>;
+    toJSON(): QuestionData<QuestionSelectOptions>;
     /**
      * Add a new TextOption at a specified index if valid or at the end of the list
      * @param opt
@@ -54,5 +58,5 @@ export declare class QuestionSelect extends Question<number, QuestionSelectOptio
      * Removes the TextScore at the specified index
      * @param index of the TextScore to remove
      */
-    removeSelect(index: number): TextScore;
+    removeSelect(index: number): void;
 }

@@ -63,7 +63,7 @@ export function ItemFunctionEditorForm({
             question={question}
             required={false}            
             />
-            <Typography>Function Name: {question.getSchema().fnCompute}</Typography>
+            <Typography>Function Name: {question.toJSON().fnCompute}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>

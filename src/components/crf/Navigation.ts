@@ -224,7 +224,7 @@ export class SurveyNav implements INavState {
 
 	public getPathToId (id: string):string[] {
 		// BFS
-		const queue:DBSchema[] = [this.root.getSchema()]
+		const queue:DBSchema[] = [this.root.toJSON()]
 		let child:DBSchema = null;
 		while (queue.length !== 0) {
 			const item = queue.shift()
@@ -245,16 +245,6 @@ export class SurveyNav implements INavState {
 			child = child['parent'];
 		}
 		return ids.reverse();
-
-		// let item = this.findItemById(id);
-		// if (typeof item === 'undefined' || item === null) { throw Error('item not exists for getPathToId'); }
-		// item = item.parent;
-		// const ids = []
-		// while (typeof item !== 'undefined' && item !== null && typeof item.parent !== 'undefined' && item.parent !== null) {
-		// 	ids.push(item.id);
-		// 	item = item.parent;
-		// }
-		// return ids.reverse();
 	}
 
 	/**

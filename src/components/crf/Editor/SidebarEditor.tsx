@@ -57,7 +57,7 @@ export function SidebarEditorForm({
 					</List>
 				</nav>
 				<Divider />
-				<nav aria-label="secondary mailbox folders">
+				<nav>
 					<List>
 						{(menuState === MenuStateMap.folders || menuState === MenuStateMap.folder) ? 
 						renderMenuButton(FolderOpen, MenuStateMap.folder) : null}
@@ -190,12 +190,12 @@ export function SidebarEditorForm({
 	}
     
 	return (
-		<Box
-			component="nav"
-			// sx={{ width: { sm: 320+64 }, flexShrink: { sm: 0 } }}
-			style={{position:'fixed',top:'0',left:'0',bottom:'0', width: 320+64}}
-		>
-			<Paper style={{ display: 'flex', justifyContent: 'flex-start', height:'100%' }}>
+		// <Box
+		// 	component="nav"
+		// 	// sx={{ width: { sm: 320+64 }, flexShrink: { sm: 0 } }}
+		// 	style={{position:'fixed',top:'0',left:'0',bottom:'0', width: 320+64}}
+		// >
+			<Box style={{ display: 'flex', justifyContent: 'flex-start', height:'100%', width:'100%' }}>
 				<Box
 				sx={{ width:'64px', borderRight: 1, borderColor: 'divider' }}
 				>
@@ -217,7 +217,7 @@ export function SidebarEditorForm({
 					}
 					</Stack>
 				</Box>
-			</Paper>
-		</Box>
+			</Box>
+		// </Box>
 	);
 }

@@ -1,29 +1,15 @@
-import { DBAnswer, DBSchema } from './db';
-import { Item, Tree } from './engine';
+import { DBAnswer, ExtendedSchema } from './db';
+import { Tree, TreeException } from './engine';
 import { IFormDataResolver, Question, DataSourceRepository } from './form';
 export declare enum SurveyMode {
     EDIT = 0,
-    COMPILE = 1,
-    READONLY = 2
+    COMPILE = 1
 }
-export declare class SurveyException extends Error {
-}
-export declare class SurveyModeException extends SurveyException {
+export declare class SurveyModeException extends TreeException {
     readonly current: SurveyMode;
     readonly required?: SurveyMode;
     constructor(current: SurveyMode, required?: SurveyMode);
 }
-/**
- * TODO:
- * Item represents a single item -> Questions, ItemFunction (are always leaves)
- * Group is a ConditionalItem with childs (recursive)
- * Add caching (question lookups)
- *
- * - select other <- conditionalItem?
- * dynamic (non input) should have constraints on how far they can fetch values
- *
- * Scores lib -> functions executable
- */
 export declare class Survey extends Tree implements IFormDataResolver {
     protected _questions: Question[];
     protected _sources: DataSourceRepository;
@@ -34,13 +20,7 @@ export declare class Survey extends Tree implements IFormDataResolver {
      * Survey current mode. Enables functionalities based on this value
      */
     get mode(): SurveyMode;
-    constructor();
-    /**
-     * @override
-     * @param schema
-     * @returns
-     */
-    load(schema: DBSchema, mode?: SurveyMode): Item;
+    constructor(schema?: ExtendedSchema);
     /**
      * Sets answers from a list returning questions
      * @param answers
@@ -59,9 +39,9 @@ export declare class Survey extends Tree implements IFormDataResolver {
     reset(): void;
     /**
      * Caches tree informations for faster lookups.
-     * NOTE: this implies that no subsequent modifications will happen
+     * NOTE: this implies that no more tree operations are allowed
      */
-    _cache(): void;
+    prepare(): void;
     /**
      * Checks if an item and it's parent hierarchy is active
      * @param id
@@ -69,4 +49,9 @@ export declare class Survey extends Tree implements IFormDataResolver {
      * @returns
      */
     isActive(id: string, activeMap?: Record<string, boolean>): boolean;
+    /**
+     * Checks if all the active questions has been submitted
+     * @returns
+     */
+    isSumbitted(): boolean;
 }

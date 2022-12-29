@@ -11,7 +11,11 @@ class ItemFactory {
         this.constructors[fn[exports.TYPEKEY]] = fn;
     }
     isRegistered(fn) {
-        return (this.constructors[fn[exports.TYPEKEY]] === fn);
+        if (typeof fn === 'string')
+            return !!this.constructors[fn];
+        else if (fn && typeof fn[exports.TYPEKEY] === 'string')
+            return this.constructors[fn[exports.TYPEKEY]] === fn;
+        return false;
     }
     build(data) {
         if (!data)
@@ -19,7 +23,7 @@ class ItemFactory {
         const fn = this.constructors[data.type];
         if (!fn)
             throw new Error(`Invalid type '${data.type}'`);
-        const item = (new fn(data));
+        const item = new fn(data);
         return item;
     }
 }

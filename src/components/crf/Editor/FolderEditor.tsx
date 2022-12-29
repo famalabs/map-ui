@@ -203,7 +203,7 @@ export function FolderEditorForm({
 				variant={"contained"} 
 				color="secondary" 
 				onClick={(e) => {
-					console.log(JSON.stringify(editor.getSurvey().getSchema()), editor.getSurvey().getSchema());
+					console.log(JSON.stringify(editor.getSurvey().toJSON()), editor.getSurvey().toJSON());
 				}} 
 				>
 					Print JSON

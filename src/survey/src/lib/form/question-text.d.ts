@@ -5,11 +5,11 @@ import { Question, QuestionData, QuestionOptions } from './question';
  */
 export interface QuestionTextOptions extends QuestionOptions<string> {
     /**
-     * minimum answer characters length (inclusive)
+     * minimum answer length (inclusive)
      */
     min?: number;
     /**
-     * maximum answer characters length (inclusive)
+     * maximum answer length (inclusive)
      */
     max?: number;
     /**
@@ -22,6 +22,11 @@ export interface QuestionTextOptions extends QuestionOptions<string> {
  */
 export declare class QuestionText extends Question<string, QuestionTextOptions> {
     static readonly TYPE: string;
+    constructor(data: Partial<QuestionData<QuestionTextOptions>>);
+    /**
+     * @override
+     */
+    isValid(): boolean;
     /**
      * @override
      */
@@ -29,5 +34,5 @@ export declare class QuestionText extends Question<string, QuestionTextOptions> 
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionTextOptions>;
+    toJSON(): QuestionData<QuestionTextOptions>;
 }

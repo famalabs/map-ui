@@ -9,7 +9,6 @@ exports.registerFn = exports.getFn = void 0;
 function getFn(fnName) {
     if (typeof functions[fnName] === 'function')
         return functions[fnName];
-    return null;
 }
 exports.getFn = getFn;
 /**

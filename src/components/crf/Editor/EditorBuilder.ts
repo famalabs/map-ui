@@ -29,26 +29,10 @@ export class EditorBuilder implements IEditorState {
 
     public constructor(survey:Survey) {
       this.survey = survey;
-      this.root = survey.get(survey.getSchema().id);
+      this.root = survey.root;
     }
-    private getValidIdRec(item:Item, acc:string[]) {
-      for (let i = 0; i < item.items.length; i++) {
-        const accRec = this.getValidIdRec(item.items[i], acc);
-        acc = acc.concat(accRec);
-      }
-      acc.push(item.id);
-      return acc;
-    }
-    private getValidId(): string {
-      var ids = this.getValidIdRec(this.root, []);
-    
-      for (let i = 1; i < +Infinity; i++) {
-        if (!ids.includes(i.toString())) return i.toString();
-      }
-      return "";
-    }
-    public getValue(): any {
-      return this.root.getSchema();
+    public getSchema():DBSchema {
+      return this.root.toJSON();
     }
     public getSurvey(): Survey {
       return this.survey;
@@ -59,18 +43,6 @@ export class EditorBuilder implements IEditorState {
     public getQuestions(folderIdx:number,pageIdx:number):Item[] {
       return this.root.items[folderIdx].items[pageIdx].items;
     }
-    // public findItemById(id:string):Item {
-    //   // DFS
-    //   const queue:Item[] = [this.root]
-    //   while (queue.length !== 0) {
-    //     const item = queue.shift()
-    //     if (item.id === id) { return item; }
-    //     for (let i = 0; i < item.items.length; i++) {
-    //       queue.push(item.items[i]);
-    //     }
-    //   }
-    //   return undefined;
-    // }
     public addFolder(): Item {
       const defaultFolder = {
         type: Group.TYPE,
@@ -298,7 +270,7 @@ export class EditorBuilder implements IEditorState {
         added.options.max = removed.options.max;
         added.options.unit = removed.options.unit;
       } else if (added instanceof QuestionSelect && removed instanceof QuestionSelect) {
-        const selects = removed.getSchema().options.select;
+        const selects = removed.toJSON().options.select;
         added.setOption("select",selects);
         // added.removeSelect(0);
         // added.removeSelect(0);
@@ -342,7 +314,8 @@ export class EditorBuilder implements IEditorState {
       const curIdx = nav.getItemIdx(item.id);
       // const parent = this.survey.parent(this.survey.get(item.id).id);
       if (curIdx == 0) { return curIdx; }
-      this.survey.update(item.id, item.getSchema(), curIdx-1);
+      // this.survey.update(item.id, item.getSchema(), curIdx-1);
+      this.survey.move(item.id, curIdx-1)
       return curIdx-1;
     }
     public moveItemDown (item:Item) {}
@@ -356,7 +329,8 @@ export class EditorBuilder implements IEditorState {
       const curIdx = nav.getItemIdx(item.id);
       // const parent = this.survey.parent(this.survey.get(item.id).id);
       if (curIdx+1 == this.survey.parent(item.id).items.length) { return curIdx; }
-      this.survey.update(item.id, item.getSchema(), curIdx+1);
+      // this.survey.update(item.id, item.toJSON(), curIdx+1);
+      this.survey.move(item.id, curIdx+1)
       return curIdx+1;
     }
     private createDBSchemaFromPath(path:string, value:any, oldSchema:DBSchema):DBSchema {
@@ -392,9 +366,9 @@ export class EditorBuilder implements IEditorState {
     public onChangeValue(itemId:string, key:string, newValue:any) {
       const item = this.survey.get(itemId);
       if (typeof item === 'undefined') { throw Error('cant change value: question not in questions'); }
-      const newData = this.createDBSchemaFromPath(key, newValue, item.getSchema());
-      const newSchema = Object.assign({}, item.getSchema(), newData) as DBSchema;
-      this.survey.update(itemId, newSchema, -1);
+      const newData = this.createDBSchemaFromPath(key, newValue, item.toJSON());
+      const newSchema = Object.assign({}, item.toJSON(), newData) as DBSchema;
+      this.survey.update(itemId, newSchema);
       return 
     }
     public hasPendingChanges: () => boolean;
@@ -413,16 +387,16 @@ export interface IUseEditorState {
 
 export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
-    // const initValue = initSchema ?? {
-    //   id: "1",
+    // const initValue = initSchema || {
+    //   id: "0",
     //   type: Group.TYPE,
     //   text: "Survey",
     //   items: [{
-    //     id: "2",
+    //     id: "1",
     //     type: Group.TYPE,
     //     text: "Folder",
     //     items: [{
-    //       id: "3",
+    //       id: "2",
     //       type: Group.TYPE,
     //       text:"Page",
     //       items:[],
@@ -434,15 +408,15 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     // } as DBSchema;
 
     const initValue = {
-      id: "1",
+      id: "0",
       type: "group",
       text: "Survey",
       items: [{
-        id: "2",
+        id: "1",
         type: "group",
         text: "Folder",
         items: [{
-          id: "3",
+          id: "2",
           type: "group",
           text:"Page",
           items:[
@@ -465,10 +439,11 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
       }]
     } as DBSchema;
 
-    const initSurvey = new Survey();
-    initSurvey.load(initValue);
+    const initSurvey = new Survey(initValue);
+    console.log('editorBuilder survey root', initSurvey, initSurvey.root);
+    // initSurvey.load();
     const [survey, setSurvey] = React.useState<Survey>(initSurvey);
-    const getRoot = (s:Survey) => s.get(s.getSchema().id);
+    const getRoot = (s:Survey) => s.root;
     // const value:DBSchema = survey.getSchema();
     // const setValue = (a:any) => {}
 
