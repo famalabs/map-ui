@@ -2,7 +2,7 @@ import React from "react";
 import { Button, ButtonProps, CircularProgress, Theme, Typography } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { Survey, Item, DBSchema, QuestionText, QuestionNumber, QuestionSelect, Group } from '../../survey'
-import surveyFormExmple from './asdf.json'
+// import surveyFormExmple from './asdf.json'
 import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined } from '@mui/icons-material';
 import { useEditorState } from "../crf";
 

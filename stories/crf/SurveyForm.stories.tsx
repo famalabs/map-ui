@@ -2,7 +2,8 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { SurveyForm, SurveyFormProps } from '../../src/components/crf/Compiler/';
 import {Survey} from '../../src/survey'
-import surveyFormExmple from './asdf.json'
+// import surveyFormExmple from './asdf.json'
+import { crf } from './crf';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
@@ -29,6 +30,6 @@ const Template: Story<SurveyFormProps> = (args) => <SurveyForm {...args} />;
 
 export const Primary: Story<SurveyFormProps> = Template.bind({});
 Primary.args = {
-  initSurvey: surveyFormExmple,
+  initSurvey: crf,
   loading: false,
 };

@@ -25,7 +25,7 @@ export function FolderEditorForm({
 	const pages = nav.getPages();
 	const pageId = nav.getPageId();
 	const page = nav.getPage();
-	// console.log('folder', folder, pages, page);
+	console.log('folder folder, pages, page', folder, pages, page);
 
 	const pageOptions = {
 		default:GroupMap.layout.style.page,

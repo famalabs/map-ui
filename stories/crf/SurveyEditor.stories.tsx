@@ -1,8 +1,10 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { SurveyEditorForm, SurveyEditorProps } from '../../src/components/crf/Editor';
-import surveyFormExmple from './asdf.json'
+// import surveyFormExmple from './asdf.json'
+// import crfForm from './crf.json'
 import { DBSchema } from '../../src/survey';
+import { crf } from './crf';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
@@ -44,7 +46,7 @@ const initValue = {
   }]
 } as DBSchema;
 
-const Template: Story<SurveyEditorProps> = (args) => <SurveyEditorForm {...args} initSurvey={initValue}/>;
+const Template: Story<SurveyEditorProps> = (args) => <SurveyEditorForm {...args} initSurvey={crf as DBSchema}/>;
 
 export const Primary: Story<SurveyEditorProps> = Template.bind({});
 

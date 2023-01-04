@@ -402,25 +402,26 @@ export interface IUseEditorState {
 
 export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
-    const initValue = {
-      id: "0",
-      type: Group.TYPE,
-      text: "Survey",
-      items: [{
-        id: "1",
-        type: Group.TYPE,
-        text: "Folder",
-        items: [{
-          id: "2",
-          type: Group.TYPE,
-          text:"Page",
-          items:[],
-          layout: {
-            style: "card",
-          }
-        }]
-      }],
-    } as DBSchema;
+    const initValue = initSchema;
+    // const initValue = {
+    //   id: "0",
+    //   type: Group.TYPE,
+    //   text: "Survey",
+    //   items: [{
+    //     id: "1",
+    //     type: Group.TYPE,
+    //     text: "Folder",
+    //     items: [{
+    //       id: "2",
+    //       type: Group.TYPE,
+    //       text:"Page",
+    //       items:[],
+    //       layout: {
+    //         style: "card",
+    //       }
+    //     }]
+    //   }],
+    // } as DBSchema;
 
     // const initValue = {
     //   id: "0",
