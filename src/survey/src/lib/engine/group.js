@@ -11,14 +11,19 @@ class Group extends item_1.Item {
     // set items(value: Item[]) { this._data.items = value; }
     constructor(data) {
         super(data);
-        this._data.items = (data.items instanceof Array) ? data.items : [];
+        this._data.items = data.items instanceof Array ? data.items : [];
     }
-    get items() { return this._data.items; } // FIX: can we avoid cast?
+    get items() {
+        return this._data.items;
+    } // FIX: can we avoid cast?
     /**
      * Returns true if all hierarchy is valid
+     * @override
      * @returns {boolean}
      */
     isValid() {
+        if (!super.isValid())
+            return false;
         if (this.items instanceof Array) {
             for (let i = 0; i < this.items.length; i++) {
                 if (!this.items[i].isValid())
@@ -30,23 +35,10 @@ class Group extends item_1.Item {
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
-        schema.items = this.items.map((el) => el.getSchema()); //TODO: not recursive
+    toJSON() {
+        const schema = super.toJSON();
+        schema.items = this.items.map((el) => el.toJSON()); //TODO: not recursive
         return schema;
-    }
-    /**
-     * Apply iterator to element and all its child in a Depth-First manner
-     * @param iterator
-     * @param context
-     */
-    iterate(iterator, context = {}) {
-        iterator(this, context);
-        if (this.items instanceof Array) {
-            for (const child of this.items) {
-                child.iterate(iterator, Object.assign({}, context)); // clone context before passing
-            }
-        }
     }
 }
 exports.Group = Group;

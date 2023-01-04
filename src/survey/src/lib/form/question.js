@@ -8,35 +8,52 @@ const form_item_1 = require("./form-item");
 class Question extends form_item_1.FormItem {
     constructor(data) {
         super(data);
-        this._data.options = (typeof data.options === 'object' && data.options !== null) ? data.options : Object.create(null);
+        this._data.options =
+            typeof data.options === 'object' && data.options !== null
+                ? data.options
+                : Object.create(null);
         Object.defineProperty(this, '_answer', {
             value: undefined,
             enumerable: false,
             writable: true,
         });
         if (this._data.options.default !== undefined)
-            this._answer = this._data.options.default;
+            this._answer = this._data.options.default; // maybe should move this in getAnswer, so it's not considered as submitted?
     }
-    get answer() { return this._answer; }
+    get answer() {
+        return this._answer;
+    }
     /**
      * configuration parameters
      */
-    get options() { return this._data.options; }
+    get options() {
+        return this._data.options;
+    }
     /**
      * Shortcut for options.required
      * True by default
      */
-    get required() { return this.options.required !== false; }
+    get required() {
+        return this.options.required !== false;
+    }
     setOption(key, value) {
         this.options[key] = value;
     }
     /**
-     * Checks if the question has a valid answer
-     * @returns true if answer is valid, false otherwise
+     * @override
      */
     isValid() {
         if (!super.isValid())
             return false;
+        if (!this.text)
+            return false;
+        return true;
+    }
+    /**
+     * Checks if the question has a valid answer
+     * @override
+     */
+    isSubmitted() {
         if (this.answer === undefined)
             return false;
         if (this.required && this.answer === null)
@@ -46,8 +63,8 @@ class Question extends form_item_1.FormItem {
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         // schema.options = this.options; // unfiltered
         schema.options = {};
         if (this.options.required !== undefined)

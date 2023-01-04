@@ -23,7 +23,7 @@ export interface QuestionData<TOptions extends QuestionOptions = QuestionOptions
 /**
  * Abstract class to create form questions
  */
-export declare abstract class Question<TAnswer = any, TOptions extends QuestionOptions<TAnswer> = QuestionOptions<TAnswer>> extends FormItem implements QuestionData<TOptions> {
+export declare abstract class Question<TAnswer = any, TOptions extends QuestionOptions<TAnswer> = QuestionOptions<TAnswer>> extends FormItem implements Required<QuestionData<TOptions>> {
     protected _data: QuestionData<TOptions>;
     /**
      * Answer
@@ -50,14 +50,18 @@ export declare abstract class Question<TAnswer = any, TOptions extends QuestionO
      */
     abstract setAnswer(answer: TAnswer): boolean;
     /**
-     * Checks if the question has a valid answer
-     * @returns true if answer is valid, false otherwise
+     * @override
      */
     isValid(): boolean;
     /**
+     * Checks if the question has a valid answer
      * @override
      */
-    getSchema(): QuestionData<TOptions>;
+    isSubmitted(): boolean;
+    /**
+     * @override
+     */
+    toJSON(): QuestionData<TOptions>;
     /**
      * This method returns the user answer
      * @returns the answer of the user

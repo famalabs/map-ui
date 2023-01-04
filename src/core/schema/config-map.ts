@@ -164,8 +164,8 @@ export const QuestionNumberMap = {
             default: 1
         },
         unit: {
-            default:"none",
-            none:"none",
+            default:undefined,
+            undefined:undefined,
             kg:"kg",
             g:"g",
             m:"m",
@@ -272,22 +272,15 @@ export const FnMap = {
     type: "Fn",
     parameters: [],
     fnCompute: {
-        sum:'sum',
-        diff:'diff',
-        multiply:'multiply',
-        division:'division',
-        average:'average',
-        CountIf:'CountIf',
-        age:'age',
-        BMI:'BMI',
-        SOFA:'SOFA',
-        ISTH:'ISTH',
-        CID:'CID',
-        HScore:'HScore',
-        MeanArterialPressure:'MeanArterialPressure',
-        CrocoftGault:'CrocoftGault',
-        CDKEPI:'CDKEPI',
-        PFpercent:'PFpercent'
+        BodyMassIndex: 'BMI',
+        SofaScore: 'SOFA',
+        ISTHScore: 'ISTH',
+        CIDScore: 'CID',
+        HScore: 'HScore',
+        MeanArterialPressure: 'MeanArterialPressure',
+        GFRCockcroftGault: 'CrocoftGault',
+        CKD_EPI_CREATININE: 'CDKEPI',
+        PF_Percent: 'PFpercent',
     }
 } as const;
 export type FnMap = keyof typeof FnMap;

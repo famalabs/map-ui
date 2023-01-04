@@ -1,11 +1,9 @@
 import { Box, Button, Step, StepButton, StepLabel, Stepper, Typography } from '@mui/material';
-import { SurveyItem } from '../../../core/schema';
+import { Item } from '../../../survey';
 import React from 'react';
 import { INavState, SurveyNav } from '../Navigation';
 import { IUseFormCompiler } from './FormCompiler';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import EditIcon from '@mui/icons-material/Edit';
+import {CheckCircle, Cancel, Edit} from '@mui/icons-material';
 
 export interface HorizontalStepperProps {
     formCompiler:IUseFormCompiler;
@@ -18,10 +16,10 @@ export function HorizontalStepper({
     const form = formCompiler.form;
     const nav = formCompiler.nav;
     
-    const renderIcon = (pg:SurveyItem) => {
+    const renderIcon = (pg:Item) => {
         return pg.id===nav.getPageId() ? 
-        (<EditIcon/>) : form.getValid(pg.id) ?
-            (<CheckCircleIcon color="success"/>) : (<CancelIcon color="error"/>);
+        (<Edit/>) : form.getValid(pg.id) ?
+            (<CheckCircle color="success"/>) : (<Cancel color="error"/>);
     }
 
     if (nav.getPages().length <= 1) {

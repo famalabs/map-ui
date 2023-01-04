@@ -14,5 +14,5 @@ export interface DBAnswer {
     /**
      * Score: score of the answer, number or undefined
      */
-    score: number;
+    score?: number;
 }

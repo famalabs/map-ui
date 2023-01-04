@@ -5,3 +5,4 @@ export * from './InputNumber';
 export * from './InputRadio';
 // export * from './InputCheck';
 export * from './InputDate';
+export * from './FormStateAdapter'

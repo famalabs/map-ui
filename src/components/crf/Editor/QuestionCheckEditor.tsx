@@ -1,42 +1,28 @@
 import React from 'react';
-import {QuestionCheck, QuestionCheckMap} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Switch, Checkbox, FormControlLabel } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import { QuestionTextMap } from '../../../core/schema';
-import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import {QuestionCheck} from '../../../survey'
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionCheckEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: QuestionCheck;
-  questionState: string;
-}
+import { QuestionCheckCommon } from '../common';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionCheckEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionCheckEditorFormProps) {
+  }: QuestionCommonEditorProps<QuestionCheck>) {
+
   const editor = editorState.editor;
   const nav = editorState.nav;
 
 
   const renderNormal = () => {
     return (
-      <Stack spacing={1}>
-        <Stack spacing={1}>
-          {/* <FormLabel component="legend">{question.text}</FormLabel> */}
-          <FormLabel component="legend">{index && (index + '.')} {question.description}</FormLabel>
-          {question.layout.style === QuestionCheckMap.layout.style.switch ? (
-            <FormControlLabel disabled control={<Switch />} label={question.text} />
-          ):(
-            <FormControlLabel disabled control={<Checkbox />} label={question.text} />
-          )}
-        </Stack>
-      </Stack>
+      <QuestionCheckCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {

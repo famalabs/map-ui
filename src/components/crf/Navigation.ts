@@ -1,12 +1,13 @@
 import React from 'react'
-import { getQuestionMenuType, GroupMap, Question, QuestionMenuTypesMap, SurveyItem, SurveyMap } from '../../core/schema';
-
+// import { getQuestionMenuType, GroupMap, Question, QuestionMenuTypesMap, SurveyItem, SurveyMap } from '../../core/schema';
+import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, SurveyMap } from '../../core/schema';
+import { Survey, Item, DBSchema } from '../../survey'
 
 export class NavState {
-	private curItem: SurveyItem;
-	private items: SurveyItem[];
+	private curItem: Item;
+	private items: Item[];
 
-	public constructor(items: SurveyItem[], cur_item?: SurveyItem) {
+	public constructor(items: Item[], cur_item?: Item) {
 		this.items = items;
 		if (cur_item) {
 			this.curItem = cur_item;
@@ -21,10 +22,10 @@ export class NavState {
 	public getIdx(): number {
 		return this.items.findIndex((val, idx)=>val.id===this.curItem.id);
 	}
-	public getCurItem(): SurveyItem {
+	public getCurItem(): Item {
 		return this.curItem;
 	}
-	public getItems(): SurveyItem[] {
+	public getItems(): Item[] {
 		return this.items;
 	}
 	public next() {
@@ -37,7 +38,7 @@ export class NavState {
 			this.set(this.items[this.getIdx() - 1]);
 		}
 	}
-	public set(item: SurveyItem):boolean {
+	public set(item: Item):boolean {
 		// if (!this.items.includes(item)) { return false; }
 		for (let i = 0; i < this.items.length; i++) {
 			if (this.items[i].id == item.id) {
@@ -56,7 +57,7 @@ export class PageNav extends NavState {
 
 export class FolderNav extends NavState {
 
-	public findFolderOfPage(page: SurveyItem):SurveyItem {
+	public findFolderOfPage(page: Item):Item {
 		const folders = this.getItems();
 		for (let i = 0; i < folders.length; i++) {
 			const pages = folders[i].items;
@@ -74,82 +75,94 @@ export class FolderNav extends NavState {
 }
 
 export interface INavState {
-	updateValues: (root: SurveyItem) => void;
-	updateAndSet: (root: SurveyItem, folder?:SurveyItem, page?:SurveyItem) => void;
-	updateAndSetWithIds: (root: SurveyItem, folderIdx?:number, pageIdx?:number) => void;
+	updateValues: (root: Item) => void;
+	updateAndSet: (root: Item, folder?:Item, page?:Item) => void;
+	updateAndSetWithIds: (root: Item, folderIdx?:number, pageIdx?:number) => void;
 
-	getPages: () => SurveyItem[];
+	getPages: () => Item[];
 	nextPage: () => void;
 	prevPage: () => void;
-	setPage: (item: SurveyItem) => void;
-	getPage: () => SurveyItem;
+	setPage: (item: Item) => void;
+	getPage: () => Item;
 	getPageId: () => string;
 	getPageIdx: () => number;
 
-	getFolders: () => SurveyItem[];
+	getFolders: () => Item[];
 	nextFolder: () => void;
 	prevFolder: () => void;
-	setFolder: (folder: SurveyItem, page?: SurveyItem) => void;
-	getFolder: () => SurveyItem;
+	setFolder: (folder: Item, page?: Item) => void;
+	getFolder: () => Item;
 	getFolderId: () => string;
 	getFolderIdx: () => number;
 
-	getQuestions:() => SurveyItem[];
+	getQuestions:() => Item[];
 
-	getPagesOfFolder: (folder: SurveyItem) => SurveyItem[];
+	getPagesOfFolder: (folder: Item) => Item[];
 
 	getItemIdx: (id:string) => number;
-	findItemById: (id:string) => SurveyItem;
+	findItemById: (id:string) => Item;
 	getItemType: (id:string) => string;
-	getIdsToId: (id:string) => string[];
+	getPathToId: (id:string) => string[];
 	/**
 	 *  returns a obj with key = question.id, value = idx || obj if question is section
 	 */
 	getItemsGlobalOrderIndex: () => any;
+	getItemsGroupedOrderIndex: () => any;
+}
+
+interface INavValue {
+	root: Item;
+	folders: Item[];
+	folder: Item;
+	pages: Item[];
+	page: Item;
 }
 
 export class SurveyNav implements INavState {
-	// private root: SurveyItem;
+	// private root: Item;
 	private folders: FolderNav;
 	private pages: PageNav;
-	public constructor(value: any) {
-			this.folders = new FolderNav(value.folders, value.folder);
-			this.pages = new PageNav(value.pages, value.page);
+	private root: Item;
+	public constructor(value: INavValue) {
+		this.root = value.root;
+		this.folders = new FolderNav(value.folders, value.folder);
+		this.pages = new PageNav(value.pages, value.page);
 	}
 
-	static rootToValue = (root: SurveyItem, folderIdx?:number, pageIdx?:number) => {
+	static rootToValue = (root: Item, folderIdx?:number, pageIdx?:number) => {
 		if (typeof folderIdx === 'undefined') { folderIdx = 0; }
 		if (typeof pageIdx === 'undefined') { pageIdx = 0; }
 		return {
+			root: root,
 			folders: root.items,
 			folder: root.items[folderIdx],
 			pages: root.items[folderIdx].items,
 			page: root.items[folderIdx].items[pageIdx]
-		}
+		} as INavValue;
 	}
 
-	updateValues: (root: SurveyItem) => void;
-	updateAndSet: (root: SurveyItem, folder?:SurveyItem, page?:SurveyItem) => void;
-	updateAndSetWithIds: (root: SurveyItem, folderIdx?:number, pageIdx?:number) => void;
+	updateValues: (root: Item) => void;
+	updateAndSet: (root: Item, folder?:Item, page?:Item) => void;
+	updateAndSetWithIds: (root: Item, folderIdx?:number, pageIdx?:number) => void;
 	
-	public getPages():SurveyItem[] { return this.pages.getItems(); }
+	public getPages():Item[] { return this.pages.getItems(); }
 	public nextPage():any { this.pages.next(); return this.getValue(); }
 	public prevPage():any  { this.pages.prev(); return this.getValue(); }
-	public setPage(page: SurveyItem):any  {
+	public setPage(page: Item):any  {
 		if (!this.pages.set(page)) {
 			throw Error("page not in pages");
 		}
 		// TODO: handle if not in pages
 		return this.getValue();
 	}
-	public getPage():SurveyItem { return this.pages.getCurItem(); }
+	public getPage():Item { return this.pages.getCurItem(); }
 	public getPageId():string { return this.pages.getId(); }
 	public getPageIdx():number { return this.pages.getIdx(); }
 
-	public getFolders():SurveyItem[] { return this.folders.getItems(); }
+	public getFolders():Item[] { return this.folders.getItems(); }
 	public nextFolder():any  { this.folders.next(); return this.getValue(); }
 	public prevFolder():any  { this.folders.prev(); return this.getValue(); }
-	public setFolder(folder: SurveyItem, page?: SurveyItem):any  {
+	public setFolder(folder: Item, page?: Item):any  {
 		this.folders.set(folder);
 		this.pages = new PageNav(this.getFolder().items);
 		if (page) {
@@ -157,34 +170,32 @@ export class SurveyNav implements INavState {
 		}
 		return this.getValue();
 	}
-	public getFolder():SurveyItem { return this.folders.getCurItem(); }
+	public getFolder():Item { return this.folders.getCurItem(); }
 	public getFolderId():string { return this.folders.getId(); }
 	public getFolderIdx():number { return this.folders.getIdx(); }
 
-	public getQuestions():SurveyItem[] { return this.pages.getCurItem().items as Question[]; }
+	public getQuestions():Item[] { return this.pages.getCurItem().items; }
 
-	public getPagesOfFolder(folder: SurveyItem): SurveyItem[] {
+	public getPagesOfFolder(folder: Item): Item[] {
 		return folder.items;
 	}
 
 	public getItemIdx (id:string):number {
-		for (let f = 0; f < this.getFolders().length; f++) {
-			const folder = this.getFolders()[f];
-			if (folder.id === id) { return f; }
-			for (let p = 0; p < folder.items.length; p++) {
-				const page = folder.items[p];
-				if (page.id === id) { return p; }
-					for (let q = 0; q < page.items.length; q++) {
-					if (page.items[q].id === id) { return q; }
-				}
+		// BFS
+		const queue:[Item,number][] = [[this.root,0]]
+		while (queue.length !== 0) {
+			const item = queue.shift()
+			if (item[0].id === id) { return item[1]; }
+			for (let i = 0; i < item[0].items.length; i++) {
+				queue.push([item[0].items[i],i]);
 			}
 		}
 		return -1;
 	}
 
-	public findItemById(id:string):SurveyItem {
-		// DFS
-		const queue:SurveyItem[] = [this.getFolders()[0].parent]
+	public findItemById(id:string):Item {
+		// BFS
+		const queue:Item[] = [this.root]
 		while (queue.length !== 0) {
 			const item = queue.shift()
 			if (item.id === id) { return item; }
@@ -192,22 +203,10 @@ export class SurveyNav implements INavState {
 				queue.push(item.items[i]);
 			}
 		}
-
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	if (folder.id === id) { return folder; }
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 		if (page.id === id) { return page; }
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 				if (page.items[q].id === id) { return page.items[q]; }
-		// 			}
-		// 		}
-		// }
 		return undefined;
 	}
 	public getItemType (id:string):string {
-		if (id === this.getFolders()[0].parent.id) return SurveyMap.type;
+		if (id === this.root.id) return SurveyMap.type;
 		for (let f = 0; f < this.getFolders().length; f++) {
 			const folder = this.getFolders()[f];
 			if (folder.id === id) { return GroupMap.layout.style.folder; }
@@ -219,20 +218,34 @@ export class SurveyNav implements INavState {
 					}
 				}
 		}
-		throw Error('this item is not a nav type');
+		// throw Error('this item is not a nav type');
+		return this.findItemById(id).type;
 	}
 
-	public getIdsToId (id: string):string[] {
-			let item = this.findItemById(id);
-			if (typeof item === 'undefined' || item === null) { throw Error('item not exists for getIdsToId'); }
-			item = item.parent;
-			const ids = []
-			while (typeof item !== 'undefined' && item !== null && typeof item.parent !== 'undefined' && item.parent !== null) {
-				ids.push(item.id);
-				item = item.parent;
+	public getPathToId (id: string):string[] {
+		// BFS
+		const queue:DBSchema[] = [this.root.toJSON()]
+		let child:DBSchema = null;
+		while (queue.length !== 0) {
+			const item = queue.shift()
+			if (item.id === id) { 
+				child = item;
+				break; 
 			}
-			return ids.reverse();
+			for (let i = 0; i < item.items.length; i++) {
+				item.items[i]['parent'] = item;
+				queue.push(item.items[i]);
+			}
 		}
+		if (typeof child === 'undefined' || child === null) { throw Error('child not exists for getPathToId'); }
+		child = child['parent'];
+		const ids:string[] = []
+		while (typeof child !== 'undefined' && child !== null && typeof child['parent'] !== 'undefined' && child['parent'] !== null) {
+			ids.push(child.id);
+			child = child['parent'];
+		}
+		return ids.reverse();
+	}
 
 	/**
 	 * 
@@ -251,11 +264,11 @@ export class SurveyNav implements INavState {
 							order[question.id] = {};
 							for (let s = 0; s < question.items.length; s++) {
 								const secQs = question.items[s];
-								order[question.id][secQs.id] = idx;
+								order[question.id][secQs.id] = idx.toString() + '. ';
 								idx+=1;
 							}
 						} else {
-							order[question.id] = idx;
+							order[question.id] = idx.toString() + '. ';
 							idx+=1;
 						}
 					}
@@ -264,15 +277,44 @@ export class SurveyNav implements INavState {
 		return order;
 	}
 
-	public getValue(): any {
+	public getItemsGroupedOrderIndex():any {
+		const order = {}
+		for (let f = 0; f < this.getFolders().length; f++) {
+			const folder = this.getFolders()[f];
+			for (let p = 0; p < folder.items.length; p++) {
+				const page = folder.items[p];
+				let idx = 1
+					for (let q = 0; q < page.items.length; q++) {
+						const question = page.items[q];
+						if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
+							order[question.id] = {};
+							for (let s = 0; s < question.items.length; s++) {
+								const secQs = question.items[s];
+								order[question.id][secQs.id] = idx.toString() + '.' + (s+1).toString() + '. ';
+								// idx+=1;
+							}
+							idx+=1;
+						} else {
+							order[question.id] = idx.toString() + '. ';
+							idx+=1;
+						}
+					}
+				}
+		}
+		return order;
+	}
+
+	public getValue(): INavValue {
 		return {
+			root: this.root,
 			folders: this.getFolders(),
 			folder: this.getFolder(),
 			pages: this.getPages(),
 			page: this.getPage()
-		}
+		} as INavValue;
 	}
-	public setValue(value:any) {
+	public setValue(value:INavValue) {
+		this.root = value.root;
 		this.folders = new FolderNav(value.folders);
 		this.folders.set(value.folder);
 		this.pages = new PageNav(value.pages);
@@ -283,23 +325,26 @@ export class SurveyNav implements INavState {
 
 
 
-export function useNavState(root: SurveyItem): INavState {
+export function useNavState(surveyRoot: Item): INavState {
 
-	const [value, setValue] = React.useState(SurveyNav.rootToValue(root));
-	function handleSetValue(value:any) {
-		setValue(value);
+	const [value, setValue] = React.useState(SurveyNav.rootToValue(surveyRoot));
+
+	// console.log('nav value', value);
+
+	function handleSetValue(val:any) {
+		setValue(val);
 	}
 
 	return {
-		updateValues: (root: SurveyItem) => {
+		updateValues: (root: Item) => {
 			handleSetValue(SurveyNav.rootToValue(root));
 		},
-		updateAndSet: (root: SurveyItem, folder:SurveyItem, page:SurveyItem) => {
+		updateAndSet: (root: Item, folder:Item, page:Item) => {
 			// root for values, folder to select or page to select
 			const nav = new SurveyNav(SurveyNav.rootToValue(root));
 			handleSetValue(nav.setFolder(folder, page));
 		},
-		updateAndSetWithIds: (root: SurveyItem, folderIdx:number, pageIdx:number) => {
+		updateAndSetWithIds: (root: Item, folderIdx:number, pageIdx:number) => {
 			// root for values, folder to select or page to select
 			handleSetValue(SurveyNav.rootToValue(root,folderIdx,pageIdx));
 		},
@@ -308,7 +353,7 @@ export function useNavState(root: SurveyItem): INavState {
 		getPages: () => new SurveyNav(value).getPages(),
 		nextPage: () => {handleSetValue(new SurveyNav(value).nextPage());},
 		prevPage: () => {handleSetValue(new SurveyNav(value).prevPage());},
-		setPage: (item: SurveyItem) => {handleSetValue(new SurveyNav(value).setPage(item));},
+		setPage: (item: Item) => {handleSetValue(new SurveyNav(value).setPage(item));},
 		getPageId: () => new SurveyNav(value).getPageId(),
 		getPageIdx: () => new SurveyNav(value).getPageIdx(),
 
@@ -316,19 +361,20 @@ export function useNavState(root: SurveyItem): INavState {
 		getFolders: () => new SurveyNav(value).getFolders(),
 		nextFolder: () => {handleSetValue(new SurveyNav(value).nextFolder());},
 		prevFolder: () => {handleSetValue(new SurveyNav(value).prevFolder());},
-		setFolder: (folder: SurveyItem, page?: SurveyItem) => {handleSetValue(new SurveyNav(value).setFolder(folder, page));},
+		setFolder: (folder: Item, page?: Item) => {handleSetValue(new SurveyNav(value).setFolder(folder, page));},
 		getFolderId: () => new SurveyNav(value).getFolderId(),
 		getFolderIdx: () => new SurveyNav(value).getFolderIdx(),
 
 		getQuestions: () => new SurveyNav(value).getQuestions(),
 
-		getPagesOfFolder: (folder: SurveyItem) => new SurveyNav(value).getPagesOfFolder(folder),
+		getPagesOfFolder: (folder: Item) => new SurveyNav(value).getPagesOfFolder(folder),
 
 		getItemIdx: (id:string) => new SurveyNav(value).getItemIdx(id),
 		findItemById: (id:string) => new SurveyNav(value).findItemById(id),
 		getItemType: (id:string) => new SurveyNav(value).getItemType(id),
-		getIdsToId: (id:string) => new SurveyNav(value).getIdsToId(id),
+		getPathToId: (id:string) => new SurveyNav(value).getPathToId(id),
 		getItemsGlobalOrderIndex: () => new SurveyNav(value).getItemsGlobalOrderIndex(),
+		getItemsGroupedOrderIndex: () => new SurveyNav(value).getItemsGroupedOrderIndex(),
 
 	} as INavState;
 }

@@ -11,5 +11,5 @@ tslib_1.__exportStar(require("./question-date"), exports);
 tslib_1.__exportStar(require("./question-text"), exports);
 tslib_1.__exportStar(require("./question-number"), exports);
 tslib_1.__exportStar(require("./item-function"), exports);
-tslib_1.__exportStar(require("./conditional-item"), exports);
+tslib_1.__exportStar(require("./item-conditional"), exports);
 //# sourceMappingURL=index.js.map

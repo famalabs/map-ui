@@ -5,14 +5,27 @@ const question_1 = require("./question");
 class QuestionSelect extends question_1.Question {
     constructor(data) {
         super(data);
-        this._data.options.select = (data.options.select instanceof Array) ? data.options.select : [];
+        if (!(this.options.select instanceof Array))
+            this.options.select = [];
     }
-    get select() { return this._data.options.select; }
+    get select() {
+        return this._data.options.select;
+    }
+    /**
+     * @override
+     */
+    isValid() {
+        if (!super.isValid())
+            return false;
+        return true;
+    }
     /**
      * @returns the selected option, undefined otherwise
      */
     selectedOption() {
-        return this.isValidIndex(this.answer) ? this.select[this.answer] : undefined;
+        return this.isValidIndex(this.answer)
+            ? this.select[this.answer]
+            : undefined;
     }
     /**
      * @override
@@ -37,13 +50,16 @@ class QuestionSelect extends question_1.Question {
         return (_a = this.selectedOption()) === null || _a === void 0 ? void 0 : _a.score;
     }
     isValidIndex(index) {
-        return (typeof index === 'number' && index >= 0 && index < this.select.length);
+        return (typeof index === 'number' &&
+            index >= 0 &&
+            index < this.select.length &&
+            ~~index === index);
     }
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         schema.options.select = this.options.select;
         return schema;
     }
@@ -74,9 +90,8 @@ class QuestionSelect extends question_1.Question {
      * @param index of the TextScore to remove
      */
     removeSelect(index) {
-        if (!this.isValidIndex(index))
-            return undefined;
-        return this.select.splice(index, 1)[0];
+        if (this.isValidIndex(index))
+            this.select.splice(index, 1)[0];
     }
 }
 exports.QuestionSelect = QuestionSelect;

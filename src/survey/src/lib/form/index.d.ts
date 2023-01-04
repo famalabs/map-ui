@@ -8,4 +8,4 @@ export * from './question-date';
 export * from './question-text';
 export * from './question-number';
 export * from './item-function';
-export * from './conditional-item';
+export * from './item-conditional';

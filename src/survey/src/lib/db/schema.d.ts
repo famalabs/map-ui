@@ -1,4 +1,4 @@
-import { Layout } from "./layout";
+import { Layout } from './layout';
 /**
  * Schema which represents the serialization of a generic node
  * @interface
@@ -21,6 +21,10 @@ export interface DBSchema {
      */
     text?: string;
     /**
+     * description
+     */
+    description?: string;
+    /**
      * Child nodes
      */
     items?: DBSchema[];
@@ -28,5 +32,8 @@ export interface DBSchema {
      * Layout
      */
     layout?: Layout;
+}
+export interface ExtendedSchema extends DBSchema {
+    items?: ExtendedSchema[];
     [k: string]: any;
 }

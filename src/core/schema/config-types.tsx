@@ -1,22 +1,13 @@
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import PinIcon from '@mui/icons-material/Pin';
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
-import ToggleOnOutlinedIcon from '@mui/icons-material/ToggleOnOutlined';
-import TocRoundedIcon from '@mui/icons-material/TocRounded';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import WebAssetIcon from '@mui/icons-material/WebAsset';
-import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
+import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined } from '@mui/icons-material';
 import React from "react";
 import { QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, GroupMap, FnMap } from './config-map';
 import { SurveyItem } from './survey-item';
+import { Item, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Group, ItemFunction } from '../../survey'
 
 export const QuestionMenuTypesMap = {
 	text: {
 		'type': 'text',
-		'icon': <TextFieldsIcon/>,
+		'icon': <TextFields/>,
 		'locale': {
 			'it': 'Testo',
 			'en': 'Text',
@@ -24,7 +15,7 @@ export const QuestionMenuTypesMap = {
 	},
 	textMulti: {
 		'type': 'textMulti',
-		'icon': <TextFieldsIcon/>,
+		'icon': <TextFields/>,
 		'locale': {
 			'it': 'Testo Multiriga',
 			'en': 'Text Multiline',
@@ -32,7 +23,7 @@ export const QuestionMenuTypesMap = {
 	},
 	number: {
 		'type': 'number',
-		'icon': <PinIcon/>,
+		'icon': <Pin/>,
 		'locale': {
 			'it': 'Numero',
 			'en': 'Number',
@@ -40,7 +31,7 @@ export const QuestionMenuTypesMap = {
 	},
 	range: {
 		'type': 'range',
-		'icon': <LinearScaleRoundedIcon/>,
+		'icon': <LinearScaleRounded/>,
 		'locale': {
 			'it': 'Intervallo',
 			'en': 'Range',
@@ -48,7 +39,7 @@ export const QuestionMenuTypesMap = {
 	},
 	select: {
 		'type': 'select',
-		'icon': <RadioButtonCheckedIcon/>,
+		'icon': <RadioButtonChecked/>,
 		'locale': {
 			'it': 'Selezione',
 			'en': 'Select',
@@ -56,7 +47,7 @@ export const QuestionMenuTypesMap = {
 	},
 	dropdown: {
 		'type': 'dropdown',
-		'icon': <ArrowDropDownCircleOutlinedIcon/>,
+		'icon': <ArrowDropDownCircleOutlined/>,
 		'locale': {
 			'it': 'Selezione a Tendina',
 			'en': 'Dropdown',
@@ -64,7 +55,7 @@ export const QuestionMenuTypesMap = {
 	},
 	selectTable: {
 		'type': 'selectTable',
-		'icon': <TocRoundedIcon/>,
+		'icon': <TocRounded/>,
 		'locale': {
 			'it': 'Tavolo di Selezione',
 			'en': 'Select Table',
@@ -72,7 +63,7 @@ export const QuestionMenuTypesMap = {
 	},
 	check: {
 		'type': 'check',
-		'icon': <CheckBoxIcon/>,
+		'icon': <CheckBox/>,
 		'locale': {
 			'it': 'Casella di Spunta',
 			'en': 'Checkbox',
@@ -80,7 +71,7 @@ export const QuestionMenuTypesMap = {
 	},
 	switch: {
 		'type': 'switch',
-		'icon': <ToggleOnOutlinedIcon/>,
+		'icon': <ToggleOnOutlined/>,
 		'locale': {
 			'it': 'Interruttore',
 			'en': 'Switch',
@@ -88,7 +79,7 @@ export const QuestionMenuTypesMap = {
 	},
 	date: {
 		'type': 'date',
-		'icon': <CalendarMonthIcon/>,
+		'icon': <CalendarMonth/>,
 		'locale': {
 			'it': 'Data',
 			'en': 'Date',
@@ -96,7 +87,7 @@ export const QuestionMenuTypesMap = {
 	},
 	fn: {
 		'type': 'fn',
-		'icon': <FunctionsIcon/>,
+		'icon': <Functions/>,
 		'locale': {
 			'it': 'Funzione',
 			'en': 'Function',
@@ -104,7 +95,7 @@ export const QuestionMenuTypesMap = {
 	},
 	section: {
 		'type': 'section',
-		'icon': <WebAssetIcon/>,
+		'icon': <WebAsset/>,
 		'locale': {
 			'it': 'Sezione',
 			'en': 'Section',
@@ -112,7 +103,7 @@ export const QuestionMenuTypesMap = {
 	}
 }
 
-export const getQuestionMenuType = (question:SurveyItem):string => {
+export const getOldQuestionMenuType = (question:SurveyItem):string => {
 		if (question.type === QuestionTextMap.type) {
       return QuestionMenuTypesMap.text.type;
     } else if (question.type === QuestionNumberMap.type) {
@@ -144,4 +135,38 @@ export const getQuestionMenuType = (question:SurveyItem):string => {
 			return QuestionMenuTypesMap.fn.type;
 		}
 		return null;
+}
+
+export const getQuestionMenuType = (question:Item):string => {
+	if (question.type === QuestionText.TYPE) {
+		return QuestionMenuTypesMap.text.type;
+	} else if (question.type === QuestionNumber.TYPE) {
+		if (question.layout.style === QuestionNumberMap.layout.style.range) {
+			return QuestionMenuTypesMap.range.type;
+		}
+		return QuestionMenuTypesMap.number.type;
+	} else if (question.type === QuestionSelect.TYPE) {
+		if (question.layout.style === QuestionSelectMap.layout.style.dropdown) {
+			return QuestionMenuTypesMap.dropdown.type;
+		}
+		return QuestionMenuTypesMap.select.type;
+	} else if (question.type === QuestionCheck.TYPE) {
+		if (question.layout.style === QuestionCheckMap.layout.style.switch) {
+			return QuestionMenuTypesMap.switch.type;
+		}
+		return QuestionMenuTypesMap.check.type;
+	} else if (question.type === QuestionDate.TYPE) {
+		return QuestionMenuTypesMap.date.type;
+	} else if (question.type === Group.TYPE) {
+		if (question.layout.style === GroupMap.layout.style.table) {
+			if (question.items[0].type === QuestionSelect.TYPE) {
+				return QuestionMenuTypesMap.selectTable.type;
+			}
+		} else if (question.layout.style === GroupMap.layout.style.section) {
+			return QuestionMenuTypesMap.section.type;
+		}
+	} else if (question.type === ItemFunction.TYPE) {
+		return QuestionMenuTypesMap.fn.type;
+	}
+	return null;
 }

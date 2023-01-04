@@ -6,6 +6,27 @@ const question_1 = require("./question");
  * Represent a question whose answer is a date
  * */
 class QuestionDate extends question_1.Question {
+    constructor(data) {
+        super(data);
+        if (typeof this.options.min === 'string' ||
+            typeof this.options.min === 'number')
+            this.options.min = new Date(this.options.min);
+        if (typeof this.options.max === 'string' ||
+            typeof this.options.max === 'number')
+            this.options.max = new Date(this.options.max);
+    }
+    /**
+     * @override
+     */
+    isValid() {
+        if (!super.isValid())
+            return false;
+        if (this.options.min &&
+            this.options.max &&
+            !(this.options.min <= this.options.max))
+            return false;
+        return true;
+    }
     /**
      * @override
      */
@@ -30,12 +51,14 @@ class QuestionDate extends question_1.Question {
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
-        if (this.options.min !== undefined)
+    toJSON() {
+        const schema = super.toJSON();
+        if (this.options.min)
             schema.options.min = this.options.min;
-        if (this.options.max !== undefined)
+        if (this.options.max)
             schema.options.max = this.options.max;
+        if (this.options.unit)
+            schema.options.unit = this.options.unit;
         return schema;
     }
 }

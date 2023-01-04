@@ -1,29 +1,42 @@
 import React from 'react';
 import { Divider, Paper, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
-import { GroupMap, SurveyItem } from '../../../core/schema';
-import { IUseFormCompiler } from './FormCompiler';
+import { Item } from '../../../survey';
 
-export interface SectionCompilerFormProps {
-	index?: any;
-	section: SurveyItem;
-	formCompiler: IUseFormCompiler;
-}
+import { QuestionCommonCompilerProps } from './CommonCompiler';
+import { SectionCommon } from '../common';
 
-export function SectionCompilerForm ({
+export function SectionCompilerForm({
+  formCompiler,
+  question,
 	index,
-	section,
-	formCompiler,
-}:SectionCompilerFormProps) {
+  }: QuestionCommonCompilerProps<Item>) {
+
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
+
+	// const content = (<div>{question.items.map((question, idx) => {
+	// 	return(
+	// 			<QuestionCompilerForm
+	// 			key={question.id}
+	// 			index={index[question.id]}
+	// 			item={question}
+	// 			formCompiler={formCompiler}
+	// 			/>
+	// 	);
+	// })}</div>)
 	return (
+			// <SectionCommon
+			// 	index={index}
+			// 	question={question}
+			// 	content={content}
+			// />
 			<Stack spacing={6}>
-        <Stack>
-			<Typography variant='h4'>{section.text}</Typography>
-			<Typography>{section.description}</Typography>
-        </Stack>
-			{section.items.map((question, idx) => {
+			<Stack>
+			<Typography variant='h4'>{question.text}</Typography>
+			<Typography>{question.description}</Typography>
+			</Stack>
+			{question.items.map((question, idx) => {
 				return(
 						<QuestionCompilerForm
 						key={question.id}

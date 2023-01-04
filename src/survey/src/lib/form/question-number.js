@@ -9,6 +9,18 @@ class QuestionNumber extends question_1.Question {
     /**
      * @override
      */
+    isValid() {
+        if (!super.isValid())
+            return false;
+        if (typeof this.options.min === 'number' &&
+            typeof this.options.max === 'number' &&
+            !(this.options.min <= this.options.max))
+            return false;
+        return true;
+    }
+    /**
+     * @override
+     */
     setAnswer(answer) {
         if (answer === null) {
             if (this.required)
@@ -29,13 +41,13 @@ class QuestionNumber extends question_1.Question {
      * @override
      */
     getScore() {
-        return (typeof this.answer === 'number') ? this.answer : undefined;
+        return typeof this.answer === 'number' ? this.answer : undefined;
     }
     /**
      * @override
      */
-    getSchema() {
-        const schema = super.getSchema();
+    toJSON() {
+        const schema = super.toJSON();
         if (this.options.min !== undefined)
             schema.options.min = this.options.min;
         if (this.options.max !== undefined)

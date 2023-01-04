@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button, FormLabel, Paper, Typography } from '@mui/material';
-import { GroupMap, ItemFunction, Question, QuestionCheck, QuestionDate, QuestionNumber, QuestionNumberMap, QuestionSelect, QuestionSelectMap, QuestionText, SurveyItem } from '../../../core/schema';
-import { InputDate, InputNumber, InputRadio, InputString } from '../../forms';
+import { GroupMap, QuestionSelectMap } from '../../../core/schema';
+import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item, Group } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
 import { QuestionSelectCompilerForm } from './QuestionSelectCompiler';
@@ -14,7 +13,7 @@ import { QuestionDateCompilerForm } from './QuestionDateCompiler';
 
 export interface QuestionCompilerFormProps {
 	index?: any;
-	item: SurveyItem;
+	item: Item;
 	formCompiler: IUseFormCompiler;
 }
 
@@ -34,17 +33,6 @@ export function QuestionCompilerForm({
 			formCompiler={formCompiler}
 			question={item}
 			/>
-			// <InputString
-			// nameid={item.id}
-			// title={item.text}
-			// label={item.description ?? item.text}
-			// value={form.getValue(item.id)}
-			// setValue={(text) => form.getSetValue(item.id)(text)}
-			// required={form.getRequired(item.id)}
-			// // required={item.options.required}
-			// // emptyMessage={'empty message'}
-			// showError={form.getShowError(item.id)}
-			// />
 		);
 	} else if (item instanceof QuestionDate) {
 		return (
@@ -53,17 +41,6 @@ export function QuestionCompilerForm({
 			formCompiler={formCompiler}
 			question={item}
 			/>
-			// <InputDate
-			// 	nameid={item.id}
-			// 	title={item.text}
-			// 	label={item.description ?? item.text}
-			// 	value={form.getValue(item.id)}
-			// 	setValue={(text) => form.getSetValue(item.id)(text)}
-			// 	required={form.getRequired(item.id)}
-			// 	// required={item.options.required}
-			// 	// emptyMessage={'empty message'}
-			// 	showError={form.getShowError(item.id)}
-			// />
 		);
 	} else if (item instanceof QuestionNumber) {
 		return (
@@ -73,25 +50,10 @@ export function QuestionCompilerForm({
 			question={item}
 			/>
 		);
-		// if (item.layout.style === QuestionNumberMap.layout.style.default) {
-		// 	return null;
-		// }
-		// return (
-		// 	<InputNumber
-		// 	nameid={item.id}
-		// 	title={item.text}
-		// 	label={item.description ?? item.text}
-		// 	value={form.getValue(item.id)}
-		// 	setValue={(number) => form.setValue(item.id)(number)}
-		// 	required={form.getRequired(item.id)}
-		// 	// required={item.options.required}
-		// 	// emptyMessage={'empty message'}
-		// 	showError={form.getShowError(item.id)}
-		// 	/>
-		// );
 	} else if (item instanceof QuestionCheck) {
 		return (
 			<QuestionCheckCompilerForm
+			index={index}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -103,28 +65,18 @@ export function QuestionCompilerForm({
 			formCompiler={formCompiler}
 			question={item}
 			/>
-			// <InputRadio
-			// 	nameid={item.id}
-			// 	title={item.text}
-			// 	value={form.getValue(item.id)}
-			// 	options={item.textScoreToOption() as any}
-			// 	setValue={(radio) => form.getSetValue(item.id)(radio)}
-			// 	required={form.getRequired(item.id)}
-			// 	// required={item.options.required}
-			// 	// emptyMessage={'empty message'}
-			// 	showError={form.getShowError(item.id)}
-			// />
 		);
 	} else if (item instanceof ItemFunction) {
 		return (
 			<ItemFunctionCompilerForm
 			formCompiler={formCompiler}
-			item={item}
+			question={item}
+			index={index}
 			/>
 		);
-	} else if (item.type === GroupMap.type) {
+	} else if (item.type === Group.TYPE) {
 		if (item.layout.style === GroupMap.layout.style.table) {
-			if (item.items[0].type === QuestionSelectMap.type) {
+			if (item.items[0].type === QuestionSelect.TYPE) {
 				return (
 					<QuestionTableCompilerForm
 					formCompiler={formCompiler}
@@ -134,21 +86,11 @@ export function QuestionCompilerForm({
 				);
 			}
 		} else if (item.layout.style === GroupMap.layout.style.section) {
-			// if (nav.getPage().layout.style === GroupMap.layout.style.card) {
-			// 	return (
-			// 		<Paper style={{padding:24}}>
-			// 			<SectionCompilerForm
-			// 			formCompiler={formCompiler}
-			// 			section={item}
-			// 			/>
-			// 		</Paper>
-			// 	);
-			// }
 			return (
 				<SectionCompilerForm
-				formCompiler={formCompiler}
-				section={item}
 				index={index}
+				formCompiler={formCompiler}
+				question={item}
 				/>
 			);
 		}

@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HScore = exports.CIDScore = exports.ISTHScore = exports.SofaScore = exports.CKD_EPI_CREATININE = exports.GFRCockcroftGault = exports.PF_Percent = exports.MeanArterialPressure = exports.BodyMassIndex = void 0;
+exports.HScore = exports.CIDScore = exports.ISTHScore = exports.SofaScore = exports.CKD_EPI_CREATININE = exports.GFRCockcroftGault = exports.PF_Percent = exports.MeanArterialPressure = exports.BodyMassIndex = exports.Gender = void 0;
 const functions_1 = require("./functions");
+// TODO fix functions which uses gender (those have wrong coding)
+var Gender;
+(function (Gender) {
+    Gender[Gender["NotKnown"] = 0] = "NotKnown";
+    Gender[Gender["Male"] = 1] = "Male";
+    Gender[Gender["Female"] = 2] = "Female";
+    Gender[Gender["NotApplicable"] = 9] = "NotApplicable";
+})(Gender = exports.Gender || (exports.Gender = {}));
 /**
  * This function returns the Body Mass Index
  * @param mass, the weight in Kg

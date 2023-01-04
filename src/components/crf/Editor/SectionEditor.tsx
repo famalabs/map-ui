@@ -1,20 +1,22 @@
 import React from 'react';
-import {Question, QuestionMenuTypesMap, QuestionText, SurveyItem} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import { QuestionTextMap } from '../../../core/schema';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {QuestionMenuTypesMap} from '../../../core/schema'
+import {Item} from '../../../survey'
+import { Stack, Typography, Button, Menu, MenuItem } from '@mui/material';
+import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
+import { QuestionEditorForm } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export interface SectionEditorFormProps {
   index?: any;
   editorState: IUseEditorState;
-  section: SurveyItem;
+  section: Item;
   questionState: string;
   handleSetQuestionState: (id: string, state: string) => void;
 }
+
+const locale = "en";
 
 export function SectionEditorForm({
   index,
@@ -72,7 +74,7 @@ export function SectionEditorForm({
 				aria-expanded={openAddQuestion ? 'true' : undefined}
 				onClick={handleOpenAddQuestion}
 			>
-				<AddCircleIcon />
+				<AddCircle />
 			</Button>
 			<Menu
 				anchorEl={anchorAddQuestion}
@@ -84,7 +86,7 @@ export function SectionEditorForm({
             return (
               <MenuItem key={key} onClick={(e) =>handleAddQuestion(key)}>
                 {QuestionMenuTypesMap[key].icon}
-                <Typography>{QuestionMenuTypesMap[key].locale[editor.getRoot().options.locale]}</Typography>
+                <Typography>{QuestionMenuTypesMap[key].locale[locale]}</Typography>
               </MenuItem>
             );
           }

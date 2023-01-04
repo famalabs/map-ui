@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const engine_1 = require("../engine");
-const conditional_item_1 = require("./conditional-item");
+const item_conditional_1 = require("./item-conditional");
 const item_function_1 = require("./item-function");
 const question_check_1 = require("./question-check");
 const question_date_1 = require("./question-date");
@@ -12,7 +12,7 @@ const question_list_1 = require("./question-list");
 /*
   initialize the engine by registering the constructors
 */
-engine_1.register(conditional_item_1.ConditionalItem);
+engine_1.register(item_conditional_1.ItemConditional);
 engine_1.register(item_function_1.ItemFunction);
 engine_1.register(question_check_1.QuestionCheck);
 engine_1.register(question_date_1.QuestionDate);

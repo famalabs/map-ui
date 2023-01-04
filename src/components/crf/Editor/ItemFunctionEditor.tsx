@@ -1,28 +1,35 @@
 import React from 'react';
-import {FnMap, getQuestionMenuType, ItemFunction, QuestionMenuTypesMap, SurveyItem} from '../../../core/schema'
+import { ItemFunction, Item } from '../../../survey'
+import { getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
 import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
+import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
-export interface ItemFunctionEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: SurveyItem;
-  questionState: string;
+enum FnMedicine {
+  BodyMassIndex = 'BMI',
+  SofaScore = 'SOFA',
+  ISTHScore = 'ISTH',
+  CIDScore = 'CID',
+  HScore = 'HScore',
+  MeanArterialPressure = 'MeanArterialPressure',
+  GFRCockcroftGault = 'CrocoftGault',
+  CKD_EPI_CREATININE = 'CDKEPI',
+  PF_Percent = 'PFpercent',
 }
+
+import { QuestionHeaderCommon } from '../common';
+import { QuestionCommonEditorProps } from './CommonEditor';
 
 export function ItemFunctionEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: ItemFunctionEditorFormProps) {
+  }: QuestionCommonEditorProps<ItemFunction>) {
 
-  if (question instanceof ItemFunction) {
+  // if (question instanceof ItemFunction) {
     const editor = editorState.editor;
     const nav = editorState.nav;
 
@@ -31,9 +38,7 @@ export function ItemFunctionEditorForm({
     }
 
     const handleAddParam = (id:string) => {
-     
       question.parameters.push(id);
-
       editor.onChangeValue(question.id, 'parameters', question.parameters);
     }
     const handleRemoveParam = (id:string) => {
@@ -51,12 +56,12 @@ export function ItemFunctionEditorForm({
     const renderNormal = () => {
       return (
         <Stack spacing={1}>
-          <Stack spacing={1}>
-            <FormLabel component="legend">
-            <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
-              </FormLabel>
-            <FormLabel component="legend">{question.description}</FormLabel>
-            <Typography>Function Name: {question.fnCompute.fnName}</Typography>
+            <QuestionHeaderCommon
+            index={index}
+            question={question}
+            required={false}            
+            />
+            <Typography>Function Name: {question.toJSON().fnCompute}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
@@ -68,7 +73,6 @@ export function ItemFunctionEditorForm({
                 }) : (<Typography>No Parameters</Typography>)}
               </Stack>
             </Stack>
-          </Stack>
         </Stack>
       );
     }
@@ -84,7 +88,7 @@ export function ItemFunctionEditorForm({
         }) : (<Typography>No Parameters</Typography>);
     }
 
-    const renderSingleAddParam = (qs:SurveyItem, params:string[]) => {
+    const renderSingleAddParam = (qs:Item, params:string[]) => {
       return (
         <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
         <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
@@ -92,12 +96,12 @@ export function ItemFunctionEditorForm({
           params.includes(qs.id) ? (
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleRemoveParam(qs.id)}}>
-            <CancelIcon/>
+            <Cancel/>
             </Button>
           ) : (
             <Button variant="outlined" color="primary"
             onClick={(e) => {handleAddParam(qs.id)}}>
-            <AddCircleIcon />
+            <AddCircle />
             </Button>
           )
         ) : (null)}
@@ -113,7 +117,7 @@ export function ItemFunctionEditorForm({
             return (
               <Accordion key={page.id}>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ExpandMore />}
                 >
                   <Typography>{page.text}</Typography>
                 </AccordionSummary>
@@ -124,7 +128,7 @@ export function ItemFunctionEditorForm({
                       return (
                         <Accordion key={qs.id}>
                           <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
+                            expandIcon={<ExpandMore />}
                           >
                             <Typography>{qs.text}</Typography>
                           </AccordionSummary>
@@ -156,10 +160,10 @@ export function ItemFunctionEditorForm({
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
             <Select
-              value={question.fnCompute.fnName}
+              value={question.toJSON().fnCompute}
               onChange={(e) => {handleChangeFunction(e.target.value)}}
             >
-                {Object.keys(FnMap.fnCompute).map((key, idx) => (
+                {Object.values(FnMedicine).map((key, idx) => (
                   <MenuItem key={key} value={key}
                   >
                     <Typography>{key}</Typography>
@@ -172,7 +176,7 @@ export function ItemFunctionEditorForm({
                 {renderChipParams()}
                 <Button variant="outlined" color="secondary"
                 onClick={(e) => {setModalParams(true)}}>
-                <AddCircleIcon />
+                <AddCircle />
                 </Button>
               </Stack>
             <Modal
@@ -220,6 +224,6 @@ export function ItemFunctionEditorForm({
       ) : renderNormal()}
       </div>
     );
-    }
-  return null;
+  //   }
+  // return null;
 }

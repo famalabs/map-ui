@@ -1,54 +1,28 @@
 import React from 'react';
-import {QuestionText} from '../../../core/schema'
-import { TextField, FormLabel, Stack, Typography } from '@mui/material';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
-import { QuestionTextMap } from '../../../core/schema';
+import {QuestionText} from '../../../survey'
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionTextEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: QuestionText;
-  questionState: string;
-}
+import { QuestionTextCommon } from '../common';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTextEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionTextEditorFormProps) {
+  }: QuestionCommonEditorProps<QuestionText>) {
+
   const editor = editorState.editor;
   const nav = editorState.nav;
 
   const renderNormal = () => {
     return (
-      <Stack spacing={1}>
-        <Stack spacing={1}>
-          <FormLabel component="legend">          
-          <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
-         </FormLabel>
-          <FormLabel component="legend">{question.description}</FormLabel>
-          {question.layout.style === QuestionTextMap.layout.style.area ? (
-            <TextField
-              disabled
-              // value={question.description ?? question.text}
-              // label={question.description ?? question.text}
-              required={question.options.required}
-            />
-          ):(
-            <TextField
-            disabled
-            multiline
-            // value={question.description ?? question.text}
-            // label={question.description ?? question.text}
-            required={question.options.required}
-          />
-          )}
-        </Stack>
-      </Stack>
+      <QuestionTextCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {

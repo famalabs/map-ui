@@ -1,73 +1,35 @@
 import React from 'react';
-import {QuestionSelect, QuestionText, SurveyItem, TextScore} from '../../../core/schema'
-import { TextField, FormLabel, Stack, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, Divider, FormControl, Button, RadioGroup, FormControlLabel } from '@mui/material';
-import TocRoundedIcon from '@mui/icons-material/TocRounded';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
-import { QuestionTextMap } from '../../../core/schema';
+import {QuestionSelect, Item, TextScore,QuestionSelectOptions} from '../../../survey'
+import { TextField, Stack, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, Divider, Button } from '@mui/material';
+import {AddCircle} from '@mui/icons-material';
 import { EditorBuilder, IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionTableEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: SurveyItem;
-  questionState: string;
-}
+import { QuestionTableCommon } from '../common';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTableEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionTableEditorFormProps) {
+  }: QuestionCommonEditorProps<Item>) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
   const selects = question.items as QuestionSelect[];
   const select = question.items[0] as QuestionSelect;
-  const options = select.selectOptions;
+  const options = select.options.select;
 
   const renderNormal = () => {
 
     return (
-      <TableContainer>
-        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
-        <Typography>{question.description}</Typography>
-        <Table sx={{ width: '100%' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Questions</TableCell>
-              {options.map((opt, idx) => {
-                return (
-                  <TableCell key={opt.text} align="center">{opt.text}</TableCell>
-                );
-              })}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {selects.map((sel,idx) => (
-              <TableRow
-                key={idx}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {sel.text}
-                </TableCell>
-                {options.map((opt, idx) => {
-                return (
-                  <TableCell key={idx} align="right"><Radio disabled/></TableCell>
-                );
-              })}
-              </TableRow>
-            ))}
-          </TableBody>
-      </Table>
-    </TableContainer>
+      <QuestionTableCommon
+      index={index}
+      question={question}
+      required={false}
+      // required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {
@@ -77,7 +39,7 @@ export function QuestionTableEditorForm({
   const addOption = () => {
     options.push({text:"New Radio",score:options.length} as TextScore);
     for (let i = 0; i < selects.length; i++) {
-      selects[i].selectOptions = options;
+      selects[i].setOption("select",options);
     }
     editor.onChangeValue(question.id, 'items', selects);
   } 
@@ -93,7 +55,7 @@ export function QuestionTableEditorForm({
       }
     }
     for (let i = 0; i < selects.length; i++) {
-      selects[i].selectOptions = newoptions;
+      selects[i].setOption("select",newoptions);
     }
     editor.onChangeValue(question.id, 'items', selects);
   } 
@@ -103,31 +65,29 @@ export function QuestionTableEditorForm({
     options[idx] = options[idx+move];
     options[idx+move] = itemIdx;
     for (let i = 0; i < selects.length; i++) {
-      selects[i].selectOptions = options;
+      selects[i].setOption("select",options);
     }
     editor.onChangeValue(question.id, 'items', selects);
   } 
   const textOption = (idx:number, value:string) => {
     options[idx].text = value;
     for (let i = 0; i < selects.length; i++) {
-      selects[i].selectOptions = options;
+      selects[i].setOption("select",options);
     }
     editor.onChangeValue(question.id, 'items', selects);
   }
 
   const addSelect = () => {
     const editorBuilder = new EditorBuilder(editor.getSurvey()); 
-    const newSelect = editorBuilder.addQuestionSelect(nav) as QuestionSelect;
-    editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItem(newSelect);
-    newSelect.selectOptions = options;
-    question.insertItem(newSelect);
+    const newSelect = editorBuilder.addQuestionSelect(nav, question.id, -1) as QuestionSelect;
+    newSelect.setOption("select",options);
     editor.onChangeValue(question.id, 'items', question.items);
   } 
   const removeSelect = (idx:number) => {
-    const editorBuilder = new EditorBuilder(editor.getSurvey()); 
-    editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItemByIdx(idx);
-    question.items = editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].items;
-    editor.onChangeValue(question.id, 'items', question.items);
+    // const editorBuilder = new EditorBuilder(editor.getRoot().getSchema()); 
+    // editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].removeItemByIdx(idx);
+    // question.items = editorBuilder.getRoot().items[nav.getFolderIdx()].items[nav.getPageIdx()].items;
+    // editor.onChangeValue(question.id, 'items', question.items);
   } 
   const moveSelect = (idx:number, move:number) => {
     if (idx+move < 0 || idx+move >= selects.length) { return; }
@@ -203,7 +163,7 @@ export function QuestionTableEditorForm({
               variant="outlined" 
               color="inherit" 
               onClick={(e) => {addOption()}}>
-              <AddCircleIcon />
+              <AddCircle />
               </Button>
               </TableCell>
             </TableRow>
@@ -228,7 +188,7 @@ export function QuestionTableEditorForm({
             variant="outlined" 
             color="inherit" 
             onClick={(e) => {addSelect()}}>
-            <AddCircleIcon />
+            <AddCircle />
             </Button>
             </TableCell>
             </TableRow>

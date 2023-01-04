@@ -1,31 +1,23 @@
 import React from 'react';
-import {QuestionSelect, QuestionSelectMap, TextScore} from '../../../core/schema'
+import {QuestionSelect, TextScore} from '../../../survey'
+import {QuestionSelectMap} from '../../../core/schema'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionGeneralEdit, renderGeneralOptions } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-
-export interface QuestionSelectEditorFormProps {
-  index?: number;
-  editorState: IUseEditorState;
-  question: QuestionSelect;
-  questionState: string;
-}
+import { QuestionSelectCommon } from '../common';
+import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionSelectEditorForm({
   index,
   editorState,
   question,
   questionState,
-  }: QuestionSelectEditorFormProps) {
+  }: QuestionCommonEditorProps<QuestionSelect>) {
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const selects = question.selectOptions;
+  const selects = question.options.select;
   const addSelect = () => {
     selects.push({text:"New Radio",score:selects.length} as TextScore);
     editor.onChangeValue(question.id, 'selectOptions', selects);
@@ -57,36 +49,12 @@ export function QuestionSelectEditorForm({
 
   const renderNormal = () => {
     return (
-      <div>
-      <FormControl
-      fullWidth
-      >
-        <FormLabel component="legend">
-        <Typography>{index && (index + '.')} {question.text}{question.options.required && '*'}</Typography>
-        </FormLabel>
-        <FormLabel component="legend">{question.description}</FormLabel>
-        {question.layout.style === QuestionSelectMap.layout.style.radio ? (
-          <RadioGroup
-            name={question.id}
-            aria-label={question.id}
-          >
-            {selects.length > 0 ? selects.map((opt, idx) => (
-              <FormControlLabel disabled key={idx} value="disabled" 
-              control={<Radio />} label={opt.text} />
-            )) : <Typography>No Radio Element</Typography>}
-          </RadioGroup>
-        ):(
-          <Select
-            disabled
-            value={selects.length > 0 ? selects[0].text : null}
-          >
-              {selects.length > 0 ? selects.map((opt, idx1) => (
-                <MenuItem key={opt.text} value={opt.text}>{opt.text}</MenuItem>
-              )) : <Typography>No Dropdown Element</Typography>}
-          </Select>
-        )}
-      </FormControl>
-      </div>
+      <QuestionSelectCommon
+      index={index}
+      question={question}
+      required={question.options.required}
+      disabled={true}
+      />
     );
   }
   const renderHover = () => {
@@ -120,19 +88,19 @@ export function QuestionSelectEditorForm({
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {moveSelect(idx,-1)}}>
-                <ArrowUpwardIcon />
+                <ArrowUpward />
                 </Button>
                 <Button 
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {moveSelect(idx,1)}}>
-                <ArrowDownwardIcon />
+                <ArrowDownward />
                 </Button>
                 <Button 
                 variant="outlined" 
                 color="inherit" 
                 onClick={(e) => {removeSelect(idx)}}>
-                <DeleteIcon />
+                <Delete />
                 </Button>
               </Stack> 
             ))}
@@ -141,7 +109,7 @@ export function QuestionSelectEditorForm({
           variant="outlined" 
           color="inherit" 
           onClick={(e) => {addSelect()}}>
-          <AddCircleIcon />
+          <AddCircle />
           </Button>
         </FormControl>
       </div>

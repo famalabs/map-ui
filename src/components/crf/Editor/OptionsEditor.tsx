@@ -1,9 +1,6 @@
 import React from 'react';
-import {Survey, SurveyMap} from '../../../core/schema'
-import { AutoSelect } from '../../simple';
-import { Button, Paper, TextField, FormControlLabel, Switch, FormControl, Grid, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Checkbox, Stack } from '@mui/material';
+import { TextField, FormControlLabel, FormControl, Typography, InputLabel, Select, MenuItem, FormLabel, Accordion, AccordionSummary, AccordionDetails, Checkbox, Stack } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { render } from 'react-dom';
 import { IEditorState } from './EditorBuilder';
 
 export const renderSelectOption = (option:any, name:string, value:any, editor:IEditorState, id:string, key:string) => {

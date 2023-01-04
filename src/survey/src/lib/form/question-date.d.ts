@@ -5,19 +5,28 @@ import { Question, QuestionData, QuestionOptions } from './question';
  */
 export interface QuestionDateOptions extends QuestionOptions<Date> {
     /**
-     * MinValue: the minimum date allowed (included)
+     * minimum date allowed (included)
      */
     min?: Date;
     /**
-     * MinValue: the maximum date allowed (included)
+     * maximum date allowed (included)
      */
     max?: Date;
+    unit?: DateTimeUnit;
 }
+export declare type DateUnit = 'day' | 'week' | 'month' | 'year';
+export declare type TimeUnit = 'second' | 'minute' | 'hour';
+export declare type DateTimeUnit = DateUnit | TimeUnit;
 /**
  * Represent a question whose answer is a date
  * */
 export declare class QuestionDate extends Question<Date, QuestionDateOptions> {
     static readonly TYPE: string;
+    constructor(data: Partial<QuestionData<QuestionDateOptions>>);
+    /**
+     * @override
+     */
+    isValid(): boolean;
     /**
      * @override
      */
@@ -25,5 +34,5 @@ export declare class QuestionDate extends Question<Date, QuestionDateOptions> {
     /**
      * @override
      */
-    getSchema(): QuestionData<QuestionDateOptions>;
+    toJSON(): QuestionData<QuestionDateOptions>;
 }
