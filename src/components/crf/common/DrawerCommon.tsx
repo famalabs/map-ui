@@ -9,7 +9,7 @@ import {Menu} from '@mui/icons-material';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-export interface SurveyEditorProps {
+export interface DrawerCommonProps {
   sidebar:JSX.Element;
   content:JSX.Element;
   drawerWidth:number;
@@ -23,7 +23,7 @@ export function DrawerCommon({
   drawerWidth,
 	title,
 	// window,
-	}: SurveyEditorProps) {
+	}: DrawerCommonProps) {
 		
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -33,8 +33,8 @@ export function DrawerCommon({
 
   const drawer = (
 	<div>
-	  <Toolbar />
-	  <Divider />
+	  {/* <Toolbar />
+	  <Divider /> */}
 			{sidebar}
 	</div>
   );
@@ -63,7 +63,7 @@ export function DrawerCommon({
 			<Menu />
 		  </IconButton>
 		  <Typography variant="h6" noWrap component="div">
-				{title}
+				{/* {title} */}
 		  </Typography>
 		</Toolbar>
 	  </AppBar>

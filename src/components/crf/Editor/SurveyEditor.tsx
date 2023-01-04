@@ -23,25 +23,6 @@ export function SurveyEditorForm({
 	const sidebar = (<SidebarEditorForm editorState={editorState}/>);
 	const content = (<FolderEditorForm editorState={editorState} />);
 	return (
-		// <Box 
-		// // sx={{ display: 'flex', width:'100%', m:0, justifyContent: 'flex-end' }}
-		// sx={{ width:'100%' }}
-		// >
-		// 	{/* <CssBaseline /> */}
-		// 	<SidebarEditorForm
-		// 		editorState={editorState}
-		// 	/>
-		// 	<Box
-		// 		component="main"
-		// 		// sx={{ flexGrow: 1, p:'0px 24px',ml:`${320+64}px`,mt:0,mr:0, minWidth:`calc(100% - ${320+64}px)`, maxWidth:`calc(100% - ${320+64}px)`}}
-		// 		style={{position:'absolute',left:320+64,top:0,right:0, padding:24}}
-		// 	>
-		// 		<FolderEditorForm
-		// 			editorState={editorState}
-		// 		/>
-		// 	</Box>
-
-		// </Box>
 		<DrawerCommon
 		sidebar={sidebar}
 		content={content}

@@ -138,8 +138,10 @@ export function useQuestionHandler(item:Item, formCompiler:IUseFormCompiler) {
   const required = form.getRequired(item.id);
   const value = form.getValue(item.id);
   const validators: any = [];
-  const emptyMessage = 'You cannot leave this field empty';
-  const defaultErrorMessage = 'Invalid input';
+  // const emptyMessage = 'You cannot leave this field empty';
+  const emptyMessage = 'Non puoi lasciare questo campo vuoto';
+  // const defaultErrorMessage = 'Invalid input';
+  const defaultErrorMessage = 'Input non valido';
   const setValid:(valid: boolean) => void = null;
   const onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void = null;
   console.log(value, required, item);

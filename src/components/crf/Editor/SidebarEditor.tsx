@@ -165,15 +165,16 @@ export function SidebarEditorForm({
 	}
 
 	const renderLayout = () => {
-		return(
-			<Stack spacing={2}>
-				{Object.keys(SurveyMap.layout).map((val,idx) => {
-					return (
-						<div key={val}>{renderSelectOption(SurveyMap.layout[val],val, survey.layout[val] ?? SurveyMap.layout[val].default, editor, survey.id, 'layout.'+val)}</div>
-					);
-				})}
-			</Stack>
-		);
+		// return(
+		// 	<Stack spacing={2}>
+		// 		{Object.keys(SurveyMap.layout).map((val,idx) => {
+		// 			return (
+		// 				<div key={val}>{renderSelectOption(SurveyMap.layout[val],val, survey.layout[val] ?? SurveyMap.layout[val].default, editor, survey.id, 'layout.'+val)}</div>
+		// 			);
+		// 		})}
+		// 	</Stack>
+		// );
+		return null;
 	}
 
 	const renderFolder = () => {

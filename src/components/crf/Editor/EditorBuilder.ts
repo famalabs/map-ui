@@ -15,6 +15,16 @@ export interface IEditorState {
   removeItem: (item:Item) => void;
   moveItemUp: (item:Item) => void;
   moveItemDown: (item:Item) => void;
+  /**
+   * !USE ONLY FOR QUESTION OR SECTION
+   * 
+   * TODO: make it for ecerything
+   * @param item 
+   * @param idx 
+   * @param parentId 
+   * @returns 
+   */
+  moveItem: (item:Item, idx:number, parentId?:string) => void;
   onChangeValue: (itemId:string, key:string, value:any) => void;
   hasPendingChanges: () => boolean;
   saveChanges: () => void;
@@ -333,6 +343,11 @@ export class EditorBuilder implements IEditorState {
       this.survey.move(item.id, curIdx+1)
       return curIdx+1;
     }
+
+    public moveItem (item:Item, idx:number, parentId:string) {
+      this.survey.move(item.id, idx, parentId);
+    }
+
     private createDBSchemaFromPath(path:string, value:any, oldSchema:DBSchema):DBSchema {
       const schema = {};  
       const keys = path.split(".");
@@ -387,57 +402,57 @@ export interface IUseEditorState {
 
 export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
-    // const initValue = initSchema || {
-    //   id: "0",
-    //   type: Group.TYPE,
-    //   text: "Survey",
-    //   items: [{
-    //     id: "1",
-    //     type: Group.TYPE,
-    //     text: "Folder",
-    //     items: [{
-    //       id: "2",
-    //       type: Group.TYPE,
-    //       text:"Page",
-    //       items:[],
-    //       layout: {
-    //         style: "card",
-    //       }
-    //     }]
-    //   }],
-    // } as DBSchema;
-
     const initValue = {
       id: "0",
-      type: "group",
+      type: Group.TYPE,
       text: "Survey",
       items: [{
         id: "1",
-        type: "group",
+        type: Group.TYPE,
         text: "Folder",
         items: [{
           id: "2",
-          type: "group",
+          type: Group.TYPE,
           text:"Page",
-          items:[
-            {id:"4",type:"num",items:[],text:"number",layout:{style:"default"},options:{required:true,min:0,max:10,step:1,unit:"kg"}},
-            {id:"5",type:"num",items:[],text:"slider",layout:{style:"range"},options:{required:true,min:10,max:100,step:10,unit:"m"}},
-            {id:"6",type:"txt",items:[],text:"text",layout:{style:"default"},options:{required:true}},
-            {id:"7",type:"select",items:[],text:"radio",layout:{style:"radio"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
-            {id:"8",type:"select",items:[],text:"dropdown",layout:{style:"dropdown"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
-            {id:"9",type:"group",items:[
-              {id:"10",type:"check",items:[],text:"checkbox",layout:{style:"check"},options:{required:true}},
-              {id:"11",type:"check",items:[],text:"switch",layout:{style:"switch"},options:{required:true}},
-              {id:"12",type:"date",items:[],text:"date",options:{required:true}},
-              {id:"13",type:"fn",items:[],text:"fn bmi",parameters:["4","5"],fnCompute:"BMI"}
-            ],text:"section",layout:{style:"section"}}
-          ],
+          items:[],
           layout: {
-            style: "card"
+            style: "card",
           }
         }]
-      }]
+      }],
     } as DBSchema;
+
+    // const initValue = {
+    //   id: "0",
+    //   type: "group",
+    //   text: "Survey",
+    //   items: [{
+    //     id: "1",
+    //     type: "group",
+    //     text: "Folder",
+    //     items: [{
+    //       id: "2",
+    //       type: "group",
+    //       text:"Page",
+    //       items:[
+    //         {id:"4",type:"num",items:[],text:"number",layout:{style:"default"},options:{required:true,min:0,max:10,step:1,unit:"kg"}},
+    //         {id:"5",type:"num",items:[],text:"slider",layout:{style:"range"},options:{required:true,min:10,max:100,step:10,unit:"m"}},
+    //         {id:"6",type:"txt",items:[],text:"text",layout:{style:"default"},options:{required:true}},
+    //         {id:"7",type:"select",items:[],text:"radio",layout:{style:"radio"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
+    //         {id:"8",type:"select",items:[],text:"dropdown",layout:{style:"dropdown"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
+    //         {id:"9",type:"group",items:[
+    //           {id:"10",type:"check",items:[],text:"checkbox",layout:{style:"check"},options:{required:true}},
+    //           {id:"11",type:"check",items:[],text:"switch",layout:{style:"switch"},options:{required:true}},
+    //           {id:"12",type:"date",items:[],text:"date",options:{required:true}},
+    //           {id:"13",type:"fn",items:[],text:"fn bmi",parameters:["4","5"],fnCompute:"BMI"}
+    //         ],text:"section",layout:{style:"section"}}
+    //       ],
+    //       layout: {
+    //         style: "card"
+    //       }
+    //     }]
+    //   }]
+    // } as DBSchema;
 
     const initSurvey = new Survey(initValue);
     console.log('editorBuilder survey root', initSurvey, initSurvey.root);
@@ -528,6 +543,20 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
           } else {
             surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
           }
+        },
+        moveItem: (item:Item, idx:number, parentId?:string) => {
+          const itemType = surveyNav.getItemType(item.id);
+          const editorBuilder = new EditorBuilder(survey);
+          editorBuilder.moveItem(item, idx, parentId);
+          setSurvey(editorBuilder.getSurvey());
+          if (itemType === GroupMap.layout.style.folder) { 
+            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), newIdx, surveyNav.getPageIdx());
+          } else if (itemType === GroupMap.layout.style.page) { 
+            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), newIdx);
+          } else {
+            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
+          }
+          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
         },
         onChangeValue: (itemId:string, key:string, newValue:any) => {
           if (!hasChanges) {

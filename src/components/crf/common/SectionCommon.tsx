@@ -6,23 +6,22 @@ import { Item } from '../../../survey';
 interface SectionCommonProps {
   index:string;
   question:Item;
-  children: JSX.Element[];
+  content:JSX.Element;
 }
 
 export function SectionCommon({
   index,
   question,
-  children,
+  content,
   }:SectionCommonProps) {
-  console.log('section', children.map((child) => child))
+
   return (
     <Stack spacing={6}>
       <Stack>
       <Typography variant='h4'>{index}{question.text}</Typography>
       <Typography>{question.description}</Typography>
       </Stack>
-      <React.Fragment>{children}</React.Fragment>
-      {/* {children} */}
+      {content}
     </Stack>
   );
 }

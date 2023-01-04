@@ -131,7 +131,7 @@ export function FolderEditorForm({
 	return (
 		<Box 
 		// style={{margin:'0px 24px',width:'100%',minWidth:'614px'}}
-		style={{width:'100%'}}
+		sx={{width:'100%'}}
 		>
 
 		

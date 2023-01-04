@@ -1,21 +1,25 @@
 import React from 'react';
-import { Divider, Paper, Stack, Typography } from '@mui/material';
+import { Divider, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
 import { GroupMap } from '../../../core/schema';
 import { IUseFormCompiler } from './FormCompiler';
 
 export interface PageCompilerFormProps {
   formCompiler:IUseFormCompiler;
+	loading: boolean;
 }
 
 export function PageCompilerForm ({
   formCompiler,
+	loading,
 }:PageCompilerFormProps) {
+
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 	const page = nav.getPage();
 	const orders = nav.getItemsGroupedOrderIndex();
-	return (
+
+	const ready = (
 		<div>
 			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 6 : 2}>
 			<Typography variant='h3'>{page.text}</Typography>
@@ -45,4 +49,38 @@ export function PageCompilerForm ({
 			</Stack>
 		</div>
 	);
+
+	const skeleton = (
+
+		<Stack spacing={2}>
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '5rem' }} />
+
+		<Stack spacing={0}>
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		{/* <Skeleton animation="wave" variant="text" sx={{ fontSize: '3rem' }} /> */}
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '5rem' }} />
+		</Stack>
+
+
+		<Stack spacing={0}>
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		{/* <Skeleton animation="wave" variant="text" sx={{ fontSize: '3rem' }} /> */}
+		<Stack spacing={0} sx={{pl:8}}>
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		</Stack>
+		</Stack>
+
+		<Stack spacing={0}>
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '2rem' }} />
+		{/* <Skeleton animation="wave" variant="text" sx={{ fontSize: '3rem' }} /> */}
+		<Skeleton animation="wave" variant="text" sx={{ fontSize: '5rem' }} />
+		</Stack>
+
+		</Stack>
+	);
+	
+	return loading ? skeleton : ready;
+
 }

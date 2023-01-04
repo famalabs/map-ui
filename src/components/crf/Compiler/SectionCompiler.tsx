@@ -14,20 +14,22 @@ export function SectionCompilerForm({
 
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
+
+	// const content = (<div>{question.items.map((question, idx) => {
+	// 	return(
+	// 			<QuestionCompilerForm
+	// 			key={question.id}
+	// 			index={index[question.id]}
+	// 			item={question}
+	// 			formCompiler={formCompiler}
+	// 			/>
+	// 	);
+	// })}</div>)
 	return (
 			// <SectionCommon
 			// 	index={index}
 			// 	question={question}
-			// 	children={question.items.map((question, idx) => {
-			// 		return(
-			// 				<QuestionCompilerForm
-			// 				key={question.id}
-			// 				index={index[question.id]}
-			// 				item={question}
-			// 				formCompiler={formCompiler}
-			// 				/>
-			// 		);
-			// 	})}
+			// 	content={content}
 			// />
 			<Stack spacing={6}>
 			<Stack>

@@ -9,17 +9,26 @@ export default {
   title: 'crf/Form',
   component: SurveyForm,
   argTypes: {},
-} as Meta;
+} as Meta<SurveyFormProps>;
 
-const Template: Story = (args) => <SurveyFormExample {...args} />;
+// const Template: Story<SurveyFormProps> = (args) => <SurveyFormExample {...args} />;
 
-export const Primary: Story = Template.bind({});
+// export const Primary: Story = Template.bind({});
 
-const SurveyFormExample: React.VFC = (args) => {
-  return (
-    <SurveyForm
-      {...args}
-      initSurvey={surveyFormExmple}
-    />
-  );
+// const SurveyFormExample: React.VFC = (args) => {
+//   return (
+//     <SurveyForm
+//       {...args}
+//       initSurvey={surveyFormExmple}
+//     />
+//   );
+// };
+
+
+const Template: Story<SurveyFormProps> = (args) => <SurveyForm {...args} />;
+
+export const Primary: Story<SurveyFormProps> = Template.bind({});
+Primary.args = {
+  initSurvey: surveyFormExmple,
+  loading: false,
 };

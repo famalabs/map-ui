@@ -2,9 +2,7 @@ import React from 'react';
 import { ItemFunction, Item } from '../../../survey'
 import { getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
 import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
@@ -98,12 +96,12 @@ export function ItemFunctionEditorForm({
           params.includes(qs.id) ? (
             <Button variant="outlined" color="secondary"
             onClick={(e) => {handleRemoveParam(qs.id)}}>
-            <CancelIcon/>
+            <Cancel/>
             </Button>
           ) : (
             <Button variant="outlined" color="primary"
             onClick={(e) => {handleAddParam(qs.id)}}>
-            <AddCircleIcon />
+            <AddCircle />
             </Button>
           )
         ) : (null)}
@@ -119,7 +117,7 @@ export function ItemFunctionEditorForm({
             return (
               <Accordion key={page.id}>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ExpandMore />}
                 >
                   <Typography>{page.text}</Typography>
                 </AccordionSummary>
@@ -130,7 +128,7 @@ export function ItemFunctionEditorForm({
                       return (
                         <Accordion key={qs.id}>
                           <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
+                            expandIcon={<ExpandMore />}
                           >
                             <Typography>{qs.text}</Typography>
                           </AccordionSummary>
@@ -162,7 +160,7 @@ export function ItemFunctionEditorForm({
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
             <Select
-              value={question.getSchema().fnCompute}
+              value={question.toJSON().fnCompute}
               onChange={(e) => {handleChangeFunction(e.target.value)}}
             >
                 {Object.values(FnMedicine).map((key, idx) => (
@@ -178,7 +176,7 @@ export function ItemFunctionEditorForm({
                 {renderChipParams()}
                 <Button variant="outlined" color="secondary"
                 onClick={(e) => {setModalParams(true)}}>
-                <AddCircleIcon />
+                <AddCircle />
                 </Button>
               </Stack>
             <Modal
