@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AST = exports.execute = exports.validate = exports.call = exports.compute = exports.resolve = exports.ExecutionError = void 0;
+exports.AST = exports.ExecutionError = void 0;
 const operators = {
     // arithmetic
     '+': (x, y) => x + y,
@@ -20,76 +20,69 @@ const operators = {
 class ExecutionError extends Error {
 }
 exports.ExecutionError = ExecutionError;
-/**
- * Resolves ExpressionValue
- * @param st
- * @param ctx
- * @returns
- */
-function resolve(st, ctx) {
-    switch (st.type) {
-        case 'v':
-            return st.value;
-        case 'id':
-            return ctx[st.name]; // global
-        case 'exp':
-            return compute(st, ctx);
-        case 'call':
-            return call(st, ctx);
-    }
-    throw new ExecutionError();
-}
-exports.resolve = resolve;
-/**
- * Computes Expression
- * @param exp
- * @param ctx
- * @returns
- */
-function compute(exp, ctx) {
-    const op = operators[exp.operator];
-    if (!op)
-        throw new ExecutionError();
-    const left = resolve(exp.left, ctx);
-    const right = resolve(exp.right, ctx);
-    return op(left, right);
-}
-exports.compute = compute;
-/**
- * Call function
- * @param exp
- * @param ctx
- * @returns
- */
-function call(exp, ctx) {
-    const fn = resolve(exp.call, ctx);
-    if (!fn)
-        throw new ExecutionError();
-    const args = exp.arguments.map((arg) => resolve(arg, ctx));
-    // should not call if validating
-    return fn.apply(null, args);
-}
-exports.call = call;
-function validate(statement) {
-    resolve(statement, {});
-}
-exports.validate = validate;
-function execute(statement, ctx) {
-    return resolve(statement, ctx);
-}
-exports.execute = execute;
-// TODO: implement instance methods
 class AST {
     constructor() {
-        this._global = {};
+        // protected _operators: Record<Operator, OperatorFn> = operators;
+        this._globals = {};
     }
-    validate(statement) {
-        this._validating = true;
-        resolve(statement, {});
+    get globals() {
+        return this._globals;
     }
     execute(statement, ctx) {
-        this._validating = false;
-        return resolve(statement, ctx);
+        ctx = Object.assign({}, this.globals, ctx || {});
+        return this.resolve(statement, ctx);
+    }
+    resolve(st, ctx) {
+        switch (st.type) {
+            case 'v':
+                return st.value;
+            case 'id':
+                return this.identifier(st, ctx);
+            case 'exp':
+                return this.compute(st, ctx);
+            case 'call':
+                return this.invoke(st, ctx);
+        }
+        throw new ExecutionError();
+    }
+    /**
+     * Compute Expression
+     * @param exp
+     * @param ctx
+     * @returns
+     */
+    compute(exp, ctx) {
+        const op = operators[exp.operator];
+        if (!op)
+            throw new ExecutionError();
+        const left = this.resolve(exp.left, ctx);
+        const right = this.resolve(exp.right, ctx);
+        return op(left, right);
+    }
+    /**
+     * Call function
+     * @param exp
+     * @param ctx
+     * @returns
+     */
+    invoke(exp, ctx) {
+        const fn = this.resolve(exp.call, ctx);
+        if (!(typeof fn === 'function'))
+            throw new ExecutionError();
+        const args = exp.arguments.map((arg) => this.resolve(arg, ctx));
+        return fn.apply(fn, args);
+    }
+    /**
+     * Get identifier in context
+     * @param id
+     * @param ctx
+     * @returns
+     */
+    identifier(id, ctx) {
+        const { name } = id;
+        if (name in ctx)
+            return ctx[name];
+        throw new ExecutionError();
     }
 }
 exports.AST = AST;

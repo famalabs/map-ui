@@ -1,6 +1,6 @@
 import React from 'react';
 import { GroupMap, QuestionSelectMap } from '../../../core/schema'
-import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, Group } from '../../../survey'
+import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction } from '../../../survey'
 import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper, Accordion, AccordionDetails, AccordionSummary, Modal } from '@mui/material';
 import {Edit, Expand, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined, ExpandMore, VerticalAlignBottom, VerticalAlignTop} from '@mui/icons-material';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
@@ -98,7 +98,7 @@ export function QuestionEditorForm({
           questionState={thisQuestionState}
         />
       );
-    } else if (question.type === Group.TYPE) {
+    } else if (question.type === Item.TYPE) {
       if (QuestionMenuTypesMap.selectTable.type === getQuestionMenuType(question)) {
         return (
           <QuestionTableEditorForm

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemConditional = void 0;
-const ast_1 = require("./ast");
 const computable_1 = require("./computable");
 /**
  *
@@ -36,7 +35,7 @@ class ItemConditional extends computable_1.Computable {
         if (!super.isValid())
             return false;
         try {
-            ast_1.validate(this.expression);
+            this._compute([]);
         }
         catch (err) {
             return false;
@@ -44,13 +43,12 @@ class ItemConditional extends computable_1.Computable {
         return true;
     }
     _compute(params) {
-        params = params.reduce((obj, value, index) => {
-            const parameter = this.parameters[index];
+        const ctx = this.parameters.reduce((obj, parameter, index) => {
+            const value = params && params[index];
             obj[parameter] = value;
             return obj;
         }, {});
-        this._result = ast_1.execute(this.expression, params);
-        return this._result;
+        return this._resolver.executor.execute(this.expression, ctx);
     }
     /**
      * @override

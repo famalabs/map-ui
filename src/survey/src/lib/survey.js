@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Survey = exports.SurveyModeException = exports.SurveyMode = void 0;
 const engine_1 = require("./engine");
 const form_1 = require("./form");
+const ast_1 = require("./form/ast");
 var SurveyMode;
 (function (SurveyMode) {
     SurveyMode[SurveyMode["EDIT"] = 0] = "EDIT";
@@ -22,14 +23,22 @@ class Survey extends engine_1.Tree {
         this._mode = SurveyMode.EDIT;
         Object.defineProperty(this, '_sources', {
             value: new form_1.DataSourceRepository(),
-            enumerable: false,
+        });
+        Object.defineProperty(this, '_executor', {
+            value: new ast_1.AST(),
         });
     }
     get questions() {
         return this._questions;
     }
+    get functions() {
+        return this._functions;
+    }
     get sources() {
         return this._sources;
+    }
+    get executor() {
+        return this._executor;
     }
     /**
      * Survey current mode. Enables functionalities based on this value
@@ -41,6 +50,7 @@ class Survey extends engine_1.Tree {
      * Sets answers from a list returning questions
      * @param answers
      * @returns list of questions set
+     * @throws {SurveyModeException}
      */
     setAnswers(answers) {
         if (this.mode !== SurveyMode.COMPILE) {
@@ -56,16 +66,26 @@ class Survey extends engine_1.Tree {
         return questions;
     }
     /**
-     * Get all answers
+     * Get answers from all questions
      * @returns
+     * @throws {SurveyModeException}
      */
     getAnswers() {
-        const items = this.filter((x) => x instanceof form_1.FormItem);
-        return items.map((q) => q.getAnswer());
+        if (this.mode !== SurveyMode.COMPILE) {
+            throw new SurveyModeException(this.mode, SurveyMode.COMPILE);
+        }
+        return this.questions.map((q) => q.getAnswer());
     }
+    /**
+     * Compute all functions
+     * @returns
+     * @throws {SurveyModeException}
+     */
     compute() {
-        const functions = this.filter((x) => x instanceof form_1.ItemFunction);
-        functions.forEach((fn) => fn.compute());
+        if (this.mode !== SurveyMode.COMPILE) {
+            throw new SurveyModeException(this.mode, SurveyMode.COMPILE);
+        }
+        this.functions.forEach((fn) => fn.compute());
     }
     /**
      * Reset all submittable or dynamic fields
@@ -89,9 +109,12 @@ class Survey extends engine_1.Tree {
         Object.freeze(this._parents);
         Object.defineProperty(this, '_questions', {
             value: this.filter((item) => item instanceof form_1.Question),
-            enumerable: false,
         });
         Object.freeze(this._questions);
+        Object.defineProperty(this, '_functions', {
+            value: this.filter((item) => item instanceof form_1.ItemFunction),
+        });
+        Object.freeze(this._functions);
         Object.freeze(this._sources);
         this._mode = SurveyMode.COMPILE;
     }
@@ -117,6 +140,7 @@ class Survey extends engine_1.Tree {
     /**
      * Checks if all the active questions has been submitted
      * @returns
+     * @throws {SurveyModeException}
      */
     isSumbitted() {
         if (this.mode !== SurveyMode.COMPILE) {

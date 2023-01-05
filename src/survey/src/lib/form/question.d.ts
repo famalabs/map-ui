@@ -5,11 +5,11 @@ import { FormItem } from './form-item';
  */
 export interface QuestionOptions<TAnswer = any> {
     /**
-     * Required: if true the answer is required (default), otherwise it's optional
+     * is answer required (true by default)
      */
     required?: boolean;
     /**
-     * Answer default value
+     * answer default value
      */
     default?: TAnswer;
 }
@@ -35,8 +35,7 @@ export declare abstract class Question<TAnswer = any, TOptions extends QuestionO
      */
     get options(): TOptions;
     /**
-     * Shortcut for options.required
-     * True by default
+     * Shortcut for options.required (true by default)
      */
     get required(): boolean;
     constructor(data: Partial<QuestionData<TOptions>>);
@@ -63,7 +62,7 @@ export declare abstract class Question<TAnswer = any, TOptions extends QuestionO
      */
     toJSON(): QuestionData<TOptions>;
     /**
-     * This method returns the user answer
+     * Returns the user answer
      * @returns the answer of the user
      */
     getAnswer(): DBAnswer;

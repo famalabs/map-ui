@@ -4,55 +4,25 @@ import { Computable, ComputableData } from './computable';
  */
 export interface ItemFunctionData extends ComputableData {
     /**
-     * The name used to register the function to use as fnCompute
+     * The name used to register the function to use as compute
      */
-    fnCompute?: string;
-    /**
-     * The name used to register the function to use as fnReduce
-     */
-    fnReduce?: string;
-    /**
-     * The name used to register the function to use as fnInit
-     */
-    fnInit?: string;
-}
-export declare enum FunctionType {
-    Compute = "Compute",
-    Reduce = "Reduce",
-    Init = "Init"
-}
-export declare enum FunctionMode {
+    fn?: string;
 }
 /**
  * Item that computes functions based on parameters
- * NOTE: parameters are not children
  */
 export declare class ItemFunction<TResult = any> extends Computable<TResult> implements Required<ItemFunctionData> {
     static readonly TYPE: string;
     protected _data: ItemFunctionData;
-    protected _fn: Record<FunctionType, Function>;
-    /**
-     * Function used for direct computation
-     */
-    get fnCompute(): string;
-    /**
-     * Function used for reduce
-     */
-    get fnReduce(): string;
-    /**
-     * Function used to initialize the default value for the reduce function
-     */
-    get fnInit(): string;
+    protected _fn: Function;
+    get fn(): string;
     constructor(data: Partial<ItemFunctionData>);
-    /**
-     * This method sets 'Compute' , 'Reduce' or 'Init' as fn, storing its name
-     * @param fn the function to exec as fnCompute, fnReduce or fnInit
-     * @param fnName the name fn is registered with
-     */
-    setFn(fn: FunctionType, fnName: string): void;
-    getFn(fn: FunctionType): Function;
+    getFn(): Function;
+    setFn(value: string): void;
     /**
      * Computes the result according to the function mode
+     * @param params
+     * @returns
      */
     _compute(params: any[]): TResult;
     /**
@@ -60,9 +30,7 @@ export declare class ItemFunction<TResult = any> extends Computable<TResult> imp
      */
     toJSON(): ItemFunctionData;
     /**
-     *
      * @override
-     * @returns true if it is valid, false otherwise
      */
     isValid(): boolean;
 }

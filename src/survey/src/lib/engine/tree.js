@@ -45,6 +45,7 @@ class Tree {
      * Get an item by its id
      * @param id of the item
      * @returns item
+     * @throws {ItemNotFoundException}
      */
     get(id) {
         if (!this._items[id])
@@ -55,6 +56,7 @@ class Tree {
      * Get the parent of an item by its id
      * @param id of the item
      * @returns parent
+     * @throws {ItemNotFoundException}
      */
     parent(id) {
         if (!this._items[id])
@@ -94,6 +96,7 @@ class Tree {
      * Creates a new item or one of its subtypes given the data
      * @param data of the new otem
      * @returns the new item
+     * @throws {Error}
      */
     build(data) {
         const item = this._engine.build(data);
@@ -130,6 +133,7 @@ class Tree {
      * @param data of the new item
      * @param index position
      * @returns the new item
+     * @throws {ItemNotFoundException}
      */
     add(id, data, index) {
         const parent = this.get(id);
@@ -174,7 +178,7 @@ class Tree {
         parent.items.splice(i, 1);
         const queue = [item];
         while (queue.length > 0) {
-            const x = queue.splice(0, 1)[0];
+            const x = queue.shift();
             delete this._items[x.id];
             delete this._parents[x.id];
             if (x.items) {

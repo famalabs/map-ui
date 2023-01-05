@@ -8,12 +8,8 @@ const question_1 = require("./question");
 class QuestionDate extends question_1.Question {
     constructor(data) {
         super(data);
-        if (typeof this.options.min === 'string' ||
-            typeof this.options.min === 'number')
-            this.options.min = new Date(this.options.min);
-        if (typeof this.options.max === 'string' ||
-            typeof this.options.max === 'number')
-            this.options.max = new Date(this.options.max);
+        this.options.min = QuestionDate.parse(this.options.min);
+        this.options.max = QuestionDate.parse(this.options.max);
     }
     /**
      * @override
@@ -36,6 +32,7 @@ class QuestionDate extends question_1.Question {
                 return false;
         }
         else {
+            answer = QuestionDate.parse(answer);
             if (!(answer instanceof Date))
                 return false;
             if (isNaN(answer.getTime()))
@@ -60,6 +57,14 @@ class QuestionDate extends question_1.Question {
         if (this.options.unit)
             schema.options.unit = this.options.unit;
         return schema;
+    }
+    /**
+     * Converts a valid primitive to date
+     * @param value
+     * @returns
+     */
+    static parse(value) {
+        return (typeof value === 'string' || typeof value === 'number') ? new Date(value) : value;
     }
 }
 exports.QuestionDate = QuestionDate;

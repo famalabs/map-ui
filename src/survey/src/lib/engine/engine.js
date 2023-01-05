@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = exports.TYPEKEY = exports.engine = exports.ItemFactory = void 0;
 const item_1 = require("./item");
-const group_1 = require("./group");
 class ItemFactory {
     constructor() {
         this.constructors = {};
@@ -38,5 +37,4 @@ function register(fn) {
 }
 exports.register = register;
 register(item_1.Item);
-register(group_1.Group);
 //# sourceMappingURL=engine.js.map

@@ -17,8 +17,6 @@ class Question extends form_item_1.FormItem {
             enumerable: false,
             writable: true,
         });
-        if (this._data.options.default !== undefined)
-            this._answer = this._data.options.default; // maybe should move this in getAnswer, so it's not considered as submitted?
     }
     get answer() {
         return this._answer;
@@ -30,8 +28,7 @@ class Question extends form_item_1.FormItem {
         return this._data.options;
     }
     /**
-     * Shortcut for options.required
-     * True by default
+     * Shortcut for options.required (true by default)
      */
     get required() {
         return this.options.required !== false;
@@ -74,7 +71,7 @@ class Question extends form_item_1.FormItem {
         return schema;
     }
     /**
-     * This method returns the user answer
+     * Returns the user answer
      * @returns the answer of the user
      */
     getAnswer() {

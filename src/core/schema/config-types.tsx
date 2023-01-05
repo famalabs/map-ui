@@ -2,7 +2,7 @@ import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRo
 import React from "react";
 import { QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, GroupMap, FnMap } from './config-map';
 import { SurveyItem } from './survey-item';
-import { Item, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Group, ItemFunction } from '../../survey'
+import { Item, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, ItemFunction } from '../../survey'
 
 export const QuestionMenuTypesMap = {
 	text: {
@@ -157,7 +157,7 @@ export const getQuestionMenuType = (question:Item):string => {
 		return QuestionMenuTypesMap.check.type;
 	} else if (question.type === QuestionDate.TYPE) {
 		return QuestionMenuTypesMap.date.type;
-	} else if (question.type === Group.TYPE) {
+	} else if (question.type === Item.TYPE) {
 		if (question.layout.style === GroupMap.layout.style.table) {
 			if (question.items[0].type === QuestionSelect.TYPE) {
 				return QuestionMenuTypesMap.selectTable.type;

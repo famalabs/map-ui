@@ -35,4 +35,10 @@ export declare class QuestionDate extends Question<Date, QuestionDateOptions> {
      * @override
      */
     toJSON(): QuestionData<QuestionDateOptions>;
+    /**
+     * Converts a valid primitive to date
+     * @param value
+     * @returns
+     */
+    static parse(value: string | number | any): Date | any;
 }

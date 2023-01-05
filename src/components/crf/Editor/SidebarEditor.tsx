@@ -191,11 +191,6 @@ export function SidebarEditorForm({
 	}
     
 	return (
-		// <Box
-		// 	component="nav"
-		// 	// sx={{ width: { sm: 320+64 }, flexShrink: { sm: 0 } }}
-		// 	style={{position:'fixed',top:'0',left:'0',bottom:'0', width: 320+64}}
-		// >
 			<Box style={{ display: 'flex', justifyContent: 'flex-start', height:'100%', width:'100%' }}>
 				<Box
 				sx={{ width:'64px', borderRight: 1, borderColor: 'divider' }}
@@ -219,6 +214,5 @@ export function SidebarEditorForm({
 					</Stack>
 				</Box>
 			</Box>
-		// </Box>
 	);
 }

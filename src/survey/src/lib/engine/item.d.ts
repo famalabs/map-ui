@@ -1,17 +1,14 @@
 import { DBSchema } from '../db';
 import { IResolver, ItemConstructor } from './engine';
+import { IteratorMode } from './iterator';
 import { Validatable } from './validatable';
-export declare enum IteratorMode {
-    DFS = 0,
-    BFS = 1
-}
 export interface Item extends Required<DBSchema> {
     constructor: ItemConstructor<Item>;
 }
 /**
  * Represents a node of the Tree
  */
-export declare class Item implements Validatable {
+export declare class Item implements Validatable, Required<DBSchema> {
     protected _data: DBSchema;
     protected _resolver: IResolver;
     static readonly TYPE: string;

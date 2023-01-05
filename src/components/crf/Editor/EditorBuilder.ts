@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { SurveyMap, fromMapToDefault, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap,GroupMap, QuestionMap, FnMap, QuestionCheckMap} from '../../../core/schema'
 import { INavState, SurveyNav, useNavState } from '../Navigation';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
-import { Survey, Item, Group, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, FunctionType } from '../../../survey'
+import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, FunctionType } from '../../../survey'
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -55,13 +55,13 @@ export class EditorBuilder implements IEditorState {
     }
     public addFolder(): Item {
       const defaultFolder = {
-        type: Group.TYPE,
+        type: Item.TYPE,
         text: "Folder",
         items: [],
       }  as Partial<DBSchema>;
       const folder = this.survey.add(this.root.id, defaultFolder, -1);
       const defaultPage = {
-        type: Group.TYPE,
+        type: Item.TYPE,
         text: "Page",
         items: [],
         layout: {
@@ -73,7 +73,7 @@ export class EditorBuilder implements IEditorState {
     }
     public addPage(folder: Item): Item {
       const defaultPage = {
-        type: Group.TYPE,
+        type: Item.TYPE,
         text: "Page",
         items: [],
         layout: {
@@ -199,7 +199,7 @@ export class EditorBuilder implements IEditorState {
     }
     public addQuestionSelectTable(nav: INavState, parentId?:string, index?:number):Item {
       const data = {
-        type:Group.TYPE,
+        type:Item.TYPE,
         items:[],
         layout: {
           style: GroupMap.layout.style.table
@@ -252,12 +252,12 @@ export class EditorBuilder implements IEditorState {
         }
       } as Partial<DBSchema>;
       const fn = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as ItemFunction;
-      fn.setFn(FunctionType.Compute, FnMap.fnCompute.BodyMassIndex);
+      fn.setFn(FnMap.fnCompute.BodyMassIndex);
       return fn;
     }
     public addSection(nav: INavState):Item {
       const data = {
-        type:Group.TYPE,
+        type:Item.TYPE,
         items: [],
         layout: {
           style: GroupMap.layout.style.section
@@ -403,17 +403,18 @@ export interface IUseEditorState {
 export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
     const initValue = initSchema;
+
     // const initValue = {
     //   id: "0",
-    //   type: Group.TYPE,
+    //   type: Item.TYPE,
     //   text: "Survey",
     //   items: [{
     //     id: "1",
-    //     type: Group.TYPE,
+    //     type: Item.TYPE,
     //     text: "Folder",
     //     items: [{
     //       id: "2",
-    //       type: Group.TYPE,
+    //       type: Item.TYPE,
     //       text:"Page",
     //       items:[],
     //       layout: {
@@ -455,8 +456,9 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     //   }]
     // } as DBSchema;
 
+    console.log("editorBuilder initValue", initValue);
     const initSurvey = new Survey(initValue);
-    console.log('editorBuilder survey root', initSurvey, initSurvey.root);
+    console.log('editorBuilder initSurvey initSurvey.root', initSurvey, initSurvey.root);
     // initSurvey.load();
     const [survey, setSurvey] = React.useState<Survey>(initSurvey);
     const getRoot = (s:Survey) => s.root;
@@ -472,7 +474,7 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
     const surveyNav = useNavState(getRoot(survey));
 
-    console.log('editor survey', survey);
+    console.log('editorBuilder survey', survey);
     
     return {
       editor: {

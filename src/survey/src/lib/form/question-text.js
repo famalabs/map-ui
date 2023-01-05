@@ -54,7 +54,7 @@ class QuestionText extends question_1.Question {
         if (this.options.max > 0)
             schema.options.max = this.options.max;
         if (this.options.format)
-            schema.options.format = this.options.format; // .source
+            schema.options.format = this.options.format.source;
         return schema;
     }
 }

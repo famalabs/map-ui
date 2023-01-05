@@ -27,12 +27,14 @@ export declare class Tree implements IEngine, IResolver {
      * Get an item by its id
      * @param id of the item
      * @returns item
+     * @throws {ItemNotFoundException}
      */
     get<T extends Item = Item>(id: string): T;
     /**
      * Get the parent of an item by its id
      * @param id of the item
      * @returns parent
+     * @throws {ItemNotFoundException}
      */
     parent<T extends Item = Item>(id: string): T;
     /**
@@ -45,6 +47,7 @@ export declare class Tree implements IEngine, IResolver {
      * Creates a new item or one of its subtypes given the data
      * @param data of the new otem
      * @returns the new item
+     * @throws {Error}
      */
     build<T extends Item>(data: Omit<ExtendedSchema, 'id'>): T;
     /**
@@ -60,6 +63,7 @@ export declare class Tree implements IEngine, IResolver {
      * @param data of the new item
      * @param index position
      * @returns the new item
+     * @throws {ItemNotFoundException}
      */
     add(id: string, data: Omit<ExtendedSchema, 'id' | 'items'>, index?: number): Item;
     /**

@@ -1,6 +1,7 @@
 import { DBAnswer, ExtendedSchema } from './db';
 import { Tree, TreeException } from './engine';
-import { IFormDataResolver, Question, DataSourceRepository } from './form';
+import { ItemFunction, Question, DataSourceRepository, IFormResolver } from './form';
+import { IExecutor } from './form/ast';
 export declare enum SurveyMode {
     EDIT = 0,
     COMPILE = 1
@@ -10,12 +11,16 @@ export declare class SurveyModeException extends TreeException {
     readonly required?: SurveyMode;
     constructor(current: SurveyMode, required?: SurveyMode);
 }
-export declare class Survey extends Tree implements IFormDataResolver {
+export declare class Survey extends Tree implements IFormResolver {
     protected _questions: Question[];
+    protected _functions: ItemFunction[];
     protected _sources: DataSourceRepository;
+    protected _executor: IExecutor;
     protected _mode: SurveyMode;
     get questions(): Question<any, import("./form").QuestionOptions<any>>[];
+    get functions(): ItemFunction<any>[];
     get sources(): DataSourceRepository;
+    get executor(): IExecutor;
     /**
      * Survey current mode. Enables functionalities based on this value
      */
@@ -25,13 +30,20 @@ export declare class Survey extends Tree implements IFormDataResolver {
      * Sets answers from a list returning questions
      * @param answers
      * @returns list of questions set
+     * @throws {SurveyModeException}
      */
     setAnswers(answers: Array<DBAnswer>): Question[];
     /**
-     * Get all answers
+     * Get answers from all questions
      * @returns
+     * @throws {SurveyModeException}
      */
     getAnswers(): Array<DBAnswer>;
+    /**
+     * Compute all functions
+     * @returns
+     * @throws {SurveyModeException}
+     */
     compute(): void;
     /**
      * Reset all submittable or dynamic fields
@@ -52,6 +64,7 @@ export declare class Survey extends Tree implements IFormDataResolver {
     /**
      * Checks if all the active questions has been submitted
      * @returns
+     * @throws {SurveyModeException}
      */
     isSumbitted(): boolean;
 }

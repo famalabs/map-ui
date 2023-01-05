@@ -1,12 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Item = exports.IteratorMode = void 0;
+exports.Item = void 0;
 const tslib_1 = require("tslib");
-var IteratorMode;
-(function (IteratorMode) {
-    IteratorMode[IteratorMode["DFS"] = 0] = "DFS";
-    IteratorMode[IteratorMode["BFS"] = 1] = "BFS";
-})(IteratorMode = exports.IteratorMode || (exports.IteratorMode = {}));
+const iterator_1 = require("./iterator");
 /* class decorator */
 function staticImplements() {
     return (constructor) => {
@@ -21,9 +17,10 @@ let Item = class Item {
         Object.defineProperties(this, {
             _data: {
                 value: Object.create(null),
-                enumerable: false,
+                enumerable: true,
             },
         });
+        this._data.type = this.constructor.TYPE;
         this.update(data);
         this._data.items =
             this._data.items instanceof Array ? this._data.items : [];
@@ -32,7 +29,7 @@ let Item = class Item {
         return this._data.id;
     }
     get type() {
-        return this.constructor.TYPE;
+        return this._data.type;
     }
     get name() {
         return this._data.name;
@@ -107,6 +104,7 @@ let Item = class Item {
     }
     update(data) {
         if (data) {
+            delete data.type; // avoid type overwriting
             Object.assign(this._data, data);
         }
     }
@@ -140,7 +138,7 @@ let Item = class Item {
      * @param mode depth-first-search by default
      */
     hierarchy(mode) {
-        return new ItemIterator(this, mode);
+        return new iterator_1.ItemIterator(this, mode);
     }
 };
 Item.TYPE = 'item';
@@ -149,29 +147,4 @@ Item = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object])
 ], Item);
 exports.Item = Item;
-class ItemIterator {
-    constructor(item, mode) {
-        this.item = item;
-        this.mode = mode;
-        this.i = 0;
-        this.entries = [this.item];
-    }
-    next() {
-        const item = this.entries[this.i++];
-        if (item && item.items instanceof Array) {
-            if (this.mode === IteratorMode.BFS)
-                Array.prototype.push.apply(this.entries, item.items);
-            // DFS
-            else
-                this.entries.splice(this.i, 0, ...item.items);
-        }
-        return {
-            done: item === undefined,
-            value: item,
-        };
-    }
-    [Symbol.iterator]() {
-        return this;
-    }
-}
 //# sourceMappingURL=item.js.map
