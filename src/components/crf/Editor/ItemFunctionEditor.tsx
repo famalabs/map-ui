@@ -61,7 +61,7 @@ export function ItemFunctionEditorForm({
             question={question}
             required={false}            
             />
-            <Typography>Function Name: {question.toJSON().fnCompute}</Typography>
+            <Typography>Function Name: {question.fnCompute}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
@@ -160,7 +160,7 @@ export function ItemFunctionEditorForm({
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
             <Select
-              value={question.toJSON().fnCompute}
+              value={question.fnCompute}
               onChange={(e) => {handleChangeFunction(e.target.value)}}
             >
                 {Object.values(FnMedicine).map((key, idx) => (

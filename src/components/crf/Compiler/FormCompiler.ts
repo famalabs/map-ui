@@ -20,9 +20,13 @@ export interface IUseFormCompiler {
   nav:INavState; 
 }
 
+function duplicateDBSchema(schema:DBSchema):DBSchema {
+  return JSON.parse(JSON.stringify(schema)) as DBSchema;
+}
+
 export function useFormCompiler(initSurvey:DBSchema) {
 
-  const initValue = initSurvey;
+  const initValue = duplicateDBSchema(initSurvey);
   // const initValue = {
   //   id: "0",
   //   type: "group",

@@ -46,7 +46,7 @@ export function SectionEditorForm({
 
   const renderNormal = () => {
     return (
-      <Stack spacing={6}>
+      <Stack spacing={2}>
         <Stack spacing={1}
         onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}
         onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}

@@ -2,8 +2,9 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { SurveyEditorForm, SurveyEditorProps } from '../../src/components/crf/Editor';
 import { DBSchema } from '../../src/survey';
-import { crf } from './crf';
-// import crfJson from './crf.json'
+// import { crf } from './crf';
+// import crf from './crf_test.json'
+import crf from './crf.json'
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {

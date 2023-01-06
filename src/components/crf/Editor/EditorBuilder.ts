@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { SurveyMap, fromMapToDefault, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap,GroupMap, QuestionMap, FnMap, QuestionCheckMap} from '../../../core/schema'
 import { INavState, SurveyNav, useNavState } from '../Navigation';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
-import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, FunctionType } from '../../../survey'
+import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction } from '../../../survey'
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -400,9 +400,13 @@ export interface IUseEditorState {
     nav: INavState;
 }
 
+function duplicateDBSchema(schema:DBSchema):DBSchema {
+  return JSON.parse(JSON.stringify(schema)) as DBSchema;
+}
+
 export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
-    const initValue = initSchema;
+    const initValue = duplicateDBSchema(initSchema);
 
     // const initValue = {
     //   id: "0",
@@ -458,19 +462,19 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
     console.log("editorBuilder initValue", initValue);
     const initSurvey = new Survey(initValue);
-    console.log('editorBuilder initSurvey initSurvey.root', initSurvey, initSurvey.root);
-    // initSurvey.load();
-    const [survey, setSurvey] = React.useState<Survey>(initSurvey);
-    const getRoot = (s:Survey) => s.root;
-    // const value:DBSchema = survey.getSchema();
-    // const setValue = (a:any) => {}
 
+    const [survey, setSurvey] = React.useState<Survey>(initSurvey);
+    console.log('editorBuilder initSurvey initSurvey.root survey root json', initSurvey, initSurvey.root, survey, survey.root, survey.toJSON());
+    // const [surveySchema, setSurveySchema] = React.useState<DBSchema>(initValue);
+    // const survey = new Survey(surveySchema);
+    // const setSurvey = (survey:Survey) => {setSurveySchema(survey.toJSON())};
+    const getRoot = (s:Survey) => s.root;
 
 
     // takes saved the survey before changes, if not save, restore prev values
     // must control other actions 
     const [hasChanges, setHasChanges] = React.useState<boolean>(false);
-    const [changesValueSurvey, setChangesValueSurvey] = React.useState<Survey>(initSurvey);
+    const [changesValueSurvey, setChangesValueSurvey] = React.useState<Survey>(survey);
 
     const surveyNav = useNavState(getRoot(survey));
 

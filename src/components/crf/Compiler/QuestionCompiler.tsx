@@ -1,6 +1,6 @@
 import React from 'react';
 import { GroupMap, QuestionSelectMap } from '../../../core/schema';
-import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item, Group } from '../../../survey';
+import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
 import { QuestionSelectCompilerForm } from './QuestionSelectCompiler';
@@ -74,7 +74,7 @@ export function QuestionCompilerForm({
 			index={index}
 			/>
 		);
-	} else if (item.type === Group.TYPE) {
+	} else if (item.type === Item.TYPE) {
 		if (item.layout.style === GroupMap.layout.style.table) {
 			if (item.items[0].type === QuestionSelect.TYPE) {
 				return (

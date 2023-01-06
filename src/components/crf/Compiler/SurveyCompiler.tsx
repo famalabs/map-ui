@@ -1,6 +1,6 @@
 import React from 'react';
 import { SidebarCompiler } from './SidebarCompiler';
-import { Box, CssBaseline } from '@mui/material';
+import { Box, CssBaseline, Stack } from '@mui/material';
 import { HorizontalStepper } from './StepperCompiler';
 import { NavigationButtons } from './NavigationButtonsCompiler';
 import { Survey } from '../../../survey';
@@ -24,9 +24,9 @@ export function SurveyForm({
 
 	const sidebar = (<SidebarCompiler formCompiler={formCompiler} loading={loading}/>);
 	const content = (
-		<><HorizontalStepper formCompiler={formCompiler}/>
+		<Stack spacing={2}><HorizontalStepper formCompiler={formCompiler}/>
 		<form onSubmit={form.submitForm}><FolderCompilerForm formCompiler={formCompiler} loading={loading}/></form>
-		<NavigationButtons formCompiler={formCompiler}/></>);
+		<NavigationButtons formCompiler={formCompiler}/></Stack>);
 	return (
 		<DrawerCommon
 		sidebar={sidebar}
