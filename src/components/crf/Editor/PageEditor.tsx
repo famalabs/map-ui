@@ -30,6 +30,8 @@ const isEditState = (state:string) => {
 
 const createQuestionState = (nav:INavState) => {
 	let qs = {}
+	qs['folder'] = nav.getFolderId();
+	qs['page'] = nav.getPageId();
 	const questions = nav.getPage().items;
 	for (let i = 0; i < questions.length; i++) {
 		if (getQuestionMenuType(questions[i]) === QuestionMenuTypesMap.section.type) {
@@ -123,14 +125,15 @@ export function PageEditorForm({
 		setQuestionState(qs);
 		// console.log('new questionState', qs);
 	}
-	// to update if changes the question numbers
-	// if (nav.getQuestions().length !== Object.keys(questionState).length) {
-	// 	handleSetQuestionState(null, null);
-	// }
+	// to update if changes the page or folder numbers
+	if (nav.getPageId() !== questionState['page'] || nav.getFolderId() !== questionState['folder']) {
+		handleSetQuestionState(null, null);
 
-	// console.log('render page',page, questionState);
+	}
+
+	// console.log('render page questionState',page, questionState);
 	return (
-		<div style={{padding:'24px 0px'}}>
+		<div style={{padding:'12px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {

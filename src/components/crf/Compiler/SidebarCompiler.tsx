@@ -58,6 +58,7 @@ export function SidebarCompiler ({
 								{folder.items.map((page, idx2) => {
 									return (
 											<Button 
+											key={page.id}
 											variant={page.id===nav.getPageId()?"contained":"text"}
 											onClick={(e) => {nav.setFolder(folder, page);}}
 											startIcon={page.id===nav.getPageId()?null

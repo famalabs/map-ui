@@ -39,7 +39,7 @@ export function QuestionTableCommon({
               <TableCell>Questions</TableCell>
               {options.map((opt, idx) => {
                 return (
-                  <TableCell align="center">{opt.text}</TableCell>
+                  <TableCell key={idx} align="center">{opt.text}</TableCell>
                 );
               })}
             </TableRow>
@@ -49,7 +49,8 @@ export function QuestionTableCommon({
               return (
                 <TableRow
                   key={idx}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 },
+                  '&:hover, &.Mui-focusVisible': {backgroundColor: 'rgba(61, 90, 128, 0.04)'} }}
                 >
                   <TableCell component="th" scope="row">
                     {sel.text}
@@ -58,7 +59,7 @@ export function QuestionTableCommon({
                     if (typeof formCompiler !== 'undefined') {
                       const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(sel, formCompiler);  
                       return (
-                        <TableCell align="center">
+                        <TableCell key={idx} align="center">
                           <Radio
                             disabled={disabled}
                             checked={value === opt.text}
@@ -71,7 +72,7 @@ export function QuestionTableCommon({
                       );
                     }
                   return (
-                    <TableCell align="center">
+                    <TableCell key={idx} align="center">
                       <Radio
                         disabled={disabled}
                       />

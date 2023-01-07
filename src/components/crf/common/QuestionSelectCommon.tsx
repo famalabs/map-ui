@@ -37,7 +37,13 @@ export function QuestionSelectCommon({
         >
           {selects.length > 0 ? selects.map((opt, idx) => (
             <FormControlLabel key={idx} disabled={disabled} value={opt.text} 
-            control={<Radio />} label={opt.text} />
+            control={<Radio />} label={opt.text} 
+            sx={{
+              '&:hover, &.Mui-focusVisible': {
+                backgroundColor: 'rgba(61, 90, 128, 0.04)'
+              }
+            }}
+            />
           )) : <Typography>No Radio Element</Typography>}
         </RadioGroup>
       ):(

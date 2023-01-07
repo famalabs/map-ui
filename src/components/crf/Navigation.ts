@@ -213,9 +213,9 @@ export class SurveyNav implements INavState {
 			for (let p = 0; p < folder.items.length; p++) {
 				const page = folder.items[p];
 				if (page.id === id) { return GroupMap.layout.style.page; }
-					for (let q = 0; q < page.items.length; q++) {
-						if (page.items[q].id === id) { return page.items[q].type; }
-					}
+					// for (let q = 0; q < page.items.length; q++) {
+					// 	if (page.items[q].id === id) { return page.items[q].type; }
+					// }
 				}
 		}
 		// throw Error('this item is not a nav type');

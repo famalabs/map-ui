@@ -1,5 +1,6 @@
 import { Form, useFormState, toUseFormState } from "../../../components/forms";
 import { QuestionNumber, Survey, Item, DBSchema } from "../../../survey";
+import { ValidatorsLocaleMap } from '../../../core/schema'
 import React from "react";
 import { INavState, useNavState } from "../Navigation";
 
@@ -142,10 +143,11 @@ export function useQuestionHandler(item:Item, formCompiler:IUseFormCompiler) {
   const required = form.getRequired(item.id);
   const value = form.getValue(item.id);
   const validators: any = [];
+  const locale = 'it';
   // const emptyMessage = 'You cannot leave this field empty';
-  const emptyMessage = 'Non puoi lasciare questo campo vuoto';
+  const emptyMessage = ValidatorsLocaleMap.emptyField[locale];
   // const defaultErrorMessage = 'Invalid input';
-  const defaultErrorMessage = 'Input non valido';
+  const defaultErrorMessage = ValidatorsLocaleMap.invalidInput[locale];
   const setValid:(valid: boolean) => void = null;
   const onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void = null;
   console.log(value, required, item);

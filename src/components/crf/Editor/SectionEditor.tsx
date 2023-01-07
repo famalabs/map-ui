@@ -1,7 +1,7 @@
 import React from 'react';
 import {QuestionMenuTypesMap} from '../../../core/schema'
 import {Item} from '../../../survey'
-import { Stack, Typography, Button, Menu, MenuItem } from '@mui/material';
+import { Stack, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionEditorForm } from './QuestionEditor';
@@ -49,7 +49,7 @@ export function SectionEditorForm({
       <Stack spacing={2}>
         <Stack spacing={1}
         onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}
-        onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}
+        // onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}
         onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.edit)}}}
         >
         <Typography variant='h4'>{section.text}</Typography>
@@ -92,6 +92,7 @@ export function SectionEditorForm({
           }
 				})}
 			</Menu>
+      <Divider variant='middle'/>
 			</Stack>
     );
   }

@@ -284,3 +284,17 @@ export const FnMap = {
     }
 } as const;
 export type FnMap = keyof typeof FnMap;
+
+
+export const ValidatorsLocaleMap = {
+    emptyField: {
+        it: 'Non puoi lasciare questo campo vuoto',
+        en: 'You cannot leave this field empty',
+    },
+    invalidInput: {
+        it: 'Input non valido',
+        en: 'Invalid input',
+    }
+
+} as const;
+export type ValidatorsLocaleMap = keyof typeof ValidatorsLocaleMap;

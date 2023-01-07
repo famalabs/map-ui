@@ -25,7 +25,7 @@ export function FolderEditorForm({
 	const pages = nav.getPages();
 	const pageId = nav.getPageId();
 	const page = nav.getPage();
-	console.log('folder folder, pages, page', folder, pages, page);
+	// console.log('folder folder, pages, page', folder, pages, page);
 
 	const pageOptions = {
 		default:GroupMap.layout.style.page,
@@ -37,16 +37,15 @@ export function FolderEditorForm({
 	const renderPageModal = () => {
 		if (modalPage == PageStateMap.normal) {
 			return(
-				<Box sx={{ width: '100%'}}
-				style={{minHeight:'36px'}}
+				<Box sx={{ width: '100%', p:'24px'}}
 				onMouseEnter={() =>  setModalPage(PageStateMap.hover)}
 				>
-					<Typography variant='h5'>{page.text}</Typography>
+					<Typography variant='h5' sx={{minHeight:'36px'}}>{page.text}</Typography>
 				</Box>
 			);
 		} else if (modalPage == PageStateMap.hover) {
 			return (
-				<Box sx={{ width: '100%'}}
+				<Box sx={{ width: '100%', p:'24px',minHeight:'36px'}}
 				onMouseLeave={() => setModalPage(PageStateMap.normal)}
 				>
 					
@@ -171,14 +170,14 @@ export function FolderEditorForm({
 		{/* PAGE RENDER */}
 		{page.layout.style === GroupMap.layout.style.card ? 
 			(
-				<Paper style={{padding:'24px',margin:'24px 0px',width:'100%'}}>
+				<Paper style={{padding:'12px',margin:'24px 0px',width:'100%'}}>
 					{renderPageModal()}
 					<PageEditorForm
 							editorState={editorState}
 						/>
 				</Paper>
 			):(
-				<Box style={{padding:'24px',margin:'24px 0px',width:'100%'}}>
+				<Box style={{padding:'12px',margin:'24px 0px',width:'100%'}}>
 					{renderPageModal()}
 					<PageEditorForm
 							editorState={editorState}

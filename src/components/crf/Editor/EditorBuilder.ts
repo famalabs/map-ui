@@ -552,17 +552,10 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
           }
         },
         moveItem: (item:Item, idx:number, parentId?:string) => {
-          const itemType = surveyNav.getItemType(item.id);
           const editorBuilder = new EditorBuilder(survey);
-          editorBuilder.moveItem(item, idx, parentId);
-          setSurvey(editorBuilder.getSurvey());
-          if (itemType === GroupMap.layout.style.folder) { 
-            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), newIdx, surveyNav.getPageIdx());
-          } else if (itemType === GroupMap.layout.style.page) { 
-            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), newIdx);
-          } else {
-            // surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
-          }
+          // editorBuilder.moveItem(item, idx, parentId);
+          survey.move(item.id, idx, parentId);
+          setSurvey(survey);
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
         },
         onChangeValue: (itemId:string, key:string, newValue:any) => {
