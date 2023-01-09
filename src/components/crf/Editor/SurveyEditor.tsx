@@ -28,6 +28,7 @@ export function SurveyEditorForm({
 		content={content}
 		drawerWidth={320+64}	
 		title={"Survey Editor"}		
+		// removeHeader={true}
 		/>
 	);
 }

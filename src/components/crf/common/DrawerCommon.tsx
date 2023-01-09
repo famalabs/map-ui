@@ -14,7 +14,7 @@ export interface DrawerCommonProps {
   content:JSX.Element;
   drawerWidth:number;
 	title:string;
-	// window?:Window;
+	// header:boolean;
 }
 
 export function DrawerCommon({
@@ -22,7 +22,7 @@ export function DrawerCommon({
   content,
   drawerWidth,
 	title,
-	// window,
+	// header,
 	}: DrawerCommonProps) {
 		
   const [mobileOpen, setMobileOpen] = React.useState(false);

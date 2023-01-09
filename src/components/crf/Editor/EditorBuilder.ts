@@ -252,7 +252,7 @@ export class EditorBuilder implements IEditorState {
         }
       } as Partial<DBSchema>;
       const fn = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as ItemFunction;
-      fn.setFn(FnMap.fnCompute.BodyMassIndex);
+      fn.setFn(FnMap.fn.BodyMassIndex);
       return fn;
     }
     public addSection(nav: INavState):Item {

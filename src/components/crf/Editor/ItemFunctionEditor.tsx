@@ -1,23 +1,23 @@
 import React from 'react';
 import { ItemFunction, Item } from '../../../survey'
-import { getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
+import { FnMap, getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
 import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
-enum FnMedicine {
-  BodyMassIndex = 'BMI',
-  SofaScore = 'SOFA',
-  ISTHScore = 'ISTH',
-  CIDScore = 'CID',
-  HScore = 'HScore',
-  MeanArterialPressure = 'MeanArterialPressure',
-  GFRCockcroftGault = 'CrocoftGault',
-  CKD_EPI_CREATININE = 'CDKEPI',
-  PF_Percent = 'PFpercent',
-}
+// enum FnMedicine {
+//   BodyMassIndex = 'BMI',
+//   SofaScore = 'SOFA',
+//   ISTHScore = 'ISTH',
+//   CIDScore = 'CID',
+//   HScore = 'HScore',
+//   MeanArterialPressure = 'MeanArterialPressure',
+//   GFRCockcroftGault = 'CrocoftGault',
+//   CKD_EPI_CREATININE = 'CDKEPI',
+//   PF_Percent = 'PFpercent',
+// }
 
 import { QuestionHeaderCommon } from '../common';
 import { QuestionCommonEditorProps } from './CommonEditor';
@@ -48,7 +48,7 @@ export function ItemFunctionEditorForm({
       editor.onChangeValue(question.id, 'parameters', params);
     }
     const handleChangeFunction = (newFn:string) => {
-      editor.onChangeValue(question.id, 'fnCompute', newFn);
+      editor.onChangeValue(question.id, 'fn', newFn);
     }
 
     const [modalPrams, setModalParams] = React.useState(false);
@@ -61,7 +61,7 @@ export function ItemFunctionEditorForm({
             question={question}
             required={false}            
             />
-            <Typography>Function Name: {question.fnCompute}</Typography>
+            <Typography>Function Name: {question.fn}</Typography>
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
@@ -160,10 +160,10 @@ export function ItemFunctionEditorForm({
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
             <Select
-              value={question.fnCompute}
+              value={question.fn}
               onChange={(e) => {handleChangeFunction(e.target.value)}}
             >
-                {Object.values(FnMedicine).map((key, idx) => (
+                {Object.values(FnMap.fn).map((key, idx) => (
                   <MenuItem key={key} value={key}
                   >
                     <Typography>{key}</Typography>

@@ -32,7 +32,8 @@ export function SurveyForm({
 		sidebar={sidebar}
 		content={content}
 		drawerWidth={320}	
-		title={form.getRoot().text}		
+		title={form.getRoot().text}			
+		// removeHeader={true}
 		/>
 	);
 }

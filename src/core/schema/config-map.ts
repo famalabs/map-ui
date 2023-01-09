@@ -1,3 +1,4 @@
+import { ItemFunction } from "../../survey/src";
 import { MAX_FIELD_SIZE } from "./config";
 
 export function fromMapToDefault(options:any) {
@@ -269,18 +270,27 @@ export const FnMap = {
     id: "",
     name: "",
     text: "",
-    type: "Fn",
+    type: ItemFunction.TYPE,
     parameters: [],
-    fnCompute: {
-        BodyMassIndex: 'BMI',
-        SofaScore: 'SOFA',
-        ISTHScore: 'ISTH',
-        CIDScore: 'CID',
-        HScore: 'HScore',
-        MeanArterialPressure: 'MeanArterialPressure',
-        GFRCockcroftGault: 'CrocoftGault',
-        CKD_EPI_CREATININE: 'CDKEPI',
-        PF_Percent: 'PFpercent',
+    fn: {
+        // BodyMassIndex: 'BMI',
+        // SofaScore: 'SOFA',
+        // ISTHScore: 'ISTH',
+        // CIDScore: 'CID',
+        // HScore: 'HScore',
+        // MeanArterialPressure: 'MeanArterialPressure',
+        // GFRCockcroftGault: 'CrocoftGault',
+        // CKD_EPI_CREATININE: 'CDKEPI',
+        // PF_Percent: 'PFpercent',
+        BodyMassIndex:'BMI',
+        SofaScore:'SOFA',
+        ISTHScore:'ISTH',
+        CIDScore:'CID',
+        HScore:'HScore',
+        MeanArterialPressure:'MeanArterialPressure',
+        GFRCockcroftGault:'CrocoftGault',
+        CKD_EPI_CREATININE:'CDKEPI',
+        PF_Percent:'PFpercent',
     }
 } as const;
 export type FnMap = keyof typeof FnMap;
