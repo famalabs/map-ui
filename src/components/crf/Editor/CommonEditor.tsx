@@ -102,7 +102,7 @@ export function QuestionCommonEditorForm<T extends Item>({
     );
   }
   const renderLayout = () => {
-    return (<>{contentLayout}</>);;
+    return (<>{contentLayout}</>);
   }
   // console.log('render Date', questionState);
   return (

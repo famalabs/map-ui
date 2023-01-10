@@ -111,7 +111,7 @@ export function SectionEditorForm({
       index={index} 
       editorState={editorState} 
       question={section} 
-      questionState={questionState}    
+      questionState={thisQuestionState}    
     />
   );
 }

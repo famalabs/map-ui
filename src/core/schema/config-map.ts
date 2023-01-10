@@ -299,7 +299,24 @@ export const ItemConditionalMap = {
     id:"",
     name:"",
     text:"",
-    type: ItemConditional.TYPE
+    type: ItemConditional.TYPE,
+    expression: {
+        operator: {
+            default: '',
+            sum:'+',
+            diff:'-',
+            mult:'*',
+            div:'/',
+            gt:'>',
+            lt:'<',
+            gte:'>=',
+            lte:'<=',
+            eq:'==',
+            neq:'!=',
+            and:'&&',
+            or:'||',
+        }
+    }
 } as const;
 export type ItemConditionalMap = keyof typeof ItemConditionalMap;
 

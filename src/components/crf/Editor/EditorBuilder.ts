@@ -5,6 +5,7 @@ import { INavState, SurveyNav, useNavState } from '../Navigation';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, ItemConditional } from '../../../survey'
 import { Expression } from '../../../survey/src/lib/form/ast';
+import { ComputableData } from '../../../survey/src/lib/form/computable';
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -184,8 +185,8 @@ export class EditorBuilder implements IEditorState {
         }
       } as Partial<DBSchema>;
       const sel = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as QuestionSelect;
-      sel.addSelect({text:"Radio 1",score:0} as TextScore, -1);
-      sel.addSelect({text:"Radio 2",score:1} as TextScore, -1);
+      sel.addSelect({text:"",score:0} as TextScore, -1);
+      sel.addSelect({text:"",score:1} as TextScore, -1);
       return sel;
     }
     public addQuestionSelectDropdown(nav: INavState, parentId?:string, index?:number):Item {
@@ -197,8 +198,8 @@ export class EditorBuilder implements IEditorState {
         }
       } as Partial<DBSchema>;
       const sel = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as QuestionSelect;
-      sel.addSelect({text:"Radio 1",score:0} as TextScore, -1);
-      sel.addSelect({text:"Radio 2",score:1} as TextScore, -1);
+      sel.addSelect({text:"",score:0} as TextScore, -1);
+      sel.addSelect({text:"",score:1} as TextScore, -1);
       return sel;
     }
     public addQuestionSelectTable(nav: INavState, parentId?:string, index?:number):Item {
@@ -213,7 +214,7 @@ export class EditorBuilder implements IEditorState {
 
       for (let i = 0; i < 2; i++) {
         const sel = this.addQuestionSelect(nav, table.id);
-        sel.text = "Question "+ (i+1).toString();
+        sel.text = "";
       }
       return table
     }
@@ -262,8 +263,13 @@ export class EditorBuilder implements IEditorState {
     public addCondItem(nav: INavState, parentId?:string, index?:number):Item {
       const data = {
         type:ItemConditional.TYPE,
-        expression: {}
-      } as Partial<DBSchema>;
+        expression: {
+          type: 'exp',
+          operator: null,
+          left: null,
+          right: null,
+        } as Expression
+      } as Partial<ComputableData>;
       const cond = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as ItemConditional;
       return cond;
     }
