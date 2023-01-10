@@ -1,8 +1,8 @@
 import React from 'react';
 import { GroupMap, QuestionSelectMap } from '../../../core/schema'
-import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction } from '../../../survey'
+import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, ItemConditional } from '../../../survey'
 import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper, Accordion, AccordionDetails, AccordionSummary, Modal, Chip } from '@mui/material';
-import {Edit, Expand, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined, ExpandMore, VerticalAlignBottom, VerticalAlignTop} from '@mui/icons-material';
+import {Edit, Expand, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined, ExpandMore, VerticalAlignBottom, VerticalAlignTop, ContentCopy} from '@mui/icons-material';
 import { IEditorState, IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
@@ -14,6 +14,7 @@ import { QuestionCheckEditorForm } from './QuestionCheckEditor';
 import { QuestionStateMap } from './PageEditor';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 import { SectionEditorForm } from './SectionEditor';
+import { ItemConditionalEditorForm } from './ItemConditionalEditor';
 
 export interface QuestionEditorFormProps {
   index?: any;
@@ -23,7 +24,7 @@ export interface QuestionEditorFormProps {
   handleSetQuestionState: (id:string, state:string) => void;
 }
 
-const locale = "en";
+const locale = "it";
 
 export function QuestionEditorForm({
   index,
@@ -92,6 +93,15 @@ export function QuestionEditorForm({
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
+          index={index}
+          editorState={editorState}
+          question={question}
+          questionState={thisQuestionState}
+        />
+      );
+    } else if (question instanceof ItemConditional) {
+      return (
+        <ItemConditionalEditorForm
           index={index}
           editorState={editorState}
           question={question}
@@ -370,6 +380,10 @@ export function QuestionEditorForm({
             onClick={(e) => {handleOpenMoveModal()}}>
             <Expand/>
             </Button>
+            {/* <Button variant="outlined" color="secondary"
+            onClick={(e) => {editor.duplicateItem(question)}}>
+            <ContentCopy/>
+            </Button> */}
             <Button variant="outlined" color="secondary"
             onClick={(e) => {editor.cancelChanges(); editor.removeItem(question)}}>
             <Delete/>
@@ -393,7 +407,7 @@ export function QuestionEditorForm({
   const renderMenu = () => {
     return (
       <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={thisQuestionState} onChange={handleChangeTab}>
+            <Tabs value={thisQuestionState} onChange={handleChangeTab} sx={{justifyContent: 'center'}}>
               <Tab icon={<Edit />} value={QuestionStateMap.edit} />
               {!isSection && (
               <Tab icon={<Settings />} value={QuestionStateMap.options} />

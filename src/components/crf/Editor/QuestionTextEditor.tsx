@@ -3,7 +3,7 @@ import {QuestionText} from '../../../survey'
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionTextCommon } from '../common';
-import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTextEditorForm({
   index,
@@ -25,34 +25,22 @@ export function QuestionTextEditorForm({
       />
     );
   }
-  const renderHover = () => {
-    return renderNormal();
-  }
   const renderEdit = () => {
-    return (
-      <div>
-        {QuestionGeneralEdit(question, editor)}
-      </div>
-    );
+    return null;
   }
   const renderLayout = () => {
     return null;
   }
   // console.log('render text', questionState);
   return (
-    <div>
-    {questionState === QuestionStateMap.normal ? (
-      renderNormal()
-    ) : questionState === QuestionStateMap.hover ? (
-      renderHover()
-    ) : questionState === QuestionStateMap.edit ? (
-      renderEdit()
-    ) : questionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionTextMap.options,"Text options")
-      renderGeneralOptions(question, editorState)
-    ) : questionState === QuestionStateMap.layout ? (
-      renderLayout()
-    ) : renderNormal()}
-    </div>
+    <QuestionCommonEditorForm 
+      contentNormal={renderNormal()} 
+      contentEdit={renderEdit()} 
+      contentLayout={renderLayout()} 
+      index={index} 
+      editorState={editorState} 
+      question={question} 
+      questionState={questionState}    
+    />
   );
 }

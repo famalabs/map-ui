@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import { SurveyMap, fromMapToDefault, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap,GroupMap, QuestionMap, FnMap, QuestionCheckMap} from '../../../core/schema'
 import { INavState, SurveyNav, useNavState } from '../Navigation';
 import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
-import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction } from '../../../survey'
+import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, ItemConditional } from '../../../survey'
+import { Expression } from '../../../survey/src/lib/form/ast';
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -13,6 +14,7 @@ export interface IEditorState {
   addQuestion: (type:string, parentId?:string) => Item;
   changeQuestionType: (item: Item, newType: string) => void;
   removeItem: (item:Item) => void;
+  duplicateItem: (item:Item) => void;
   moveItemUp: (item:Item) => void;
   moveItemDown: (item:Item) => void;
   /**
@@ -106,6 +108,8 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionSelectTable(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.fn.type) {
         return this.addFnItem(nav, parentId, index ?? -1);
+      } else if (type === QuestionMenuTypesMap.cond.type) {
+        return this.addCondItem(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.section.type) {
         return this.addSection(nav);
       }
@@ -255,6 +259,14 @@ export class EditorBuilder implements IEditorState {
       fn.setFn(FnMap.fn.BodyMassIndex);
       return fn;
     }
+    public addCondItem(nav: INavState, parentId?:string, index?:number):Item {
+      const data = {
+        type:ItemConditional.TYPE,
+        expression: {}
+      } as Partial<DBSchema>;
+      const cond = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as ItemConditional;
+      return cond;
+    }
     public addSection(nav: INavState):Item {
       const data = {
         type:Item.TYPE,
@@ -287,6 +299,18 @@ export class EditorBuilder implements IEditorState {
         // for (let i = 0; i < selects.length; i++) {
         //   added.addSelect(selects[i], -1);
         // }
+      }
+    }
+
+    public duplicateItem (item: Item) {
+      const duplSchema:DBSchema = duplicateDBSchema(item.toJSON());
+      delete duplSchema.id;
+      delete duplSchema.items;
+      console.log("recursive", duplSchema, item.items);
+      this.survey.add(item.parent().id, duplSchema, -1);
+
+      for (let i = 0; i < item.items.length; i++) {
+        this.duplicateItem(item.items[i]);
       }
     }
 
@@ -400,6 +424,13 @@ export interface IUseEditorState {
     nav: INavState;
 }
 
+const removeKeys = (obj:DBSchema, keys:string[]) => Object.keys(obj)
+          .filter((k) => !keys.includes(k))
+          .reduce(
+            (acc, x) => Object.assign(acc, { [x]: removeKeys(obj[x], keys) }),
+            {}
+          )
+
 function duplicateDBSchema(schema:DBSchema):DBSchema {
   return JSON.parse(JSON.stringify(schema)) as DBSchema;
 }
@@ -426,38 +457,6 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     //       }
     //     }]
     //   }],
-    // } as DBSchema;
-
-    // const initValue = {
-    //   id: "0",
-    //   type: "group",
-    //   text: "Survey",
-    //   items: [{
-    //     id: "1",
-    //     type: "group",
-    //     text: "Folder",
-    //     items: [{
-    //       id: "2",
-    //       type: "group",
-    //       text:"Page",
-    //       items:[
-    //         {id:"4",type:"num",items:[],text:"number",layout:{style:"default"},options:{required:true,min:0,max:10,step:1,unit:"kg"}},
-    //         {id:"5",type:"num",items:[],text:"slider",layout:{style:"range"},options:{required:true,min:10,max:100,step:10,unit:"m"}},
-    //         {id:"6",type:"txt",items:[],text:"text",layout:{style:"default"},options:{required:true}},
-    //         {id:"7",type:"select",items:[],text:"radio",layout:{style:"radio"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
-    //         {id:"8",type:"select",items:[],text:"dropdown",layout:{style:"dropdown"},options:{required:true,select:[{text:"Radio 1",score:0},{text:"New Radio",score:2},{text:"Radio 2",score:1}]}},
-    //         {id:"9",type:"group",items:[
-    //           {id:"10",type:"check",items:[],text:"checkbox",layout:{style:"check"},options:{required:true}},
-    //           {id:"11",type:"check",items:[],text:"switch",layout:{style:"switch"},options:{required:true}},
-    //           {id:"12",type:"date",items:[],text:"date",options:{required:true}},
-    //           {id:"13",type:"fn",items:[],text:"fn bmi",parameters:["4","5"],fnCompute:"BMI"}
-    //         ],text:"section",layout:{style:"section"}}
-    //       ],
-    //       layout: {
-    //         style: "card"
-    //       }
-    //     }]
-    //   }]
     // } as DBSchema;
 
     console.log("editorBuilder initValue", initValue);
@@ -524,6 +523,11 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
           } else {
             surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
           }
+        },
+        duplicateItem: (item:Item) => {
+          const editorBuilder = new EditorBuilder(survey); 
+          editorBuilder.duplicateItem(item);
+          surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
         },
         moveItemUp: (item:Item) => {
           const itemType = surveyNav.getItemType(item.id);

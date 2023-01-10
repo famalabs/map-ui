@@ -6,7 +6,7 @@ import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { renderSelectOption } from './OptionsEditor';
 import { QuestionNumberCommon } from '../common';
-import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionNumberEditorForm({
   index,
@@ -28,23 +28,9 @@ export function QuestionNumberEditorForm({
       />
     );
   }
-  const renderHover = () => {
-    return renderNormal();
-  }
   const renderEdit = () => {
     return (
-      <div>
-        {QuestionGeneralEdit(question, editor)}
-      </div>
-    );
-  }
-  const renderNumberOptions = () => {
-    
-    return (
-    <div>
-      {renderGeneralOptions(question,editorState)}
       <Stack spacing={1}>
-      <Typography>Number Options</Typography>
       {renderSelectOption(QuestionNumberMap.options.unit, 'Unit', question.options.unit, editor, question.id, 'options.unit')}
       <div>
         <FormLabel component="legend">Min Value</FormLabel>
@@ -70,28 +56,21 @@ export function QuestionNumberEditorForm({
           onChange={(e) => {editor.onChangeValue(question.id,'options.step', Number(e.target.value))}}
         />
       </div>
-      </Stack>
-    </div>);
+      </Stack>);
   }
   const renderLayout = () => {
     return null;
   }
   // console.log('render number', questionState);
   return (
-    <div>
-    {questionState === QuestionStateMap.normal ? (
-      renderNormal()
-    ) : questionState === QuestionStateMap.hover ? (
-      renderHover()
-    ) : questionState === QuestionStateMap.edit ? (
-      renderEdit()
-    ) : questionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionNumberMap.options,"Number options")
-      // renderGeneralOptions(undefined,undefined)
-      renderNumberOptions()
-    ) : questionState === QuestionStateMap.layout ? (
-      renderLayout()
-    ) : renderNormal()}
-    </div>
+    <QuestionCommonEditorForm 
+      contentNormal={renderNormal()} 
+      contentEdit={renderEdit()} 
+      contentLayout={renderLayout()} 
+      index={index} 
+      editorState={editorState} 
+      question={question} 
+      questionState={questionState}    
+    />
   );
 }

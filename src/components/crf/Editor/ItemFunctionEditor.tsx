@@ -5,7 +5,7 @@ import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, C
 import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
-import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 // enum FnMedicine {
 //   BodyMassIndex = 'BMI',
@@ -75,9 +75,6 @@ export function ItemFunctionEditorForm({
             </Stack>
         </Stack>
       );
-    }
-    const renderHover = () => {
-      return renderNormal();
     }
     const renderChipParams = () => {
       return getParameters().length > 0 ? getParameters().map((id,idx) => {
@@ -209,20 +206,15 @@ export function ItemFunctionEditorForm({
     }
     // console.log('render function', questionState);
     return (
-      <div>
-      {questionState === QuestionStateMap.normal ? (
-        renderNormal()
-      ) : questionState === QuestionStateMap.hover ? (
-        renderHover()
-      ) : questionState === QuestionStateMap.edit ? (
-        renderEdit()
-      ) : questionState === QuestionStateMap.options ? (
-        // renderGeneralOptions(QuestionTextMap.options,"Text options")
-        renderGeneralOptions(question, editorState)
-      ) : questionState === QuestionStateMap.layout ? (
-        renderLayout()
-      ) : renderNormal()}
-      </div>
+      <QuestionCommonEditorForm 
+        contentNormal={renderNormal()} 
+        contentEdit={renderEdit()} 
+        contentLayout={renderLayout()} 
+        index={index} 
+        editorState={editorState} 
+        question={question} 
+        questionState={questionState}    
+      />
     );
   //   }
   // return null;

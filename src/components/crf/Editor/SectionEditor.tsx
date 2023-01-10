@@ -6,7 +6,7 @@ import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionEditorForm } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
-import { QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export interface SectionEditorFormProps {
   index?: any;
@@ -96,34 +96,22 @@ export function SectionEditorForm({
 			</Stack>
     );
   }
-  const renderHover = () => {
-    return renderNormal();
-  }
   const renderEdit = () => {
-    return (
-      <div>
-        {QuestionGeneralEdit(section, editor)}
-      </div>
-    );
+    return null;
   }
   const renderLayout = () => {
     return null;
   }
   // console.log('render section', questionState);
   return (
-    <div>
-    {thisQuestionState === QuestionStateMap.normal ? (
-      renderNormal()
-    ) : thisQuestionState === QuestionStateMap.hover ? (
-      renderHover()
-    ) : thisQuestionState === QuestionStateMap.edit ? (
-      renderEdit()
-    ) : thisQuestionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionTextMap.options,"Text options")
-      renderGeneralOptions(section, editorState)
-    ) : thisQuestionState === QuestionStateMap.layout ? (
-      renderLayout()
-    ) : renderNormal()}
-    </div>
+    <QuestionCommonEditorForm 
+      contentNormal={renderNormal()} 
+      contentEdit={renderEdit()} 
+      contentLayout={renderLayout()} 
+      index={index} 
+      editorState={editorState} 
+      question={section} 
+      questionState={questionState}    
+    />
   );
 }

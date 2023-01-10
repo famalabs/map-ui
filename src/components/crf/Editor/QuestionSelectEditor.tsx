@@ -6,7 +6,7 @@ import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-materi
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionSelectCommon } from '../common';
-import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionSelectEditorForm({
   index,
@@ -19,7 +19,7 @@ export function QuestionSelectEditorForm({
 
   const selects = question.options.select;
   const addSelect = () => {
-    selects.push({text:"New Radio",score:selects.length} as TextScore);
+    selects.push({text:"",score:selects.length} as TextScore);
     editor.onChangeValue(question.id, 'selectOptions', selects);
   } 
   const removeSelect = (idx:number) => {
@@ -57,14 +57,8 @@ export function QuestionSelectEditorForm({
       />
     );
   }
-  const renderHover = () => {
-    return renderNormal();
-  }
   const renderEdit = () => {
     return (
-      <div>
-        {QuestionGeneralEdit(question, editor)}
-        <Divider textAlign="left">Options</Divider>
         <FormControl
         >
           <RadioGroup
@@ -112,7 +106,6 @@ export function QuestionSelectEditorForm({
           <AddCircle />
           </Button>
         </FormControl>
-      </div>
     );
   }
   const renderLayout = () => {
@@ -120,19 +113,14 @@ export function QuestionSelectEditorForm({
   }
   // console.log('render Select', questionState);
   return (
-    <div>
-    {questionState === QuestionStateMap.normal ? (
-      renderNormal()
-    ) : questionState === QuestionStateMap.hover ? (
-      renderHover()
-    ) : questionState === QuestionStateMap.edit ? (
-      renderEdit()
-    ) : questionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionSelectMap.options,"Select options")
-      renderGeneralOptions(question, editorState)
-    ) : questionState === QuestionStateMap.layout ? (
-      renderLayout()
-    ) : renderNormal()}
-    </div>
+    <QuestionCommonEditorForm 
+      contentNormal={renderNormal()} 
+      contentEdit={renderEdit()} 
+      contentLayout={renderLayout()} 
+      index={index} 
+      editorState={editorState} 
+      question={question} 
+      questionState={questionState}    
+    />
   );
 }

@@ -5,7 +5,7 @@ import {AddCircle} from '@mui/icons-material';
 import { EditorBuilder, IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionTableCommon } from '../common';
-import { QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 
 export function QuestionTableEditorForm({
   index,
@@ -31,9 +31,6 @@ export function QuestionTableEditorForm({
       disabled={true}
       />
     );
-  }
-  const renderHover = () => {
-    return renderNormal();
   }
 
   const addOption = () => {
@@ -298,19 +295,14 @@ export function QuestionTableEditorForm({
   }
   // console.log('render text', questionState);
   return (
-    <div>
-    {questionState === QuestionStateMap.normal ? (
-      renderNormal()
-    ) : questionState === QuestionStateMap.hover ? (
-      renderHover()
-    ) : questionState === QuestionStateMap.edit ? (
-      renderEdit()
-    ) : questionState === QuestionStateMap.options ? (
-      // renderGeneralOptions(QuestionTextMap.options,"Text options")
-      renderGeneralOptions(question, editorState)
-    ) : questionState === QuestionStateMap.layout ? (
-      renderLayout()
-    ) : renderNormal()}
-    </div>
+    <QuestionCommonEditorForm 
+      contentNormal={renderNormal()} 
+      contentEdit={renderEdit()} 
+      contentLayout={renderLayout()} 
+      index={index} 
+      editorState={editorState} 
+      question={question} 
+      questionState={questionState}    
+    />
   );
 }

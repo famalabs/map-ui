@@ -1,4 +1,4 @@
-import { ItemFunction } from "../../survey/src";
+import { ItemConditional, ItemFunction } from "../../survey/src";
 import { MAX_FIELD_SIZE } from "./config";
 
 export function fromMapToDefault(options:any) {
@@ -294,6 +294,14 @@ export const FnMap = {
     }
 } as const;
 export type FnMap = keyof typeof FnMap;
+
+export const ItemConditionalMap = {
+    id:"",
+    name:"",
+    text:"",
+    type: ItemConditional.TYPE
+} as const;
+export type ItemConditionalMap = keyof typeof ItemConditionalMap;
 
 
 export const ValidatorsLocaleMap = {
