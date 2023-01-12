@@ -1,3 +1,4 @@
+import { QuestionList } from "../../survey/src/lib/form/question-list";
 import { ItemConditional, ItemFunction } from "../../survey/src";
 import { MAX_FIELD_SIZE } from "./config";
 
@@ -239,6 +240,17 @@ export const QuestionSelectMap = {
     }
 } as const;
 export type QuestionSelectMap = keyof typeof QuestionSelectMap;
+
+export const QuestionListMap = {
+    id:"",
+    name:"",
+    text:"",
+    type:QuestionList.TYPE,
+    options: {
+        
+    }
+} as const;
+export type QuestionListMap = keyof typeof QuestionListMap;
 
 // export function DEFAULT_OPTIONS_ACTIVATE(value) {
 //     return !(value instanceof Array && value.length > 0);

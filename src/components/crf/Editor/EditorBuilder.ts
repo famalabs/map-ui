@@ -6,6 +6,7 @@ import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/
 import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, ItemConditional } from '../../../survey'
 import { Expression } from '../../../survey/src/lib/form/ast';
 import { ComputableData } from '../../../survey/src/lib/form/computable';
+import { QuestionList, QuestionListOptions} from '../../../survey/src/lib/form/question-list';
 
 export interface IEditorState {
   getSurvey: () => Survey;
@@ -105,6 +106,8 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionSwitch(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.date.type) {
         return this.addQuestionDate(nav, parentId, index ?? -1);
+      } else if (type === QuestionMenuTypesMap.list.type) {
+        return this.addQuestionList(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.selectTable.type) {
         return this.addQuestionSelectTable(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.fn.type) {
@@ -246,6 +249,19 @@ export class EditorBuilder implements IEditorState {
         }
       } as Partial<DBSchema>;
       return this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1);
+    }
+    public addQuestionList(nav: INavState, parentId?:string, index?:number):Item {
+      const data = {
+        type:QuestionList.TYPE,
+        options: {
+          required: false,
+          source: '',
+          min: 0,
+          max: 0,
+        }
+      } as Partial<QuestionListOptions>;
+      const qs = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as QuestionList;
+      return qs;
     }
     public addFnItem(nav: INavState, parentId?:string, index?:number):Item {
       const data = {

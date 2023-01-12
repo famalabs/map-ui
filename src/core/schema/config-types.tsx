@@ -1,7 +1,8 @@
-import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined, AccountTree } from '@mui/icons-material';
+import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined, AccountTree, List } from '@mui/icons-material';
 import React from "react";
 import { QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, GroupMap, FnMap } from './config-map';
 import { Item, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, ItemFunction, ItemConditional } from '../../survey'
+import { QuestionList } from '../../survey/src/lib/form/question-list';
 
 export interface QuestionMenuType {
 	[id:string]: {
@@ -103,6 +104,14 @@ export const QuestionMenuTypesMap = {
 			en: 'Section',
 		},
 	},
+	list: {
+		type: 'list',
+		icon: <List/>,
+		locale: {
+			it: 'Lista',
+			en: 'List',
+		}
+	},
 	fn: {
 		type: 'fn',
 		icon: <Functions/>,
@@ -142,6 +151,8 @@ export const getQuestionMenuType = (question:Item):string => {
 		return QuestionMenuTypesMap.check.type;
 	} else if (question.type === QuestionDate.TYPE) {
 		return QuestionMenuTypesMap.date.type;
+	} else if (question.type === QuestionList.TYPE) {
+		return QuestionMenuTypesMap.list.type;
 	} else if (question.type === ItemFunction.TYPE) {
 		return QuestionMenuTypesMap.fn.type;
 	} else if (question.type === ItemConditional.TYPE) { 

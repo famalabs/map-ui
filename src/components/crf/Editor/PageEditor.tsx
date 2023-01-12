@@ -15,7 +15,7 @@ export const QuestionStateMap = {
   layout:"layout"
 }
 
-const locale = "en";
+const locale = "it";
 
 const isEditState = (state:string) => {
 	if (state === QuestionStateMap.edit) {

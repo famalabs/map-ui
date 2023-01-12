@@ -16,6 +16,8 @@ import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/
 import { SectionEditorForm } from './SectionEditor';
 import { ItemConditionalEditorForm } from './ItemConditionalEditor';
 import { IHierarchyValue, RenderHierarchy, RenderMoveModal } from './HierarchyEditor';
+import { QuestionList } from '../../../survey/src/lib/form/question-list';
+import { QuestionListEditorForm } from './QuestionListEditor';
 
 export interface QuestionEditorFormProps {
   index?: any;
@@ -91,6 +93,15 @@ export function QuestionEditorForm({
           questionState={thisQuestionState}
         />
       );
+    } else if (question instanceof QuestionList) {
+      return (
+        <QuestionListEditorForm
+          index={index}
+          editorState={editorState}
+          question={question}
+          questionState={thisQuestionState}
+        />
+      );
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
@@ -153,79 +164,6 @@ export function QuestionEditorForm({
   }
 
   const [moveModal, setMoveModal] = React.useState<boolean>(false);
-  // const renderTopHierarchy = () => (<Typography>Moving <Chip disabled label={question.text}/> from <Chip disabled label={question.parent().text}/> to:</Typography>);
-  // const movePositionMap = ['before','after','inside'] as const;
-  // const [movePositionValue, setMovePositionValue] = React.useState<string>(movePositionMap[0]);
-  // const renderInsideHierarchy = () => (
-  //   <Stack spacing={1}>
-  //     <Typography>Position:</Typography>
-  //     <Select
-  //       value={movePositionValue}
-  //       onChange={(e,v) => {setMovePositionValue(e.target.value)}}
-  //     >
-  //         {movePositionMap.map((mp, idx) => (
-  //           <MenuItem key={idx} value={mp}>{mp}</MenuItem>
-  //         ))}
-  //     </Select>
-  //   </Stack>
-  // );
-  // const handleMove = (moveValue:IHierarchyValue) => {
-  //   const itemToMove = question;
-
-  //   const survey = editor.getSurvey();
-  //   let moveToFolder = null;
-  //   try { moveToFolder = survey.get(moveValue.folder); } catch(e) {}
-  //   let moveToPage = null;
-  //   try { moveToPage = survey.get(moveValue.page); } catch(e) {}
-  //   let moveToSection = null;
-  //   try { moveToSection = survey.get(moveValue.section); } catch(e) {}
-  //   let moveToQuestion = null;
-  //   try { moveToQuestion = survey.get(moveValue.question); } catch(e) {}
-
-  //   // move
-  //   if (movePositionValue === 'inside') {
-  //     let moveInside:Item = null;
-
-  //     if (nav.getItemType(itemToMove.id) === GroupMap.layout.style.folder) {
-
-  //     } else if (nav.getItemType(itemToMove.id) === GroupMap.layout.style.page) {
-
-  //     } else if (getQuestionMenuType(itemToMove) === QuestionMenuTypesMap.section.type) {
-  //       if (moveToQuestion !== null) { return; }
-  //       if (moveToSection !== null) { return; }
-  //       moveInside = moveToPage;
-  //     } else {
-  //       if (moveToQuestion !== null) { return; }
-  //       moveInside = moveToSection !== null ? moveToSection : moveToPage;
-  //     }
-
-  //     if (moveInside === null) { return; }
-  //     editor.moveItem(itemToMove, -1, moveInside.id);
-  //     return;
-
-  //   } else {
-  //     let moveRef:Item = null;
-  //     if (nav.getItemType(itemToMove.id) === GroupMap.layout.style.folder) {
-
-  //     } else if (nav.getItemType(itemToMove.id) === GroupMap.layout.style.page) {
-
-  //     } else if (getQuestionMenuType(itemToMove) === QuestionMenuTypesMap.section.type) {
-  //       if (moveToSection !== null) { return; }
-  //       moveRef = moveToQuestion;
-  //     } else {
-  //       moveRef = moveToQuestion;
-  //     }
-
-  //     if (moveRef === null) { return; }
-  //     const curIdx = nav.getItemIdx(itemToMove.id);
-  //     const refIdx = nav.getItemIdx(moveRef.id)
-  //     const moveToIndex = refIdx + (movePositionValue === 'before' ? (curIdx < refIdx ? -1 : 0) : (curIdx < refIdx ? 0 : 1));
-      
-  //     editor.moveItem(itemToMove, moveToIndex, moveRef.parent().id);
-  //     return;
-  //   }
-
-  // }
   const renderMoveModal = () => (
     <RenderMoveModal 
     question={question}
