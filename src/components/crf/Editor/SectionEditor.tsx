@@ -1,6 +1,6 @@
 import React from 'react';
 import {QuestionMenuTypesMap} from '../../../core/schema'
-import {Item} from '../../../survey'
+import {Item, ItemConditional} from '../../../survey'
 import { Stack, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
@@ -16,7 +16,7 @@ export interface SectionEditorFormProps {
   handleSetQuestionState: (id: string, state: string) => void;
 }
 
-const locale = "en";
+const locale = "it";
 
 export function SectionEditorForm({
   index,
@@ -55,14 +55,14 @@ export function SectionEditorForm({
         <Typography variant='h4'>{section.text}</Typography>
         <Typography>{section.description}</Typography>
         </Stack>
-			{section.items.map((question, idx) => {
+			{section.items.map((qs, idx) => {
 				return(
           <QuestionEditorForm
-					key={question.id}
-					index={index[question.id]}
+					key={qs.id}
+					index={index[qs.id]}
 					editorState={editorState}
-					question={question}
-					questionState={questionState[question.id]}
+					question={qs}
+					questionState={qs instanceof ItemConditional ? questionState : questionState[qs.id]}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 				);

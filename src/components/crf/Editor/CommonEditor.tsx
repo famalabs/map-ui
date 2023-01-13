@@ -26,7 +26,7 @@ export function QuestionGeneralEdit(item:Item, editor:IEditorState) {
           value={item.text}
           onChange={(e) => {editor.onChangeValue(item.id,'text', e.target.value)}}
         />
-        {QuestionMenuTypesMap.section.type !== getQuestionMenuType(item) && (
+        {![QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type].includes(getQuestionMenuType(item)) && (
           <FormControl fullWidth>
           <Select
             
@@ -104,7 +104,7 @@ export function QuestionCommonEditorForm<T extends Item>({
   const renderLayout = () => {
     return (<>{contentLayout}</>);
   }
-  // console.log('render Date', questionState);
+  // console.log('renderCommon question state', question, questionState);
   return (
     <div>
     {questionState === QuestionStateMap.normal ? (

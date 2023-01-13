@@ -2,7 +2,7 @@ import { CheckCircle, Cancel } from "@mui/icons-material";
 import { Modal, Paper, Stack, Typography, Chip, Select, MenuItem, Button } from "@mui/material";
 import React from "react";
 import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap } from "../../../core/schema";
-import { Item } from "../../../survey/src";
+import { Item, ItemConditional } from "../../../survey/src";
 import { IEditorState, IUseEditorState } from "./EditorBuilder";
 
 export interface IHierarchyValue {
@@ -43,6 +43,7 @@ export function RenderHierarchy({
   }
   const defaulthierarchyValue = () => {
     const isParentSection = getQuestionMenuType(question.parent()) === QuestionMenuTypesMap.section.type;
+    const isParentCond = getQuestionMenuType(question.parent()) === QuestionMenuTypesMap.cond.type;
     return {
     folder: isParentSection ? question.parent().parent().parent().id : question.parent().parent().id,
     page: isParentSection ? question.parent().parent().id : question.parent().id,
@@ -210,8 +211,12 @@ export function RenderMoveModal({
         if (moveToSection !== null) { return; }
         moveInside = moveToPage;
       } else {
-        if (moveToQuestion !== null) { return; }
-        moveInside = moveToSection !== null ? moveToSection : moveToPage;
+        if (moveToQuestion !== null) { 
+          if (moveToQuestion instanceof ItemConditional) { moveInside = moveToQuestion; }
+          else { return; } 
+        } else {
+          moveInside = moveToSection !== null ? moveToSection : moveToPage;
+        }
       }
 
       if (moveInside === null) { return; }

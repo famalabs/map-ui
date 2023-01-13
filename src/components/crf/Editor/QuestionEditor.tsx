@@ -40,8 +40,8 @@ export function QuestionEditorForm({
   const nav = editorState.nav;
 
   const isSection = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type;
-  const thisQuestionState = isSection ? questionState[question.id] : questionState;
-  // const thisQuestionState = questionState;
+  const isItemCond = getQuestionMenuType(question) === QuestionMenuTypesMap.cond.type;
+  const thisQuestionState = isSection || isItemCond ? questionState[question.id] : questionState;
 
   const renderIcon = () => {
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
@@ -117,7 +117,8 @@ export function QuestionEditorForm({
           index={index}
           editorState={editorState}
           question={question}
-          questionState={thisQuestionState}
+          questionState={questionState}
+					handleSetQuestionState={handleSetQuestionState}
         />
       );
     } else if (question.type === Item.TYPE) {
@@ -153,7 +154,6 @@ export function QuestionEditorForm({
         padding:'12px 12px'}}
       >
         <Stack direction="row" spacing={1} style={{minHeight:'36px',minWidth:'376px'}}>
-         {/* <Typography variant="h5">{question.options.required && '*'} renderIcon()</Typography>*/}
         </Stack>
         <Box>
           {renderQuestion()}
@@ -214,7 +214,8 @@ export function QuestionEditorForm({
           </Stack>
         </Box>
         <div
-          onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
+          onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover 
+            && (!isSection || !isItemCond)) {handleSetQuestionState(question.id, QuestionStateMap.edit)}}}
         >
           {renderQuestion()}
         </div>
@@ -294,11 +295,11 @@ export function QuestionEditorForm({
       </Stack>
     );
   }
-  // console.log('render question', questionState, JSON.stringify(question.getSchema()));
+  // console.log('renderQuestion question questionState', question, thisQuestionState);
   return (
     <div
-    onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal && !isSection){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
-    onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover && !isSection) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
+    onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal && !(isSection || isItemCond)){handleSetQuestionState(question.id, QuestionStateMap.hover)}}}
+    onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover && !(isSection || isItemCond)) {handleSetQuestionState(question.id, QuestionStateMap.normal)}}}
     style={{padding:'0px 12px'}}
     >
       {/* {moveModal ? renderMoveModal(question) : null} */}

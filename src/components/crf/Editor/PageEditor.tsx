@@ -1,5 +1,6 @@
 import React from 'react';
-import {GroupMap, Question} from '../../../core/schema';
+import {GroupMap} from '../../../core/schema';
+import {Item} from '../../../survey';
 import {AddCircle} from '@mui/icons-material';
 import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material';
 import { QuestionEditorForm } from './QuestionEditor';
@@ -29,23 +30,27 @@ const isEditState = (state:string) => {
 }
 
 const createQuestionState = (nav:INavState) => {
+
+	const recCreateQS = (items:Item[], qs:any) => {
+		for (let i = 0; i < items.length; i++) {
+			if ([QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type]
+				.includes(getQuestionMenuType(items[i]))) {
+				// qs[items[i].id] = {
+				// 	state: itemstateMap.normal,
+				// };
+				qs[items[i].id] = QuestionStateMap.normal;
+				qs = recCreateQS(items[i].items, qs);
+			} else {
+				qs[items[i].id] = QuestionStateMap.normal;
+			}
+		}
+		return qs;
+	}
+
 	let qs = {}
 	qs['folder'] = nav.getFolderId();
 	qs['page'] = nav.getPageId();
-	const questions = nav.getPage().items;
-	for (let i = 0; i < questions.length; i++) {
-		if (getQuestionMenuType(questions[i]) === QuestionMenuTypesMap.section.type) {
-			// qs[questions[i].id] = {
-			// 	state: QuestionStateMap.normal,
-			// };
-			qs[questions[i].id] = QuestionStateMap.normal;
-			for (let j = 0; j < questions[i].items.length; j++) {
-				qs[questions[i].items[j].id] = QuestionStateMap.normal;
-			}
-		} else {
-			qs[questions[i].id] = QuestionStateMap.normal;
-		}
-	}
+	qs = recCreateQS(nav.getPage().items, qs);
 	// console.log('createQuestionState',qs);
 	return qs;
 }
@@ -138,7 +143,8 @@ export function PageEditorForm({
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
-				const realQuestionState = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type ? questionState : questionState[question.id]??QuestionStateMap.normal;
+				const realQuestionState = [QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type].includes(getQuestionMenuType(question))
+				? questionState : questionState[question.id] ?? QuestionStateMap.normal;
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (

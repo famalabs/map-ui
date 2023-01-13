@@ -328,6 +328,28 @@ export const ItemConditionalMap = {
             and:'&&',
             or:'||',
         }
+    },
+    locale: {
+        condition: {
+            it: 'Condizione',
+            en: 'Condition',
+        },
+        selectQuestion: {
+            it: 'Seleziona una domanda',
+            en: 'Select a question',
+        },
+        selectOperator: {
+            it: 'Seleziona un operatore',
+            en: 'Select an operator',
+        },
+        selectValue: {
+            it: 'Seleziona un valore',
+            en: 'Select a value',
+        },
+        activate: {
+            it: 'Domande attive quando si verifica la condizione',
+            en: 'Active questions on true condition'
+        }
     }
 } as const;
 export type ItemConditionalMap = keyof typeof ItemConditionalMap;
