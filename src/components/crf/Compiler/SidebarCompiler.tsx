@@ -40,10 +40,10 @@ export function SidebarCompiler ({
 
 	const ready = (
 				<Stack spacing={2} sx={{p:3}}>
-				<Typography variant="h3">{form.getRoot().text}</Typography>
+				<Typography variant="h5" style={{marginBottom: 15}}>{form.getRoot().text}</Typography>
 				{form.getRoot().items.map((folder, idx) => {
 					return (
-						<Accordion key={folder.id} 
+						<Accordion key={folder.id} style={{margin: 0}}
 						defaultExpanded={folder.id===nav.getFolderId()}
 						sx={{border: folder.id===nav.getFolderId()?'1px solid black':0}}
 						>
@@ -51,13 +51,14 @@ export function SidebarCompiler ({
 							{form.getValid(folder.id)?
 												(<CheckCircle color="success"/>)
 												:(<Cancel color="error"/>)}
-							{folder.text}
+							<span style={{paddingLeft: 10}}>{folder.text}</span>
 							</AccordionSummary>
 							<AccordionDetails>
 								<Stack spacing={1}>
 								{folder.items.map((page, idx2) => {
 									return (
 											<Button 
+											style={{justifyContent: 'start'}}
 											key={page.id}
 											variant={page.id===nav.getPageId()?"contained":"text"}
 											onClick={(e) => {nav.setFolder(folder, page);}}

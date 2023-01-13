@@ -33,7 +33,7 @@ export function SectionCompilerForm({
 			// />
 			<Stack spacing={6}>
 			<Stack>
-			<Typography variant='h4'>{question.text}</Typography>
+			<Typography variant='h5'>{question.text}</Typography>
 			<Typography>{question.description}</Typography>
 			</Stack>
 			{question.items.map((question, idx) => {

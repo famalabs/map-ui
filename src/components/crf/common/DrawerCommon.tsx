@@ -104,7 +104,6 @@ export function DrawerCommon({
 		sx={{ flexGrow: 1, p: 1, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
 		// sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
 	  >
-		<Toolbar />
 				{content}
 	  </Box>
 	</Box>

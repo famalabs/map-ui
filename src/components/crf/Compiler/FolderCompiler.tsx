@@ -20,11 +20,11 @@ export function FolderCompilerForm ({
   console.log("render folder", page)
   return (
     <Box
-    style={{width:'100%'}}
+    style={{width:'100%', minHeight: '70vh'}}
     >
     {page.layout.style === GroupMap.layout.style.card ? 
 			(
-				<Paper style={{width:'100%',padding:'24px'}}>
+				<Paper style={{width:'100%',padding:'24px', minWidth: '60vw'}}>
 					<PageCompilerForm
           formCompiler={formCompiler}
           loading={loading}
@@ -39,7 +39,7 @@ export function FolderCompilerForm ({
 				</Box>
 			)
 		}
-    <Typography>{JSON.stringify(form.getValidObj(nav.getPageId()), null, 2)}</Typography>
+  <Typography>{JSON.stringify(form.getValidObj(nav.getPageId()), null, 2)}</Typography>
     <Typography>{JSON.stringify(form.getValue(nav.getPageId()), null, 2)}</Typography>
     </Box>
   );
