@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemConditional} from '../../../survey'
+import {ItemConditional, QuestionNumber, QuestionSelect} from '../../../survey'
 import { Button, Checkbox, Chip, FormControlLabel, FormLabel, MenuItem, Modal, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
@@ -7,6 +7,7 @@ import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdi
 import { Parameter, Expression, Literal, Operator, Identifier, CallExpression, ExpressionValue } from '../../../survey/src/lib/form/ast';
 import { ItemConditionalMap } from '../../../core/schema';
 import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
+import { Edit } from '@mui/icons-material';
 
 export function ItemConditionalEditorForm({
   index,
@@ -18,11 +19,18 @@ export function ItemConditionalEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
-  const renderExpressionValue = (ev:ExpressionValue):JSX.Element => {
+  const renderExpressionValue = (ev:ExpressionValue, other:ExpressionValue):JSX.Element => {
     if (ev !== null) {
       if (ev.type === 'id') {
-        return <Chip disabled label={ev.name}/>;
+        const condItem = nav.findItemById(ev.name)
+        return <Chip disabled label={condItem.text}/>;
       } else if (ev.type === 'v') {
+        if (other.type === 'id') {
+          const condItem = nav.findItemById(other.name)
+          if (condItem instanceof QuestionSelect) {
+            return <Chip disabled label={condItem.options.select[ev.value].text}/>;
+          }
+        }
         return <Chip disabled label={ev.value}/>;
       }
     }
@@ -43,145 +51,192 @@ export function ItemConditionalEditorForm({
     </FormLabel>
     <FormLabel component="legend">{question.description}</FormLabel>
     {question.expression !== null && (<>
-    <Stack direction={'row'}><Typography>Left:</Typography>{renderExpressionValue(question.expression.left)}</Stack>
-    <Stack direction={'row'}><Typography>Operator:</Typography>{renderOperator(question.expression.operator)}</Stack>
-    <Stack direction={'row'}><Typography>Right:</Typography>{renderExpressionValue(question.expression.right)}</Stack>
+    <Stack direction={'row'}>
+    {renderExpressionValue(question.expression.left,question.expression.right)}
+    {renderOperator(question.expression.operator)}
+    {renderExpressionValue(question.expression.right,question.expression.left)}
+    </Stack>
     </>)}
     </Stack>
     );
   }
 
-  const params = ['id','v'] as const;
-  const [paramModal, setParamModal] = React.useState({active:false,param:'',value:null});
-  const renderParamModal = ():JSX.Element => {
-    const literals = ['boolean','number','string'] as const;
+  enum guidedModalState {none,left,operator,right};
+  const guidedModalDefault = () => {return {
+    modal: guidedModalState.none,
+    expression: {
+      type: 'exp',
+      operator: '',
+      left: {type:'id',name:''},
+      right: {type:'v',value:null},
+    }
+  }};
+  const [guidedModal, setGuidedModal] = React.useState(guidedModalDefault)
+  const renderGuidedModalItem = ():JSX.Element => {
+
+    const setActiveModal = (b:boolean) => {}
+    const handleConfirm = (ihv:IHierarchyValue) => {
+      if (ihv.question !== null && ihv.question !== '') {
+        guidedModal.expression.left = {
+          type: 'id',
+          name: ihv.question,
+        }
+        setGuidedModal({
+          modal: guidedModalState.operator,
+          expression: guidedModal.expression
+        })
+      }
+    };
+    const renderTop = () => (
+      <Typography>Select a Question</Typography>
+    );
+    const renderInside = () => null;
+    return (
+      <RenderHierarchy 
+        question={question}
+        editorState={editorState}
+        activeModal={guidedModal.modal===guidedModalState.left}
+        setActiveModal={setActiveModal}
+        handleConfirm={handleConfirm}
+        topHierarchy={renderTop()}
+        insideHierarchy={renderInside()}
+        insideHierarchyPos={'sq'}
+      />
+    );
+  } 
+  const renderGuidedModalOperator = ():JSX.Element => {
+    const conditionItem = nav.findItemById(guidedModal.expression.left.name);
     return (
       <Modal
-      open={paramModal.active}
-      onClose={(e) => {setParamModal({active:false,param:paramModal.param,value:paramModal.value})}}
+      open={guidedModal.modal===guidedModalState.operator}
+      onClose={(e) => {}}
       >
       <Paper sx={{
         position: 'absolute' as 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        minWidth: 520,
+        minWidth: 360,
         p: '24px',
       }}>
-        <Stack spacing={2} direction={'row'}>
-          <Stack spacing={1}>
-            <Typography>Type:</Typography>
-            <Select
-                value={paramModal.param}
-                onChange={(e,v) => {
-                  setParamModal({active:paramModal.active,param:e.target.value,value:paramModal.value});
-                  if (e.target.value === 'id') setIdentifierModal(true);
-                }}
-              >
-              {params.map((op, idx) => (
-                <MenuItem key={idx} value={op}>{op}</MenuItem>
-              ))}
-            </Select>
-          </Stack>
-          {paramModal.param === 'id' && (<Stack spacing={1}>
-            <Typography>Identifier:</Typography>
-            <Button 
-            variant={"text"} 
-            color={"inherit"}
-            onClick={(e)=>{setIdentifierModal(true)}}>
-              {renderExpressionValue(question.expression.left)}</Button>
-            </Stack>)}
-          {paramModal.param === 'v' && (<Stack spacing={1}>
-            <Typography>Literal:</Typography>
-            <Select
-                // value={paramModal.param}
-                onChange={(e,v) => {setParamModal({active:paramModal.active,param:paramModal.param,value:e.target.value})
-                }}
-              >
-              {literals.map((lit, idx) => (
-                <MenuItem key={idx} value={lit}>{lit}</MenuItem>
-              ))}
-            </Select>
-          </Stack>)}
-          {paramModal.param === 'v' && paramModal.value !== null &&
-          paramModal.value === 'boolean' ? (<Stack spacing={1}>
-            <Typography>Boolean:</Typography>
-            <FormControlLabel control={
-            <Checkbox 
-            // checked={item.required} 
-            onChange={(e)=>{}} />
-            } label={''}/>
-          </Stack>) : paramModal.value === 'number' ? (<Stack spacing={1}>
-            <Typography>Number:</Typography>
-            <TextField
-            autoFocus
-            variant='outlined'
-            // value={item.text}
-            onChange={(e) => {}}
-          />
-          </Stack>) : paramModal.value === 'string' ? (<Stack spacing={1}>
-            <Typography>String:</Typography>
-            <TextField
-              autoFocus
-              variant='outlined'
-              // value={item.text}
-              onChange={(e) => {}}
-            />
-          </Stack>) : null}
+        <Stack>
+          <Typography>Select an Operator</Typography>
+          <Select
+            defaultValue={null}
+            onChange={(e,v) => {
+              guidedModal.expression.operator = e.target.value;
+              setGuidedModal({
+                modal: guidedModalState.right,
+                expression: guidedModal.expression
+              })
+            }}
+          >
+            {Object.values(ItemConditionalMap.expression.operator).map((op, idx) => { 
+              if (op !== "") {
+                if (conditionItem instanceof QuestionSelect) {
+                  if (["==","!="].includes(op))
+                  return (<MenuItem key={idx} value={op}>{op}</MenuItem>)
+                } else {
+                  return (<MenuItem key={idx} value={op}>{op}</MenuItem>)
+                }
+              }
+          })}
+          </Select>
         </Stack>
       </Paper>
+      </Modal>
+    );
+  } 
+  const renderGuidedModalValue = ():JSX.Element => {
+
+    const conditionItem = nav.findItemById(guidedModal.expression.left.name);
+
+    return (
+    <Modal
+    open={guidedModal.modal===guidedModalState.right}
+    onClose={(e) => {}}
+    >
+    <Paper sx={{
+      position: 'absolute' as 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      minWidth: 520,
+      p: '24px',
+    }}>
+      <Stack>
+        <Typography>Select a Value</Typography>
+        {conditionItem instanceof QuestionSelect ? (
+          <Select
+          defaultValue={null}
+          onChange={(e,v) => {
+            guidedModal.expression.right.value = e.target.value;
+            setGuidedModal({
+              modal: guidedModalState.none,
+              expression: guidedModal.expression
+            })
+            editor.onChangeValue(question.id, 'expression', guidedModal.expression);
+          }}
+          >
+            {conditionItem.options.select.map((ts, idx) => (
+            <MenuItem key={idx} value={ts.score}>{ts.text}</MenuItem>))}
+          </Select>
+        ) : conditionItem instanceof QuestionNumber ? (
+          <TextField
+            autoFocus
+            type={'number'}
+            variant='outlined'
+            onChange={(e) => {
+              guidedModal.expression.right.value = Number(e.target.value);
+              setGuidedModal({
+                modal: guidedModalState.none,
+                expression: guidedModal.expression
+              })
+              editor.onChangeValue(question.id, 'expression', guidedModal.expression);
+            }}
+          />
+        ) : (
+          <TextField
+            autoFocus
+            variant='outlined'
+            onChange={(e) => {
+              guidedModal.expression.right.value = e.target.value;
+              setGuidedModal({
+                modal: guidedModalState.none,
+                expression: guidedModal.expression
+              })
+              editor.onChangeValue(question.id, 'expression', guidedModal.expression);
+            }}
+          />
+        )}
+      </Stack>
+    </Paper>
     </Modal>
     );
   }
 
-  const [identifierModal, setIdentifierModal] = React.useState<boolean>(false);
-  const handleidentifier = (ihv:IHierarchyValue) => {setParamModal({active:false,param:'',value:null})};
-  const renderTopidentifier = () => null;
-  const renderInsideidentifier = () => null;
-  const renderIdentifierModal = () => (
-    <RenderHierarchy 
-    question={question}
-    editorState={editorState}
-    activeModal={identifierModal}
-    setActiveModal={setIdentifierModal}
-    handleConfirm={handleidentifier}
-    topHierarchy={renderTopidentifier()}
-    insideHierarchy={renderInsideidentifier()}
-    insideHierarchyPos={'sq'}
-    />
-  )
-
   const renderEdit = () => {
     return (
-      <Stack direction={'row'} spacing={2}>
-        <Stack spacing={1}>
-          <Typography>Left:</Typography>
-          <Button 
-          variant={"text"} 
-          color={"inherit"}
-          onClick={(e)=>{setParamModal({active:true,param:'',value:null})}}>
-            {renderExpressionValue(question.expression.left)}</Button>
-        </Stack>
-        <Stack spacing={1}>
-          <Typography>Operator:</Typography>
-          <Select
-            value={question.expression.operator}
-            onChange={(e,v) => {editor.onChangeValue(question.id, 'expression.operator', e.target.value)}}
-          >
-              {Object.values(ItemConditionalMap.expression.operator).map((op, idx) => { 
-                if (op !== "") return (
-                <MenuItem key={idx} value={op}>{op}</MenuItem>
-              )})}
-          </Select>
-        </Stack>
-        <Stack spacing={1}>
-          <Typography>Right:</Typography>
-          <Button 
-          variant={"text"} 
-          color={"inherit"}
-          onClick={(e)=>{setParamModal({active:true,param:'',value:null})}}>
-            {renderExpressionValue(question.expression.left)}</Button>
-        </Stack>
+      <Stack spacing={2}>
+        <Typography>Condition:</Typography>
+          <Stack direction={'row'} spacing={2}>
+            <Button 
+            variant={"outlined"} 
+            color={"primary"}
+            onClick={(e)=>{setGuidedModal({
+              modal:guidedModalState.left,
+              expression:guidedModalDefault().expression,
+            })}}>
+              <Edit/>
+            </Button>
+            {question.expression !== null && (<>
+            {renderExpressionValue(question.expression.left,question.expression.right)}
+            {renderOperator(question.expression.operator)}
+            {renderExpressionValue(question.expression.right,question.expression.left)}
+            </>)}
+          </Stack>
+        <Typography>Activate On Condition True:</Typography>
+        {null}
       </Stack>
     );
   }
@@ -190,7 +245,10 @@ export function ItemConditionalEditorForm({
   }
   // console.log('render Date', questionState);
   return (
-    <>{renderParamModal()}{renderIdentifierModal()}
+    <>
+    {renderGuidedModalItem()}
+    {renderGuidedModalOperator()}
+    {renderGuidedModalValue()}
     <QuestionCommonEditorForm 
       contentNormal={renderNormal()} 
       contentEdit={renderEdit()} 

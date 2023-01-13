@@ -104,14 +104,14 @@ export const QuestionMenuTypesMap = {
 			en: 'Section',
 		},
 	},
-	list: {
-		type: 'list',
-		icon: <List/>,
-		locale: {
-			it: 'Lista',
-			en: 'List',
-		}
-	},
+	// list: {
+	// 	type: 'list',
+	// 	icon: <List/>,
+	// 	locale: {
+	// 		it: 'Lista',
+	// 		en: 'List',
+	// 	}
+	// },
 	fn: {
 		type: 'fn',
 		icon: <Functions/>,
@@ -151,8 +151,8 @@ export const getQuestionMenuType = (question:Item):string => {
 		return QuestionMenuTypesMap.check.type;
 	} else if (question.type === QuestionDate.TYPE) {
 		return QuestionMenuTypesMap.date.type;
-	} else if (question.type === QuestionList.TYPE) {
-		return QuestionMenuTypesMap.list.type;
+	// } else if (question.type === QuestionList.TYPE) {
+	// 	return QuestionMenuTypesMap.list.type;
 	} else if (question.type === ItemFunction.TYPE) {
 		return QuestionMenuTypesMap.fn.type;
 	} else if (question.type === ItemConditional.TYPE) { 

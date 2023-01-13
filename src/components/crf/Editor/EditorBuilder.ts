@@ -106,8 +106,8 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionSwitch(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.date.type) {
         return this.addQuestionDate(nav, parentId, index ?? -1);
-      } else if (type === QuestionMenuTypesMap.list.type) {
-        return this.addQuestionList(nav, parentId, index ?? -1);
+      // } else if (type === QuestionMenuTypesMap.list.type) {
+      //   return this.addQuestionList(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.selectTable.type) {
         return this.addQuestionSelectTable(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.fn.type) {

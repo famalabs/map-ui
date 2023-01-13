@@ -93,15 +93,15 @@ export function QuestionEditorForm({
           questionState={thisQuestionState}
         />
       );
-    } else if (question instanceof QuestionList) {
-      return (
-        <QuestionListEditorForm
-          index={index}
-          editorState={editorState}
-          question={question}
-          questionState={thisQuestionState}
-        />
-      );
+    // } else if (question instanceof QuestionList) {
+    //   return (
+    //     <QuestionListEditorForm
+    //       index={index}
+    //       editorState={editorState}
+    //       question={question}
+    //       questionState={thisQuestionState}
+    //     />
+    //   );
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
