@@ -18,6 +18,7 @@ import { ItemConditionalEditorForm } from './ItemConditionalEditor';
 import { IHierarchyValue, RenderHierarchy, RenderMoveModal } from './HierarchyEditor';
 import { QuestionList } from '../../../survey/src/lib/form/question-list';
 import { QuestionListEditorForm } from './QuestionListEditor';
+import { QuestionMultipleSelectEditorForm } from './QuestionMultipleSelectEditor';
 
 export interface QuestionEditorFormProps {
   index?: any;
@@ -140,6 +141,15 @@ export function QuestionEditorForm({
 					section={question}
 					questionState={questionState}
 					handleSetQuestionState={handleSetQuestionState}
+          />
+        );
+      } else if (QuestionMenuTypesMap.multipleSelect.type === getQuestionMenuType(question)) {
+        return (
+          <QuestionMultipleSelectEditorForm
+          index={index}
+          editorState={editorState}
+          question={question}
+          questionState={thisQuestionState}
           />
         );
       }

@@ -1,4 +1,4 @@
-import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined, AccountTree, List } from '@mui/icons-material';
+import { TextFields, Functions, Pin, RadioButtonChecked, ToggleOnOutlined, TocRounded, CheckBox, CalendarMonth, WebAsset, LinearScaleRounded, ArrowDropDownCircleOutlined, AccountTree, List, LibraryAddCheck } from '@mui/icons-material';
 import React from "react";
 import { QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionCheckMap, QuestionDateMap, GroupMap, FnMap } from './config-map';
 import { Item, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, ItemFunction, ItemConditional } from '../../survey'
@@ -64,14 +64,14 @@ export const QuestionMenuTypesMap = {
 			en: 'Dropdown',
 		}
 	},
-	// multipleSelect: {
-	// 	type: 'multipleStelct',
-	// 	icon: <List/>,
-	// 	locale: {
-	// 		it: 'Selezione multipla',
-	// 		en: 'Multiple select',
-	// 	}
-	// },
+	multipleSelect: {
+		type: 'multipleSelect',
+		icon: <LibraryAddCheck/>,
+		locale: {
+			it: 'Selezione multipla',
+			en: 'Multiple select',
+		}
+	},
 	selectTable: {
 		type: 'selectTable',
 		icon: <TocRounded/>,
@@ -172,6 +172,10 @@ export const getQuestionMenuType = (question:Item):string => {
 			}
 		} else if (question.layout.style === GroupMap.layout.style.section) {
 			return QuestionMenuTypesMap.section.type;
+		} else  {
+			if (question.items[0].type === QuestionCheck.TYPE) {
+				return QuestionMenuTypesMap.multipleSelect.type;
+			}
 		}
 	} 
 	return null;

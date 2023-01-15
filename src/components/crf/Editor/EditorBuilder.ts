@@ -100,6 +100,8 @@ export class EditorBuilder implements IEditorState {
         return this.addQuestionSelect(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.dropdown.type) {
         return this.addQuestionSelectDropdown(nav, parentId, index ?? -1);
+      } else if (type === QuestionMenuTypesMap.multipleSelect.type) {
+        return this.addQuestionMultipleSelect(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.check.type) {
         return this.addQuestionCheck(nav, parentId, index ?? -1);
       } else if (type === QuestionMenuTypesMap.switch.type) {
@@ -205,6 +207,26 @@ export class EditorBuilder implements IEditorState {
       sel.addSelect({text:"",score:1} as TextScore, -1);
       return sel;
     }
+
+    public addQuestionMultipleSelect(nav: INavState, parentId?:string, index?:number):Item {
+      const data = {
+        type:Item.TYPE,
+        layout:{style:'',},
+        options: {}
+        // options: {
+        //   required: true,
+        // }
+      } as Partial<DBSchema>;
+      const multi = this.survey.add(parentId ?? nav.getPageId(), data, index ?? -1) as Item;
+      for (let i = 0; i < 2; i++) {
+        const sel = this.addQuestionCheck(nav, multi.id);
+        sel.text = "";
+      }
+      // sel.addSelect({text:"",score:0} as TextScore, -1);
+      // sel.addSelect({text:"",score:1} as TextScore, -1);
+      return multi;
+    }
+    
     public addQuestionSelectTable(nav: INavState, parentId?:string, index?:number):Item {
       const data = {
         type:Item.TYPE,
