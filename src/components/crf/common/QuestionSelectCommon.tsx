@@ -32,11 +32,11 @@ export function QuestionSelectCommon({
         <RadioGroup
           name={question.id}
           value={value ?? ''}
-          onChange={(e,v) => handleOnChange(v)}
+          onChange={(e,v) => handleOnChange(Number(e.target.value))}
           onBlur={handleOnBlur}
         >
           {selects.length > 0 ? selects.map((opt, idx) => (
-            <FormControlLabel key={idx} disabled={disabled} value={opt.text} 
+            <FormControlLabel key={idx} disabled={disabled} value={opt.score} 
             control={<Radio />} label={opt.text} 
             sx={{
               '&:hover, &.Mui-focusVisible': {
@@ -50,12 +50,12 @@ export function QuestionSelectCommon({
         <Select
           disabled={disabled}
           value={value ?? ''}
-          onChange={(e,v) => handleOnChange(e.target.value)}
+          onChange={(e,v) => handleOnChange(Number(e.target.value))}
           required={required}
           onBlur={handleOnBlur}
         >
             {selects.length > 0 ? selects.map((opt, idx1) => (
-              <MenuItem key={opt.text} value={opt.text}>{opt.text}</MenuItem>
+              <MenuItem key={opt.score} value={opt.score}>{opt.text}</MenuItem>
             )) : <Typography>No Dropdown Element</Typography>}
         </Select>
       )}

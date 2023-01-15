@@ -1,6 +1,6 @@
 import React from 'react';
 import { GroupMap, QuestionSelectMap } from '../../../core/schema';
-import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item } from '../../../survey';
+import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item, ItemConditional } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
 import { QuestionSelectCompilerForm } from './QuestionSelectCompiler';
@@ -10,6 +10,7 @@ import { QuestionCheckCompilerForm } from './QuestionCheckCompiler';
 import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 import { SectionCompilerForm } from './SectionCompiler';
 import { QuestionDateCompilerForm } from './QuestionDateCompiler';
+import { ItemConditionalCompilerForm } from './ItemConditionalCompiler';
 
 export interface QuestionCompilerFormProps {
 	index?: any;
@@ -69,6 +70,14 @@ export function QuestionCompilerForm({
 	} else if (item instanceof ItemFunction) {
 		return (
 			<ItemFunctionCompilerForm
+			formCompiler={formCompiler}
+			question={item}
+			index={index}
+			/>
+		);
+	} else if (item instanceof ItemConditional) {
+		return (
+			<ItemConditionalCompilerForm
 			formCompiler={formCompiler}
 			question={item}
 			index={index}

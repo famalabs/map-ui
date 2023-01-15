@@ -64,6 +64,14 @@ export const QuestionMenuTypesMap = {
 			en: 'Dropdown',
 		}
 	},
+	// multipleSelect: {
+	// 	type: 'multipleStelct',
+	// 	icon: <List/>,
+	// 	locale: {
+	// 		it: 'Selezione multipla',
+	// 		en: 'Multiple select',
+	// 	}
+	// },
 	selectTable: {
 		type: 'selectTable',
 		icon: <TocRounded/>,

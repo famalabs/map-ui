@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, FormLabel, Stack, Typography } from '@mui/material';
-import { ItemFunction, Item } from '../../../survey';
+import { Button, Chip, FormLabel, Stack, Typography } from '@mui/material';
+import { ItemFunction, Item, Question } from '../../../survey';
 import { AddCircle, Cancel, ExpandMore, Refresh} from '@mui/icons-material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 import { QuestionCommonCompilerProps } from './CommonCompiler';
@@ -15,10 +15,15 @@ export function ItemFunctionCompilerForm({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
   
-	const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
+	// const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
 	
+	for (let i = 0; i < question.parameters.length; i++) {
+		const itm = nav.findItemById(question.parameters[i]) as Question;
+		itm.setAnswer(form.getValue(question.parameters[i]));
+	}
+
 	const computed = typeof question.compute() === 'undefined' ? 'undefined' : question.compute();
-	console.log("item function",question.params())	
+	// console.log("item function",question.params())	
 	return (
 			<Stack>
 				<QuestionHeaderCommon
@@ -26,21 +31,19 @@ export function ItemFunctionCompilerForm({
 				question={question}
 				required={false}
 				/>
-				{/* <Button color="primary" variant="contained" onClick={(e) => {handleOnChange(computedValue);}}>
-					<RefreshIcon/>
-				</Button> */}
-				{/* <Typography>{`${question.fnCompute().name}: ${question.compute()}`}</Typography> */}
-				<Typography>{question.text}: {computed}</Typography>
-				<Typography>Params: {question.params().toString()}</Typography>
-				<Typography>Params: {question.parameters.toString()}</Typography>
+				<Typography>{question.fn}: {computed}</Typography>
+				{/* <Typography>Params: {question.params().toString()}</Typography>
+				<Typography>Params: {question.parameters.toString()}</Typography> */}
 				{/* <Typography>Params0: {question.params()[0].getAnswer().toString()}</Typography> */}
+				<Stack spacing={2} direction={'row'}>
 				{question.parameters.map((id,idx) => {
 					const param = nav.findItemById(id);
 					const value = form.getValue(id);
 					return (
-						<Typography key={id}>{param.text}: {value ? value.toString() : ''}</Typography>
+						<Chip key={id} label={param.text+': ' + JSON.stringify(value) + ''}/>
 					);
 				})}
+				</Stack>
 			</Stack>
 		);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemConditional, QuestionNumber, QuestionSelect} from '../../../survey'
+import {DBSchema, ItemConditional, QuestionNumber, QuestionSelect} from '../../../survey'
 import { Button, Checkbox, Chip, Divider, FormControlLabel, FormLabel, Menu, MenuItem, Modal, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
@@ -65,6 +65,9 @@ export function ItemConditionalEditorForm({
 	};
 
   const renderChilren = () => {
+    for (let i = 0; i < question.items.length; i++) {
+      question.items[i].update({options:{required:false}} as Partial<DBSchema>)
+    }
     return (
       <Stack spacing={2}>
       {question.items.map((question, idx) => {
