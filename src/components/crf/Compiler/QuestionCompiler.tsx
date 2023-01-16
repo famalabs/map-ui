@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroupMap, QuestionSelectMap } from '../../../core/schema';
+import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, QuestionSelectMap } from '../../../core/schema';
 import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item, ItemConditional } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';
@@ -11,6 +11,7 @@ import { QuestionTableCompilerForm } from './QuestionTableCompiler';
 import { SectionCompilerForm } from './SectionCompiler';
 import { QuestionDateCompilerForm } from './QuestionDateCompiler';
 import { ItemConditionalCompilerForm } from './ItemConditionalCompiler';
+import { QuestionMultipleSelectCompilerForm } from './QuestionMultipleSelectCompiler';
 
 export interface QuestionCompilerFormProps {
 	index?: any;
@@ -83,9 +84,8 @@ export function QuestionCompilerForm({
 			index={index}
 			/>
 		);
-	} else if (item.type === Item.TYPE) {
-		if (item.layout.style === GroupMap.layout.style.table) {
-			if (item.items[0].type === QuestionSelect.TYPE) {
+	} else  {
+		if (getQuestionMenuType(item) === QuestionMenuTypesMap.selectTable.type) {
 				return (
 					<QuestionTableCompilerForm
 					formCompiler={formCompiler}
@@ -93,8 +93,7 @@ export function QuestionCompilerForm({
 					index={index}
 					/>
 				);
-			}
-		} else if (item.layout.style === GroupMap.layout.style.section) {
+		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.section.type) {
 			return (
 				<SectionCompilerForm
 				index={index}
@@ -102,6 +101,12 @@ export function QuestionCompilerForm({
 				question={item}
 				/>
 			);
+		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.multipleSelect.type) {
+				return (<QuestionMultipleSelectCompilerForm
+				index={index}
+				formCompiler={formCompiler}
+				question={item}
+			/>);
 		}
 	}
 	return null;

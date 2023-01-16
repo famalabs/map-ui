@@ -50,6 +50,7 @@ export function DrawerCommon({
 		sx={{
 		  width: { sm: `calc(100% - ${drawerWidth}px)` },
 		  ml: { sm: `${drawerWidth}px` },
+			display: { sm: 'none' },
 		}}
 	  >
 		<Toolbar>

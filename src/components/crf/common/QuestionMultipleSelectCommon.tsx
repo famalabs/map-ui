@@ -4,6 +4,11 @@ import { Item, QuestionCheck } from '../../../survey/src'
 import { Checkbox, FormControl, FormControlLabel, FormHelperText, FormLabel, Stack, Switch, Typography } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';
 import { QuestionCheckCommon } from './QuestionCheckCommon';
+import { IUseFormCompiler, useQuestionHandler } from '../Compiler';
+
+export interface QuestionMultipleSelectommonProps extends QuestionCommonProps<Item> {
+  formCompiler?: IUseFormCompiler;
+}
 
 export function QuestionMultipleSelectCommon({
   index,
@@ -14,8 +19,9 @@ export function QuestionMultipleSelectCommon({
   handleOnBlur,
   error,
   helperText,
-  disabled
-  }: QuestionCommonProps<Item>) {
+  disabled,
+  formCompiler,
+  }: QuestionMultipleSelectommonProps) {
     
     const checks = question.items as QuestionCheck[];
 
@@ -28,6 +34,22 @@ export function QuestionMultipleSelectCommon({
       />
       <FormControl fullWidth>
       {checks.map((check,idx) => {
+        if (typeof formCompiler !== 'undefined') {
+          const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(check, formCompiler);  
+          return (
+            <FormControlLabel
+            disabled={disabled}
+            control={
+            <Checkbox 
+            checked={value ?? false}
+            onChange={(e,c)=>handleOnChange(c)}
+            onBlur={handleOnBlur}
+            />} 
+            label={check.text} 
+            // label={value ? 'Si' : 'No'} 
+          />
+          );
+        }
         return (
           <FormControlLabel
           disabled={disabled}

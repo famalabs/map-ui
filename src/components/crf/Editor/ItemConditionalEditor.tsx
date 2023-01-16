@@ -1,11 +1,11 @@
 import React from 'react';
-import {DBSchema, ItemConditional, QuestionNumber, QuestionSelect} from '../../../survey'
+import {DBSchema, Item, ItemConditional, QuestionCheck, QuestionNumber, QuestionSelect} from '../../../survey'
 import { Button, Checkbox, Chip, Divider, FormControlLabel, FormLabel, Menu, MenuItem, Modal, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 import { Parameter, Expression, Literal, Operator, Identifier, CallExpression, ExpressionValue } from '../../../survey/src/lib/form/ast';
-import { ItemConditionalMap, QuestionMenuTypesMap } from '../../../core/schema';
+import { getQuestionMenuType, ItemConditionalMap, QuestionMenuTypesMap } from '../../../core/schema';
 import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
 import { AddCircle, Edit } from '@mui/icons-material';
 import { QuestionEditorForm } from './QuestionEditor';
@@ -31,12 +31,16 @@ export function ItemConditionalEditorForm({
     if (ev !== null) {
       if (ev.type === 'id') {
         const condItem = nav.findItemById(ev.name)
+        if (typeof condItem === 'undefined' || condItem === null) return null;
         return <Chip disabled label={condItem.text}/>;
       } else if (ev.type === 'v') {
         if (other.type === 'id') {
           const condItem = nav.findItemById(other.name)
+          if (typeof condItem === 'undefined' || condItem === null) return null;
           if (condItem instanceof QuestionSelect) {
             return <Chip disabled label={condItem.options.select[ev.value].text}/>;
+          } else if (getQuestionMenuType(condItem) === QuestionMenuTypesMap.cond.type) {
+            return <Chip disabled label={condItem.items[ev.value].text}/>;
           }
         }
         return <Chip disabled label={ev.value}/>;
@@ -185,6 +189,7 @@ export function ItemConditionalEditorForm({
   } 
   const renderGuidedModalOperator = ():JSX.Element => {
     const conditionItem = nav.findItemById(guidedModal.expression.left.name);
+    if (typeof conditionItem === 'undefined' || conditionItem === null) return null;
     return (
       <Modal
       open={guidedModal.modal===guidedModalState.operator}
@@ -212,7 +217,7 @@ export function ItemConditionalEditorForm({
           >
             {Object.values(ItemConditionalMap.expression.operator).map((op, idx) => { 
               if (op !== "") {
-                if (conditionItem instanceof QuestionSelect) {
+                if (conditionItem instanceof QuestionSelect || getQuestionMenuType(conditionItem) === QuestionMenuTypesMap.cond.type) {
                   if (["==","!="].includes(op))
                   return (<MenuItem key={idx} value={op}>{op}</MenuItem>)
                 } else {
@@ -229,6 +234,7 @@ export function ItemConditionalEditorForm({
   const renderGuidedModalValue = ():JSX.Element => {
 
     const conditionItem = nav.findItemById(guidedModal.expression.left.name);
+    if (typeof conditionItem === 'undefined' || conditionItem === null) return null;
 
     return (
     <Modal

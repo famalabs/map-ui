@@ -166,14 +166,15 @@ export const getQuestionMenuType = (question:Item):string => {
 	} else if (question.type === ItemConditional.TYPE) { 
 		return QuestionMenuTypesMap.cond.type;
 	} else if (question.type === Item.TYPE) {
+		const childrenTypes = new Set(question.items.map((child,idx) => child.type));
 		if (question.layout.style === GroupMap.layout.style.table) {
-			if (question.items[0].type === QuestionSelect.TYPE) {
+			if (childrenTypes.size == 1 && childrenTypes.has(QuestionSelect.TYPE)) {
 				return QuestionMenuTypesMap.selectTable.type;
 			}
 		} else if (question.layout.style === GroupMap.layout.style.section) {
 			return QuestionMenuTypesMap.section.type;
 		} else  {
-			if (question.items[0].type === QuestionCheck.TYPE) {
+			if (childrenTypes.size == 1 && childrenTypes.has(QuestionCheck.TYPE)) {
 				return QuestionMenuTypesMap.multipleSelect.type;
 			}
 		}

@@ -338,12 +338,24 @@ export class EditorBuilder implements IEditorState {
       } else if (added instanceof QuestionSelect && removed instanceof QuestionSelect) {
         const selects = removed.toJSON().options.select;
         added.setOption("select",selects);
-        // added.removeSelect(0);
-        // added.removeSelect(0);
-        // for (let i = 0; i < selects.length; i++) {
-        //   added.addSelect(selects[i], -1);
-        // }
-      }
+      } else if ((removed instanceof QuestionSelect) && (getQuestionMenuType(added) === QuestionMenuTypesMap.cond.type)) {
+          const selects = removed.toJSON().options.select;
+          for (let i = 0; i < selects.length; i++) {
+            if (i < added.items.length) {
+              added.items[i].text = selects[i].text;
+            } else {
+              const sel = this.addQuestionCheck(nav, added.id);
+              sel.text = selects[i].text;
+            }
+          }
+
+        } else if ((added instanceof QuestionSelect) && (getQuestionMenuType(removed) === QuestionMenuTypesMap.cond.type)) {
+
+          for (let i = 0; i < removed.items.length; i++) {
+            added.addSelect({score:i,text:removed.items[i].text} as TextScore, -1);
+          }
+
+        }
     }
 
     public duplicateItem (item: Item) {

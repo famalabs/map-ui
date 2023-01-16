@@ -36,7 +36,7 @@ export function QuestionTableCommon({
         <Table sx={{ width: '100%' }}>
           <TableHead>
             <TableRow>
-              <TableCell>Questions</TableCell>
+              <TableCell></TableCell>
               {options.map((opt, idx) => {
                 return (
                   <TableCell key={idx} align="center">{opt.text}</TableCell>
