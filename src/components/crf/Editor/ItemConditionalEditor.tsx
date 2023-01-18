@@ -70,7 +70,7 @@ export function ItemConditionalEditorForm({
 
   const renderChilren = () => {
     for (let i = 0; i < question.items.length; i++) {
-      question.items[i].update({options:{required:false}} as Partial<DBSchema>)
+      // question.items[i].update({options:{required:false}} as Partial<DBSchema>)
     }
     return (
       <Stack spacing={2}>
@@ -78,10 +78,11 @@ export function ItemConditionalEditorForm({
 				return(
           <QuestionEditorForm
 					key={question.id}
-					index={index[question.id]}
+					index={null}
+					// index={index[question.id]}
 					editorState={editorState}
 					question={question}
-					questionState={questionState[question.id]}
+					questionState={questionState}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 				);
@@ -102,14 +103,14 @@ export function ItemConditionalEditorForm({
 				onClose={(e) =>handleAddQuestion(undefined)}
 			>
 				{Object.keys(QuestionMenuTypesMap).map((key,idx) => {
-          // if (key !== QuestionMenuTypesMap.section.type) {
+          if (key !== QuestionMenuTypesMap.section.type) {
             return (
               <MenuItem key={key} onClick={(e) =>handleAddQuestion(key)}>
                 {QuestionMenuTypesMap[key].icon}
                 <Typography>{QuestionMenuTypesMap[key].locale[locale]}</Typography>
               </MenuItem>
             );
-          // }
+          }
 				})}
 			</Menu>
       <Divider variant='middle'/>
@@ -328,7 +329,7 @@ export function ItemConditionalEditorForm({
   const renderLayout = () => {
     return null;
   }
-  // console.log('renderCond state this', questionState, thisQuestionState);
+  console.log('renderCond state this', questionState, thisQuestionState);
   return (
     <>
     {renderGuidedModalItem()}

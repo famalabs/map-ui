@@ -62,7 +62,7 @@ export function SectionEditorForm({
 					index={index[qs.id]}
 					editorState={editorState}
 					question={qs}
-					questionState={qs instanceof ItemConditional ? questionState : questionState[qs.id]}
+					questionState={questionState}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 				);

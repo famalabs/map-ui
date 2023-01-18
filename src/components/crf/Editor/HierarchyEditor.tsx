@@ -212,8 +212,8 @@ export function RenderMoveModal({
         moveInside = moveToPage;
       } else {
         if (moveToQuestion !== null) { 
-          if (moveToQuestion instanceof ItemConditional) { moveInside = moveToQuestion; }
-          else { return; } 
+          if (getQuestionMenuType(moveToQuestion) === QuestionMenuTypesMap.cond.type)
+          { moveInside = moveToQuestion; } else { return; } 
         } else {
           moveInside = moveToSection !== null ? moveToSection : moveToPage;
         }

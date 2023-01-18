@@ -362,7 +362,7 @@ export class EditorBuilder implements IEditorState {
       const duplSchema:DBSchema = duplicateDBSchema(item.toJSON());
       delete duplSchema.id;
       delete duplSchema.items;
-      console.log("recursive", duplSchema, item.items);
+      // console.log("recursive", duplSchema, item.items);
       this.survey.add(item.parent().id, duplSchema, -1);
 
       for (let i = 0; i < item.items.length; i++) {
@@ -515,14 +515,11 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
     //   }],
     // } as DBSchema;
 
-    console.log("editorBuilder initValue", initValue);
+    // console.log("editorBuilder initValue", initValue);
     const initSurvey = new Survey(initValue);
 
     const [survey, setSurvey] = React.useState<Survey>(initSurvey);
-    console.log('editorBuilder initSurvey initSurvey.root survey root json', initSurvey, initSurvey.root, survey, survey.root, survey.toJSON());
-    // const [surveySchema, setSurveySchema] = React.useState<DBSchema>(initValue);
-    // const survey = new Survey(surveySchema);
-    // const setSurvey = (survey:Survey) => {setSurveySchema(survey.toJSON())};
+    // console.log('editorBuilder initSurvey initSurvey.root survey root json', initSurvey, initSurvey.root, survey, survey.root, survey.toJSON());
     const getRoot = (s:Survey) => s.root;
 
 
@@ -533,7 +530,7 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
 
     const surveyNav = useNavState(getRoot(survey));
 
-    console.log('editorBuilder survey', survey);
+    // console.log('editorBuilder survey', survey);
     
     return {
       editor: {

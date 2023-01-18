@@ -18,6 +18,7 @@ export function QuestionSelectEditorForm({
   const nav = editorState.nav;
 
   const selects = question.options.select;
+  if (typeof selects === 'undefined') { return null; }
   const addSelect = () => {
     selects.push({text:"",score:selects.length} as TextScore);
     editor.onChangeValue(question.id, 'selectOptions', selects);

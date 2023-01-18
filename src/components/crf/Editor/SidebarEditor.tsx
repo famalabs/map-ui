@@ -26,7 +26,7 @@ export function SidebarEditorForm({
 	const survey = editor.getRoot();
 	const folders = nav.getFolders();
 	const folderId = nav.getFolderId();
-	console.log('sidebar', folders)
+	// console.log('sidebar', folders)
 
 	const [menuState, setMenuState] = React.useState(MenuStateMap.folders);
 

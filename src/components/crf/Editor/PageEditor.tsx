@@ -115,7 +115,7 @@ export function PageEditorForm({
 
 				} else {
 					editor.cancelChanges();
-					return;
+					// return;
 				}
 			}
 		} 
@@ -127,8 +127,8 @@ export function PageEditorForm({
 			}
 		}
 		qs[id] = state;
+		console.log('set new questionState', qs);
 		setQuestionState(qs);
-		// console.log('new questionState', qs);
 	}
 	// to update if changes the page or folder numbers
 	if (nav.getPageId() !== questionState['page'] || nav.getFolderId() !== questionState['folder']) {
@@ -136,15 +136,16 @@ export function PageEditorForm({
 
 	}
 
-	// console.log('render page questionState',page, questionState);
+	console.log('render page questionState',page, questionState);
 	return (
 		<div style={{padding:'12px 0px'}}>
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {
 				// console.log('before render qs', question.id, questionState, questionState[question.id]);
-				const realQuestionState = [QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type].includes(getQuestionMenuType(question))
-				? questionState : questionState[question.id] ?? QuestionStateMap.normal;
+				// const realQuestionState = [QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type].includes(getQuestionMenuType(question))
+				// ? questionState : questionState[question.id] ?? QuestionStateMap.normal;
+				
 				if (page.layout.style === GroupMap.layout.style.card)  
 				{
 					return (
@@ -153,7 +154,7 @@ export function PageEditorForm({
 					index={orders[question.id]}
 					editorState={editorState}
 					question={question}
-					questionState={realQuestionState}
+					questionState={questionState}
 					handleSetQuestionState={handleSetQuestionState}
 					/>
 					);
@@ -165,7 +166,7 @@ export function PageEditorForm({
 							index={orders[question.id]}
 							editorState={editorState}
 							question={question}
-							questionState={realQuestionState}
+							questionState={questionState}
 							handleSetQuestionState={handleSetQuestionState}
 						/>
 					</Paper>

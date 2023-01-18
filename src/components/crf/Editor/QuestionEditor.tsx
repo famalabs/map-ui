@@ -42,7 +42,8 @@ export function QuestionEditorForm({
 
   const isSection = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type;
   const isItemCond = getQuestionMenuType(question) === QuestionMenuTypesMap.cond.type;
-  const thisQuestionState = isSection || isItemCond ? questionState[question.id] : questionState;
+  // const thisQuestionState = (isSection || isItemCond) ? questionState[question.id] : questionState;
+  const thisQuestionState = questionState[question.id];
 
   const renderIcon = () => {
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
@@ -210,7 +211,7 @@ export function QuestionEditorForm({
             <ArrowDownward/>
             </Button> */}
             <Button variant="outlined" color="secondary"
-            onClick={(e) => {setMoveModal(true)}}>
+            onClick={(e) => {setMoveModal(true); handleSetQuestionState(question.id, QuestionStateMap.normal);}}>
             <Expand/>
             </Button>
             {/* <Button variant="outlined" color="secondary"
