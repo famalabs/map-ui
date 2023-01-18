@@ -32,7 +32,8 @@ export function ItemConditionalCompilerForm({
 				return(
 						<QuestionCompilerForm
 						key={question.id}
-						index={index[question.id]}
+						index={null}
+						// index={index[question.id]}
 						item={question}
 						formCompiler={formCompiler}
 						/>
