@@ -147,8 +147,6 @@ export function QuestionTableEditorForm({
   const renderEdit = () => {
     return (
       <div>
-        {QuestionGeneralEdit(question, editor)}
-        <Divider textAlign="left"></Divider>
         <TableContainer>
         <Table sx={{ width: '100%' }}>
           <TableHead>

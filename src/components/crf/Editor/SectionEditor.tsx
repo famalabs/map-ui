@@ -52,7 +52,7 @@ export function SectionEditorForm({
         // onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}
         onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.edit)}}}
         >
-        <Typography variant='h4'>{section.text}</Typography>
+        <Typography variant='h4'>{index[section.id]}{section.text}</Typography>
         <Typography>{section.description}</Typography>
         </Stack>
 			{section.items.map((qs, idx) => {

@@ -78,8 +78,8 @@ export function ItemConditionalEditorForm({
 				return(
           <QuestionEditorForm
 					key={question.id}
-					index={null}
-					// index={index[question.id]}
+					// index={null}
+					index={index[question.id]}
 					editorState={editorState}
 					question={question}
 					questionState={questionState}

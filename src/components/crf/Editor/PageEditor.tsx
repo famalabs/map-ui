@@ -74,7 +74,7 @@ export function PageEditorForm({
 	const editor = editorState.editor;
 	const nav = editorState.nav;
 	const page = nav.getPage();
-	const orders = nav.getItemsGroupedOrderIndex();
+	const orders = nav.getItemsGroupedOrderIndex()[nav.getFolderId()][page.id];
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
 	const openAddQuestion = Boolean(anchorAddQuestion);
 	const handleOpenAddQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {

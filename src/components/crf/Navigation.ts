@@ -3,6 +3,10 @@ import React from 'react'
 import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, SurveyMap } from '../../core/schema';
 import { Survey, Item, DBSchema } from '../../survey'
 
+export interface IOrderIndex {
+	[id:string]: string | IOrderIndex;
+}
+
 export class NavState {
 	private curItem: Item;
 	private items: Item[];
@@ -277,31 +281,71 @@ export class SurveyNav implements INavState {
 		return order;
 	}
 
-	public getItemsGroupedOrderIndex():any {
-		const order = {}
-		for (let f = 0; f < this.getFolders().length; f++) {
-			const folder = this.getFolders()[f];
-			for (let p = 0; p < folder.items.length; p++) {
-				const page = folder.items[p];
-				let idx = 1
-					for (let q = 0; q < page.items.length; q++) {
-						const question = page.items[q];
-						if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
-							order[question.id] = {};
-							for (let s = 0; s < question.items.length; s++) {
-								const secQs = question.items[s];
-								order[question.id][secQs.id] = idx.toString() + '.' + (s+1).toString() + '. ';
-								// idx+=1;
-							}
-							idx+=1;
-						} else {
-							order[question.id] = idx.toString() + '. ';
-							idx+=1;
-						}
+	public getItemsGroupedOrderIndex():IOrderIndex {
+
+		const recursive = (item:Item, order:string, acc:IOrderIndex):IOrderIndex => {
+			let idx = 1;
+			for(let i=0; i < item.items.length; i++) {
+				const itm = item.items[i];
+				const index = order+idx.toString()+".";
+				acc[itm.id] = index+" ";
+				if (itm.items.length > 0) {
+					if (getQuestionMenuType(itm) === QuestionMenuTypesMap.cond.type) {
+						acc[itm.id] = {} as IOrderIndex;
+						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						acc[itm.id][itm.id] = index+" ";
+					} if (getQuestionMenuType(itm) === QuestionMenuTypesMap.section.type) {
+						acc[itm.id] = {} as IOrderIndex;
+						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						acc[itm.id][itm.id] = index+" ";
+					} else if (
+						this.getItemType(itm.id) === GroupMap.layout.style.page
+						|| this.getItemType(itm.id) === GroupMap.layout.style.folder
+					) {
+						// page or folders
+						acc[itm.id] = {} as IOrderIndex;
+						(acc[itm.id] as IOrderIndex) = recursive(itm, order, (acc[itm.id] as IOrderIndex));
+						acc[itm.id][itm.id] = "";
+					} else {
+						// question table / multi check ...
+						acc[itm.id] = {} as IOrderIndex;
+						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						acc[itm.id][itm.id] = index+" ";
 					}
 				}
+				idx+=1;
+			}
+			return acc;
 		}
-		return order;
+		const res = recursive(this.root, "", {} as IOrderIndex);
+		console.log("groupedOrder", res);
+		return res;
+
+		// const order = {} as IOrderIndex;
+		
+		// for (let f = 0; f < this.getFolders().length; f++) {
+		// 	const folder = this.getFolders()[f];
+		// 	for (let p = 0; p < folder.items.length; p++) {
+		// 		const page = folder.items[p];
+		// 		let idx = 1
+		// 			for (let q = 0; q < page.items.length; q++) {
+		// 				const question = page.items[q];
+		// 				if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
+		// 					order[question.id] = {};
+		// 					for (let s = 0; s < question.items.length; s++) {
+		// 						const secQs = question.items[s];
+		// 						order[question.id][secQs.id] = idx.toString() + '.' + (s+1).toString() + '. ';
+		// 						// idx+=1;
+		// 					}
+		// 					idx+=1;
+		// 				} else {
+		// 					order[question.id] = idx.toString() + '. ';
+		// 					idx+=1;
+		// 				}
+		// 			}
+		// 		}
+		// }
+		// return order;
 	}
 
 	public getValue(): INavValue {

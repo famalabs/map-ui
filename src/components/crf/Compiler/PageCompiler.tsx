@@ -17,7 +17,7 @@ export function PageCompilerForm ({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 	const page = nav.getPage();
-	const orders = nav.getItemsGroupedOrderIndex();
+	const orders = nav.getItemsGroupedOrderIndex()[nav.getFolderId()][page.id];
 
 	const ready = (
 		<div>
@@ -29,7 +29,7 @@ export function PageCompilerForm ({
 					return (
 						<QuestionCompilerForm
 							key={question.id}
-							index={orders[question.id]}
+							index={orders}
 							item={question}
 							formCompiler={formCompiler}
 							/>
@@ -39,7 +39,7 @@ export function PageCompilerForm ({
 					<Paper style={{padding:24}}>
 						<QuestionCompilerForm
 						key={question.id}
-						index={orders[question.id]}
+						index={orders}
 						item={question}
 						formCompiler={formCompiler}
 						/>

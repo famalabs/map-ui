@@ -23,18 +23,18 @@ export function ItemConditionalCompilerForm({
   const isActive = question.compute();
 
 	return (
-			<Stack spacing={1}>
+			<Stack spacing={isActive ? 1 : 0}>
       {/* <Typography>score: {JSON.stringify(left.getScore())}</Typography>
       <Typography>value: {JSON.stringify(form.getValue(leftId))}</Typography>
       <Typography>expr: {JSON.stringify(question.expression)}</Typography>
       <Typography>active: {JSON.stringify(isActive)}</Typography> */}
-			{isActive && question.items.map((question, idx) => {
+			{isActive && question.items.map((qs, idx) => {
 				return(
 						<QuestionCompilerForm
-						key={question.id}
-						index={null}
-						// index={index[question.id]}
-						item={question}
+						key={qs.id}
+						// index={null}
+						index={index}
+						item={qs}
 						formCompiler={formCompiler}
 						/>
 				);

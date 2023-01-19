@@ -28,7 +28,7 @@ export function QuestionMultipleSelectCommon({
   return (
     <Stack spacing={1}>
       <QuestionHeaderCommon
-        index={index}
+        index={index[question.id]}
         question={question}
         required={required}
       />

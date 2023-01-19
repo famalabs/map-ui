@@ -33,15 +33,15 @@ export function SectionCompilerForm({
 			// />
 			<Stack spacing={6}>
 			<Stack>
-			<Typography variant='h5'>{question.text}</Typography>
+			<Typography variant='h5'>{index[question.id]}{question.text}</Typography>
 			<Typography>{question.description}</Typography>
 			</Stack>
-			{question.items.map((question, idx) => {
+			{question.items.map((qs, idx) => {
 				return(
 						<QuestionCompilerForm
-						key={question.id}
-						index={index[question.id]}
-						item={question}
+						key={qs.id}
+						index={index}
+						item={qs}
 						formCompiler={formCompiler}
 						/>
 				);

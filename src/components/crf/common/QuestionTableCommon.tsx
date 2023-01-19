@@ -28,7 +28,7 @@ export function QuestionTableCommon({
   return (
     <Stack spacing={1}>
       <QuestionHeaderCommon
-        index={index}
+        index={index[question.id]}
         question={question}
         required={required}
       />
@@ -53,7 +53,7 @@ export function QuestionTableCommon({
                   '&:hover, &.Mui-focusVisible': {backgroundColor: 'rgba(61, 90, 128, 0.04)'} }}
                 >
                   <TableCell component="th" scope="row">
-                    {sel.text}
+                    {index[sel.id]}{sel.text}
                   </TableCell>
                   {options.map((opt, idx) => {
                     if (typeof formCompiler !== 'undefined') {

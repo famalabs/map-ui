@@ -27,11 +27,13 @@ export function QuestionCompilerForm({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 
+	const thisIndex = index[item.id];
+
 	// console.log('rendering',item);
 	if (item instanceof QuestionText) {
 		return (
 			<QuestionTextCompilerForm
-			index={index}
+			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -39,7 +41,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionDate) {
 		return (
 			<QuestionDateCompilerForm
-			index={index}
+			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -47,7 +49,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionNumber) {
 		return (
 			<QuestionNumberCompilerForm
-			index={index}
+			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -55,7 +57,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionCheck) {
 		return (
 			<QuestionCheckCompilerForm
-			index={index}
+			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -63,7 +65,7 @@ export function QuestionCompilerForm({
 	} else if (item instanceof QuestionSelect) {
 		return (
 			<QuestionSelectCompilerForm
-			index={index}
+			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
 			/>
@@ -73,7 +75,7 @@ export function QuestionCompilerForm({
 			<ItemFunctionCompilerForm
 			formCompiler={formCompiler}
 			question={item}
-			index={index}
+			index={thisIndex}
 			/>
 		);
 	} else if (item instanceof ItemConditional) {
@@ -81,7 +83,7 @@ export function QuestionCompilerForm({
 			<ItemConditionalCompilerForm
 			formCompiler={formCompiler}
 			question={item}
-			index={index}
+			index={thisIndex}
 			/>
 		);
 	} else  {
@@ -90,20 +92,20 @@ export function QuestionCompilerForm({
 					<QuestionTableCompilerForm
 					formCompiler={formCompiler}
 					question={item}
-					index={index}
+					index={thisIndex}
 					/>
 				);
 		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.section.type) {
 			return (
 				<SectionCompilerForm
-				index={index}
+				index={thisIndex}
 				formCompiler={formCompiler}
 				question={item}
 				/>
 			);
 		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.multipleSelect.type) {
 				return (<QuestionMultipleSelectCompilerForm
-				index={index}
+				index={thisIndex}
 				formCompiler={formCompiler}
 				question={item}
 			/>);

@@ -46,6 +46,7 @@ export function QuestionEditorForm({
   const thisQuestionState = questionState[question.id];
 
   const renderIcon = () => {
+    // if (typeof QuestionMenuTypesMap[getQuestionMenuType(question)] === 'undefined') return null;
     return QuestionMenuTypesMap[getQuestionMenuType(question)].icon;
   }
 

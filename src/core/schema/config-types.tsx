@@ -167,16 +167,17 @@ export const getQuestionMenuType = (question:Item):string => {
 		return QuestionMenuTypesMap.cond.type;
 	} else if (question.type === Item.TYPE) {
 		const childrenTypes = new Set(question.items.map((child,idx) => child.type));
-		if (question.layout.style === GroupMap.layout.style.table) {
-			if (childrenTypes.size == 1 && childrenTypes.has(QuestionSelect.TYPE)) {
-				return QuestionMenuTypesMap.selectTable.type;
-			}
-		} else if (question.layout.style === GroupMap.layout.style.section) {
-			return QuestionMenuTypesMap.section.type;
-		} else  {
-			if (childrenTypes.size == 1 && childrenTypes.has(QuestionCheck.TYPE)) {
-				return QuestionMenuTypesMap.multipleSelect.type;
-			}
+		if (typeof question.layout !== 'undefined' && question.layout) { 
+			if (question.layout.style === GroupMap.layout.style.table) {
+				if (childrenTypes.size == 1 && childrenTypes.has(QuestionSelect.TYPE)) {
+					return QuestionMenuTypesMap.selectTable.type;
+				}
+			} else if (question.layout.style === GroupMap.layout.style.section) {
+				return QuestionMenuTypesMap.section.type;
+			} 
+		}
+		if (childrenTypes.size == 1 && childrenTypes.has(QuestionCheck.TYPE)) {
+			return QuestionMenuTypesMap.multipleSelect.type;
 		}
 	} 
 	return null;

@@ -130,9 +130,12 @@ export function RenderHierarchy({
                 value={hierarchyValue.question}
                 onChange={(e,v) => {handleSetHierarchyValue('','','',e.target.value)}}
               >
-                  {questions.map((f, idx1) => (
-                    <MenuItem key={f.id} value={f.id}>{QuestionMenuTypesMap[getQuestionMenuType(f)].icon}{f.text}</MenuItem>
-                  ))}
+                  {questions.map((qs, idx1) => {
+                    // if (typeof QuestionMenuTypesMap[getQuestionMenuType(qs)] !== 'undefined')
+                    return (
+                      <MenuItem key={qs.id} value={qs.id}>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</MenuItem>
+                    )
+                    })}
               </Select>
             </Stack>
             {insideHierarchyPos === 'q' && (<>{insideHierarchy}</>)}
