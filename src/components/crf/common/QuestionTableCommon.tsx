@@ -62,10 +62,10 @@ export function QuestionTableCommon({
                         <TableCell key={idx} align="center">
                           <Radio
                             disabled={disabled}
-                            checked={value === opt.text}
-                            value={opt.text}
+                            checked={value === opt.score}
+                            value={opt.score}
                             onChange={(e,v) => {
-                              if (v) { handleOnChange(opt.text) }
+                              if (v) { handleOnChange(opt.score) }
                             }}
                           />
                         </TableCell>

@@ -215,10 +215,10 @@ export function QuestionEditorForm({
             onClick={(e) => {setMoveModal(true); handleSetQuestionState(question.id, QuestionStateMap.normal);}}>
             <Expand/>
             </Button>
-            {/* <Button variant="outlined" color="secondary"
-            onClick={(e) => {editor.duplicateItem(question)}}>
+            <Button variant="outlined" color="secondary"
+            onClick={(e) => {editor.duplicateItem(question, question.parent())}}>
             <ContentCopy/>
-            </Button> */}
+            </Button>
             <Button variant="outlined" color="secondary"
             onClick={(e) => {editor.cancelChanges(); editor.removeItem(question)}}>
             <Delete/>

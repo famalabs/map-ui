@@ -9,6 +9,7 @@ import { getQuestionMenuType, ItemConditionalMap, QuestionMenuTypesMap } from '.
 import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
 import { AddCircle, Edit } from '@mui/icons-material';
 import { QuestionEditorForm } from './QuestionEditor';
+import {ModalCommon} from '../common';
 
 export interface ItemConditionalEditorProps extends QuestionCommonEditorProps<ItemConditional> {
   handleSetQuestionState: (id: string, state: string) => void;
@@ -191,20 +192,8 @@ export function ItemConditionalEditorForm({
   const renderGuidedModalOperator = ():JSX.Element => {
     const conditionItem = nav.findItemById(guidedModal.expression.left.name);
     if (typeof conditionItem === 'undefined' || conditionItem === null) return null;
-    return (
-      <Modal
-      open={guidedModal.modal===guidedModalState.operator}
-      onClose={(e) => {}}
-      >
-      <Paper sx={{
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        minWidth: 360,
-        p: '24px',
-      }}>
-        <Stack>
+    const renderContent = ():JSX.Element => (
+      <Stack>
           <Typography>{ItemConditionalMap.locale.selectOperator[locale]}</Typography>
           <Select
             defaultValue={null}
@@ -228,28 +217,21 @@ export function ItemConditionalEditorForm({
           })}
           </Select>
         </Stack>
-      </Paper>
-      </Modal>
+    )
+    return (
+      <ModalCommon
+        open={guidedModal.modal === guidedModalState.operator}
+        onClose={undefined}
+        content={renderContent()}
+        minWidth={360}        
+      />
     );
   } 
   const renderGuidedModalValue = ():JSX.Element => {
 
     const conditionItem = nav.findItemById(guidedModal.expression.left.name);
     if (typeof conditionItem === 'undefined' || conditionItem === null) return null;
-
-    return (
-    <Modal
-    open={guidedModal.modal===guidedModalState.right}
-    onClose={(e) => {}}
-    >
-    <Paper sx={{
-      position: 'absolute' as 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      minWidth: 520,
-      p: '24px',
-    }}>
+    const renderContent = () => (
       <Stack>
         <Typography>{ItemConditionalMap.locale.selectValue[locale]}</Typography>
         {conditionItem instanceof QuestionSelect ? (
@@ -296,8 +278,14 @@ export function ItemConditionalEditorForm({
           />
         )}
       </Stack>
-    </Paper>
-    </Modal>
+    );
+    return (
+      <ModalCommon
+        open={guidedModal.modal===guidedModalState.right}
+        onClose={undefined}
+        content={renderContent()}
+        minWidth={520}        
+      />
     );
   }
 

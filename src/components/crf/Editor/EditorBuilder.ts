@@ -16,7 +16,7 @@ export interface IEditorState {
   addQuestion: (type:string, parentId?:string) => Item;
   changeQuestionType: (item: Item, newType: string) => void;
   removeItem: (item:Item) => void;
-  duplicateItem: (item:Item) => void;
+  duplicateItem: (toDuplicate: Item, parent: Item) => void;
   moveItemUp: (item:Item) => void;
   moveItemDown: (item:Item) => void;
   /**
@@ -358,15 +358,14 @@ export class EditorBuilder implements IEditorState {
         }
     }
 
-    public duplicateItem (item: Item) {
-      const duplSchema:DBSchema = duplicateDBSchema(item.toJSON());
+    public duplicateItem (toDuplicate: Item, parent: Item) {
+      const duplSchema:DBSchema = duplicateDBSchema(toDuplicate.toJSON());
       delete duplSchema.id;
       delete duplSchema.items;
-      // console.log("recursive", duplSchema, item.items);
-      this.survey.add(item.parent().id, duplSchema, -1);
+      const duplicated = this.survey.add(parent.id, duplSchema, -1);
 
-      for (let i = 0; i < item.items.length; i++) {
-        this.duplicateItem(item.items[i]);
+      for (let i = 0; i < toDuplicate.items.length; i++) {
+        this.duplicateItem(toDuplicate.items[i], duplicated);
       }
     }
 
@@ -577,9 +576,9 @@ export function useEditorState(initSchema:DBSchema): IUseEditorState {
             surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
           }
         },
-        duplicateItem: (item:Item) => {
+        duplicateItem: (toDuplicate: Item, parent: Item) => {
           const editorBuilder = new EditorBuilder(survey); 
-          editorBuilder.duplicateItem(item);
+          editorBuilder.duplicateItem(toDuplicate, toDuplicate.parent());
           surveyNav.updateAndSetWithIds(editorBuilder.getRoot(), surveyNav.getFolderIdx(), surveyNav.getPageIdx());
         },
         moveItemUp: (item:Item) => {

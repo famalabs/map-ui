@@ -21,6 +21,7 @@ import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } f
 
 import { QuestionHeaderCommon } from '../common';
 import { QuestionCommonEditorProps } from './CommonEditor';
+import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
 
 export function ItemFunctionEditorForm({
   index,
@@ -32,13 +33,34 @@ export function ItemFunctionEditorForm({
   // if (question instanceof ItemFunction) {
     const editor = editorState.editor;
     const nav = editorState.nav;
+    const locale = 'it'
 
-    const getParameters = ():string[] => {
+    const getRenderParams = ():string[] => {
+      // const params = []
+      // const fixParams = [];
+      // for (let i = 0; i < question.parameters.length; i++) {
+      //   const paramId = question.parameters[i]
+      //   const param = nav.findItemById(paramId);
+      //   params.push(paramId);
+      //   if (getQuestionMenuType(param) === QuestionMenuTypesMap.selectTable.type) {
+
+      //   } else {
+      //     fixParams.push(paramId);
+      //   }
+      // }
       return question.parameters;
     }
 
     const handleAddParam = (id:string) => {
+      if (question.parameters.includes(id)) { return }
       question.parameters.push(id);
+      editor.onChangeValue(question.id, 'parameters', question.parameters);
+    }
+    const handleAddParams = (ids:string[]) => {
+      for (let i = 0; i < ids.length; i++) {
+        if (question.parameters.includes(ids[i])) { continue; }
+        question.parameters.push(ids[i]);
+      }
       editor.onChangeValue(question.id, 'parameters', question.parameters);
     }
     const handleRemoveParam = (id:string) => {
@@ -51,7 +73,7 @@ export function ItemFunctionEditorForm({
       editor.onChangeValue(question.id, 'fn', newFn);
     }
 
-    const [modalPrams, setModalParams] = React.useState(false);
+    // const [modalPrams, setModalParams] = React.useState(false);
 
     const renderNormal = () => {
       return (
@@ -65,7 +87,7 @@ export function ItemFunctionEditorForm({
             <Stack spacing={1}>
               <Typography>Function Params:</Typography>
               <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>
-                {getParameters().length > 0 ? getParameters().map((id,idx) => {
+                {getRenderParams().length > 0 ? getRenderParams().map((id,idx) => {
                 const item = nav.findItemById(id);  
                 return (
                     <Chip disabled key={id} label={item.text}/>
@@ -77,7 +99,7 @@ export function ItemFunctionEditorForm({
       );
     }
     const renderChipParams = () => {
-      return getParameters().length > 0 ? getParameters().map((id,idx) => {
+      return getRenderParams().length > 0 ? getRenderParams().map((id,idx) => {
         const item = nav.findItemById(id);  
         return (
             <Chip key={id} label={item.text} onDelete={(e) => {handleRemoveParam(id)}} />
@@ -85,74 +107,131 @@ export function ItemFunctionEditorForm({
         }) : (<Typography>No Parameters</Typography>);
     }
 
-    const renderSingleAddParam = (qs:Item, params:string[]) => {
-      return (
-        <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
-        <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
-        {qs.id !== question.id ? (
-          params.includes(qs.id) ? (
-            <Button variant="outlined" color="secondary"
-            onClick={(e) => {handleRemoveParam(qs.id)}}>
-            <Cancel/>
-            </Button>
-          ) : (
-            <Button variant="outlined" color="primary"
-            onClick={(e) => {handleAddParam(qs.id)}}>
-            <AddCircle />
-            </Button>
-          )
-        ) : (null)}
-        </div>
-      );
-    }
+    // const renderSingleAddParam = (qs:Item, params:string[]) => {
+    //   return (
+    //     <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
+    //     <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
+    //     {qs.id !== question.id ? (
+    //       params.includes(qs.id) ? (
+    //         <Button variant="outlined" color="secondary"
+    //         onClick={(e) => {handleRemoveParam(qs.id)}}>
+    //         <Cancel/>
+    //         </Button>
+    //       ) : (
+    //         <Button variant="outlined" color="primary"
+    //         onClick={(e) => {handleAddParam(qs.id)}}>
+    //         <AddCircle />
+    //         </Button>
+    //       )
+    //     ) : (null)}
+    //     </div>
+    //   );
+    // }
     
-    const renderAddParams = () => {
-      const params = getParameters();
-      return (
+    // const renderAddParams = () => {
+    //   const params = getRenderParams();
+    //   return (
+    //     <Stack spacing={1}>
+    //       {nav.getPages().map((page,idx) => {
+    //         return (
+    //           <Accordion key={page.id}>
+    //             <AccordionSummary
+    //               expandIcon={<ExpandMore />}
+    //             >
+    //               <Typography>{page.text}</Typography>
+    //             </AccordionSummary>
+    //             <AccordionDetails>
+    //               {page.items.map((qs,idx) => {
+    //                 // if (!params.includes(qs.id)) {
+    //                 if (getQuestionMenuType(qs) === QuestionMenuTypesMap.section.type) {
+    //                   return (
+    //                     <Accordion key={qs.id}>
+    //                       <AccordionSummary
+    //                         expandIcon={<ExpandMore />}
+    //                       >
+    //                         <Typography>{qs.text}</Typography>
+    //                       </AccordionSummary>
+    //                       <AccordionDetails>
+    //                         {qs.items.map((qss,idx) => {
+    //                           return renderSingleAddParam(qss,params);
+    //                           // }
+    //                         })}
+    //                       </AccordionDetails>
+    //                     </Accordion>
+    //                   );
+    //                 }
+    //                 return renderSingleAddParam(qs,params);
+    //                 // }
+    //               })}
+    //             </AccordionDetails>
+    //           </Accordion>
+    //         );
+    //       })}
+    //     </Stack>
+    //   );
+    // }
+
+
+    enum GuidedModalState {none,selectParam,selectTable};
+    const guidedModalDefault = () => {return{
+      state: GuidedModalState.none,
+      param: null as Item,
+    }}
+    const [guidedModal, setGuidedModal] = React.useState(guidedModalDefault)
+    const renderAddParamsModal = ():JSX.Element => {
+
+      const setActiveModal = (b:boolean) => {}
+      const handleConfirm = (ihv:IHierarchyValue) => {
+        if (ihv.question !== null && ihv.question !== '') {
+          guidedModal.param = nav.findItemById(ihv.question);
+          if (getQuestionMenuType(guidedModal.param) === QuestionMenuTypesMap.selectTable.type) {
+            const params = [];
+            for (let i = 0; i < guidedModal.param.items.length; i++) {
+              params.push(guidedModal.param.items[i].id);
+            }
+            handleAddParams(params);
+            setGuidedModal({
+              state: GuidedModalState.none,
+              param: guidedModal.param,
+            })
+          } else {
+            handleAddParam(guidedModal.param.id);
+            setGuidedModal({
+              state: GuidedModalState.none,
+              param: guidedModal.param,
+            })
+          }
+          return;
+        }
+
+      };
+      const renderTop = () => (
         <Stack spacing={1}>
-          {nav.getPages().map((page,idx) => {
-            return (
-              <Accordion key={page.id}>
-                <AccordionSummary
-                  expandIcon={<ExpandMore />}
-                >
-                  <Typography>{page.text}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {page.items.map((qs,idx) => {
-                    // if (!params.includes(qs.id)) {
-                    if (getQuestionMenuType(qs) === QuestionMenuTypesMap.section.type) {
-                      return (
-                        <Accordion key={qs.id}>
-                          <AccordionSummary
-                            expandIcon={<ExpandMore />}
-                          >
-                            <Typography>{qs.text}</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            {qs.items.map((qss,idx) => {
-                              return renderSingleAddParam(qss,params);
-                              // }
-                            })}
-                          </AccordionDetails>
-                        </Accordion>
-                      );
-                    }
-                    return renderSingleAddParam(qs,params);
-                    // }
-                  })}
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
+          <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>{renderChipParams()}</Stack>
+          <Typography>{FnMap.locale.addParam[locale]}: </Typography>
         </Stack>
       );
+      const renderInside = () => null;
+      return (
+        <RenderHierarchy 
+          question={question}
+          editorState={editorState}
+          activeModal={guidedModal.state===GuidedModalState.selectParam}
+          setActiveModal={setActiveModal}
+          handleConfirm={handleConfirm}
+          topHierarchy={renderTop()}
+          insideHierarchy={renderInside()}
+          insideHierarchyPos={'sq'}
+        />
+      );
+    } 
+    const renderSelectTableModal = ():JSX.Element => {
+      return null;
     }
+
     const renderEdit = () => {
       return (
         <div>
-          {QuestionGeneralEdit(question, editor)}
-          <Divider textAlign="left">Function Options</Divider>
           <Stack spacing={2}>
             <FormControl>
             <FormLabel component="legend">Function Name</FormLabel>
@@ -170,13 +249,13 @@ export function ItemFunctionEditorForm({
             </FormControl>
             <div>
               <Stack direction={'row'} spacing={2} style={{	flexWrap: 'wrap'}}>
-                {renderChipParams()}
                 <Button variant="outlined" color="secondary"
-                onClick={(e) => {setModalParams(true)}}>
+                onClick={(e) => {setGuidedModal({state:GuidedModalState.selectParam,param:null})}}>
                 <AddCircle />
                 </Button>
+                {renderChipParams()}
               </Stack>
-            <Modal
+            {/* <Modal
             open={modalPrams}
             onClose={(e) => setModalParams(false)}
             >
@@ -194,7 +273,7 @@ export function ItemFunctionEditorForm({
                 {renderAddParams()}
               </Stack>
               </Paper>
-            </Modal>
+            </Modal> */}
             </div>
           </Stack>
 
@@ -206,6 +285,8 @@ export function ItemFunctionEditorForm({
     }
     // console.log('render function', questionState);
     return (
+      <>
+      {renderAddParamsModal()}
       <QuestionCommonEditorForm 
         contentNormal={renderNormal()} 
         contentEdit={renderEdit()} 
@@ -215,6 +296,7 @@ export function ItemFunctionEditorForm({
         question={question} 
         questionState={questionState}    
       />
+      </>
     );
   //   }
   // return null;

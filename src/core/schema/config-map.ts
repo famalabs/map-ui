@@ -285,15 +285,12 @@ export const FnMap = {
     type: ItemFunction.TYPE,
     parameters: [],
     fn: {
-        // BodyMassIndex: 'BMI',
-        // SofaScore: 'SOFA',
-        // ISTHScore: 'ISTH',
-        // CIDScore: 'CID',
-        // HScore: 'HScore',
-        // MeanArterialPressure: 'MeanArterialPressure',
-        // GFRCockcroftGault: 'CrocoftGault',
-        // CKD_EPI_CREATININE: 'CDKEPI',
-        // PF_Percent: 'PFpercent',
+        CountIf:'CountIf',
+        Sum:'sum',
+        Multiply:'mul',
+        Diff:'diff',
+        Divide:'div',
+        Average:'avg',
         BodyMassIndex:'BMI',
         SofaScore:'SOFA',
         ISTHScore:'ISTH',
@@ -303,6 +300,12 @@ export const FnMap = {
         GFRCockcroftGault:'CrocoftGault',
         CKD_EPI_CREATININE:'CDKEPI',
         PF_Percent:'PFpercent',
+    },
+    locale: {
+        addParam: {
+            it:'Aggiungi un parametro',
+            en:'Aggiungi un parametro',
+        }
     }
 } as const;
 export type FnMap = keyof typeof FnMap;

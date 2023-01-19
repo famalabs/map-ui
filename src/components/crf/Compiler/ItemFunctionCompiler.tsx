@@ -5,6 +5,7 @@ import { AddCircle, Cancel, ExpandMore, Refresh} from '@mui/icons-material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 import { QuestionCommonCompilerProps } from './CommonCompiler';
 import { QuestionHeaderCommon } from '../common';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema';
 
 export function ItemFunctionCompilerForm({
   formCompiler,
@@ -18,8 +19,12 @@ export function ItemFunctionCompilerForm({
 	// const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
 	
 	for (let i = 0; i < question.parameters.length; i++) {
-		const itm = nav.findItemById(question.parameters[i]) as Question;
-		itm.setAnswer(form.getValue(question.parameters[i]));
+		const itm = nav.findItemById(question.parameters[i]);
+		if (itm instanceof Question) {
+			itm.setAnswer(form.getValue(question.parameters[i]));
+		} else {
+			
+		}
 	}
 
 	const computed = typeof question.compute() === 'undefined' ? 'undefined' : question.compute();
@@ -35,7 +40,7 @@ export function ItemFunctionCompilerForm({
 				{/* <Typography>Params: {question.params().toString()}</Typography>
 				<Typography>Params: {question.parameters.toString()}</Typography> */}
 				{/* <Typography>Params0: {question.params()[0].getAnswer().toString()}</Typography> */}
-				<Stack spacing={2} direction={'row'}>
+				<Stack spacing={2} direction={'row'} style={{flexWrap: 'wrap'}}>
 				{question.parameters.map((id,idx) => {
 					const param = nav.findItemById(id);
 					const value = form.getValue(id);
