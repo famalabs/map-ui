@@ -21,7 +21,7 @@ export function PageCompilerForm ({
 
 	const ready = (
 		<div>
-			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 6 : 2}>
+			<Stack spacing={page.layout.style === GroupMap.layout.style.card ? 2 : 2}>
 			<Typography variant='h4'>{page.text}</Typography>
 			{page.items.map((question, index) => {
 				if (page.layout.style === GroupMap.layout.style.card)  

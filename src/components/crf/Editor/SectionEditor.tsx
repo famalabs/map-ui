@@ -7,6 +7,7 @@ import { IUseEditorState } from './EditorBuilder';
 import { QuestionEditorForm } from './QuestionEditor';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { SectionCommon } from '../common';
 
 export interface SectionEditorFormProps {
   index?: any;
@@ -45,17 +46,9 @@ export function SectionEditorForm({
 	};
 
   const renderNormal = () => {
-    return (
-      <Stack spacing={2}>
-        <Stack spacing={1}
-        onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}
-        // onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}
-        onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.edit)}}}
-        >
-        <Typography variant='h4'>{index[section.id]}{section.text}</Typography>
-        <Typography>{section.description}</Typography>
-        </Stack>
-			{section.items.map((qs, idx) => {
+    const renderContent = () => (
+      <>
+      {section.items.map((qs, idx) => {
 				return(
           <QuestionEditorForm
 					key={qs.id}
@@ -92,8 +85,64 @@ export function SectionEditorForm({
           }
 				})}
 			</Menu>
-      <Divider variant='middle'/>
-			</Stack>
+      </>
+    );
+    return (
+      <SectionCommon
+      index={index}
+      question={section}
+      content={renderContent()}
+      handleMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}
+      handleClick={(e) => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.edit)}}}      
+      />
+      // <Stack spacing={2}>
+      //   <Stack spacing={1}
+      //   onMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}
+      //   // onMouseLeave={() => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.normal)}}}
+      //   onClick={(e) => {if (thisQuestionState === QuestionStateMap.hover) {handleSetQuestionState(section.id, QuestionStateMap.edit)}}}
+      //   >
+      //   <Typography variant='h4'>{index[section.id]}{section.text}</Typography>
+      //   <Typography>{section.description}</Typography>
+      //   </Stack>
+			// {section.items.map((qs, idx) => {
+			// 	return(
+      //     <QuestionEditorForm
+			// 		key={qs.id}
+			// 		index={index[qs.id]}
+			// 		editorState={editorState}
+			// 		question={qs}
+			// 		questionState={questionState}
+			// 		handleSetQuestionState={handleSetQuestionState}
+			// 		/>
+			// 	);
+			// })}
+      // <Button 
+			// 	color="inherit" 
+			// 	aria-controls={openAddQuestion ? 'basic-menu' : undefined}
+			// 	aria-haspopup="true"
+			// 	aria-expanded={openAddQuestion ? 'true' : undefined}
+			// 	onClick={handleOpenAddQuestion}
+			// >
+			// 	<AddCircle />
+			// </Button>
+			// <Menu
+			// 	anchorEl={anchorAddQuestion}
+			// 	open={openAddQuestion}
+			// 	onClose={(e) =>handleAddQuestion(undefined)}
+			// >
+			// 	{Object.keys(QuestionMenuTypesMap).map((key,idx) => {
+      //     if (key !== QuestionMenuTypesMap.section.type) {
+      //       return (
+      //         <MenuItem key={key} onClick={(e) =>handleAddQuestion(key)}>
+      //           {QuestionMenuTypesMap[key].icon}
+      //           <Typography>{QuestionMenuTypesMap[key].locale[locale]}</Typography>
+      //         </MenuItem>
+      //       );
+      //     }
+			// 	})}
+			// </Menu>
+      // <Divider variant='middle'/>
+			// </Stack>
     );
   }
   const renderEdit = () => {

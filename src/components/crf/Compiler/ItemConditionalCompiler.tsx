@@ -23,7 +23,7 @@ export function ItemConditionalCompilerForm({
   const isActive = question.compute();
 
 	return (
-			<Stack spacing={isActive ? 1 : 0}>
+			<Stack spacing={isActive ? 2 : 0}>
       {/* <Typography>score: {JSON.stringify(left.getScore())}</Typography>
       <Typography>value: {JSON.stringify(form.getValue(leftId))}</Typography>
       <Typography>expr: {JSON.stringify(question.expression)}</Typography>
