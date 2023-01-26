@@ -2,7 +2,7 @@ import React from 'react';
 import {QuestionSelect, TextScore} from '../../../survey'
 import {QuestionSelectMap} from '../../../core/schema'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
-import { AddCircle, Delete, ArrowUpward, ArrowDownward } from '@mui/icons-material';
+import { AddCircle, Delete, ArrowUpward, ArrowDownward, ArrowDropUp, ArrowDropDown, Add, Remove } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionSelectCommon } from '../common';
@@ -19,8 +19,16 @@ export function QuestionSelectEditorForm({
 
   const selects = question.options.select;
   if (typeof selects === 'undefined') { return null; }
+  const nextScore = (add?:number):number => {
+    const scores = selects.map((val)=>val.score);
+    let i = 0;
+    while (scores.includes(i)) {
+      i += 1;
+    }
+    return i;
+  }
   const addSelect = () => {
-    selects.push({text:"",score:selects.length} as TextScore);
+    selects.push({text:"",score:nextScore()} as TextScore);
     editor.onChangeValue(question.id, 'selectOptions', selects);
   } 
   const removeSelect = (idx:number) => {
@@ -30,7 +38,7 @@ export function QuestionSelectEditorForm({
         newSelects.push(selects[i]);
       } else if (i > idx) {
         var newSelect = selects[i];
-        newSelect.score -= 1;
+        // newSelect.score -= 1;
         newSelects.push(newSelect)
       }
     }
@@ -45,6 +53,12 @@ export function QuestionSelectEditorForm({
   } 
   const textSelect = (idx:number, value:string) => {
     selects[idx].text = value;
+    editor.onChangeValue(question.id, 'selectOptions', selects);
+  }
+  const scoreSelect = (idx:number, value:number) => {
+    const scores = selects.map((val)=>val.score);
+    // if (scores.includes(value)) { return }
+    selects[idx].score = value;
     editor.onChangeValue(question.id, 'selectOptions', selects);
   }
 
@@ -79,6 +93,34 @@ export function QuestionSelectEditorForm({
                   value={opt.text}
                   onChange={(e) => {textSelect(idx, e.target.value)}}
                 />
+                <Stack direction={'row'}>
+                <TextField
+                  disabled={true}
+                  type={'number'}
+                  value={opt.score}
+                  onChange={(e) => {scoreSelect(idx, Number(e.target.value))}}
+                  sx={{width:'56px'}}
+                />
+                <Stack>
+                <Button 
+                variant="outlined" 
+                color="inherit" 
+                onClick={(e) => {scoreSelect(idx, selects[idx].score+1)}}
+                sx={{height:'28px',minWidth:'28px',pl:'5px',pr:'5px'}}
+                >
+                <Add/>
+                </Button>
+                <Button 
+                variant="outlined" 
+                color="inherit" 
+                onClick={(e) => {scoreSelect(idx, selects[idx].score-1)}}
+                sx={{height:'28px',minWidth:'28px',pl:'5px',pr:'5px'}}
+                >
+                <Remove/>
+                </Button>
+                </Stack>
+                </Stack>
+
                 <Button 
                 variant="outlined" 
                 color="inherit" 

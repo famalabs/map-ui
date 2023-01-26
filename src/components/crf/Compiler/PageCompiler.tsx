@@ -17,7 +17,7 @@ export function PageCompilerForm ({
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 	const page = nav.getPage();
-	const orders = nav.getItemsGroupedOrderIndex()[nav.getFolderId()][page.id];
+	const orders = nav.getItemsGlobalOrderIndex()[nav.getFolderId()][page.id];
 
 	const ready = (
 		<div>

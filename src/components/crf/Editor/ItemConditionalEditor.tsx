@@ -146,7 +146,7 @@ export function ItemConditionalEditorForm({
     );
   }
 
-  enum guidedModalState {none,left,operator,right};
+  enum guidedModalState {none,left,operator,right}
   const guidedModalDefault = () => {return {
     modal: guidedModalState.none,
     expression: {

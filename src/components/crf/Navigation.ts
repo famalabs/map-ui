@@ -255,30 +255,68 @@ export class SurveyNav implements INavState {
 	 * 
 	 * @returns a obj with key = question.id, value = idx || obj if question is section
 	 */
-	public getItemsGlobalOrderIndex():any {
-		const order = {}
-		let idx = 1
-		for (let f = 0; f < this.getFolders().length; f++) {
-			const folder = this.getFolders()[f];
-			for (let p = 0; p < folder.items.length; p++) {
-				const page = folder.items[p];
-					for (let q = 0; q < page.items.length; q++) {
-						const question = page.items[q];
-						if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
-							order[question.id] = {};
-							for (let s = 0; s < question.items.length; s++) {
-								const secQs = question.items[s];
-								order[question.id][secQs.id] = idx.toString() + '. ';
-								idx+=1;
-							}
-						} else {
-							order[question.id] = idx.toString() + '. ';
-							idx+=1;
-						}
-					}
+	public getItemsGlobalOrderIndex():IOrderIndex {
+		let idx = 0;
+		const folders = this.getFolders().map((itm)=> itm.id);
+		const pages = this.getPages().map((itm)=> itm.id);
+		const recursive = (item:Item,acc:IOrderIndex):IOrderIndex => {
+			for(let i=0; i < item.items.length; i++) {
+				const itm = item.items[i];
+				if (!folders.includes(itm.id) && !pages.includes(itm.id)) { idx+=1; }
+				const index = (idx).toString();
+				acc[itm.id] = index+". ";
+				if (itm.items.length > 0) {
+					acc[itm.id] = {} as IOrderIndex;
+					(acc[itm.id] as IOrderIndex) = recursive(itm, (acc[itm.id] as IOrderIndex));
+					acc[itm.id][itm.id] = index+". ";
+					// if (getQuestionMenuType(itm) === QuestionMenuTypesMap.cond.type) {
+					// 	acc[itm.id] = {} as IOrderIndex;
+					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+					// 	acc[itm.id][itm.id] = index+". ";
+					// } if (getQuestionMenuType(itm) === QuestionMenuTypesMap.section.type) {
+					// 	acc[itm.id] = {} as IOrderIndex;
+					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+					// 	acc[itm.id][itm.id] = index+". ";
+					// } else if (folders.includes(itm.id) || pages.includes(itm.id)) {
+					// 	// page or folders
+					// 	acc[itm.id] = {} as IOrderIndex;
+					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, order, (acc[itm.id] as IOrderIndex));
+					// 	acc[itm.id][itm.id] = "";
+					// } else {
+					// 	// question table / multi check ...
+					// 	acc[itm.id] = {} as IOrderIndex;
+					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+					// 	acc[itm.id][itm.id] = index+". ";
+					// }
 				}
+			}
+			return acc;
 		}
-		return order;
+		const res = recursive(this.root, {} as IOrderIndex);
+		return res;
+		// const order = {}
+		// let idx = 1
+		// for (let f = 0; f < this.getFolders().length; f++) {
+		// 	const folder = this.getFolders()[f];
+		// 	for (let p = 0; p < folder.items.length; p++) {
+		// 		const page = folder.items[p];
+		// 			for (let q = 0; q < page.items.length; q++) {
+		// 				const question = page.items[q];
+		// 				if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
+		// 					order[question.id] = {};
+		// 					for (let s = 0; s < question.items.length; s++) {
+		// 						const secQs = question.items[s];
+		// 						order[question.id][secQs.id] = idx.toString() + '. ';
+		// 						idx+=1;
+		// 					}
+		// 				} else {
+		// 					order[question.id] = idx.toString() + '. ';
+		// 					idx+=1;
+		// 				}
+		// 			}
+		// 		}
+		// }
+		// return order;
 	}
 
 	public getItemsGroupedOrderIndex():IOrderIndex {
@@ -318,34 +356,7 @@ export class SurveyNav implements INavState {
 			return acc;
 		}
 		const res = recursive(this.root, "", {} as IOrderIndex);
-		console.log("groupedOrder", res);
 		return res;
-
-		// const order = {} as IOrderIndex;
-		
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 		let idx = 1
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 				const question = page.items[q];
-		// 				if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
-		// 					order[question.id] = {};
-		// 					for (let s = 0; s < question.items.length; s++) {
-		// 						const secQs = question.items[s];
-		// 						order[question.id][secQs.id] = idx.toString() + '.' + (s+1).toString() + '. ';
-		// 						// idx+=1;
-		// 					}
-		// 					idx+=1;
-		// 				} else {
-		// 					order[question.id] = idx.toString() + '. ';
-		// 					idx+=1;
-		// 				}
-		// 			}
-		// 		}
-		// }
-		// return order;
 	}
 
 	public getValue(): INavValue {

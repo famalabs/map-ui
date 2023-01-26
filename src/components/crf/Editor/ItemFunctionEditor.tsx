@@ -107,72 +107,7 @@ export function ItemFunctionEditorForm({
         }) : (<Typography>No Parameters</Typography>);
     }
 
-    // const renderSingleAddParam = (qs:Item, params:string[]) => {
-    //   return (
-    //     <div key={qs.id} style={{display:'flex', justifyContent: 'space-between'}}>
-    //     <Typography>{QuestionMenuTypesMap[getQuestionMenuType(qs)].icon}{qs.text}</Typography>
-    //     {qs.id !== question.id ? (
-    //       params.includes(qs.id) ? (
-    //         <Button variant="outlined" color="secondary"
-    //         onClick={(e) => {handleRemoveParam(qs.id)}}>
-    //         <Cancel/>
-    //         </Button>
-    //       ) : (
-    //         <Button variant="outlined" color="primary"
-    //         onClick={(e) => {handleAddParam(qs.id)}}>
-    //         <AddCircle />
-    //         </Button>
-    //       )
-    //     ) : (null)}
-    //     </div>
-    //   );
-    // }
-    
-    // const renderAddParams = () => {
-    //   const params = getRenderParams();
-    //   return (
-    //     <Stack spacing={1}>
-    //       {nav.getPages().map((page,idx) => {
-    //         return (
-    //           <Accordion key={page.id}>
-    //             <AccordionSummary
-    //               expandIcon={<ExpandMore />}
-    //             >
-    //               <Typography>{page.text}</Typography>
-    //             </AccordionSummary>
-    //             <AccordionDetails>
-    //               {page.items.map((qs,idx) => {
-    //                 // if (!params.includes(qs.id)) {
-    //                 if (getQuestionMenuType(qs) === QuestionMenuTypesMap.section.type) {
-    //                   return (
-    //                     <Accordion key={qs.id}>
-    //                       <AccordionSummary
-    //                         expandIcon={<ExpandMore />}
-    //                       >
-    //                         <Typography>{qs.text}</Typography>
-    //                       </AccordionSummary>
-    //                       <AccordionDetails>
-    //                         {qs.items.map((qss,idx) => {
-    //                           return renderSingleAddParam(qss,params);
-    //                           // }
-    //                         })}
-    //                       </AccordionDetails>
-    //                     </Accordion>
-    //                   );
-    //                 }
-    //                 return renderSingleAddParam(qs,params);
-    //                 // }
-    //               })}
-    //             </AccordionDetails>
-    //           </Accordion>
-    //         );
-    //       })}
-    //     </Stack>
-    //   );
-    // }
-
-
-    enum GuidedModalState {none,selectParam,selectTable};
+    enum GuidedModalState {none,selectParam,selectTable}
     const guidedModalDefault = () => {return{
       state: GuidedModalState.none,
       param: null as Item,
@@ -255,25 +190,6 @@ export function ItemFunctionEditorForm({
                 </Button>
                 {renderChipParams()}
               </Stack>
-            {/* <Modal
-            open={modalPrams}
-            onClose={(e) => setModalParams(false)}
-            >
-              <Paper sx={{
-                position: 'absolute' as 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 320,
-                p: '24px',
-              }}>
-              <Stack spacing={2}>
-                <Stack direction={'row'} spacing={2} style={{flexWrap: 'wrap'}}>{renderChipParams()}</Stack>
-                <Divider variant='middle'>Add Parameter</Divider>
-                {renderAddParams()}
-              </Stack>
-              </Paper>
-            </Modal> */}
             </div>
           </Stack>
 
