@@ -1,6 +1,6 @@
 import {Question} from './question';
 import {isDefault} from "./config";
-import { QuestionTextMap } from './config-map';
+import { QuestionTextMap } from '../../components/forms/config-map';
 
 export class QuestionText extends Question {
 

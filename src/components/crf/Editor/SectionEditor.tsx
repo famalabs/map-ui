@@ -1,5 +1,5 @@
 import React from 'react';
-import {QuestionMenuTypesMap} from '../../../core/schema'
+import {QuestionMenuTypesMap} from '../../forms'
 import {Item, ItemConditional} from '../../../survey'
 import { Stack, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';

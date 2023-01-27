@@ -1,7 +1,7 @@
 import {Question} from './question';
 import {TextScore} from './answer';
 import { isDefault} from './config';
-import { QuestionSelectMap } from './config-map';
+import { QuestionSelectMap } from '../../components/forms/config-map';
 
 export class QuestionSelect extends Question {
   // {"id":"31","type":"QuestionSelect","text":"Genere","options":{"required":true},"selectOptions":[{"text":"M","score":0},{"text":"F","score":1}]}

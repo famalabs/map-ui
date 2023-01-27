@@ -1,12 +1,11 @@
 import React from 'react';
-import {GroupMap} from '../../../core/schema';
+import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap} from '../../forms';
 import {Item} from '../../../survey';
 import {AddCircle} from '@mui/icons-material';
 import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material';
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IUseEditorState } from './EditorBuilder';
-import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 
 export const QuestionStateMap = {
   normal:"normal",

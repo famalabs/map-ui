@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from "@mui/material";
-import { GroupMap } from "../../../core/schema";
+import { GroupMap } from "../../forms";
 import React from "react";
 import { IUseFormCompiler } from "./FormCompiler";
 import { PageCompilerForm } from "./PageCompiler";

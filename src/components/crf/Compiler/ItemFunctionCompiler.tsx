@@ -5,7 +5,7 @@ import { AddCircle, Cancel, ExpandMore, Refresh} from '@mui/icons-material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
 import { QuestionCommonCompilerProps } from './CommonCompiler';
 import { QuestionHeaderCommon } from '../common';
-import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../forms';
 
 export function ItemFunctionCompilerForm({
   formCompiler,

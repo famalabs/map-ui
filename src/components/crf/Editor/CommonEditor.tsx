@@ -1,6 +1,6 @@
 import { TextField, FormControl, Select, MenuItem, Typography, Stack, FormControlLabel, Checkbox, Divider } from '@mui/material';
 import { Box } from '@mui/system';
-import { QuestionMenuTypesMap, getQuestionMenuType } from '../../../core/schema';
+import { QuestionMenuTypesMap, getQuestionMenuType } from '../../forms/config-types';
 import React from 'react'
 import { Item, Question } from '../../../survey'
 import { IEditorState, IUseEditorState } from './EditorBuilder';

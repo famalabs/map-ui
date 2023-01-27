@@ -1,6 +1,6 @@
 import React from 'react';
 import {QuestionSelect, TextScore} from '../../../survey'
-import {QuestionSelectMap} from '../../../core/schema'
+import {QuestionSelectMap} from '../../forms'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem } from '@mui/material';
 import { AddCircle, Delete, ArrowUpward, ArrowDownward, ArrowDropUp, ArrowDropDown, Add, Remove } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';

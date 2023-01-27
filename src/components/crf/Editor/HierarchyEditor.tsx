@@ -1,7 +1,7 @@
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { Modal, Paper, Stack, Typography, Chip, Select, MenuItem, Button } from "@mui/material";
 import React from "react";
-import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap } from "../../../core/schema";
+import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap } from "../../forms";
 import { Item, ItemConditional } from "../../../survey/src";
 import { IEditorState, IUseEditorState } from "./EditorBuilder";
 

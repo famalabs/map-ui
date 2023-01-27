@@ -1,6 +1,6 @@
 import { QuestionList } from "../../survey/src/lib/form/question-list";
-import { ItemConditional, ItemFunction } from "../../survey/src";
-import { MAX_FIELD_SIZE } from "./config";
+import { ItemConditional, ItemFunction } from "../../survey";
+// import { MAX_FIELD_SIZE } from "../../core/schema/config";
 
 export function fromMapToDefault(options:any) {
     var acc = {}
@@ -137,7 +137,7 @@ export const QuestionTextMap = {
             default: 0
         },
         maxLength: {
-            default: MAX_FIELD_SIZE
+            default: 500
         }
     },
     layout: {

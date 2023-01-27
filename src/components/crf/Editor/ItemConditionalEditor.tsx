@@ -5,7 +5,7 @@ import { IUseEditorState } from './EditorBuilder';
 import { QuestionStateMap } from './PageEditor';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 import { Parameter, Expression, Literal, Operator, Identifier, CallExpression, ExpressionValue } from '../../../survey/src/lib/form/ast';
-import { getQuestionMenuType, ItemConditionalMap, QuestionMenuTypesMap } from '../../../core/schema';
+import { getQuestionMenuType, ItemConditionalMap, QuestionMenuTypesMap } from '../../forms';
 import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
 import { AddCircle, Edit } from '@mui/icons-material';
 import { QuestionEditorForm } from './QuestionEditor';

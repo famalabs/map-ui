@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionCheckMap } from '../../../core/schema'
+import { QuestionCheckMap } from '../../forms'
 import { QuestionCheck } from '../../../survey'
 import { Checkbox, FormControlLabel, FormHelperText, FormLabel, Stack, Switch, Typography } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';

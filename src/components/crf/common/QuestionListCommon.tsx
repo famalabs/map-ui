@@ -1,5 +1,5 @@
 import React from 'react';
-import {QuestionSelectMap} from '../../../core/schema'
+import {QuestionSelectMap} from '../../forms'
 import {QuestionSelect} from '../../../survey'
 import { FormControlLabel, FormControl, Typography, FormLabel, RadioGroup, Radio, Select, MenuItem, FormHelperText } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';

@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 // import {Survey, SurveyMap, fromMapToDefault, SurveyItem, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap, QuestionCheckMap, Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck,GroupMap, QuestionMap, FnMap, ItemFunction} from '../../../core/schema'
-import { SurveyMap, fromMapToDefault, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap,GroupMap, QuestionMap, FnMap, QuestionCheckMap} from '../../../core/schema'
+import { getQuestionMenuType, QuestionMenuTypesMap,  SurveyMap, fromMapToDefault, QuestionTextMap, QuestionNumberMap, QuestionSelectMap, QuestionDateMap,GroupMap, QuestionMap, FnMap, QuestionCheckMap} from '../../forms'
 import { INavState, SurveyNav, useNavState } from '../Navigation';
-import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 import { Survey, Item, DBSchema, SurveyMode, Question, QuestionCheck, QuestionNumber, QuestionNumberOptions, QuestionDate, QuestionSelect, QuestionText, TextScore, ItemFunction, ItemConditional } from '../../../survey'
 import { Expression } from '../../../survey/src/lib/form/ast';
 import { ComputableData } from '../../../survey/src/lib/form/computable';

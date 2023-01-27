@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionTextMap } from '../../../core/schema'
+import { QuestionTextMap } from '../../forms'
 import { QuestionText } from '../../../survey'
 import { TextField, FormLabel, Stack, Typography } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';

@@ -1,7 +1,7 @@
 import {SurveyItem} from './survey-item';
 import {DBAnswer, IAnswerable} from './answer';
 import {isDefault} from './config';
-import { QuestionMap } from './config-map';
+import { QuestionMap } from '../../components/forms/config-map';
 
 export class Question extends SurveyItem implements IAnswerable<any> {
 

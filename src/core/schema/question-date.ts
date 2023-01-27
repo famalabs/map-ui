@@ -1,7 +1,7 @@
 import {Question} from './question';
 import {DBAnswer} from './answer';
 import {isDefault} from './config';
-import { QuestionDateMap } from './config-map';
+import { QuestionDateMap } from '../../components/forms/config-map';
 
 export class QuestionDate extends Question {
 

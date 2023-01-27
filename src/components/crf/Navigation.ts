@@ -1,6 +1,5 @@
 import React from 'react'
-// import { getQuestionMenuType, GroupMap, Question, QuestionMenuTypesMap, SurveyItem, SurveyMap } from '../../core/schema';
-import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, SurveyMap } from '../../core/schema';
+import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, SurveyMap } from '../forms';
 import { Survey, Item, DBSchema } from '../../survey'
 
 export interface IOrderIndex {

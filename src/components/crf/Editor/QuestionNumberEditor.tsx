@@ -1,5 +1,5 @@
 import React from 'react';
-import {QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../../core/schema'
+import {QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberMinValue, toValidQuestionNumberStep} from '../../forms'
 import {QuestionNumber,Unit} from '../../../survey'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';

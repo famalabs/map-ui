@@ -1,5 +1,5 @@
 import React from 'react';
-import {GroupMap} from '../../../core/schema'
+import {GroupMap} from '../../forms'
 import { Button, Paper, TextField, Typography, FormLabel, Stack, Divider, Box, Modal, Select, MenuItem } from '@mui/material';
 import { ArrowUpward, ArrowDownward, Edit, Delete, Cancel, CheckCircle, NoteAdd, ArrowBackIos, ArrowForwardIos} from '@mui/icons-material';
 import { PageEditorForm } from './PageEditor';

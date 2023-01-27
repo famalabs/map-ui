@@ -1,6 +1,6 @@
 import React from 'react';
 import { ItemFunction, Item } from '../../../survey'
-import { FnMap, getQuestionMenuType, QuestionMenuTypesMap} from '../../../core/schema'
+import { FnMap, getQuestionMenuType, QuestionMenuTypesMap} from '../../forms'
 import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';

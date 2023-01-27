@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { QuestionCompilerForm } from './QuestionCompiler';
-import { GroupMap } from '../../../core/schema';
+import { GroupMap } from '../../forms';
 import { IUseFormCompiler } from './FormCompiler';
 
 export interface PageCompilerFormProps {

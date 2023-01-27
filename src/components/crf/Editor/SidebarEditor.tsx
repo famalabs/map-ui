@@ -1,5 +1,5 @@
 import React from 'react';
-import {SurveyMap} from '../../../core/schema'
+import {SurveyMap} from '../../forms'
 import { Button, Paper, TextField, Typography, FormLabel, Box, Stack, List, ListItem, Divider } from '@mui/material';
 import {Edit, Delete, Settings, FormatListNumbered, FolderOpen, CreateNewFolder, Preview, ArrowUpward, ArrowDownward} from '@mui/icons-material';
 import { renderSelectOption } from './OptionsEditor';

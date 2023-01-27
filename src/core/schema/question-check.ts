@@ -1,6 +1,6 @@
 import {Question} from './question';
 import { isDefault} from './config';
-import { QuestionCheckMap } from './config-map';
+import { QuestionCheckMap } from '../../components/forms/config-map';
 
 export class QuestionCheck extends Question {
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroupMap, QuestionSelectMap } from '../../../core/schema'
+import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap, QuestionSelectMap } from '../../forms'
 import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, ItemConditional } from '../../../survey'
 import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper, Accordion, AccordionDetails, AccordionSummary, Modal, Chip } from '@mui/material';
 import {Edit, Expand, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined, ExpandMore, VerticalAlignBottom, VerticalAlignTop, ContentCopy} from '@mui/icons-material';
@@ -12,7 +12,6 @@ import { QuestionTableEditorForm } from './QuestionTableEditor';
 import { ItemFunctionEditorForm } from './ItemFunctionEditor';
 import { QuestionCheckEditorForm } from './QuestionCheckEditor';
 import { QuestionStateMap } from './PageEditor';
-import { getQuestionMenuType, QuestionMenuTypesMap } from '../../../core/schema/config-types';
 import { SectionEditorForm } from './SectionEditor';
 import { ItemConditionalEditorForm } from './ItemConditionalEditor';
 import { IHierarchyValue, RenderHierarchy, RenderMoveModal } from './HierarchyEditor';

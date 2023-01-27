@@ -1,5 +1,5 @@
 import React from 'react';
-import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, QuestionSelectMap } from '../../../core/schema';
+import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, QuestionSelectMap } from '../../forms';
 import { ItemFunction, QuestionCheck, QuestionDate, QuestionNumber, QuestionSelect, QuestionText, Item, ItemConditional } from '../../../survey';
 import { IUseFormCompiler } from './FormCompiler';
 import { QuestionNumberCompilerForm } from './QuestionNumberCompiler';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionNumberMap } from '../../../core/schema'
+import { QuestionNumberMap } from '../../forms'
 import { QuestionNumber } from '../../../survey'
 import { FormHelperText, InputAdornment, Slider, Stack, TextField, Typography } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';

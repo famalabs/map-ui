@@ -1,6 +1,6 @@
 import { Form, useFormState, toUseFormState } from "../../../components/forms";
 import { QuestionNumber, Survey, Item, DBSchema } from "../../../survey";
-import { ValidatorsLocaleMap } from '../../../core/schema'
+import { ValidatorsLocaleMap } from '../../forms'
 import React from "react";
 import { INavState, useNavState } from "../Navigation";
 
