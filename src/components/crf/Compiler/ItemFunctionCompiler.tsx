@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Chip, FormLabel, Stack, Typography } from '@mui/material';
+import { Button, Chip, FormLabel, Stack, TextField, Typography } from '@mui/material';
 import { ItemFunction, Item, Question } from '../../../survey';
 import { AddCircle, Cancel, ExpandMore, Refresh} from '@mui/icons-material';
 import { IUseFormCompiler, useQuestionHandler } from './FormCompiler';
@@ -36,10 +36,14 @@ export function ItemFunctionCompilerForm({
 				question={question}
 				required={false}
 				/>
-				<Typography>{question.fn}: {computed}</Typography>
-				{/* <Typography>Params: {question.params().toString()}</Typography>
-				<Typography>Params: {question.parameters.toString()}</Typography> */}
-				{/* <Typography>Params0: {question.params()[0].getAnswer().toString()}</Typography> */}
+				{/* <Typography>{question.fn}: {computed}</Typography> */}
+				<TextField
+					disabled
+          variant='outlined'
+          label={question.fn}
+          value={computed}
+        />
+				
 				<Stack spacing={2} direction={'row'} style={{flexWrap: 'wrap'}}>
 				{question.parameters.map((id,idx) => {
 					const param = nav.findItemById(id);
