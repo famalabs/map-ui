@@ -7,7 +7,8 @@ import { QuestionCheckCommon } from './QuestionCheckCommon';
 import { IUseFormCompiler, useQuestionHandler } from '../Compiler';
 
 export interface QuestionMultipleSelectommonProps extends QuestionCommonProps<Item> {
-  formCompiler?: IUseFormCompiler;
+  // formCompiler?: IUseFormCompiler;
+  useQuestionHandler?:any;
 }
 
 export function QuestionMultipleSelectCommon({
@@ -20,7 +21,7 @@ export function QuestionMultipleSelectCommon({
   error,
   helperText,
   disabled,
-  formCompiler,
+  useQuestionHandler,
   }: QuestionMultipleSelectommonProps) {
     
     const checks = question.items as QuestionCheck[];
@@ -34,8 +35,8 @@ export function QuestionMultipleSelectCommon({
       />
       <FormControl fullWidth>
       {checks.map((check,idx) => {
-        if (typeof formCompiler !== 'undefined') {
-          const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(check, formCompiler);  
+        if (typeof useQuestionHandler !== 'undefined') {
+          const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(check);  
           return (
             <FormControlLabel
             disabled={disabled}

@@ -17,17 +17,20 @@ export interface QuestionCompilerFormProps {
 	index?: any;
 	item: Item;
 	formCompiler: IUseFormCompiler;
+	disabled?:boolean;
 }
 
 export function QuestionCompilerForm({
 	index,
 	item,
 	formCompiler,
+	disabled=false,
 }: QuestionCompilerFormProps) {
 	const form = formCompiler.form;
 	const nav = formCompiler.nav;
 
-	const thisIndex = index[item.id];
+	// const thisIndex = index[item.id];
+	const thisIndex = nav.getItemOrderIndex(item.id);
 
 	// console.log('rendering',item);
 	if (item instanceof QuestionText) {
@@ -36,6 +39,7 @@ export function QuestionCompilerForm({
 			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
+			disabled={disabled}
 			/>
 		);
 	} else if (item instanceof QuestionDate) {
@@ -44,6 +48,7 @@ export function QuestionCompilerForm({
 			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
+			disabled={disabled}
 			/>
 		);
 	} else if (item instanceof QuestionNumber) {
@@ -52,6 +57,7 @@ export function QuestionCompilerForm({
 			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
+			disabled={disabled}
 			/>
 		);
 	} else if (item instanceof QuestionCheck) {
@@ -60,6 +66,7 @@ export function QuestionCompilerForm({
 			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
+			disabled={disabled}
 			/>
 			);
 	} else if (item instanceof QuestionSelect) {
@@ -68,6 +75,7 @@ export function QuestionCompilerForm({
 			index={thisIndex}
 			formCompiler={formCompiler}
 			question={item}
+			disabled={disabled}
 			/>
 		);
 	} else if (item instanceof ItemFunction) {
@@ -76,6 +84,7 @@ export function QuestionCompilerForm({
 			formCompiler={formCompiler}
 			question={item}
 			index={thisIndex}
+			disabled={disabled}
 			/>
 		);
 	} else if (item instanceof ItemConditional) {
@@ -84,6 +93,7 @@ export function QuestionCompilerForm({
 			formCompiler={formCompiler}
 			question={item}
 			index={thisIndex}
+			disabled={disabled}
 			/>
 		);
 	} else  {
@@ -93,6 +103,7 @@ export function QuestionCompilerForm({
 					formCompiler={formCompiler}
 					question={item}
 					index={thisIndex}
+					disabled={disabled}
 					/>
 				);
 		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.section.type) {
@@ -101,6 +112,7 @@ export function QuestionCompilerForm({
 				index={thisIndex}
 				formCompiler={formCompiler}
 				question={item}
+				disabled={disabled}
 				/>
 			);
 		} else if (getQuestionMenuType(item) === QuestionMenuTypesMap.multipleSelect.type) {
@@ -108,6 +120,7 @@ export function QuestionCompilerForm({
 				index={thisIndex}
 				formCompiler={formCompiler}
 				question={item}
+				disabled={disabled}
 			/>);
 		}
 	}

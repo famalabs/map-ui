@@ -1,11 +1,10 @@
 import React from 'react';
-import {QuestionSelect, Item, TextScore,QuestionSelectOptions} from '../../../survey'
-import { TextField, Stack, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Typography, Divider, Button } from '@mui/material';
+import {QuestionSelect, Item, TextScore} from '../../../survey'
+import { TextField, Stack, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Button } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
-import { EditorBuilder, IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
+import { EditorBuilder } from './EditorBuilder';
 import { QuestionTableCommon } from '../common';
-import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps } from './CommonEditor';
 
 export function QuestionTableEditorForm({
   index,

@@ -6,4 +6,5 @@ export interface QuestionCommonCompilerProps<T extends Item> {
   formCompiler: IUseFormCompiler;
   question: T;
 	index: string;
+  disabled: boolean;
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import {QuestionText} from '../../../survey'
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
 import { QuestionTextCommon } from '../common';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 

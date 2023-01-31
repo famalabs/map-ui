@@ -8,6 +8,7 @@ export function QuestionSelectCompilerForm({
   formCompiler,
   question,
 	index,
+  disabled,
   }: QuestionCommonCompilerProps<QuestionSelect>) {
 
   const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(question, formCompiler);
@@ -18,7 +19,7 @@ export function QuestionSelectCompilerForm({
     index={index}
     question={question}
     required={required}
-    disabled={false}
+    disabled={disabled}
     value={value}
     handleOnChange={handleOnChange}
     handleOnBlur={handleOnBlur}

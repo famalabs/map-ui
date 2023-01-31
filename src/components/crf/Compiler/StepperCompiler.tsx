@@ -3,7 +3,7 @@ import { Item } from '../../../survey';
 import React from 'react';
 import { INavState, SurveyNav } from '../Navigation';
 import { IUseFormCompiler } from './FormCompiler';
-import {CheckCircle, Cancel, Edit} from '@mui/icons-material';
+import {CheckCircle, Cancel, Edit, KeyboardHide} from '@mui/icons-material';
 
 export interface HorizontalStepperProps {
     formCompiler:IUseFormCompiler;
@@ -18,8 +18,9 @@ export function HorizontalStepper({
     
     const renderIcon = (pg:Item) => {
         return pg.id===nav.getPageId() ? 
-        (<Edit/>) : form.getValid(pg.id) ?
-            (<CheckCircle color="success"/>) : (<Cancel color="error"/>);
+        (<KeyboardHide/>) : form.getValid(pg.id) ?
+        (<CheckCircle color="success"/>) : (<Edit/>);
+        // (<CheckCircle color="success"/>) : (<Cancel color="error"/>);
     }
 
     if (nav.getPages().length <= 1) {

@@ -10,6 +10,7 @@ export function SectionCompilerForm({
   formCompiler,
   question,
 	index,
+  disabled,
   }: QuestionCommonCompilerProps<Item>) {
 
 	const form = formCompiler.form;
@@ -24,6 +25,7 @@ export function SectionCompilerForm({
 						index={index}
 						item={qs}
 						formCompiler={formCompiler}
+						disabled={disabled}
 						/>
 				);
 			})}
@@ -31,7 +33,7 @@ export function SectionCompilerForm({
 	)
 	return (
 			<SectionCommon
-			index={index}
+			index={nav.getItemOrderIndex(question.id)}
 			question={question}
 			content={renderContent()}
 			handleMouseEnter={undefined}

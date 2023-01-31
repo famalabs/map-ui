@@ -4,7 +4,6 @@ import {QuestionMenuTypesMap, QuestionSelectMap} from '../../forms'
 import { Button, TextField, FormControlLabel, FormControl, Typography, FormLabel, Stack, RadioGroup, Radio, Divider, Select, MenuItem, Checkbox } from '@mui/material';
 import { AddCircle, Delete, ArrowUpward, ArrowDownward, Check } from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
 import { QuestionMultipleSelectCommon, QuestionSelectCommon } from '../common';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
 

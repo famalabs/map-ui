@@ -1,9 +1,9 @@
 import React from 'react';
-import { getQuestionMenuType, QuestionMenuTypesMap, GroupMap, QuestionSelectMap } from '../../forms'
-import { Question, QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, ItemConditional } from '../../../survey'
-import { Button, TextField, FormControlLabel, FormControl, Typography, Select, MenuItem, FormLabel, Stack, Box, Tabs, Tab, Checkbox, Divider, Paper, Accordion, AccordionDetails, AccordionSummary, Modal, Chip } from '@mui/material';
-import {Edit, Expand, CheckCircle, Cancel, Settings, ArrowUpward, ArrowDownward, Delete, Preview, SettingsAccessibilityOutlined, ExpandMore, VerticalAlignBottom, VerticalAlignTop, ContentCopy} from '@mui/icons-material';
-import { IEditorState, IUseEditorState } from './EditorBuilder';
+import { getQuestionMenuType, QuestionMenuTypesMap } from '../../forms'
+import { QuestionText, QuestionNumber, QuestionSelect, QuestionDate, QuestionCheck, Item, ItemFunction, ItemConditional } from '../../../survey'
+import { Button, Typography, Stack, Box, Tabs, Tab } from '@mui/material';
+import {Edit, Expand, CheckCircle, Cancel, Settings, Delete, Preview, ContentCopy} from '@mui/icons-material';
+import { IUseEditorState } from './EditorBuilder';
 import { QuestionTextEditorForm } from './QuestionTextEditor';
 import { QuestionNumberEditorForm } from './QuestionNumberEditor';
 import { QuestionSelectEditorForm } from './QuestionSelectEditor';
@@ -11,13 +11,11 @@ import { QuestionDateEditorForm } from './QuestionDateEditor';
 import { QuestionTableEditorForm } from './QuestionTableEditor';
 import { ItemFunctionEditorForm } from './ItemFunctionEditor';
 import { QuestionCheckEditorForm } from './QuestionCheckEditor';
-import { QuestionStateMap } from './PageEditor';
 import { SectionEditorForm } from './SectionEditor';
 import { ItemConditionalEditorForm } from './ItemConditionalEditor';
-import { IHierarchyValue, RenderHierarchy, RenderMoveModal } from './HierarchyEditor';
-import { QuestionList } from '../../../survey/src/lib/form/question-list';
-import { QuestionListEditorForm } from './QuestionListEditor';
+import { RenderMoveModal } from './HierarchyEditor';
 import { QuestionMultipleSelectEditorForm } from './QuestionMultipleSelectEditor';
+import { QuestionStateMap } from './CommonEditor';
 
 export interface QuestionEditorFormProps {
   index?: any;
@@ -39,6 +37,8 @@ export function QuestionEditorForm({
   const editor = editorState.editor;
   const nav = editorState.nav;
 
+  const thisIndex = nav.getItemOrderIndex(question.id);
+
   const isSection = getQuestionMenuType(question) === QuestionMenuTypesMap.section.type;
   const isItemCond = getQuestionMenuType(question) === QuestionMenuTypesMap.cond.type;
   // const thisQuestionState = (isSection || isItemCond) ? questionState[question.id] : questionState;
@@ -53,7 +53,7 @@ export function QuestionEditorForm({
     if (question instanceof QuestionText) {
       return (
         <QuestionTextEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -62,7 +62,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionNumber) {
       return (
         <QuestionNumberEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -71,7 +71,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionDate) {
       return (
         <QuestionDateEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -80,7 +80,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionCheck) {
       return (
         <QuestionCheckEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -89,7 +89,7 @@ export function QuestionEditorForm({
     } else if (question instanceof QuestionSelect) {
       return (
         <QuestionSelectEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -98,7 +98,7 @@ export function QuestionEditorForm({
     // } else if (question instanceof QuestionList) {
     //   return (
     //     <QuestionListEditorForm
-    //       index={index}
+    //       index={thisIndex}
     //       editorState={editorState}
     //       question={question}
     //       questionState={thisQuestionState}
@@ -107,7 +107,7 @@ export function QuestionEditorForm({
     } else if (question instanceof ItemFunction) {
       return (
         <ItemFunctionEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}
@@ -116,7 +116,7 @@ export function QuestionEditorForm({
     } else if (question instanceof ItemConditional) {
       return (
         <ItemConditionalEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={questionState}
@@ -127,7 +127,7 @@ export function QuestionEditorForm({
       if (QuestionMenuTypesMap.selectTable.type === getQuestionMenuType(question)) {
         return (
           <QuestionTableEditorForm
-            index={index}
+            index={thisIndex}
             editorState={editorState}
             question={question}
             questionState={thisQuestionState}
@@ -147,7 +147,7 @@ export function QuestionEditorForm({
       } else if (QuestionMenuTypesMap.multipleSelect.type === getQuestionMenuType(question)) {
         return (
           <QuestionMultipleSelectEditorForm
-          index={index}
+          index={thisIndex}
           editorState={editorState}
           question={question}
           questionState={thisQuestionState}

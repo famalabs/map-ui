@@ -3,7 +3,6 @@ import {QuestionNumberMap, toValidQuestionNumberMaxValue, toValidQuestionNumberM
 import {QuestionNumber,Unit} from '../../../survey'
 import { TextField, FormLabel, Stack, Typography, Slider, InputAdornment } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
 import { renderSelectOption } from './OptionsEditor';
 import { QuestionNumberCommon } from '../common';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';

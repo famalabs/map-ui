@@ -1,8 +1,7 @@
 import React from 'react';
 import {QuestionCheck} from '../../../survey'
-import { QuestionStateMap } from './PageEditor';
 import { QuestionCheckCommon } from '../common';
-import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps } from './CommonEditor';
 
 export function QuestionCheckEditorForm({
   index,

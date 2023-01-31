@@ -1,12 +1,11 @@
 import React from 'react';
 import {QuestionMenuTypesMap} from '../../forms'
-import {Item, ItemConditional} from '../../../survey'
-import { Stack, Typography, Button, Menu, MenuItem, Divider } from '@mui/material';
+import {Item} from '../../../survey'
+import { Typography, Button, Menu, MenuItem } from '@mui/material';
 import {AddCircle} from '@mui/icons-material';
 import { IUseEditorState } from './EditorBuilder';
 import { QuestionEditorForm } from './QuestionEditor';
-import { QuestionStateMap } from './PageEditor';
-import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionStateMap } from './CommonEditor';
 import { SectionCommon } from '../common';
 
 export interface SectionEditorFormProps {
@@ -89,7 +88,7 @@ export function SectionEditorForm({
     );
     return (
       <SectionCommon
-      index={index}
+      index={index[section.id]}
       question={section}
       content={renderContent()}
       handleMouseEnter={() =>  {if (thisQuestionState === QuestionStateMap.normal){handleSetQuestionState(section.id, QuestionStateMap.hover)}}}

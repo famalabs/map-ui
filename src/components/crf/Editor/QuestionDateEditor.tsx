@@ -2,7 +2,6 @@ import React from 'react';
 import {QuestionDate} from '../../../survey'
 import { FormLabel, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
 import { DatePicker } from '@mui/x-date-pickers';
 import { QuestionDateCommon } from '../common';
 import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';

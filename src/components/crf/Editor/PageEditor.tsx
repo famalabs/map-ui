@@ -6,14 +6,7 @@ import { Button, Paper, Typography, MenuItem, Menu, Stack } from '@mui/material'
 import { QuestionEditorForm } from './QuestionEditor';
 import { INavState } from '../Navigation';
 import { IUseEditorState } from './EditorBuilder';
-
-export const QuestionStateMap = {
-  normal:"normal",
-  hover:"hover",
-  edit:"edit",
-  options:"options",
-  layout:"layout"
-}
+import { QuestionStateMap } from './CommonEditor';
 
 const locale = "it";
 
@@ -73,7 +66,8 @@ export function PageEditorForm({
 	const editor = editorState.editor;
 	const nav = editorState.nav;
 	const page = nav.getPage();
-	const orders = nav.getItemsGlobalOrderIndex()[nav.getFolderId()][page.id];
+	// const orders = nav.getItemsGlobalOrderIndex()[nav.getFolderId()][page.id];
+	const orders = nav.getItemsGlobalOrderIndex();
 	const [anchorAddQuestion, setAnchorAddQuestion] = React.useState<null | HTMLElement>(null);
 	const openAddQuestion = Boolean(anchorAddQuestion);
 	const handleOpenAddQuestion = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -141,7 +135,7 @@ export function PageEditorForm({
 			{/* <Typography variant='h6'>Questions</Typography> */}
 			<Stack spacing={2}>
 			{page.items.map((question, index) => {
-				// console.log('before render qs', question.id, questionState, questionState[question.id]);
+				// console.log('before render qs', question.id, questionState, questionState);
 				// const realQuestionState = [QuestionMenuTypesMap.section.type,QuestionMenuTypesMap.cond.type].includes(getQuestionMenuType(question))
 				// ? questionState : questionState[question.id] ?? QuestionStateMap.normal;
 				
@@ -150,7 +144,7 @@ export function PageEditorForm({
 					return (
 					<QuestionEditorForm
 					key={question.id}
-					index={orders[question.id]}
+					index={orders}
 					editorState={editorState}
 					question={question}
 					questionState={questionState}
@@ -162,7 +156,7 @@ export function PageEditorForm({
 					<Paper>
 						<QuestionEditorForm
 							key={question.id}
-							index={orders[question.id]}
+							index={orders}
 							editorState={editorState}
 							question={question}
 							questionState={questionState}

@@ -2,8 +2,7 @@ import React from 'react';
 import {DBSchema, Item, ItemConditional, QuestionCheck, QuestionNumber, QuestionSelect} from '../../../survey'
 import { Button, Checkbox, Chip, Divider, FormControlLabel, FormLabel, Menu, MenuItem, Modal, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
-import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { QuestionCommonEditorForm, QuestionCommonEditorProps, QuestionGeneralEdit, QuestionStateMap, renderGeneralOptions } from './CommonEditor';
 import { Parameter, Expression, Literal, Operator, Identifier, CallExpression, ExpressionValue } from '../../../survey/src/lib/form/ast';
 import { getQuestionMenuType, ItemConditionalMap, QuestionMenuTypesMap } from '../../forms';
 import { IHierarchyValue, RenderHierarchy } from './HierarchyEditor';
@@ -80,7 +79,7 @@ export function ItemConditionalEditorForm({
           <QuestionEditorForm
 					key={question.id}
 					// index={null}
-					index={index[question.id]}
+					index={index}
 					editorState={editorState}
 					question={question}
 					questionState={questionState}

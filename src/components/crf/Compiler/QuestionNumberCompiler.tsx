@@ -8,6 +8,7 @@ export function QuestionNumberCompilerForm({
   formCompiler,
   question,
 	index,
+  disabled,
   }: QuestionCommonCompilerProps<QuestionNumber>) {
 
   const form = formCompiler.form;
@@ -21,7 +22,7 @@ export function QuestionNumberCompilerForm({
     index={index}
     question={question}
     required={required}
-    disabled={false}
+    disabled={disabled}
     value={value}
     handleOnChange={handleOnChange}
     handleOnBlur={handleOnBlur}

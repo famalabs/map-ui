@@ -11,6 +11,7 @@ export function QuestionDateCompilerForm({
   formCompiler,
   question,
 	index,
+  disabled,
   }: QuestionCommonCompilerProps<QuestionDate>) {
 
   const form = formCompiler.form;
@@ -24,7 +25,7 @@ export function QuestionDateCompilerForm({
       index={index}
       question={question}
       required={required}
-      disabled={false}
+      disabled={disabled}
       value={value}
       handleOnChange={handleOnChange}
       handleOnBlur={handleOnBlur}

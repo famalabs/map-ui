@@ -25,7 +25,7 @@ export function SectionCommon({
       onMouseEnter={handleMouseEnter}
       onClick={handleClick}
       >
-      <Typography variant='h4'>{index[question.id]}{question.text}</Typography>
+      <Typography variant='h4'>{index}{question.text}</Typography>
       <Typography>{question.description}</Typography>
       </Stack>
       {content}

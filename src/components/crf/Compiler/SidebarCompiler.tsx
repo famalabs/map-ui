@@ -2,7 +2,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Button, ListItemBut
 import { Item } from "../../../survey";
 import React from "react";
 import { IUseFormCompiler } from "./FormCompiler";
-import {ExpandMore, CheckCircle, Cancel} from '@mui/icons-material';
+import {ExpandMore, CheckCircle, Cancel, Edit} from '@mui/icons-material';
 
 export interface SidebarCompilerProps {
 	formCompiler: IUseFormCompiler;
@@ -43,38 +43,48 @@ export function SidebarCompiler ({
 				<Typography variant="h5" style={{marginBottom: 15}}>{form.getRoot().text}</Typography>
 				{form.getRoot().items.map((folder, idx) => {
 					return (
-						<Accordion key={folder.id} style={{margin: 0}}
-						defaultExpanded={folder.id===nav.getFolderId()}
-						sx={{border: folder.id===nav.getFolderId()?'1px solid black':0}}
+						<Button
+						key={folder.id}
+						variant={folder.id===nav.getFolderId()?"contained":"outlined"}
+						onClick={(e)=>{nav.setFolder(folder)}}
+						// sx={{border: folder.id===nav.getFolderId()?'1px solid black':0}}
 						>
-							<AccordionSummary expandIcon={<ExpandMore />}>
-							{form.getValid(folder.id)?
-												(<CheckCircle color="success"/>)
-												:(<Cancel color="error"/>)}
-							<span style={{paddingLeft: 10}}>{folder.text}</span>
-							</AccordionSummary>
-							<AccordionDetails>
-								<Stack spacing={1}>
-								{folder.items.map((page, idx2) => {
-									return (
-											<Button 
-											style={{justifyContent: 'start'}}
-											key={page.id}
-											variant={page.id===nav.getPageId()?"contained":"text"}
-											onClick={(e) => {nav.setFolder(folder, page);}}
-											startIcon={page.id===nav.getPageId()?null
-												:form.getValid(page.id)?
-												(<CheckCircle color="success"/>)
-												:(<Cancel color="error"/>)}
-											>
-												{page.text}
-											</Button>
-									);
-								})}
-								</Stack>
-							</AccordionDetails>
-							{/* <Divider variant="middle"></Divider> */}
-						</Accordion>
+						{/* {form.getValid(folder.id)?(<CheckCircle color="success"/>):(<Cancel color="error"/>)} */}
+							{form.getValid(folder.id)?(<CheckCircle color="success"/>):(<Edit />)}
+						 	<span style={{paddingLeft: 10}}>{folder.text}</span>
+						</Button>
+						// <Accordion key={folder.id} style={{margin: 0}}
+						// defaultExpanded={folder.id===nav.getFolderId()}
+						// sx={{border: folder.id===nav.getFolderId()?'1px solid black':0}}
+						// >
+						// 	<AccordionSummary expandIcon={<ExpandMore />}>
+						// 	{form.getValid(folder.id)?
+						// 						(<CheckCircle color="success"/>)
+						// 						:(<Cancel color="error"/>)}
+						// 	<span style={{paddingLeft: 10}}>{folder.text}</span>
+						// 	</AccordionSummary>
+						// 	<AccordionDetails>
+						// 		<Stack spacing={1}>
+						// 		{folder.items.map((page, idx2) => {
+						// 			return (
+						// 					<Button 
+						// 					style={{justifyContent: 'start'}}
+						// 					key={page.id}
+						// 					variant={page.id===nav.getPageId()?"contained":"text"}
+						// 					onClick={(e) => {nav.setFolder(folder, page);}}
+						// 					startIcon={page.id===nav.getPageId()?null
+						// 						:form.getValid(page.id)?
+						// 						(<CheckCircle color="success"/>)
+						// 						:(<Cancel color="error"/>)}
+						// 					>
+						// 						{page.text}
+						// 					</Button>
+						// 			);
+						// 		})}
+						// 		</Stack>
+						// 	</AccordionDetails>
+						// 	{/* <Divider variant="middle"></Divider> */}
+						// </Accordion>
 					);
 				})}
 				</Stack>

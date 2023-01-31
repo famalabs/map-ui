@@ -3,7 +3,7 @@ import { getQuestionMenuType, GroupMap, QuestionMenuTypesMap, SurveyMap } from '
 import { Survey, Item, DBSchema } from '../../survey'
 
 export interface IOrderIndex {
-	[id:string]: string | IOrderIndex;
+	[id:string]: string;
 }
 
 export class NavState {
@@ -111,6 +111,7 @@ export interface INavState {
 	 */
 	getItemsGlobalOrderIndex: () => any;
 	getItemsGroupedOrderIndex: () => any;
+	getItemOrderIndex: (id:string) => string;
 }
 
 interface INavValue {
@@ -130,6 +131,7 @@ export class SurveyNav implements INavState {
 		this.root = value.root;
 		this.folders = new FolderNav(value.folders, value.folder);
 		this.pages = new PageNav(value.pages, value.page);
+		this.getItemsGlobalOrderIndex();
 	}
 
 	static rootToValue = (root: Item, folderIdx?:number, pageIdx?:number) => {
@@ -250,6 +252,8 @@ export class SurveyNav implements INavState {
 		return ids.reverse();
 	}
 
+	private cachedItemIndex:IOrderIndex;
+
 	/**
 	 * 
 	 * @returns a obj with key = question.id, value = idx || obj if question is section
@@ -265,57 +269,17 @@ export class SurveyNav implements INavState {
 				const index = (idx).toString();
 				acc[itm.id] = index+". ";
 				if (itm.items.length > 0) {
-					acc[itm.id] = {} as IOrderIndex;
-					(acc[itm.id] as IOrderIndex) = recursive(itm, (acc[itm.id] as IOrderIndex));
-					acc[itm.id][itm.id] = index+". ";
-					// if (getQuestionMenuType(itm) === QuestionMenuTypesMap.cond.type) {
-					// 	acc[itm.id] = {} as IOrderIndex;
-					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-					// 	acc[itm.id][itm.id] = index+". ";
-					// } if (getQuestionMenuType(itm) === QuestionMenuTypesMap.section.type) {
-					// 	acc[itm.id] = {} as IOrderIndex;
-					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-					// 	acc[itm.id][itm.id] = index+". ";
-					// } else if (folders.includes(itm.id) || pages.includes(itm.id)) {
-					// 	// page or folders
-					// 	acc[itm.id] = {} as IOrderIndex;
-					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, order, (acc[itm.id] as IOrderIndex));
-					// 	acc[itm.id][itm.id] = "";
-					// } else {
-					// 	// question table / multi check ...
-					// 	acc[itm.id] = {} as IOrderIndex;
-					// 	(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-					// 	acc[itm.id][itm.id] = index+". ";
-					// }
+					// acc[itm.id] = {} as IOrderIndex;
+					// (acc[itm.id] as IOrderIndex) = recursive(itm, (acc[itm.id] as IOrderIndex));
+					// acc[itm.id][itm.id] = index+". ";
+					acc = recursive(itm, acc);
 				}
 			}
 			return acc;
 		}
 		const res = recursive(this.root, {} as IOrderIndex);
+		this.cachedItemIndex = res;
 		return res;
-		// const order = {}
-		// let idx = 1
-		// for (let f = 0; f < this.getFolders().length; f++) {
-		// 	const folder = this.getFolders()[f];
-		// 	for (let p = 0; p < folder.items.length; p++) {
-		// 		const page = folder.items[p];
-		// 			for (let q = 0; q < page.items.length; q++) {
-		// 				const question = page.items[q];
-		// 				if (getQuestionMenuType(question) === QuestionMenuTypesMap.section.type) {
-		// 					order[question.id] = {};
-		// 					for (let s = 0; s < question.items.length; s++) {
-		// 						const secQs = question.items[s];
-		// 						order[question.id][secQs.id] = idx.toString() + '. ';
-		// 						idx+=1;
-		// 					}
-		// 				} else {
-		// 					order[question.id] = idx.toString() + '. ';
-		// 					idx+=1;
-		// 				}
-		// 			}
-		// 		}
-		// }
-		// return order;
 	}
 
 	public getItemsGroupedOrderIndex():IOrderIndex {
@@ -328,26 +292,31 @@ export class SurveyNav implements INavState {
 				acc[itm.id] = index+" ";
 				if (itm.items.length > 0) {
 					if (getQuestionMenuType(itm) === QuestionMenuTypesMap.cond.type) {
-						acc[itm.id] = {} as IOrderIndex;
-						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-						acc[itm.id][itm.id] = index+" ";
+						// acc[itm.id] = {} as IOrderIndex;
+						// (acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						// acc[itm.id][itm.id] = index+" ";
+						acc = recursive(itm, index, acc);
 					} if (getQuestionMenuType(itm) === QuestionMenuTypesMap.section.type) {
-						acc[itm.id] = {} as IOrderIndex;
-						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-						acc[itm.id][itm.id] = index+" ";
+						// acc[itm.id] = {} as IOrderIndex;
+						// (acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						// acc[itm.id][itm.id] = index+" ";
+						acc = recursive(itm, index, acc);
 					} else if (
 						this.getItemType(itm.id) === GroupMap.layout.style.page
 						|| this.getItemType(itm.id) === GroupMap.layout.style.folder
 					) {
 						// page or folders
-						acc[itm.id] = {} as IOrderIndex;
-						(acc[itm.id] as IOrderIndex) = recursive(itm, order, (acc[itm.id] as IOrderIndex));
-						acc[itm.id][itm.id] = "";
+						// acc[itm.id] = {} as IOrderIndex;
+						// (acc[itm.id] as IOrderIndex) = recursive(itm, order, (acc[itm.id] as IOrderIndex));
+						// acc[itm.id][itm.id] = "";
+						acc = recursive(itm, order, acc);
+						acc[itm.id] = "";
 					} else {
 						// question table / multi check ...
-						acc[itm.id] = {} as IOrderIndex;
-						(acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
-						acc[itm.id][itm.id] = index+" ";
+						// acc[itm.id] = {} as IOrderIndex;
+						// (acc[itm.id] as IOrderIndex) = recursive(itm, index, (acc[itm.id] as IOrderIndex));
+						// acc[itm.id][itm.id] = index+" ";
+						acc = recursive(itm, index, acc);
 					}
 				}
 				idx+=1;
@@ -355,7 +324,15 @@ export class SurveyNav implements INavState {
 			return acc;
 		}
 		const res = recursive(this.root, "", {} as IOrderIndex);
+		this.cachedItemIndex = res;
 		return res;
+	}
+
+	public getItemOrderIndex(id:string):string {
+		if (typeof this.cachedItemIndex !== 'undefined') {
+			return this.cachedItemIndex[id]
+		}
+		return "";
 	}
 
 	public getValue(): INavValue {
@@ -429,6 +406,6 @@ export function useNavState(surveyRoot: Item): INavState {
 		getPathToId: (id:string) => new SurveyNav(value).getPathToId(id),
 		getItemsGlobalOrderIndex: () => new SurveyNav(value).getItemsGlobalOrderIndex(),
 		getItemsGroupedOrderIndex: () => new SurveyNav(value).getItemsGroupedOrderIndex(),
-
+		getItemOrderIndex: (id:string) => new SurveyNav(value).getItemOrderIndex(id),
 	} as INavState;
 }

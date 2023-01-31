@@ -2,10 +2,9 @@ import React from 'react';
 import {Item, QuestionSelect} from '../../../survey'
 import { Radio, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { QuestionCommonProps, QuestionHeaderCommon } from './QuestionCommon';
-import { IUseFormCompiler, useQuestionHandler } from '../Compiler';
 
 export interface QuestionTableCommonProps extends QuestionCommonProps<Item> {
-  formCompiler?: IUseFormCompiler;
+  useQuestionHandler?: any;
 }
 
 export function QuestionTableCommon({
@@ -18,7 +17,7 @@ export function QuestionTableCommon({
   error,
   helperText,
   disabled,
-  formCompiler,
+  useQuestionHandler,
   }: QuestionTableCommonProps) {
   
   const selects = question.items as QuestionSelect[];
@@ -28,7 +27,7 @@ export function QuestionTableCommon({
   return (
     <Stack spacing={1}>
       <QuestionHeaderCommon
-        index={index[question.id]}
+        index={index}
         question={question}
         required={required}
       />
@@ -56,8 +55,8 @@ export function QuestionTableCommon({
                     {index[sel.id]}{sel.text}
                   </TableCell>
                   {options.map((opt, idx) => {
-                    if (typeof formCompiler !== 'undefined') {
-                      const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(sel, formCompiler);  
+                    if (typeof useQuestionHandler !== 'undefined') {
+                      const { value, required, handleOnChange, handleOnBlur, error, helperText } = useQuestionHandler(sel);  
                       return (
                         <TableCell key={idx} align="center">
                           <Radio
@@ -65,7 +64,8 @@ export function QuestionTableCommon({
                             checked={value === opt.score}
                             value={opt.score}
                             onChange={(e,v) => {
-                              if (v) { handleOnChange(opt.score) }
+                              if (v) 
+                              { handleOnChange(opt.score) }
                             }}
                           />
                         </TableCell>
@@ -80,8 +80,6 @@ export function QuestionTableCommon({
                   );
                 })}
                 </TableRow>
-              //   </RadioGroup>
-              // </FormControl>
               );
             })}
           </TableBody>

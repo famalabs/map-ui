@@ -11,6 +11,7 @@ export function ItemConditionalCompilerForm({
   formCompiler,
   question,
 	index,
+  disabled,
   }: QuestionCommonCompilerProps<ItemConditional>) {
 
 	const form = formCompiler.form;

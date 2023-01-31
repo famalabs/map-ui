@@ -4,7 +4,14 @@ import { QuestionMenuTypesMap, getQuestionMenuType } from '../../forms/config-ty
 import React from 'react'
 import { Item, Question } from '../../../survey'
 import { IEditorState, IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
+
+export const QuestionStateMap = {
+  normal:"normal",
+  hover:"hover",
+  edit:"edit",
+  options:"options",
+  layout:"layout"
+}
 
 export interface QuestionCommonEditorProps<T extends Item> {
   index: string;

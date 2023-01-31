@@ -1,11 +1,9 @@
 import React from 'react';
 import { ItemFunction, Item } from '../../../survey'
 import { FnMap, getQuestionMenuType, QuestionMenuTypesMap} from '../../forms'
-import { FormLabel, Stack, Typography, Divider, FormControl, Select, MenuItem, Chip, Button, Modal, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { AddCircle, Cancel, ExpandMore} from '@mui/icons-material';
-import { IUseEditorState } from './EditorBuilder';
-import { QuestionStateMap } from './PageEditor';
-import { QuestionCommonEditorForm, QuestionGeneralEdit, renderGeneralOptions } from './CommonEditor';
+import { FormLabel, Stack, Typography, FormControl, Select, MenuItem, Chip, Button } from '@mui/material';
+import { AddCircle} from '@mui/icons-material';
+import { QuestionCommonEditorForm } from './CommonEditor';
 
 // enum FnMedicine {
 //   BodyMassIndex = 'BMI',
