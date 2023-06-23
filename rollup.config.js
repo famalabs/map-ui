@@ -16,16 +16,19 @@ export default [
     {
       input: "src/index.ts",
       output: [
-        {
+        /*{
           file: packageJson.main,
           format: 'cjs',
           sourcemap: true,
           name: '@famalabs/map-ui'
-      },
+      },*/
       {
-          file: packageJson.module,
+          //file: packageJson.module,
+          dir: 'dist',
           format: 'esm',
-          sourcemap: true
+          sourcemap: true,
+          preserveModules: true,
+          preserveModulesRoot: 'src'
       }
       ],
       plugins: [
@@ -38,7 +41,7 @@ export default [
       ],
     },
     {
-      input: "dist/esm/types/index.d.ts",
+      input: "dist/types/index.d.ts",
       output: [{ file: "dist/index.d.ts", format: "esm" }],
       plugins: [dts()],
       // external: [/\.css$/],
