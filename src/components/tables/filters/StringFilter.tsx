@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FilterModel from './model';
-import { TextField } from '@mui/material';
+import TextField from '@mui/material/TextField';
 
 export function StringFilter() {
   return new FilterModel<string, string>(

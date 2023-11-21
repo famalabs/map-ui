@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextField, TextFieldProps, Autocomplete, AutocompleteProps } from '@mui/material';
-import { Theme } from '@mui/material';
+import TextField, {TextFieldProps} from '@mui/material/TextField';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 
 export interface AutoSelectOption {
   id: string;

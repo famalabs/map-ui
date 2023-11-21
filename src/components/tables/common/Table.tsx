@@ -1,15 +1,13 @@
 /* eslint react/jsx-key: 0 */
 import React from 'react';
-import {
-  IconButton,
-  SvgIcon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Theme
-} from '@mui/material';
+import SvgIcon from "@mui/material/SvgIcon"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import IconButton from "@mui/material/IconButton"
+
 import { ITablePaginatedProps, selectRowsColumnId } from '../utils';
 import { TableInstance } from 'react-table';
 import { Skeleton } from '@mui/lab';
@@ -225,7 +223,7 @@ export function CommonTable<T extends Record<string, any>>(props: IProps<T>) {
         ) : (
           <TableRow style={{ height: 53 * (pageSize - page.length) }}>
             <TableCell colSpan={visibleColumns.length}>
-              {page.length === 0 ? 'No data found' : null}
+              {page.length === 0 ? 'Nessun elemento trovato' : null}
             </TableCell>
           </TableRow>
         ))}

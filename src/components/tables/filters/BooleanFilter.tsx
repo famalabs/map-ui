@@ -2,7 +2,11 @@
 
 import React from 'react';
 import FilterModel from './model';
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+
 
 export function BooleanFilter() {
   return new FilterModel<boolean, boolean>(

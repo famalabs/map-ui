@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnInterfaceBasedOnValue } from 'react-table';
-import { Link, LinkProps } from '@mui/material';
+import  Link, {LinkProps } from '@mui/material/Link';
 
 export const LinkCell = (callback: (obj) => void,
                          label: (obj) => string,

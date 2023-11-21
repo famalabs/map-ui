@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableOptions, useTable, Row } from 'react-table';
-import { Paper, TableContainer } from '@mui/material';
+import  TableContainer  from '@mui/material/TableContainer';
 import { CommonTable, commonTableProps } from './common';
 
 export interface SimpleTableProps<T extends Record<string, any>> {

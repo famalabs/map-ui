@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField, BaseTextFieldProps, FormLabel } from '@mui/material';
+import TextField, {BaseTextFieldProps} from '@mui/material/TextField';
+import FormLabel from '@mui/material/FormLabel';
 import { FormNodeValidator } from './useFormState';
 
 export type NumberValidator = FormNodeValidator<number>;

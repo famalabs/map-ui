@@ -1,10 +1,9 @@
 import React from 'react';
-import { ColumnInterfaceBasedOnValue } from 'react-table';
-import { Tooltip, TooltipProps } from '@mui/material';
-import { CancelPresentation } from '@mui/icons-material';
-import { Rowing } from '@mui/icons-material';
-import { HourglassEmpty } from '@mui/icons-material';
-import { AssignmentTurnedIn } from '@mui/icons-material';
+import  Tooltip, {TooltipProps } from '@mui/material/Tooltip';
+import  CancelPresentation  from '@mui/icons-material/CancelPresentation';
+import  Rowing  from '@mui/icons-material/Rowing';
+import HourglassEmpty from '@mui/icons-material/HourglassEmpty';
+import AssignmentTurnedIn  from '@mui/icons-material/AssignmentTurnedIn';
 
 export const ALL_STATUS = ['pending', 'active', 'terminated', 'canceled'] as const;
 export type IStatus = typeof ALL_STATUS[number];

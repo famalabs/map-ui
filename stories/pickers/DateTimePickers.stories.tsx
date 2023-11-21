@@ -1,17 +1,18 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
-import { DateTimePicker, DateTimePickerProps } from '../../src/components/pickers';
+import { DatePicker, DatePickerProps } from '../../src/components/pickers';
+import moment from 'moment';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
   title: 'pickers/DateTimePicker',
-  component: DateTimePicker,
+  component: DatePicker,
   argTypes: {
     onChange: { action: 'click' },
   },
-} as Meta<DateTimePickerProps>;
+} as Meta<DatePickerProps>;
 
-export const DateTime: Story<DateTimePickerProps> = (args) => <DateTimePicker {...args} />;
+export const DateTime: Story<DatePickerProps> = (args) => <DatePicker {...args} />;
 DateTime.args = {
-  value: new Date(),
+  value: moment(new Date()),
 };

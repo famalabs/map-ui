@@ -9,7 +9,15 @@ import {
   useGlobalFilter,
 } from 'react-table';
 import React from 'react';
-import { Paper, Checkbox, TableContainer, FormControlLabel, Box, Toolbar, Button } from '@mui/material';
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import TableContainer from "@mui/material/TableContainer";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import FormControlLabel from "@mui/material/FormControlLabel";
+
+
+
 import {
   CommonTable,
   CommonTablePagination,
@@ -154,10 +162,10 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
               <Toolbar style={{ alignItems: 'center', minHeight: '52px' }}>
                 <FormControlLabel
                   control={<Checkbox {...getToggleAllRowsSelectedProps()} />}
-                  label="Select All"
+                  label="Seleziona tutti"
                 />
                 <Box component="span">
-                  Selected items: {selectedFlatRows.length} / {rows.length}
+                  Selezionati: {selectedFlatRows.length} / {rows.length}
                 </Box>
               </Toolbar>
             )}

@@ -1,6 +1,7 @@
 import React from 'react';
-import { ColumnInterfaceBasedOnValue } from 'react-table';
-import { Button, ButtonProps, IconButton, IconButtonProps } from '@mui/material';
+import Button, {ButtonProps} from '@mui/material/Button';
+import IconButton, {IconButtonProps} from '@mui/material/IconButton';
+
 
 interface ExtButtonProps extends Omit<ButtonProps, 'onClick'> {
   label: string;

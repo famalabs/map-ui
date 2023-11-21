@@ -1,15 +1,12 @@
 import React from 'react';
 import { ColumnInterfaceBasedOnValue } from 'react-table';
-import { Avatar, AvatarProps, Button } from '@mui/material';
+import Button from '@mui/material/Button';
+import Avatar, {AvatarProps} from '@mui/material/Avatar';
 
-export const AvatarCell: <T extends Record<string, any>>(
-  avatarSrc?: (obj: T) => string,
-  avatarProps?: Omit<AvatarProps, 'onClick' | 'src'>,
-  callback?: (obj: T) => void
-) => Extract<ColumnInterfaceBasedOnValue<T, string>['Cell'], React.FC> = (
+export const AvatarCell = (
   avatarSrc,
-  avatarProps,
-  callback
+  avatarProps?:any,
+  callback?
 ) => ({ row, value }) => {
   if (typeof value === 'undefined') return null;
   const onClick: React.MouseEventHandler<HTMLButtonElement> | undefined = callback

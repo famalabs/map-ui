@@ -1,7 +1,7 @@
 import React from 'react';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
-import { IconButton } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import IconButton  from '@mui/material/IconButton';
+import  Close  from '@mui/icons-material/Close';
 
 export interface ISnackbar {
   message: SnackbarMessage;

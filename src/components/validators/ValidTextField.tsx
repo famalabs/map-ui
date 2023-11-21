@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, BaseTextFieldProps } from '@mui/material';
+import  TextField, {BaseTextFieldProps } from '@mui/material/TextField';
 
 export type TextValidator = {
   f: (text: string) => boolean;
@@ -42,7 +42,7 @@ export const ValidTextField: React.FC<ValidTextFieldProps> = ({
         setError(emptyMessage);
         return false;
       }
-      if (!!text) {
+      if (!text) {
         for (const validator of validators) {
           if (!validator.f(text)) {
             setError(validator.message ?? defaultErrorMessage);
@@ -75,7 +75,7 @@ export const ValidTextField: React.FC<ValidTextFieldProps> = ({
       value={value}
       onChange={(event) => {
         const text = event.target.value;
-        if (!!error) validate(text);
+        if (!error) validate(text);
         setValue(text);
       }}
       onBlur={() => setShowError(true)}

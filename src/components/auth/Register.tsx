@@ -1,5 +1,6 @@
 import React from 'react';
-import { MenuItem } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+
 import { ValidTextField, checkValidEmail, useValidatorState } from '../validators';
 import { AuthContainer, AuthForm, EmailTextField, NewPswTextField, SubmitButton } from './common';
 

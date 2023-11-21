@@ -1,6 +1,8 @@
 import React from 'react';
-import { TextField, InputAdornment, IconButton } from '@mui/material';
-import { Clear } from '@mui/icons-material';
+import TextField from "@mui/material/TextField"
+import InputAdornment from "@mui/material/InputAdornment"
+import IconButton from "@mui/material/IconButton"
+import  Clear  from '@mui/icons-material/Clear';
 import { SearchIcon } from './Table';
 
 interface IProps {

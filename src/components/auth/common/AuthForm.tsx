@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Theme, Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 export interface AuthFormProps extends React.HTMLProps<HTMLFormElement> {
   onSubmit: () => void;
@@ -19,7 +19,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, noValidate = true,
       <Box
         sx={{
           width: "100%", // Fix IE 11 issue.
-      marginTop: (theme: Theme) => theme.spacing(1),
+      marginTop: (theme) => theme.spacing(1),
     }}>
        {children}
     </Box>

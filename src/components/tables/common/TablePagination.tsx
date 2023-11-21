@@ -1,5 +1,5 @@
 import React from 'react';
-import  {TablePagination, TablePaginationProps } from '@mui/material';
+import  TablePagination, { TablePaginationProps } from '@mui/material/TablePagination';
 import { TableInstance } from 'react-table';
 import { IDynamicTablePaginatedProps, StaticTablePaginatedProps } from '../index';
 
@@ -37,8 +37,9 @@ export function CommonTablePagination<T extends Record<string, any>>(props: IPro
       page={pageIndex}
       rowsPerPage={pageSize}
       rowsPerPageOptions={rowsPerPageOptions}
+      labelRowsPerPage={'Elementi mostrati'}
       labelDisplayedRows={({ from, to, count, page }) =>
-        `${from}-${to} of ${count} | Page ${page + 1} of ${pageCount}`
+        `${from}-${to} di ${count} | Pagina ${page + 1} di ${pageCount}`
       }
       onRowsPerPageChange={(e) => {
         const size = Number(e.target.value);

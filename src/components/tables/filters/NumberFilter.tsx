@@ -1,7 +1,7 @@
 /* tslint:disable */
 import React from 'react';
 import FilterModel from './model';
-import { TextField } from '@mui/material';
+import TextField from '@mui/material/TextField';
 
 export function NumberFilter() {
   return new FilterModel<number, number | bigint>(

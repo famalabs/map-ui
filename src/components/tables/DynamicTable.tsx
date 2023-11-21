@@ -1,7 +1,11 @@
 
 import { TableOptions, useFilters, usePagination, useRowSelect, useSortBy, useTable } from 'react-table';
 import React from 'react';
-import { Paper, Checkbox, TableContainer, Box, Toolbar, FormControlLabel } from '@mui/material';
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import TableContainer from "@mui/material/TableContainer";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
 import {
   CommonTable,
   CommonTablePagination,

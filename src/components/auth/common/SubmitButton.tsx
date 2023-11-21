@@ -1,12 +1,11 @@
 import React from 'react';
-import { Theme } from '@mui/material';
-import { ButtonLoading, ButtonLoadingProps } from '../../simple';
+import { ButtonLoading } from '../../simple';
 
-export interface SubmitButtonProps extends ButtonLoadingProps {
+/*export interface SubmitButtonProps extends ButtonLoadingProps {
   validForm: boolean;
-}
+}*/
 
-export const SubmitButton: React.VFC<SubmitButtonProps> = ({
+export const SubmitButton: React.VFC<any> = ({
                                                              label = 'Submit',
                                                              validForm,
                                                              variant = 'contained',
@@ -16,7 +15,6 @@ export const SubmitButton: React.VFC<SubmitButtonProps> = ({
                                                            }) => {
 
   return (
-    <>
       <ButtonLoading
         loading={false} type="submit"
         label={label}
@@ -24,11 +22,10 @@ export const SubmitButton: React.VFC<SubmitButtonProps> = ({
         variant={variant}
         color={color}
         sx={{
-          margin: (theme: Theme) => theme.spacing(3, 0, 2),
+          margin: (theme) => theme.spacing(3, 0, 2),
           textTransform: 'uppercase'
         }}
         disabled={!validForm}
         {...props}      />
-    </>
   );
 };

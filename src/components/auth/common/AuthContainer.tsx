@@ -1,6 +1,8 @@
 import React from 'react';
-import {  Theme, Avatar, Typography, Box } from '@mui/material';
-import { LockOutlined } from '@mui/icons-material';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import LockOutlined  from '@mui/icons-material/LockOutlined';
 
 export interface AuthContainerProps {
   error?: string;
@@ -11,15 +13,15 @@ export interface AuthContainerProps {
 export const AuthContainer: React.FC<AuthContainerProps> = ({ error, title, children }) => {
 
   return (
-    <Box sx={{paddingTop: 40,
-        marginTop: (theme: Theme) => theme.spacing(8),
+    <Box sx={{paddingTop: '40px',
+        marginTop: (theme) => theme.spacing(8),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center'}}>
       <Avatar
         sx={{
-          margin: (theme: Theme) => theme.spacing(1),
-          backgroundColor: (theme: Theme) => theme.palette.secondary.main,
+          margin: (theme) => theme.spacing(1),
+          backgroundColor: (theme) => theme.palette.secondary.main,
         }}
       >
         <LockOutlined />
@@ -27,8 +29,10 @@ export const AuthContainer: React.FC<AuthContainerProps> = ({ error, title, chil
       <Typography component="h1" variant="h5">
         {title}
       </Typography>
-      <p style={{ color: 'red' }}>{error}</p>
+      {/* <p style={{ color: 'red' }}>{error}</p> */}
+      {error && <p style={{ color: 'red' }}>Credenziali non corrette, si prega di riprovare</p>}
 
+     
       {children}
     </Box>
   );

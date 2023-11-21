@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnInterfaceBasedOnValue } from 'react-table';
-import {  Theme, Box } from '@mui/material';
+import  Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 
 const Div = styled('div')``;
@@ -13,36 +13,35 @@ export interface SelectCellOption {
   type?: SelectTypes;
 }
 
-// @ts-ignore
-export const SelectCell: <T extends Record<string, any>>(options: SelectCellOption[]) => Extract<ColumnInterfaceBasedOnValue<T, string>['Cell'], React.FC> = (options) => ({ value }) => {
+export const SelectCell = (options) => ({ value }) => {
   const option = options.find((opt) => opt.id === value)
 
   if (value == null) return null;
 
     return (
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
         <Div sx={{
-           paddingLeft: 10,
-           paddingRight: 10,
+           paddingLeft: '10px !important',
+           paddingRight: '10px !important',
            paddingVertical: 5,
            width: 'auto',
            textAlign: 'center',
            //borderWidth: 3,
-           //borderStyle: 'solid',s
+           //borderStyle: 'solid',
            borderRadius: 20,
-           color: (theme:Theme) => theme.palette.primary.main,
-          backgroundColor: (theme:Theme) => theme.palette.primary.main + '33',
+           color: (theme) => theme.palette.primary.main,
+          backgroundColor: (theme) => theme.palette.primary.main + '33',
            ...(option?.type === 'error' && {
-            color: (theme:Theme) => theme.palette.error.main,
-            backgroundColor: (theme:Theme) => theme.palette.error.main + '33',
+            color: (theme) => theme.palette.error.main,
+            backgroundColor: (theme) => theme.palette.error.main + '33',
            }),
            ...(option?.type === 'warning' && {
-            color: (theme:Theme) => theme.palette.secondary.main,
-            backgroundColor: (theme:Theme) => theme.palette.warning.main + '33',
+            color: (theme) => theme.palette.secondary.main,
+            backgroundColor: (theme) => theme.palette.warning.main + '33',
            }),
            ...(option?.type === 'success' && {
-            color: (theme:Theme) => theme.palette.success.main,
-            backgroundColor:(theme:Theme) => theme.palette.success.main + '33',
+            color: (theme) => theme.palette.success.main,
+            backgroundColor:(theme) => theme.palette.success.main + '33',
            }),
         }}>
           {option?.Content || value}

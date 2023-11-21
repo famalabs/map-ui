@@ -4,28 +4,15 @@ import {
   DatePickerProps as MuiDatePickerProps,
 } from '@mui/x-date-pickers/DatePicker';
 
-import { InputAdornment, IconButton, TextField } from '@mui/material';
-import { Today } from '@mui/icons-material';
-
 const defaultProps: Partial<any> = {
   disablePast: true,
-  format: 'DD/MM/yyyy',
+  format: 'DD/MM/YYYY',
 };
 
-export type DatePickerProps = MuiDatePickerProps<any, any>;
+export type DatePickerProps = MuiDatePickerProps<any>;
 export const DatePicker: React.VFC<DatePickerProps> = ({ ...props }) => (
   <MuiDatePicker
-    renderInput={(params) => <TextField {...params} />}
     {...defaultProps}
-    InputProps={{
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton>
-            <Today />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
     {...props}
   />
 );

@@ -1,7 +1,11 @@
 import React from 'react';
 import { ColumnInstance } from 'react-table';
 import { ITablePaginatedProps, selectRowsColumnId } from '../utils';
-import { Checkbox, FormControlLabel, Button, Menu, MenuItem } from '@mui/material';
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Button from "@mui/material/Button"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
 import { HiddenIcon } from './Table';
 
 interface IProps<T extends Record<string, any>> {

@@ -4,7 +4,6 @@ import React from 'react';
 import FilterModel from './model';
 import moment from 'moment';
 import { DatePicker } from '../../pickers';
-import { TextField } from '@mui/material';
 
 export function DateFilter() {
   return new FilterModel<Date, Date | string>(
@@ -13,17 +12,17 @@ export function DateFilter() {
       {
         id: '=',
         label: 'È uguale',
-        filter: (field, filterValue) => (field == null ? false : moment(field).isSame(filterValue, 'day'))
+        filter: (field, filterValue) => (field == null ? false : moment(field)?.isSame(filterValue, 'day'))
       },
       {
         id: '>',
         label: 'È dopo',
-        filter: (field, filterValue) => (field == null ? false : moment(field).isAfter(filterValue, 'day'))
+        filter: (field, filterValue) => (field == null ? false : moment(field)?.isAfter(filterValue, 'day'))
       },
       {
         id: '<',
         label: 'È prima',
-        filter: (field, filterValue) => (field == null ? false : moment(field).isBefore(filterValue, 'day'))
+        filter: (field, filterValue) => { console.log(field, moment(field)); return(field == null ? false : moment(field)?.isBefore(filterValue, 'day'))}
       },
       {
         id: 'empty',
@@ -32,18 +31,20 @@ export function DateFilter() {
       }
     ],
     ({ value, onChange, condition, updateFilters, label, autoDelete }: any) => {
+      console.log("filter", value, condition);
+
       React.useEffect(() => {
+
         if (condition === 'empty' || (!!condition && value != null)) autoDelete(false);
         else autoDelete(true);
         updateFilters();
       }, [value, condition]);
       return (
         <DatePicker
-          value={value}
+          value={moment(value)}
           onChange={(date: any) => onChange(date.toDate())}
           disablePast={false}
           label={label}
-          renderInput={(params) => <TextField {...params} />}
         />
       );
     },

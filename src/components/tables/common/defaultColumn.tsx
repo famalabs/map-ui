@@ -1,6 +1,8 @@
 import React from 'react';
 import { Column, TableOptions } from 'react-table';
-import { TableSortLabel, TextField, IconButton } from '@mui/material';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import TextField from '@mui/material/TextField'
+
 import { BooleanCell, DateCell } from '../cells';
 import { selectRowsColumnId } from '../utils';
 import moment from 'moment';
@@ -8,6 +10,16 @@ import moment from 'moment';
 export default function defaultColumn<T extends Record<string, any>>(
   given?: Partial<Column<T>>
 ): Partial<any> {
+
+  function Trim(str) {
+
+    if (str && str.length > 15) {
+      return str.substring(0, Math.min(15,str.length)) + '...';
+       
+    } else return str;
+
+  }
+
   return {
     Filter: ({ column: { filterValue, setFilter, id, name } }) => {
       return (
@@ -46,7 +58,7 @@ export default function defaultColumn<T extends Record<string, any>>(
         case 'date':
           return DateCell()(props);
       }
-      return props.value ?? '';
+      return Trim(props.value) ?? '';
     },
     ...given,
   };

@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { ColumnInstance, IdType, TableInstance } from 'react-table';
-import { Button, Popover, Grid, Select, MenuItem, IconButton, Theme, Box } from '@mui/material';
-import { CloseOutlined } from '@mui/icons-material';
+
+import Button from "@mui/material/Button"
+import Popover from "@mui/material/Popover"
+import Grid from "@mui/material/Grid"
+import Select from "@mui/material/Select"
+import MenuItem from "@mui/material/MenuItem"
+import IconButton from "@mui/material/IconButton"
+import Box from "@mui/material/Box"
+
+import CloseOutlined from '@mui/icons-material/CloseOutlined';
 import { AutoSelect, AutoSelectOption } from '../../simple';
 import { BooleanFilter } from '../filters';
 import { FilterIcon } from './Table';
@@ -73,6 +81,9 @@ export function TableFilter<T extends Record<string, any>>({
       return dict;
     }, {});
     setAllFilters(Object.entries(fdict).map(([id, value]) => ({ id, value })));
+
+    console.log(dfilters);
+
   }, [setAllFilters, dfilters]);
 
   const addDfilter = React.useCallback(() => {
@@ -143,8 +154,8 @@ export function TableFilter<T extends Record<string, any>>({
             <h2 style={{ display: 'flex', alignItems: 'center' }}>
               Scegli i filtri{' '}
               {filters.length ? (
-                <Span sx={{color: (theme:Theme) => theme.palette.secondary.main,
-                  backgroundColor: (theme:Theme) => theme.palette.secondary.main + '33',
+                <Span sx={{color: (theme) => theme.palette.secondary.main,
+                  backgroundColor: (theme) => theme.palette.secondary.main + '33',
                   borderRadius: 20,
                   padding: '1px 8px',
                   fontSize: 13,

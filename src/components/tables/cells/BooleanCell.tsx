@@ -1,6 +1,6 @@
 import React from 'react';
-import { ColumnInterfaceBasedOnValue } from 'react-table';
-import { SvgIcon, Tooltip, TooltipProps } from '@mui/material';
+import Tooltip, {TooltipProps} from '@mui/material/Tooltip';
+import SvgIcon from '@mui/material/SvgIcon';
 
 export const BooleanCell = (tooltip?: (value: boolean) => string, tooltipProps?: Omit<TooltipProps, 'title' | 'children'>) => ({
                                                                                                                                  value

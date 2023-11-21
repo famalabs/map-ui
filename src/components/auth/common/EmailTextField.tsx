@@ -1,6 +1,7 @@
 import React from 'react';
 import { ValidTextField, checkValidEmail, ValidTextFieldProps } from '../../validators';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmailTextFieldProps extends Omit<ValidTextFieldProps, 'nameid'> {}
 
 export const EmailTextField: React.VFC<EmailTextFieldProps> = ({

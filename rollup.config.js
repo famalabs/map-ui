@@ -39,11 +39,21 @@ export default [
         postcss(), 
         terser()
       ],
+      onwarn(warning, warn) {
+        if (
+          warning.code === 'MODULE_LEVEL_DIRECTIVE' &&
+          warning.message.includes(`'use client'`)
+        ) {
+          return;
+        }
+        warn(warning);
+      }
     },
-    /*{
+    {
       input: "dist/types/index.d.ts",
       output: [{ file: "dist/index.d.ts", format: "esm" }],
       plugins: [dts()],
       // external: [/\.css$/],
-    },*/
+    },
+    
   ];

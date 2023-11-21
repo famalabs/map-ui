@@ -1,12 +1,10 @@
 import React from 'react';
-import { ColumnInterfaceBasedOnValue } from 'react-table';
 import moment from 'moment';
+import  Box from '@mui/material/Box';
 
-export const DateCell: <T extends Record<string, any>>(
-  format?: string
-) => Extract<ColumnInterfaceBasedOnValue<T, string | Date>['Cell'], React.FC> = (format = 'DD/MM/yyyy') => ({
-  value,
+export const DateCell = (format = 'DD/MM/yyyy') => ({
+  value
 }) => {
   if (typeof value === 'undefined') return null;
-  return <>{moment(value).format(format)}</>;
+  return <Box>{moment(value).format(format)}</Box>;
 };

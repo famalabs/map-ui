@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnInstance } from 'react-table';
 import { ITablePaginatedProps, selectRowsColumnId } from '../utils';
-import { Button } from '@mui/material';
+import  Button  from '@mui/material/Button';
 import { QuickIcon } from './Table';
 
 interface IProps<T extends Record<string, any>> {

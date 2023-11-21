@@ -1,8 +1,8 @@
 import React from 'react';
-import { Grid, Link } from '@mui/material';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
 import { ValidTextField, useValidatorState } from '../validators';
 import { AuthContainer, AuthForm, EmailTextField, SubmitButton } from './common';
-import { ButtonLoading } from '../simple';
 
 export interface LoginFormProps {
   onSubmit: (email: string, psw: string) => void;
@@ -41,7 +41,7 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
 
   return (
     <AuthContainer title={title} error={error}>
-      {onEmailVerificationClick && error && (
+      {/*onEmailVerificationClick && error && (
         <Grid item>
           <ButtonLoading
             loading={loading}
@@ -51,7 +51,7 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
             label={emailVerificationText}
           />
         </Grid>
-      )}
+      )*/}
 
       <AuthForm onSubmit={() => onSubmit(email, psw)}>
         <EmailTextField
