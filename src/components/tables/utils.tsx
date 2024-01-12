@@ -3,8 +3,17 @@ import { Row, TableOptions } from 'react-table';
 import { IQueryParams } from './common';
 import { ParsedUrlQueryInput } from 'querystring';
 
+export type IActionType = 'add' | 'delete';
+export interface IAction {
+  type: IActionType;
+  text?: string;
+  icon?: React.ReactNode;
+  onlyIcon?: boolean;
+}
+
 export interface ITablePaginatedProps<T extends Record<string, any>> {
   tableProps: TableOptions<T>;
+  actionList: IAction[],
   loading: boolean;
   paginationOptions: {
     pageSizes: number[];
@@ -16,6 +25,7 @@ export interface ITablePaginatedProps<T extends Record<string, any>> {
     query: IQueryParams;
     setQuery: (query: ParsedUrlQueryInput) => void;
   };
+  onAction: (action: IActionType, selectedItems: any) => unknown;
   setSelected?: (objs: T[]) => void;
   container?: React.ElementType;
 }

@@ -7,6 +7,7 @@ import {
   useSortBy,
   useFilters,
   useGlobalFilter,
+  TableInstance,
 } from 'react-table';
 import React from 'react';
 import Paper from "@mui/material/Paper";
@@ -15,8 +16,6 @@ import TableContainer from "@mui/material/TableContainer";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
-
 
 import {
   CommonTable,
@@ -30,16 +29,19 @@ import {
   TableFilter,
 } from './common';
 import { ITablePaginatedProps, selectRowsColumnId } from './utils';
+import { Button, IconButton, Stack, TableProps, Tooltip } from '@mui/material';
 
 export type StaticTablePaginatedProps<T extends Record<string, any>> = ITablePaginatedProps<T>;
 
 export function StaticTablePaginated<T extends Record<string, any>>(props: StaticTablePaginatedProps<T>) {
   const {
     tableProps: tableGivenProps,
+    actionList,
     loading,
     paginationOptions,
     hideColumnAction,
     onSingleRowClick,
+    onAction,
     router,
     setSelected,
   } = props;
@@ -61,7 +63,6 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
     allColumns,
     visibleColumns,
     selectedFlatRows,
-
     gotoPage,
     setPageSize,
     pageCount,
@@ -71,7 +72,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
     toggleAllRowsSelected,
     setGlobalFilter,
     state: { pageIndex, pageSize, filters, sortBy, globalFilter },
-  }:any = useTable<any>(
+  }: TableProps<any> = useTable<TableInstance>(
     tableProps,
     useFilters,
     useGlobalFilter,
@@ -82,10 +83,10 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
       hooks.allColumns.push((columns) => [
         {
           id: String(selectRowsColumnId),
-          Header: ({ getToggleAllPageRowsSelectedProps }:any) => (
+          Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
             <Checkbox {...getToggleAllPageRowsSelectedProps()} />
           ),
-          Cell: ({ row }:any) => <Checkbox {...row.getToggleRowSelectedProps()} />,
+          Cell: ({ row }: any) => <Checkbox {...row.getToggleRowSelectedProps()} />,
         },
         ...columns,
       ]);
@@ -96,8 +97,8 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
     if (router) router.setQuery(getQueryFromState({ filters, sortBy }));
   }, [filters, sortBy, router]);
 
-  React.useEffect(() => {
-    if (setSelected) setSelected(selectedFlatRows.map((r) => r.original));
+  React.useMemo(() => {
+    if (setSelected) setSelected(selectedFlatRows.map(row => row.original));
   }, [selectedFlatRows]);
   //React.useEffect(() => console.log('setSelected chaged'), [setSelected]);
   //React.useEffect(() => console.log('selectedRowIds chaged'), [selectedRowIds]);
@@ -138,6 +139,41 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
           </div>
         )}
       </div>
+
+      {(selectedFlatRows.length > 0  &&
+        <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ margin: "1rem"}}>
+          <Box component="span">
+            Selezionati: {selectedFlatRows.length} / {rows.length}
+          </Box>
+
+          {/** Need a empty space between box and the buttons */}
+          <Box component="span" width="1rem" />
+
+          <Box component="span">
+            {actionList.map((action) => (
+
+              (action.onlyIcon && !!action.text)
+                ? <Tooltip title={action.text}>
+                  <IconButton size="medium" key={action.type} onClick={() => onAction(action.type, selectedFlatRows)}>
+                    {action.icon}
+                  </IconButton>
+                </Tooltip>
+
+                : <Button
+                  variant="contained"
+                  startIcon={action.icon}
+                  key={action.type}
+                  onClick={() => onAction(action.type, selectedFlatRows)}
+                >
+                  {" "}{action.text}{" "}
+                </Button>
+            ))}
+          </Box>
+
+          
+        </Stack>
+      )}
+
       <TableContainer>
         <CommonTable
           onFilterClick={(id) => {
@@ -164,9 +200,6 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
                   control={<Checkbox {...getToggleAllRowsSelectedProps()} />}
                   label="Seleziona tutti"
                 />
-                <Box component="span">
-                  Selezionati: {selectedFlatRows.length} / {rows.length}
-                </Box>
               </Toolbar>
             )}
           </Box>
