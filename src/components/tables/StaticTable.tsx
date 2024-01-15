@@ -45,7 +45,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
     router,
     setSelected,
   } = props;
-  const container = props.container ?? Paper;
+  //const container = props.container ?? Paper;
 
   const tableProps: any = React.useMemo(() => commonTableProps(tableGivenProps), [
     tableGivenProps,
