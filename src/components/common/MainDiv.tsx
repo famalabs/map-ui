@@ -4,12 +4,7 @@ import { styled } from '@mui/material/styles';
 
 const Main = styled('main')``;
 
-interface IProps {
-  appbar?: boolean;
-  children: React.ReactNode;
-}
-
-export const MainDiv: React.FC<IProps> = ({ children }) => {
+export default function MainDiv({ children }) {
 
   //const theme: any = useTheme();
 
@@ -24,4 +19,4 @@ export const MainDiv: React.FC<IProps> = ({ children }) => {
       </Container>
     </Main>
   );
-};
+}

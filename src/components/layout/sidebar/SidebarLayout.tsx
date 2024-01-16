@@ -3,7 +3,7 @@ import { useTheme, styled } from '@mui/material/styles';
 import { Divider, Box, Drawer, Container, IconButton, Theme, Stack } from "@mui/material";
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import { MenuIcon } from '@src/components/icons/stockholm';
-import { MainDiv } from '@src/components/common/Main';
+import MainDiv from '@src/components/common/MainDiv';
 
 
 import MenuItems from '@src/components/common/MenuItems';
