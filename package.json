@@ -1,6 +1,6 @@
 {
   "name": "@famalabs/map-ui",
-  "version": "0.1.41",
+  "version": "0.1.53",
   "author": "Alberto Pietrangelo",
   "private": false,
   "module": "dist/index.js",
