@@ -21,7 +21,7 @@ export interface InputStringProps
 
 const emptyValidators: any = [];
 
-export const InputString: React.VFC<InputStringProps> = ({
+export const InputString: React.FC<InputStringProps> = ({
     nameid,
     title,
     value,

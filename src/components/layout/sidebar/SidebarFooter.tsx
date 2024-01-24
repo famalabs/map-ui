@@ -16,16 +16,16 @@ import {
 import { HomeIcon } from "../../icons/stockholm";
 import { MoreVertOutlined } from "@mui/icons-material";
 
-import MenuItems from "@src/components/common/MenuItems";
-import { ItemData } from "@src/components/layout/sidebar/SidebarLayout";
+import { MenuItems} from "@src/components/common/MenuItems";
+import { SidebarItem } from "./SidebarLayout";
 
-interface SidebarFooterProps {
-  popupItems: ItemData[];
+export interface SidebarFooterProps {
+  popupItems: SidebarItem[];
   isSidebarOpen: boolean;
   onSelectItem: (itemID: string, link: string) => void;
 }
 
-export default function SidebarFooterComponent({
+export function SidebarFooter({
   popupItems = [],
   isSidebarOpen,
   onSelectItem,
