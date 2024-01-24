@@ -1,17 +1,19 @@
 import React from 'react';
 import { ColumnInstance } from 'react-table';
-import { ITablePaginatedProps, selectRowsColumnId } from '../utils';
+import { selectRowsColumnId } from '../utils';
 import  Button  from '@mui/material/Button';
 import { QuickIcon } from './Table';
 
 interface IProps<T extends Record<string, any>> {
   allColumns: ColumnInstance<T>[];
   deselectRows: () => void;
+  localeObj: Record<string, any>;
 }
 
 export function TableSelect<T extends Record<string, any>>({
   allColumns,
   deselectRows,
+  localeObj,
 }: IProps<T>): JSX.Element {
   const selectColumn = React.useMemo(() => allColumns.find(({ id }) => id === selectRowsColumnId), [
     allColumns,
@@ -30,7 +32,7 @@ export function TableSelect<T extends Record<string, any>>({
       color={selectColumn.isVisible ? 'secondary' : 'inherit'}
     >
       <QuickIcon style={{ marginRight: 10 }} />
-      Azioni veloci
+      {localeObj['name']}
     </Button>
   );
 }

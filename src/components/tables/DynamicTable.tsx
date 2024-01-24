@@ -53,7 +53,6 @@ export function DynamicTablePaginated<T extends Record<string, any>>(props: IDyn
     allColumns,
     visibleColumns,
     selectedFlatRows,
-
     gotoPage,
     setPageSize,
     pageCount,

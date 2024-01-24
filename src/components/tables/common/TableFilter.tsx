@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
-import { ColumnInstance, IdType, TableInstance } from 'react-table';
+import React from "react";
+import { ColumnInstance, IdType } from "react-table";
 
-import Button from "@mui/material/Button"
-import Popover from "@mui/material/Popover"
-import Grid from "@mui/material/Grid"
-import Select from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import IconButton from "@mui/material/IconButton"
-import Box from "@mui/material/Box"
+import Button from "@mui/material/Button";
+import Popover from "@mui/material/Popover";
+import IconButton from "@mui/material/IconButton";
+import Box from "@mui/material/Box";
 
-import CloseOutlined from '@mui/icons-material/CloseOutlined';
-import { AutoSelect, AutoSelectOption } from '../../simple';
-import { BooleanFilter } from '../filters';
-import { FilterIcon } from './Table';
-import { styled } from '@mui/material/styles';
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import { AutoSelect, AutoSelectOption } from "../../simple";
+import { BooleanFilter } from "../filters";
+import { FilterIcon } from "./Table";
+import { styled } from "@mui/material/styles";
 
-const Span = styled('span')``;
-const Div = styled('div')``;
+const Span = styled("span")``;
+const Div = styled("div")``;
 
 export interface CustomFilter<T extends Record<string, any>> {
   column: IdType<T>;
@@ -27,98 +24,115 @@ export interface CustomFilter<T extends Record<string, any>> {
 
 interface IProps<T extends Record<string, any>> {
   allColumns: ColumnInstance<T>[];
-  filters: any['state']['filters']; //CustomFilter<T>[];
-  setFilter: any['setFilter'];
-  setAllFilters: any['setAllFilters'];
+  filters: any["state"]["filters"]; //CustomFilter<T>[];
+  setFilter: any["setFilter"];
+  setAllFilters: any["setAllFilters"];
   panelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
   defaultColumn: string | undefined;
   setDefaultColumn: (id: string | undefined) => void;
+  localeObj: Record<string, any>;
 }
 
 export function TableFilter<T extends Record<string, any>>({
-                                                             allColumns,
-                                                             setFilter,
-                                                             filters,
-                                                             setAllFilters,
-                                                             panelOpen,
-                                                             setPanelOpen,
-                                                             defaultColumn,
-                                                             setDefaultColumn
-                                                           }: IProps<T>): JSX.Element {
+  allColumns,
+  setFilter,
+  filters,
+  setAllFilters,
+  panelOpen,
+  setPanelOpen,
+  defaultColumn,
+  setDefaultColumn,
+  localeObj,
+}: IProps<T>): JSX.Element {
   const buttonRef = React.useRef(null);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   React.useEffect(() => setAnchorEl(buttonRef.current), [buttonRef]);
 
-  const filtrableColumns = React.useMemo(() => allColumns.filter((col: any) => col.canFilter), [allColumns]);
-  const columnById = React.useCallback((id: string) => filtrableColumns.find((col) => col.id === id), [
-    filtrableColumns
-  ]);
+  const filtrableColumns = React.useMemo(
+    () => allColumns.filter((col: any) => col.canFilter),
+    [allColumns]
+  );
+  const columnById = React.useCallback(
+    (id: string) => filtrableColumns.find((col) => col.id === id),
+    [filtrableColumns]
+  );
 
-  const newDfilter = React.useCallback(
-    (df: Partial<CustomFilter<T>> = {}): CustomFilter<T> => {
-      if (df.column) {
-        const defaults: Partial<CustomFilter<T>> = { ...df, ...columnById(df.column)['filterModel'].defaults };
-        return {
-          column: df.column,
-          cond: (df.cond || defaults.cond) ?? '',
-          value: df.value ?? defaults.value ?? null,
-          nullable: df.nullable ?? defaults.nullable ?? true
+  const newDynFilter = React.useCallback(
+    (dynFilter: Partial<CustomFilter<T>> = {}): CustomFilter<T> => {
+      if (dynFilter.column) {
+        const defaults: Partial<CustomFilter<T>> = {
+          ...dynFilter,
+          ...columnById(dynFilter.column)["filterModel"].defaults,
         };
-      } else return { column: '', cond: '', value: null, nullable: true };
+        return {
+          column: dynFilter.column,
+          cond: (dynFilter.cond || defaults.cond) ?? "",
+          value: dynFilter.value ?? defaults.value ?? null,
+          nullable: dynFilter.nullable ?? defaults.nullable ?? true,
+        };
+      } else return { column: "", cond: "", value: null, nullable: true };
     },
     [columnById]
   );
 
-  const [dfilters, setDfilters] = React.useState<CustomFilter<T>[]>([newDfilter()]);
+  const [activeFilters, setActiveFilters] = React.useState<CustomFilter<T>[]>([newDynFilter()]);
 
-  React.useEffect(() => {
-    const fdict = dfilters.reduce<{ [id: string]: Pick<CustomFilter<T>, 'cond' | 'value'>[] }>((dict, df) => {
-      const key = df.column;
-      if (!key || df.nullable) return dict;
-      if (dict[key]) dict[key].push({ cond: df.cond, value: df.value });
-      else dict[key] = [{ cond: df.cond, value: df.value }];
-      return dict;
-    }, {});
-    setAllFilters(Object.entries(fdict).map(([id, value]) => ({ id, value })));
+  React.useMemo(() => {
 
-    console.log(dfilters);
+    const filteredDict = activeFilters.reduce<{ [id: string]: Pick<CustomFilter<T>, "cond" | "value">[] }>(
+      (dict, df) => {
+        const key = df.column;
+        if (!key || df.nullable) return dict;
+        if (dict[key]) dict[key].push({ cond: df.cond, value: df.value });
+        else dict[key] = [{ cond: df.cond, value: df.value }];
+        return dict;
+      },
+      {}
+    );
 
-  }, [setAllFilters, dfilters]);
+    // this prevents table re-render at startup & at popup opening
+    const filteredData = Object.entries(filteredDict).map(([id, value]) => ({ id, value }));
+    panelOpen ? setAllFilters(filteredData) : null;
 
-  const addDfilter = React.useCallback(() => {
-    setDfilters((olds) => olds.concat(newDfilter({ column: defaultColumn })));
+    //console.log(activeFilters);
+  }, [setAllFilters, activeFilters]);
+
+  const addDynFilter = React.useCallback(() => {
+    setActiveFilters((olds) => olds.concat(newDynFilter({ column: defaultColumn })));
   }, [defaultColumn]);
-  const editDfilter = React.useCallback((idx: number, obj: Partial<CustomFilter<T>>) => {
-    setDfilters((olds) => {
-      if (obj.column) olds[idx] = newDfilter(obj);
+
+  const editDynFilter = React.useCallback((idx: number, obj: Partial<CustomFilter<T>>) => {
+    setActiveFilters((olds) => {
+      if (obj.column) olds[idx] = newDynFilter(obj);
       else olds[idx] = { ...olds[idx], ...obj };
       return olds.slice();
     });
   }, []);
-  const removeDfilter = React.useCallback((idx = -1) => {
+
+  const removeDynFilter = React.useCallback((idx = -1) => {
     if (idx < 0)
-      setDfilters((olds) => {
-        olds.splice(0, olds.length, newDfilter());
+      setActiveFilters((olds) => {
+        olds.splice(0, olds.length, newDynFilter());
         return olds.slice();
       });
     else
-      setDfilters((olds) => {
+      setActiveFilters((olds) => {
         olds.splice(idx, 1);
-        if (olds.length === 0) olds.push(newDfilter());
+        if (olds.length === 0) olds.push(newDynFilter());
         return olds.slice();
       });
   }, []);
 
-  const emptyDfilter = React.useMemo(() => dfilters.findIndex((df) => !df.column), [dfilters]);
+  const emptyDynFilter = React.useMemo(() => activeFilters.findIndex((df) => !df.column), [activeFilters]);
 
   React.useEffect(() => {
     if (defaultColumn) {
-      if (emptyDfilter < 0) addDfilter();
-      else editDfilter(emptyDfilter, { column: defaultColumn });
+      if (emptyDynFilter < 0) addDynFilter();
+      else editDynFilter(emptyDynFilter, { column: defaultColumn });
       setDefaultColumn(undefined);
     }
-  }, [addDfilter, editDfilter, emptyDfilter, defaultColumn, setDefaultColumn]);
+  }, [addDynFilter, editDynFilter, emptyDynFilter, defaultColumn, setDefaultColumn]);
 
   return (
     <>
@@ -127,59 +141,67 @@ export function TableFilter<T extends Record<string, any>>({
         ref={buttonRef}
         onClick={() => setPanelOpen(true)}
         disableElevation
-        variant={filters.length ? 'contained' : 'text'}
-        color={filters.length ? 'secondary' : 'inherit'}
+        variant={filters.length ? "contained" : "text"}
+        color={filters.length ? "secondary" : "inherit"}
       >
         <FilterIcon style={{ marginRight: 10 }} />
-        Filtro {filters.length ? '(' + filters.length + ')' : ''}
+        {localeObj['name']} {filters.length ? "(" + filters.length + ")" : ""}
       </Button>
       <Popover
         open={panelOpen}
         anchorEl={anchorEl}
         onClose={() => setPanelOpen(false)}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left'
+          vertical: "bottom",
+          horizontal: "left",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
+          vertical: "top",
+          horizontal: "left",
         }}
         elevation={6}
       >
-        <Box sx={{ height: 300,
-      padding: '5px 20px',
-      width: 700}}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h2 style={{ display: 'flex', alignItems: 'center' }}>
-              Scegli i filtri{' '}
+        <Box
+          sx={{
+            height: 300,
+            padding: "5px 20px",
+            width: 700,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <h2 style={{ display: "flex", alignItems: "center" }}>
+              {localeObj['title']}{' '}
               {filters.length ? (
-                <Span sx={{color: (theme) => theme.palette.secondary.main,
-                  backgroundColor: (theme) => theme.palette.secondary.main + '33',
-                  borderRadius: 20,
-                  padding: '1px 8px',
-                  fontSize: 13,
-                  marginLeft: 10}}>
-                  {filters.length} attiv{filters.length > 1 ? 'i' : 'o'}
+                <Span
+                  sx={{
+                    color: (theme) => theme.palette.secondary.main,
+                    backgroundColor: (theme) => theme.palette.secondary.main + "33",
+                    borderRadius: 20,
+                    padding: "1px 8px",
+                    fontSize: 13,
+                    marginLeft: 10,
+                  }}
+                >
+                  {filters.length} {localeObj['active'] }
                 </Span>
               ) : (
-                ''
+                ""
               )}
             </h2>
             <Button
-              color={'secondary'}
-              style={{ alignSelf: 'center' }}
-              onClick={() => removeDfilter()}
-              disabled={dfilters.length === 1 && emptyDfilter >= 0}
+              color={"secondary"}
+              style={{ alignSelf: "center" }}
+              onClick={() => removeDynFilter()}
+              disabled={activeFilters.length === 1 && emptyDynFilter >= 0}
             >
-              Rimuovi tutti
+              {localeObj['remove']}
             </Button>
           </div>
 
-          {dfilters.map((dfilter, idx, dfilters) => {
+          {activeFilters.map((dfilter, idx, dfilters) => {
             let conditions: AutoSelectOption[] = [];
-            let ValueFilter: React.VFC<any> = ({ label }) => (
-              <AutoSelect title={label} options={[]} autocompleteProps={{ size: 'small' }} />
+            let ValueFilter: React.FC<any> = ({ label }) => (
+              <AutoSelect title={label} options={[]} autocompleteProps={{ size: "small" }} />
             );
             if (dfilter.column) {
               const col: any = columnById(dfilter.column);
@@ -187,43 +209,55 @@ export function TableFilter<T extends Record<string, any>>({
               ValueFilter = col.filterModel.DisplayFilter;
             }
             return (
-              <Div sx={{ display: 'flex', marginBottom: 2}} key={idx}>
+              <Div sx={{ display: "flex", marginBottom: 2 }} key={idx}>
                 {/* <Div style={{ width: '40px', flex: 'none', textAlign: 'center' }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 4}}>
                   {idx === dfilters.length-1 ? 'Nuovo':'Filtro '+(idx+1) }
                 </Div> */}
-                <Box style={{ width: '80px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
+                <Box
+                  style={{ width: "80px", flex: 1 }}
+                  sx={{ justifySelf: "stretch", alignSelf: "center", marginRight: 3 }}
+                >
                   <AutoSelect
-                    title="Colonna"
-                    autocompleteProps={{ disableClearable: true, size: 'small' }}
+                    title={localeObj['column']}
+                    autocompleteProps={{ disableClearable: true, size: "small" }}
                     options={filtrableColumns.map((col: any) => ({
                       id: col.id,
-                      label: col.name || col.id
+                      label: col.name || col.id,
                     }))}
                     value={dfilter.column}
-                    onChange={(id) => editDfilter(idx, { column: id })}
+                    onChange={(id) => editDynFilter(idx, { column: id })}
                   />
                 </Box>
-                <Box style={{ width: '80px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
+                <Box
+                  style={{ width: "80px", flex: 1 }}
+                  sx={{ justifySelf: "stretch", alignSelf: "center", marginRight: 3 }}
+                >
                   <AutoSelect
-                    title="Condizione"
-                    autocompleteProps={{ disableClearable: true, size: 'small' }}
+                    title={localeObj['condition']}
+                    autocompleteProps={{ disableClearable: true, size: "small" }}
                     options={conditions}
                     value={dfilter.cond}
-                    onChange={(id) => editDfilter(idx, { cond: id })}
+                    onChange={(id) => editDynFilter(idx, { cond: id })}
                   />
                 </Box>
-                <Box style={{ width: '140px', flex:1 }} sx={{ justifySelf: 'stretch', alignSelf: 'center', marginRight: 3}}>
+                <Box
+                  style={{ width: "140px", flex: 1 }}
+                  sx={{ justifySelf: "stretch", alignSelf: "center", marginRight: 3 }}
+                >
                   <ValueFilter
                     value={dfilter.value}
                     condition={dfilter.cond}
-                    onChange={(value) => editDfilter(idx, { value: value })}
+                    onChange={(value) => editDynFilter(idx, { value: value })}
                     updateFilters={() => null}
-                    autoDelete={(nullable) => editDfilter(idx, { nullable: nullable })}
-                    label="Valore"
+                    autoDelete={(nullable) => editDynFilter(idx, { nullable: nullable })}
+                    label={localeObj['value']}
                   />
                 </Box>
-                <Box style={{ width: '24px' }} sx={{ justifySelf: 'stretch',alignSelf: 'center', marginRight: 2}}>
-                  <IconButton size="small" onClick={() => removeDfilter(idx)}>
+                <Box
+                  style={{ width: "24px" }}
+                  sx={{ justifySelf: "stretch", alignSelf: "center", marginRight: 2 }}
+                >
+                  <IconButton size="small" onClick={() => removeDynFilter(idx)}>
                     <CloseOutlined />
                   </IconButton>
                 </Box>
@@ -231,8 +265,8 @@ export function TableFilter<T extends Record<string, any>>({
             );
           })}
 
-          <Button onClick={() => addDfilter()} disabled={emptyDfilter >= 0} color={'primary'}>
-            Aggiungi un filtro
+          <Button onClick={() => addDynFilter()} disabled={emptyDynFilter >= 0} color={"primary"}>
+            {localeObj['add']}
           </Button>
         </Box>
       </Popover>

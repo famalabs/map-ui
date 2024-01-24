@@ -1,6 +1,5 @@
 import React from 'react';
 import  TablePagination, { TablePaginationProps } from '@mui/material/TablePagination';
-import { TableInstance } from 'react-table';
 import { IDynamicTablePaginatedProps, StaticTablePaginatedProps } from '../index';
 
 interface IProps<T extends Record<string, any>>
@@ -14,6 +13,7 @@ interface IProps<T extends Record<string, any>>
     currentLength: number;
     fetchRequest: IDynamicTablePaginatedProps<T>['fetchProps']['fetchRequest'];
   };
+  localeObj?: Record<string, any>;
 }
 
 export function CommonTablePagination<T extends Record<string, any>>(props: IProps<T>) {
@@ -27,6 +27,7 @@ export function CommonTablePagination<T extends Record<string, any>>(props: IPro
     setPageSize,
     changeSizeEvent,
     dynamic,
+    localeObj,
   } = props;
 
   return (
@@ -37,16 +38,16 @@ export function CommonTablePagination<T extends Record<string, any>>(props: IPro
       page={pageIndex}
       rowsPerPage={pageSize}
       rowsPerPageOptions={rowsPerPageOptions}
-      labelRowsPerPage={'Elementi mostrati'}
+      labelRowsPerPage={localeObj['elements']}
       labelDisplayedRows={({ from, to, count, page }) =>
-        `${from}-${to} di ${count} | Pagina ${page + 1} di ${pageCount}`
+        `${from}-${to} ${localeObj['of']} ${count} | ${localeObj['page']} ${page + 1} ${localeObj['of']} ${pageCount}`
       }
       onRowsPerPageChange={(e) => {
         const size = Number(e.target.value);
         if (dynamic) if (!(totalRows === dynamic.currentLength)) dynamic.fetchRequest(size);
         setPageSize(size);
         if (changeSizeEvent) changeSizeEvent(size);
-        gotoPage(0);
+        //gotoPage(0);
       }}
     />
   );

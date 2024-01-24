@@ -8,9 +8,10 @@ import { SearchIcon } from './Table';
 interface IProps {
   globalFilter?: string;
   setGlobalFilter: (value: string) => void;
+  localeObj: string;
 }
 
-export function GlobalFilter({ globalFilter = '', setGlobalFilter }: IProps): JSX.Element {
+export function GlobalFilter({ globalFilter = '', setGlobalFilter, localeObj }: IProps): JSX.Element {
   return (
     <TextField
       variant="outlined"
@@ -18,7 +19,7 @@ export function GlobalFilter({ globalFilter = '', setGlobalFilter }: IProps): JS
       style={{ width: 200, marginRight: 15 }}
       value={globalFilter}
       name={'search'}
-      placeholder={'Cerca'}
+      placeholder={localeObj}
       onChange={(e) => setGlobalFilter(e.target.value)}
       InputProps={{
         startAdornment: (

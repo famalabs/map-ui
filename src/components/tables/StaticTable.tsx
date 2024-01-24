@@ -1,6 +1,5 @@
 /* tslint:disable */
 import {
-  TableOptions,
   usePagination,
   useRowSelect,
   useTable,
@@ -8,9 +7,8 @@ import {
   useFilters,
   useGlobalFilter,
   TableInstance,
-} from 'react-table';
-import React from 'react';
-import Paper from "@mui/material/Paper";
+} from "react-table";
+import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import TableContainer from "@mui/material/TableContainer";
 import Box from "@mui/material/Box";
@@ -21,19 +19,20 @@ import {
   CommonTable,
   CommonTablePagination,
   HideColumns,
-  TableFilters,
   commonTableProps,
   getQueryFromState,
   TableSelect,
   GlobalFilter,
   TableFilter,
-} from './common';
-import { ITablePaginatedProps, selectRowsColumnId } from './utils';
-import { Button, IconButton, Stack, TableProps, Tooltip } from '@mui/material';
+} from "./common";
+import { ITablePaginatedProps, selectRowsColumnId, itLocale, enLocale } from "./utils";
+import { Button, IconButton, Stack, TableProps, Tooltip } from "@mui/material";
 
 export type StaticTablePaginatedProps<T extends Record<string, any>> = ITablePaginatedProps<T>;
 
-export function StaticTablePaginated<T extends Record<string, any>>(props: StaticTablePaginatedProps<T>) {
+export function StaticTablePaginated<T extends Record<string, any>>(
+  props: StaticTablePaginatedProps<T>
+) {
   const {
     tableProps: tableGivenProps,
     actionList,
@@ -44,12 +43,35 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
     onAction,
     router,
     setSelected,
+    onPageChange,
+    defaultLocale,
+    alternateLocale,
   } = props;
   //const container = props.container ?? Paper;
 
-  const tableProps: any = React.useMemo(() => commonTableProps(tableGivenProps), [
-    tableGivenProps,
-  ]);
+  const [currentLocale, setCurrentLocale] = useState<Record<string, any>>(itLocale);
+
+  React.useMemo(() => {
+
+    if (!alternateLocale || Object.keys(alternateLocale).length === 0) {
+
+      switch(defaultLocale) {
+        case 'it':
+          setCurrentLocale(itLocale);
+          break;
+        case 'en':
+          setCurrentLocale(enLocale);
+          break;
+        default:
+          setCurrentLocale(itLocale);
+          break;
+      }
+    } else setCurrentLocale(alternateLocale);
+
+  }, [defaultLocale, alternateLocale]);
+
+
+  const tableProps: any = React.useMemo(() => commonTableProps(tableGivenProps), [tableGivenProps]);
   //React.useMemo(() => console.log('givenprops update'), [tableGivenProps]);
 
   const {
@@ -98,11 +120,8 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
   }, [filters, sortBy, router]);
 
   React.useMemo(() => {
-    if (setSelected) setSelected(selectedFlatRows.map(row => row.original));
+    if (setSelected) setSelected(selectedFlatRows.map((row) => row.original));
   }, [selectedFlatRows]);
-  //React.useEffect(() => console.log('setSelected chaged'), [setSelected]);
-  //React.useEffect(() => console.log('selectedRowIds chaged'), [selectedRowIds]);
-  //React.useEffect(() => console.log('change selectedFlatRows'), [selectedFlatRows]);
 
   const isSelectRowVisible = React.useMemo(
     () => !!visibleColumns.find(({ id }) => id === selectRowsColumnId),
@@ -113,13 +132,23 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [filterColumn, setFilterColumn] = React.useState<string | undefined>(undefined);
 
+  // run onPageChange function each time pageIndex changes
+  React.useEffect(() => {
+    if (onPageChange) onPageChange(pageIndex); 
+  }, [pageIndex]);
+
   return (
     <>
       <div style={{ marginBottom: 20 }}>
-        <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+        <GlobalFilter
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          localeObj={currentLocale.globalfilter}
+        />
         <TableSelect
           allColumns={allColumns}
           deselectRows={() => (selectedFlatRows.length > 0 ? toggleAllRowsSelected(false) : null)}
+          localeObj={currentLocale.quickactions}
         />
         <TableFilter
           allColumns={allColumns}
@@ -130,47 +159,55 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
           setPanelOpen={setFilterOpen}
           defaultColumn={filterColumn}
           setDefaultColumn={setFilterColumn}
+          localeObj={currentLocale.dynfilter}
         />
         <HideColumns allColumns={allColumns} hideColumnAction={hideColumnAction} />
         {filters.length > 0 && (
           <div style={{ marginTop: 20 }}>
-            <b>{rows.length}</b> element{rows.length === 1 ? 'o' : 'i'} trovat{rows.length === 1 ? 'o' : 'i'}{' '}
-            su {preFilteredRows.length}
+            <b>{rows.length}</b> {currentLocale.dynfilter['found']} {currentLocale.pagination['of']} {preFilteredRows.length}
           </div>
         )}
       </div>
 
-      {(selectedFlatRows.length > 0  &&
-        <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ margin: "1rem"}}>
+      {selectedFlatRows.length > 0 && (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          alignItems="center"
+          sx={{ margin: "1rem" }}
+        >
           <Box component="span">
-            Selezionati: {selectedFlatRows.length} / {rows.length}
+            {currentLocale.quickactions['selected']}: {selectedFlatRows.length} / {rows.length}
           </Box>
 
           {/** Need a empty space between box and the buttons */}
           <Box component="span" width="1rem" />
 
           <Box component="span">
-            {actionList.map((action) => (
-
-              (action.onlyIcon && !!action.text)
-                ? <Tooltip title={action.text}>
-                  <IconButton size="medium" key={action.type} onClick={() => onAction(action.type, selectedFlatRows)}>
+            {actionList.map((action) =>
+              action.onlyIcon && !!action.text ? (
+                <Tooltip title={action.text}>
+                  <IconButton
+                    size="medium"
+                    key={action.type}
+                    onClick={() => onAction(action.type, selectedFlatRows)}
+                  >
                     {action.icon}
                   </IconButton>
                 </Tooltip>
-
-                : <Button
+              ) : (
+                <Button
                   variant="contained"
                   startIcon={action.icon}
                   key={action.type}
                   onClick={() => onAction(action.type, selectedFlatRows)}
                 >
-                  {" "}{action.text}{" "}
+                  {" "} {action.text}{" "}
                 </Button>
-            ))}
+              )
+            )}
           </Box>
-
-          
         </Stack>
       )}
 
@@ -192,18 +229,18 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
             loading,
           }}
         />
-        <Box display="flex" p={1} >
-          <Box p={1} flexGrow={1} >
+        <Box display="flex" p={1}>
+          <Box p={1} flexGrow={1}>
             {isSelectRowVisible && (
-              <Toolbar style={{ alignItems: 'center', minHeight: '52px' }}>
+              <Toolbar style={{ alignItems: "center", minHeight: "52px" }}>
                 <FormControlLabel
                   control={<Checkbox {...getToggleAllRowsSelectedProps()} />}
-                  label="Seleziona tutti"
+                  label={currentLocale.quickactions["selectall"]}
                 />
               </Toolbar>
             )}
           </Box>
-          <Box p={1} >
+          <Box p={1}>
             <CommonTablePagination
               totalRows={rows.length}
               pageIndex={pageIndex}
@@ -213,6 +250,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(props: Stati
               gotoPage={gotoPage}
               setPageSize={setPageSize}
               changeSizeEvent={paginationOptions.changeSize}
+              localeObj={currentLocale.pagination}
             />
           </Box>
         </Box>

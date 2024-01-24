@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParsedUrlQuery, ParsedUrlQueryInput } from 'querystring';
-import { TableOptions, TableState } from 'react-table';
+import { ActionType, TableOptions, TableState } from 'react-table';
 import { selectRowsColumnId } from '../utils';
 import defaultColumn from './defaultColumn';
 import filterTypes from './filterTypes';
@@ -58,7 +58,7 @@ export function getStateFromQuery(query: IQueryParams): any {
   return { filters, sortBy };
 }
 
-export function commonTableProps<T extends Record<string, any>>(
+export function commonTableProps(
   givenProps: any,
   query?: IQueryParams
 ): any {
@@ -72,6 +72,11 @@ export function commonTableProps<T extends Record<string, any>>(
       ...initialState,
       ...givenProps.initialState,
       hiddenColumns: [selectRowsColumnId].concat(givenProps.initialState?.hiddenColumns),
+    },
+    stateReducer: (newState: any, action: ActionType) => {
+      
+      if(newState.filters.length > 0) newState.pageIndex = 0; 
+      return newState;
     },
     defaultColumn: defaultColumn(givenProps.defaultColumn),
     filterTypes: filterTypes(givenProps.filterTypes as any),
