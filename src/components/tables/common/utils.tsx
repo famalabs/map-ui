@@ -74,8 +74,9 @@ export function commonTableProps(
       hiddenColumns: [selectRowsColumnId].concat(givenProps.initialState?.hiddenColumns),
     },
     stateReducer: (newState: any, action: ActionType) => {
-      
-      if(newState.filters.length > 0) newState.pageIndex = 0; 
+      if(newState.filters.length > 0) {
+        action.type == 'resetPage' ? newState.pageIndex = 0 : null;
+      } 
       return newState;
     },
     defaultColumn: defaultColumn(givenProps.defaultColumn),
