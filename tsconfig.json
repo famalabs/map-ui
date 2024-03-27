@@ -8,7 +8,7 @@
     "allowJs": true,
     "strict": false,
     "module": "esnext",
-    "target": "es5",
+    "target": "ES6",
     "lib": ["es6", "dom", "es2016", "es2017"],
     "jsx": "react",
     "moduleResolution": "node",
@@ -28,5 +28,5 @@
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "tests", "stories", "src/**/*.stories.tsx"]
+  "exclude": ["node_modules", "dist", "tests", "stories", "src/**/*.stories.tsx", ".old"]
 }
