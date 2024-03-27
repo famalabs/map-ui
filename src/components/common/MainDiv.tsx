@@ -16,13 +16,7 @@ export const MainDiv: React.FC<IProps> = ({ children }) => {
 
   return (
     <Main sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', backgroundColor: 'background.default' }}>
-      <Container maxWidth="lg" sx={{
-        paddingTop: (theme) => theme.spacing(4),
-        paddingBottom: (theme) => theme.spacing(4),
-        minHeight: '80vh'
-      }}>
-        {children}
-      </Container>
+      {children}
     </Main>
   );
 };

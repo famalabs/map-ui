@@ -1,5 +1,5 @@
 import React from "react";
-import { ColumnInstance, IdType } from "react-table";
+import { Column, ColumnInstance, IdType } from "react-table";
 
 import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
@@ -27,6 +27,7 @@ interface IProps<T extends Record<string, any>> {
   filters: any["state"]["filters"]; //CustomFilter<T>[];
   setFilter: any["setFilter"];
   setAllFilters: any["setAllFilters"];
+  gotoPage?: (page: number) => void;
   panelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
   defaultColumn: string | undefined;
@@ -39,6 +40,7 @@ export function TableFilter<T extends Record<string, any>>({
   setFilter,
   filters,
   setAllFilters,
+  gotoPage,
   panelOpen,
   setPanelOpen,
   defaultColumn,
@@ -93,35 +95,45 @@ export function TableFilter<T extends Record<string, any>>({
 
     // this prevents table re-render at startup & at popup opening
     const filteredData = Object.entries(filteredDict).map(([id, value]) => ({ id, value }));
+    console.log('FilteredData', filteredData, filters);
     panelOpen ? setAllFilters(filteredData) : null;
 
     //console.log(activeFilters);
   }, [setAllFilters, activeFilters]);
 
+  // this adds a new filter
   const addDynFilter = React.useCallback(() => {
     setActiveFilters((olds) => olds.concat(newDynFilter({ column: defaultColumn })));
   }, [defaultColumn]);
 
+
   const editDynFilter = React.useCallback((idx: number, obj: Partial<CustomFilter<T>>) => {
     setActiveFilters((olds) => {
-      if (obj.column) olds[idx] = newDynFilter(obj);
-      else olds[idx] = { ...olds[idx], ...obj };
+      if (obj.column) {
+        olds[idx] = newDynFilter(obj);
+        //console.log('adeed');
+      } else olds[idx] = { ...olds[idx], ...obj };
+
       return olds.slice();
     });
   }, []);
 
   const removeDynFilter = React.useCallback((idx = -1) => {
-    if (idx < 0)
+    if (idx < 0) {
+      gotoPage ? gotoPage(0) : null;
       setActiveFilters((olds) => {
         olds.splice(0, olds.length, newDynFilter());
         return olds.slice();
       });
-    else
+    } else {
+      gotoPage ? gotoPage(0) : null;
       setActiveFilters((olds) => {
         olds.splice(idx, 1);
         if (olds.length === 0) olds.push(newDynFilter());
         return olds.slice();
       });
+    }
+      
   }, []);
 
   const emptyDynFilter = React.useMemo(() => activeFilters.findIndex((df) => !df.column), [activeFilters]);
@@ -133,6 +145,11 @@ export function TableFilter<T extends Record<string, any>>({
       setDefaultColumn(undefined);
     }
   }, [addDynFilter, editDynFilter, emptyDynFilter, defaultColumn, setDefaultColumn]);
+
+  const valueDynFilter = (idx: number, value: any) => {
+    editDynFilter(idx, { value: value });
+    gotoPage ? gotoPage(0) : null;
+  }
 
   return (
     <>
@@ -247,7 +264,7 @@ export function TableFilter<T extends Record<string, any>>({
                   <ValueFilter
                     value={dfilter.value}
                     condition={dfilter.cond}
-                    onChange={(value) => editDynFilter(idx, { value: value })}
+                    onChange={(value: any) => valueDynFilter(idx, value)}
                     updateFilters={() => null}
                     autoDelete={(nullable) => editDynFilter(idx, { nullable: nullable })}
                     label={localeObj['value']}

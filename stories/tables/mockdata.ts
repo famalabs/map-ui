@@ -59,3 +59,52 @@ export const generateComplexData = (n = 1): ComplexData[] => {
 
   return v;
 };
+
+export interface DynamicData {
+  id: string;
+  supplier: string | object;
+  code: string;
+  name: string;
+  description: string;
+  status: 0 | 1;
+}
+
+export const generateDynamicData = (n = 1): DynamicData[] => {
+
+  const v: DynamicData[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const data: DynamicData = {
+      id: randomString(),
+      supplier: {
+        id: randomInt(1000),
+        name: 'TESTNAME',
+        supplierCode: randomString(),
+        supplierDescription: randomString(),
+      },
+      code: randomString(),
+      name: randomString(),
+      description: randomString(),
+      status: i % 2 as 0 | 1,
+    };
+    v.push(data);
+  }
+
+  return v;
+}
+
+export const generateAsyncData = async (n = 1): Promise<DynamicData[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(generateDynamicData(n));
+    }, 300);
+  });
+}
+
+export const generateAsyncCount = async (n: number): Promise<number> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(n);
+    }, 300);
+  });
+}

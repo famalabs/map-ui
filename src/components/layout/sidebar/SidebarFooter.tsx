@@ -49,17 +49,6 @@ export function SidebarFooter({
   return (
     <>
       <List>
-        <MenuItems
-          displayItems={[
-            {
-              title: "Home",
-              link: "/",
-              icon: <HomeIcon />,
-            },
-          ]}
-          itemID="footer"
-          onSelectItem={onSelectItem}
-        />
 
         <a onClick={(event) => handleClick(event)}>
           <ListItemButton aria-describedby={id} style={{ paddingLeft: 7 }}>

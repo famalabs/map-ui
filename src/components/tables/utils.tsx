@@ -1,7 +1,5 @@
 import React from 'react';
 import { Row, TableOptions } from 'react-table';
-import { IQueryParams } from './common';
-import { ParsedUrlQueryInput } from 'querystring';
 
 export const itLocale: Record<string, any> = {
   "globalfilter": "Cerca",
@@ -83,11 +81,12 @@ export interface ITablePaginatedProps<T extends Record<string, any>> {
   hideColumnAction?: (columnId: string) => void;
   onSingleRowClick?: (row: Row<T>) => void;
   router?: {
-    query: IQueryParams;
-    setQuery: (query: ParsedUrlQueryInput) => void;
+    queryEntries: IterableIterator<[string, string]>;
+    setQuery: (queryString: string) => void;
   };
   onAction: (action: IActionType, selectedItems: any) => unknown;
   setSelected?: (objs: T[]) => void;
+  customPageIndex?: number;
   onPageChange?: (page: number) => void;
   defaultLocale?: 'it' | 'en';
   alternateLocale?: Record<string, any>;

@@ -7,6 +7,7 @@ import {
   useFilters,
   useGlobalFilter,
   TableInstance,
+  ActionType,
 } from "react-table";
 import React, { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
@@ -24,6 +25,7 @@ import {
   TableSelect,
   GlobalFilter,
   TableFilter,
+  getStateFromQuery,
 } from "./common";
 import { ITablePaginatedProps, selectRowsColumnId, itLocale, enLocale } from "./utils";
 import { Button, IconButton, Stack, TableProps, Tooltip } from "@mui/material";
@@ -43,6 +45,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
     onAction,
     router,
     setSelected,
+    customPageIndex,
     onPageChange,
     defaultLocale,
     alternateLocale,
@@ -55,7 +58,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
 
     if (!alternateLocale || Object.keys(alternateLocale).length === 0) {
 
-      switch(defaultLocale) {
+      switch (defaultLocale) {
         case 'it':
           setCurrentLocale(itLocale);
           break;
@@ -93,6 +96,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
     setAllFilters,
     toggleAllRowsSelected,
     setGlobalFilter,
+    setSortBy,
     state: { pageIndex, pageSize, filters, sortBy, globalFilter },
   }: TableProps<any> = useTable<TableInstance>(
     tableProps,
@@ -115,9 +119,31 @@ export function StaticTablePaginated<T extends Record<string, any>>(
     }
   );
 
-  React.useEffect(() => {
-    if (router) router.setQuery(getQueryFromState({ filters, sortBy }));
-  }, [filters, sortBy, router]);
+  // Set initial filters and sort on load
+  
+
+  /* React.useEffect(() => {
+
+    const testParams = new URLSearchParams('filter[name]=not-contains,2&filter[name]=not-equals,3&filter[qty]=less-than-equals,1&sort=available&order=desc&page=2');
+    const testEntries = testParams.entries();
+    
+    const { filters, sortBy, pageIndex } = getStateFromQuery(testEntries);
+
+    setAllFilters(filters);
+    setSortBy(sortBy);
+    gotoPage(pageIndex);
+
+
+  }, []); */
+
+  // Run setQuery function each time filters, sortBy or pageIndex changes
+  /* React.useEffect(() => {
+    const queryString = getQueryFromState({ filters, sortBy, pageIndex });
+    if (router) router.setQuery(queryString);
+
+    console.log('QueryToSetApp: ', queryString);
+
+  }, [filters, sortBy, router, pageIndex]); */
 
   React.useMemo(() => {
     if (setSelected) setSelected(selectedFlatRows.map((row) => row.original));
@@ -134,7 +160,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
 
   // run onPageChange function each time pageIndex changes
   React.useEffect(() => {
-    if (onPageChange) onPageChange(pageIndex); 
+    if (onPageChange) onPageChange(pageIndex);
   }, [pageIndex]);
 
   return (
@@ -143,6 +169,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
         <GlobalFilter
           globalFilter={globalFilter}
           setGlobalFilter={setGlobalFilter}
+          gotoPage={gotoPage}
           localeObj={currentLocale.globalfilter}
         />
         <TableSelect
@@ -155,6 +182,7 @@ export function StaticTablePaginated<T extends Record<string, any>>(
           filters={filters}
           setFilter={setFilter}
           setAllFilters={setAllFilters}
+          gotoPage={gotoPage}
           panelOpen={filterOpen}
           setPanelOpen={setFilterOpen}
           defaultColumn={filterColumn}

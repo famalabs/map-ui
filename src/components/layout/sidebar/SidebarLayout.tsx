@@ -152,8 +152,7 @@ export function SidebarLayout({
         {/* Main page Div */}
 
         <MainDiv>
-          {/** need to fix this sx, minHeight with vh not optimal */}
-          <Container sx={{ minHeight: "60vh" }}>{children}</Container>
+          {children}
         </MainDiv>
       </Box>
     </>
