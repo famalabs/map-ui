@@ -1,0 +1,107 @@
+'use client';
+import { Material, useLazyMaterialControllerCountQuery, useLazyMaterialControllerListQuery, MaterialControllerListApiArg } from '@id3/redux/api-v2/materialApi';
+import { useState } from 'react';
+import React from 'react';
+
+export function DynamicCardTableTester() {
+
+  const filtersDef = [
+    { accessor: 'name', type: 'string', label: 'Name' },
+    /* {
+      accessor: 'status', type: 'select', label: 'Status',
+      SelectCell: [
+        { id: 1, type: 'success', label: 'Published' },
+        { id: 0, type: 'warning', label: 'Pending' },
+      ]
+    }, */
+  ] as CardFilterDef[];
+
+
+  const [data, setData] = useState<Material[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+
+  const [fetchItems] = useLazyMaterialControllerListQuery();
+  const [fetchToken, setFetchToken] = useState<string>('');
+
+  const [expectedRowCount, setExpectedRowCount] = useState<number>(0);
+  const [fetchItemCount] = useLazyMaterialControllerCountQuery();
+
+  const fetchItemsHandler = async (limit: number, filters: ActiveCardFilter[], firstLoad?: boolean) => {
+
+    try {
+
+      const filterObj = filters.length > 0
+        ? filters.reduce((acc, filter) => {
+          acc[filter.filterName] = filter.filterValue;
+          return acc;
+        }, {})
+        : {};
+
+      /* Set fetching before the request starts to ensure correct skeleton view */
+      setIsFetching(true);
+
+      /* where param does not work with productFamilyCount */
+      const rowCount = await fetchItemCount({ where: filterObj });
+      setExpectedRowCount(rowCount.data ?? 0);
+
+      const requestObject = {
+        token: firstLoad ? '' : fetchToken,
+        limit: limit ?? 5,
+        where: filterObj,
+      } as MaterialControllerListApiArg;
+
+      /* console.log(`Fetching, limit: ${limit}, firstLoad: ${firstLoad}`); */
+
+      const res = await fetchItems(requestObject);
+      const itemData = res.data ?? { token: '', items: [], length: 0 };
+
+      firstLoad
+        ? setData(itemData.items)
+        : setData(prevData => [...prevData, ...itemData.items as any]);
+
+      setFetchToken(itemData.token ?? '');
+
+    } catch (error) {
+      console.error('Error', error);
+    } finally {
+      setIsFetching(false);
+    }
+
+  };
+
+  /* Can set permanent filters from here */
+  const [queryParamString, setQueryParamString] = useState<string>('');
+
+  return (
+    <>
+      <DynamicCardsTable
+        tableInfo={{
+          tableName: 'CardTable',
+          tableData: data,
+          filtersDef: filtersDef,
+          expectedRowCount: expectedRowCount,
+          paginationOptions: {
+            customPageRowCount: 6,
+            customSelectPages: [6, 12]
+          },
+        }}
+        fetchInfo={{
+          fetchData: fetchItemsHandler,
+          isFetching: isFetching
+        }}
+        cardInfo={{
+          image: "https://cdna.artstation.com/p/assets/images/images/035/175/878/large/valenti-de-haro-hiroshi-nagai-2020.jpg?1614280917",
+          titleAccessor: 'name',
+          descAccessor: 'description',
+          onCardClick: (row) => {
+            console.log('Clicked', row);
+          }
+        }}
+        queryInfo={{
+          onLoadQuery: queryParamString,
+          setCurrentQuery: setQueryParamString
+        }}
+      />
+    </>
+  );
+}
