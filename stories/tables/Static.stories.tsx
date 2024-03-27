@@ -21,6 +21,7 @@ export default {
 export const ComplexTemplate: Story<StaticTablePaginatedProps<ComplexData>> = (args) => (
   <StaticTablePaginated {...args} />
 );
+
 ComplexTemplate.args = {
   tableProps: {
     columns: [
@@ -29,9 +30,9 @@ ComplexTemplate.args = {
       { name: 'Available', accessor: 'available' },
       { name: 'Date', accessor: 'date', type: 'date' },
       { name: 'Status', accessor: 'status', type: 'select' },
-    ],
+    ] as any,
     data: generateComplexData(25),
-    initialState: { pageSize: 5 },
+    initialState: { pageSize: 5 } as any,
   },
   actionList: [{ type: 'add' as IActionType, text: 'Add', icon: <CheckIcon />, onlyIcon: true },
   { type: 'delete' as IActionType, text: 'Delete', icon: <DeleteIcon />, onlyIcon: true },
@@ -39,7 +40,11 @@ ComplexTemplate.args = {
   loading: false,
   paginationOptions: {
     pageSizes: [3, 5, 10, 20],
-    changeSize: (size) => null,
+    //changeSize: (size) => null,
   },
-  router: { query: {}, setQuery: (query) => null },
+  router: {
+    queryEntries: [] as any,
+    setQuery: (queryString) => console.log('SetQuery: ', queryString),
+  },
+  //onPageChange: (page) => (console.log(page)),
 };
