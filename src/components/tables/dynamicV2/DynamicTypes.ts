@@ -1,5 +1,5 @@
-import { ButtonOwnProps, ChipOwnProps } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import { ButtonOwnProps } from "@mui/material";
+import React, { Dispatch, SetStateAction } from "react";
 
 /**
  * Interface for the options of a select cell.
@@ -7,11 +7,15 @@ import { Dispatch, SetStateAction } from "react";
  * @param {string} type - The type of the option.
  * @param {string} label - The label of the option.
  */
-export interface NewSelectCellOption {
+export interface DynamicFilterOptions {
   id: string | number | boolean;
-  type: ChipOwnProps['color'];
   label: string;
 }
+
+export type ColumnType = 'string'
+  | 'number' | 'action' | 'avatar'
+  | 'boolean' | 'date' | 'image'
+  | 'link' | 'status' | 'select';
 
 /**
  * Interface for the definition of a dynamic column.
@@ -19,18 +23,18 @@ export interface NewSelectCellOption {
  * @param {string} label - The label of the column.
  * @param {string} type - The type of the column.
  * @param {boolean} isFilter - Indicates whether the column is filterable.
+ * @param {DynamicFilterOptions[]} filterOptions - The options for the filter in case of select.
  * @param {boolean} visible - Indicates whether the column is visible.
  * @param {JSX.Element} Cell - The cell component for the column.
- * @param {NewSelectCellOption[]} SelectCell - The options for the select cell.
  */
 export interface DynColumnsDef {
   accessor: string;
   label: string;
-  type: string;
+  type: ColumnType;
   isFilter?: boolean;
+  filterOptions?: DynamicFilterOptions[];
   visible: boolean;
-  Cell?: JSX.Element;
-  SelectCell?: NewSelectCellOption[];
+  Cell?: React.FC<unknown>;
 }
 
 /**
@@ -93,6 +97,15 @@ export interface CustomButton {
   buttonClick: () => void;
 }
 
+export interface i18nStrings {
+  quickActions: string,
+  visibleColumns: string,
+  itemsSelected: string,
+  rowsPerPage: string,
+  of: string,
+}
+
+
 /**
  * Interface for the props accepted by the DynamicTable component.
  * @param {string} tableName - The name of the table (required for localStorage).
@@ -112,6 +125,7 @@ export interface CustomButton {
  * @param {ActionEventItem[]} [defineActions.actionList] - Optional array of actions that can be performed on the selected rows.
  * @param {(action: any, selectedRows: Record<string, any>[]) => void} [defineActions.onAction] - Optional function that is called when an action is performed.
  * @param {CustomButton} [newItemButton] - Optional button to create a new item.
+ * @param {i18nStrings} [localeStr] - Optional object containing localized strings.
  */
 export interface DynamicTableProps<T extends Record<string, any>> {
   tableInfo: {
@@ -139,4 +153,5 @@ export interface DynamicTableProps<T extends Record<string, any>> {
     onAction: ActionEvent<T>;
   }
   newItemButton?: CustomButton;
+  localeStr?: i18nStrings;
 }

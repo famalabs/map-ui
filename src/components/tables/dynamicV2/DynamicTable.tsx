@@ -5,8 +5,8 @@ import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Grid2 from "@mui/material/Unstable_Grid2";
-import React, { useEffect, useRef, useState } from 'react';
 import qs from 'qs';
+import React, { useEffect, useRef, useState } from 'react';
 import { DynamicActionHeader } from './DynamicActionHeader';
 import { CommonBodyCreator } from './DynamicCommons';
 import { DynamicSimpleFilters } from './DynamicFilters';
@@ -37,6 +37,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     defineActions,
     onRowClick,
     newItemButton,
+    localeStr,
   } = props;
 
   /* Page index */
@@ -112,7 +113,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
         const selectColumn = columns.find(column => column.type === 'select' && column.accessor === filterColumn);
 
-        switch (typeof selectColumn?.SelectCell?.[0].id) {
+        switch (typeof selectColumn?.filterOptions?.[0].id) {
           case 'string':
             return { filterColumn, filterValue } as ActiveFilter;
           case 'number':
@@ -217,6 +218,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           quickSelectedRows={quickSelectedRows}
           setQuickSelectedRows={setQuickSelectedRows}
           newItemButton={newItemButton}
+          localeStr={localeStr}
         />
 
       </Grid2>
@@ -247,6 +249,10 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage={localeStr ? localeStr.rowsPerPage : 'Rows per page: '}
+              labelDisplayedRows={({ from, to, count }) => {
+                return `${from} - ${to} ${localeStr ? localeStr.of : 'of'} ${count}`
+              }}
               ActionsComponent={CustomTablePaginationActions}
             />
           </TableRow>

@@ -47,7 +47,7 @@ export function SelectFilterForm(props: SelectFilterFormProps) {
   const { column, activeFilters, setActiveFilters } = props;
 
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
-  const foundValue = column.SelectCell?.find(option => option.id === loadedValue);
+  const foundValue = column.filterOptions?.find(option => option.id === loadedValue);
 
   return (
     <Grid2 sm={'auto'} minWidth={200} p={2}>
@@ -58,7 +58,7 @@ export function SelectFilterForm(props: SelectFilterFormProps) {
         clearOnBlur
         value={foundValue ?? null}
         onChange={(event, option) => updateFilters(option ? option.id : undefined, column, setActiveFilters)}
-        options={column.SelectCell || []}
+        options={column.filterOptions || []}
         getOptionLabel={(option) => option.label}
         renderOption={(props, option) => <ListItem {...props}>{option.label}</ListItem>}
         renderInput={

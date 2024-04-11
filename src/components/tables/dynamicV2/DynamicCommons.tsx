@@ -1,16 +1,15 @@
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import Checkbox from '@mui/material/Checkbox';
-import Chip from '@mui/material/Chip';
 import Skeleton from '@mui/material/Skeleton';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Grid2 from '@mui/material/Unstable_Grid2';
 import { styled } from '@mui/material/styles';
 import { Dispatch, SetStateAction } from 'react';
 import { DynColumnsDef } from './DynamicTypes';
 import React from 'react';
+import { DynamicCellCreator } from './DynamicCellCreator';
 
 const StyledTableRow = styled(TableRow)(({ /* theme */ }) => ({
   height: 56,
@@ -113,67 +112,6 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     onRowClick
   } = props;
 
-  /* Renders cell depending on its type */
-  const cellCreator = (row: T, column: DynColumnsDef, index: number) => {
-
-    const chipColorMap = {
-      warning: '#FFA500',
-      success: '#40916C',
-      error: '#ff0000',
-      default: '#808080',
-    };
-
-    /* Extract potential nested objects values */
-
-    const getNestedProperty = (row: T, path: string,) => {
-      return path.split('.').reduce((nestedObject, property) => {
-        return (nestedObject && property in nestedObject)
-          ? nestedObject[property]
-          : '';
-      }, row).toString() ?? '';
-    };
-
-    const cellValue = getNestedProperty(row, column.accessor);
-
-    /* Select cell data */
-
-    const cellData = column.SelectCell?.find(cell => cell.id === cellValue);
-    const customColor = cellData && cellData.type ? chipColorMap[cellData.type] : chipColorMap.default;
-
-    switch (column.type) {
-
-      case 'string':
-        return <TableCell key={index} style={{ width: 160 }}>{cellValue}</TableCell>;
-
-      case 'number':
-        return <TableCell key={index} style={{ width: 160 }}>{cellValue}</TableCell>;
-
-      case 'select':
-
-        return (
-          <TableCell key={index} style={{ width: 160 }}>
-            <Grid2
-              container
-            >
-              <Chip
-                size="small"
-                label={cellData ? cellData.label : ''}
-                style={{
-                  backgroundColor: `${customColor}4D`,
-                  color: customColor,
-                }}
-              />
-            </Grid2>
-
-          </TableCell>
-        );
-
-      default:
-        return <TableCell key={index} style={{ width: 160 }}>{cellValue}</TableCell>;
-    }
-
-  }
-
   const currentPageRows = rowsPerPage > 0
     ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     : tableData;
@@ -232,7 +170,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
             {visibleColumns.map((column, index) => {
               if (!column.visible) return null;
 
-              return cellCreator(row, column, index);
+              return DynamicCellCreator<T>(row, column, index);
             })}
           </StyledTableRow>
         ))}
