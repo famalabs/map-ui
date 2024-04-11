@@ -1,18 +1,18 @@
 import { Dispatch, SetStateAction } from "react";
-import { FilterType, FilterValue, NewSelectCellOption } from "../dynamicV2";
+import { FilterType, FilterValue, DynamicFilterOptions } from "../dynamicV2";
 
 /**
  * Interface for the definition of the filters.
  * @param {string} accessor - The accessor of the column.
  * @param {string} label - The label of the column.
  * @param {string} type - The type of the column.
- * @param {NewSelectCellOption[]} SelectCell - The options for the select cell.
+ * @param {DynamicFilterOptions[]} SelectCell - The options for the select cell.
  */
 export interface CardFilterDef {
   accessor: string;
   type: string;
   label: string;
-  SelectCell?: NewSelectCellOption[];
+  SelectCell?: DynamicFilterOptions[];
 }
 
 /**

@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Meta, Story } from '@storybook/react';
 import { ActionEventItem, ActionType, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
 import { generateAsyncCount, generateAsyncData } from './mockdata';
+
+import {
+  BooleanCell,
+  DateCell,
+  ActionCell,
+  LinkCell,
+  AvatarCell,
+  StatusCell,
+  ImageCell,
+  SelectCell,
+} from '../../src/components/tables';
+
+
 export default {
   title: 'tables/DynamicV2',
   component: DynamicTable,
@@ -19,16 +32,23 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
   const columns =
     [
       { accessor: 'id', label: 'ID', type: 'string', visible: false },
-      { accessor: 'supplier.name', label: 'Supplier', type: 'string', visible: false },
-      { accessor: 'code', label: 'Code', type: 'string', visible: true },
+      { accessor: 'supplier.name', label: 'Supplier', type: 'string', visible: false, isFilter: true },
+      {
+        accessor: 'code', label: 'Code', type: 'string', visible: true
+      },
       { accessor: 'name', label: 'Name', type: 'string', isFilter: true, visible: true },
       { accessor: 'description', label: 'Description', type: 'string', visible: true },
       {
-        accessor: 'status', label: 'Status', type: 'select', isFilter: true,
-        SelectCell: [
+        accessor: 'status', label: 'Status', type: 'select',
+        isFilter: true,
+        filterOptions: [
+          { id: 1, label: 'Published' },
+          { id: 0, label: 'Pending' },
+        ],
+        Cell: SelectCell([
           { id: 1, type: 'success', label: 'Published' },
           { id: 0, type: 'warning', label: 'Pending' },
-        ], visible: true
+        ]), visible: true
       },
     ] as DynColumnsDef[];
 
@@ -41,6 +61,8 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
   const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => {
 
     try {
+
+      console.log('Active Filters: ', filters);
 
       setIsFetching(true);
 
@@ -100,6 +122,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
   /* Readonly? queryParamString to set URL */
   const [queryParamString, setQueryParamString] = useState<string>('');
 
+
   return (
     <>
       <DynamicTable
@@ -133,6 +156,13 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           buttonClick: () => {
             console.log('New item clicked');
           }
+        }}
+        localeStr={{
+          quickActions: 'Azioni Veloci',
+          visibleColumns: 'Colonne Visibili',
+          itemsSelected: 'Righe Selezionate: ',
+          rowsPerPage: 'Righe per pagina: ',
+          of: 'di',
         }}
       />
     </>

@@ -2,6 +2,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { DynColumnsDef, DynamicSimpleFilters, DynamicSimpleFiltersProps } from '../../src/components/tables/dynamicV2';
+import { SelectCell } from '../../src/components/tables';
 
 const columns =
   [
@@ -12,10 +13,15 @@ const columns =
     { accessor: 'description', label: 'Description', type: 'string', visible: true },
     {
       accessor: 'status', label: 'Status', type: 'select', isFilter: true,
-      SelectCell: [
+      filterOptions: [
         { id: 1, type: 'success', label: 'Published' },
         { id: 0, type: 'warning', label: 'Pending' },
-      ], visible: true
+      ],
+      Cell: SelectCell([
+        { id: 1, type: 'success', label: 'Published' },
+        { id: 0, type: 'warning', label: 'Pending' },
+      ]),
+      visible: true
     },
   ] as DynColumnsDef[];
 
