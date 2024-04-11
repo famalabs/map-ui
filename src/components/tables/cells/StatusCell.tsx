@@ -1,9 +1,9 @@
 import React from 'react';
-import  Tooltip, {TooltipProps } from '@mui/material/Tooltip';
-import  CancelPresentation  from '@mui/icons-material/CancelPresentation';
-import  Rowing  from '@mui/icons-material/Rowing';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
+import CancelPresentation from '@mui/icons-material/CancelPresentation';
+import Rowing from '@mui/icons-material/Rowing';
 import HourglassEmpty from '@mui/icons-material/HourglassEmpty';
-import AssignmentTurnedIn  from '@mui/icons-material/AssignmentTurnedIn';
+import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
 
 export const ALL_STATUS = ['pending', 'active', 'terminated', 'canceled'] as const;
 export type IStatus = typeof ALL_STATUS[number];
@@ -15,37 +15,24 @@ function isStatus(status: IStatus | string): status is IStatus {
 export const StatusCell = (
   tooltip?: (value: IStatus) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
-) => ({ value }) => {
-  if (typeof value === 'undefined') return null;
-  if (!isStatus(value))
-    throw new Error(`Status passed '${value}' is not a valid status string (${ALL_STATUS.join('|')})`);
+) => ({ cellValue }) => {
 
-  const DivTip: ({ children }: { children: TooltipProps['children'] }) => JSX.Element = tooltip
-    ? ({ children }) => (
-        <Tooltip title={tooltip(value)} {...tooltipProps}>
-          {children}
-        </Tooltip>
-      )
-    : ({ children }) => <>{children}</>;
+  if (typeof cellValue === 'undefined' || cellValue === null) return null;
 
-  let StatusComp: React.ReactNode = '';
-  switch (value) {
-    case 'canceled':
-      StatusComp = <CancelPresentation />;
-      break;
-    case 'active':
-      StatusComp = <Rowing />;
-      break;
-    case 'pending':
-      StatusComp = <HourglassEmpty />;
-      break;
-    case 'terminated':
-      StatusComp = <AssignmentTurnedIn />;
-      break;
-  }
+  if (!isStatus(cellValue)) return null;
+
+  const statusMap = {
+    canceled: <CancelPresentation />,
+    active: <Rowing />,
+    pending: <HourglassEmpty />,
+    terminated: <AssignmentTurnedIn />,
+  };
+
+  const statusIcon = statusMap[cellValue];
+
   return (
-    <DivTip>
-      <span>{StatusComp}</span>
-    </DivTip>
+    <Tooltip title={tooltip(cellValue)} {...tooltipProps}>
+      {statusIcon}
+    </Tooltip>
   );
 };

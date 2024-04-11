@@ -1,10 +1,9 @@
 import React from "react";
 import moment from "moment";
-import Box from "@mui/material/Box";
+import Grid2 from "@mui/material/Unstable_Grid2";
 
-export const DateCell =
-  (format = "DD/MM/yyyy") =>
-  ({ value }) => {
-    if (typeof value === "undefined") return null;
-    return <Box>{moment(value).format(format)}</Box>;
+export const DateCell = (format = "DD/MM/yyyy") =>
+  ({ cellValue }) => {
+    if (typeof cellValue === "undefined") return null;
+    return <Grid2 container>{moment(cellValue).format(format)}</Grid2>;
   };
