@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Meta, Story } from '@storybook/react';
-import { ActionEventItem, ActionType, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
+import { ActionEventItem, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
 import { generateAsyncCount, generateAsyncData } from './mockdata';
 
 import {
@@ -31,20 +31,17 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
   const columns =
     [
-      { accessor: 'id', label: 'ID', type: 'string', visible: false },
-      { accessor: 'supplier.name', label: 'Supplier', type: 'string', visible: false, isFilter: true },
+      { accessor: 'id', label: 'ID', visible: false },
+      { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
+      { accessor: 'code', label: 'Code', visible: true },
+      { accessor: 'name', label: 'Name', visible: true },
+      { accessor: 'description', label: 'Description', visible: true },
       {
-        accessor: 'code', label: 'Code', type: 'string', visible: true
-      },
-      { accessor: 'name', label: 'Name', type: 'string', isFilter: true, visible: true },
-      { accessor: 'description', label: 'Description', type: 'string', visible: true },
-      {
-        accessor: 'status', label: 'Status', type: 'select',
-        isFilter: true,
-        filterOptions: [
+        accessor: 'status', label: 'Status', 
+        filterOptions: {type: 'select', options: [
           { id: 1, label: 'Published' },
           { id: 0, label: 'Pending' },
-        ],
+        ]},
         Cell: SelectCell([
           { id: 1, type: 'success', label: 'Published' },
           { id: 0, type: 'warning', label: 'Pending' },
@@ -89,11 +86,11 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
   const [quickActions, setQuickActions] = useState<boolean>(false);
 
-  const actionHandler = async (action: ActionType, selectedRows: any[]) => {
+  const actionHandler = async (actionType: string, selectedRows: any[]) => {
 
     const requestArray: Promise<any>[] = [];
 
-    switch (action) {
+    switch (actionType) {
       case 'import':
 
         break;
