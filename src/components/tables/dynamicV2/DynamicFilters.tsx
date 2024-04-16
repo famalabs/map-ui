@@ -22,7 +22,6 @@ export function StringFilterForm(props: StringFilterFormProps) {
   return (
     <Grid2 sm={'auto'} p={2}>
       <TextField
-        fullWidth
         size='small'
         label={column.label}
         variant="outlined"
@@ -47,18 +46,17 @@ export function SelectFilterForm(props: SelectFilterFormProps) {
   const { column, activeFilters, setActiveFilters } = props;
 
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
-  const foundValue = column.filterOptions?.find(option => option.id === loadedValue);
+  const foundValue = column.filterOptions?.options.find(option => option.id === loadedValue);
 
   return (
     <Grid2 sm={'auto'} minWidth={200} p={2}>
       <Autocomplete
-        fullWidth
         size='small'
         blurOnSelect
         clearOnBlur
         value={foundValue ?? null}
         onChange={(event, option) => updateFilters(option ? option.id : undefined, column, setActiveFilters)}
-        options={column.filterOptions || []}
+        options={column.filterOptions.options ?? []}
         getOptionLabel={(option) => option.label}
         renderOption={(props, option) => <ListItem {...props}>{option.label}</ListItem>}
         renderInput={
@@ -120,10 +118,7 @@ export function DynamicSimpleFilters(props: DynamicSimpleFiltersProps) {
 
   /* Renders row depending on its type */
   const filterTypeMap = (column: DynColumnsDef) => {
-    switch (column.type) {
-
-      case 'number':
-        return null;
+    switch (column.filterOptions.type) {
 
       case 'string':
         return <StringFilterForm
@@ -151,7 +146,7 @@ export function DynamicSimpleFilters(props: DynamicSimpleFiltersProps) {
       justifyContent="flex-start"
       alignItems="center"
     >
-      {columns.map(column => column.isFilter && filterTypeMap(column))}
+      {columns.map(column => column.filterOptions && filterTypeMap(column))}
     </Grid2>
   )
 }

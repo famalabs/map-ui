@@ -170,7 +170,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
             {visibleColumns.map((column, index) => {
               if (!column.visible) return null;
 
-              return DynamicCellCreator<T>(row, column, index);
+              return <DynamicCellCreator<T> key={`custom-cell-${index}`} row={row} column={column} />;
             })}
           </StyledTableRow>
         ))}

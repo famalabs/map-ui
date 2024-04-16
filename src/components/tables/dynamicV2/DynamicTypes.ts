@@ -30,17 +30,15 @@ export type ColumnType = 'string'
 export interface DynColumnsDef {
   accessor: string;
   label: string;
-  type: ColumnType;
-  isFilter?: boolean;
-  filterOptions?: DynamicFilterOptions[];
-  visible: boolean;
+  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[]}
   Cell?: React.FC<unknown>;
+  visible: boolean;
 }
 
 /**
  * Type for the filter type.
  */
-export type FilterType = 'string' | 'number' | 'select';
+export type FilterType = 'string' | 'select';
 
 /**
  * Type for the filter value.
@@ -60,14 +58,9 @@ export interface ActiveFilter {
 }
 
 /**
- * Type for the action type.
- */
-export type ActionType = 'delete' | 'import' | 'export';
-
-/**
  * Type for the action event.
  */
-export type ActionEvent<T extends Record<string, any>> = (action: ActionType, selectedRows: T[]) => void;
+export type ActionEvent<T extends Record<string, any>> = (actionType: string, selectedRows: T[]) => void;
 
 /**
  * Interface for an action event button.
@@ -78,7 +71,7 @@ export type ActionEvent<T extends Record<string, any>> = (action: ActionType, se
  * @param {boolean} isIconButton - Indicates whether the button is an icon button.
  */
 export interface ActionEventItem {
-  type: ActionType;
+  type: string;
   label?: string;
   color?: ButtonOwnProps['color'];
   icon?: JSX.Element;

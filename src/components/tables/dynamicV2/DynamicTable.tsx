@@ -111,9 +111,9 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
       const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
 
-        const selectColumn = columns.find(column => column.type === 'select' && column.accessor === filterColumn);
+        const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
 
-        switch (typeof selectColumn?.filterOptions?.[0].id) {
+        switch (typeof selectColumn?.filterOptions.options[0].id) {
           case 'string':
             return { filterColumn, filterValue } as ActiveFilter;
           case 'number':

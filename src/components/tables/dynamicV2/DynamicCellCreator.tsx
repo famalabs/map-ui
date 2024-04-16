@@ -2,9 +2,14 @@ import TableCell from '@mui/material/TableCell';
 import React from 'react';
 import { DynColumnsDef } from './DynamicTypes';
 
-export function DynamicCellCreator<T extends Record<string, any>>(row: T, column: DynColumnsDef, index: number) {
+export interface DynamicCellProps<T> {
+  row: T;
+  column: DynColumnsDef;
+}
 
-  const cellCases = ['action', 'avatar', 'boolean', 'date', 'image', 'link', 'status', 'select']
+export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
+
+  const { row, column } = props;
 
   /* Extract potential nested objects values */
   const getNestedProperty = (row: T, path: string,) => {
@@ -19,15 +24,12 @@ export function DynamicCellCreator<T extends Record<string, any>>(row: T, column
 
   switch (true) {
 
-    case column.type === 'string' || 'number':
-      return <TableCell key={index} style={{ width: 160 }}>{cellValue}</TableCell>;
-
-    case cellCases.includes(column.type):
+    case 'Cell' in column && column.Cell !== undefined:
       const CustomCell = column.Cell({ cellValue });
-      return <TableCell key={index} style={{ width: 160 }}>{CustomCell}</TableCell>;
+      return <TableCell style={{ width: 160 }}>{CustomCell}</TableCell>;
 
     default:
-      return <TableCell key={index} style={{ width: 160 }}>{cellValue}</TableCell>;
+      return <TableCell style={{ width: 160 }}>{cellValue}</TableCell>;
   }
 
 }
