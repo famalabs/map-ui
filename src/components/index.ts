@@ -10,4 +10,4 @@ export * from './pickers';
 export * from './snackbar';
 export * from './common';
 export * from './icons';
-export * from './layout';
+export * from './sidebar';

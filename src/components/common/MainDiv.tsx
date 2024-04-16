@@ -1,9 +1,12 @@
 import React from 'react';
-import Container from '@mui/material/Container';
 import { styled } from '@mui/material/styles';
-import { useTheme } from '@mui/material/styles';
 
-const Main = styled('main')``;
+const Main = styled('main')(({ theme }) => ({
+  flex: 1,
+  height: '100%',
+  overflow: 'auto',
+  backgroundColor: theme.palette.background.default,
+}));
 
 export interface IProps {
   appbar?: boolean;
@@ -11,11 +14,8 @@ export interface IProps {
 }
 
 export const MainDiv: React.FC<IProps> = ({ children }) => {
-
-  const theme: any = useTheme();
-
   return (
-    <Main sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', backgroundColor: 'background.default' }}>
+    <Main>
       {children}
     </Main>
   );

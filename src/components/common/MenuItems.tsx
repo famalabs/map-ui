@@ -1,26 +1,25 @@
 import React from "react";
-import { List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 
-export type MenuID = "generic" | "footer" | string;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MenuID = "body" | "footer" | string;
 export interface MenuItemsProps<T extends Record<string, any>> {
+  listType: MenuID;
   displayItems: T[];
-  itemID: MenuID;
   onSelectItem: (itemID: MenuID, link: string) => void;
   selectedLink?: string;
+  listProps?: Record<string, any>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function MenuItems<T extends Record<string, any>>({
-  displayItems,
-  itemID,
-  onSelectItem,
-  selectedLink,
-}: MenuItemsProps<T>) {
+export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T>) {
+
+  const { displayItems, listType, onSelectItem, selectedLink, listProps } = props;
 
   return (
     <>
-      <List style={{ margin: "auto 0" }}>
+      <List sx={{...listProps}}>
         {displayItems.map((item, index) => (
           <ListItemButton
             key={index}
@@ -29,7 +28,7 @@ export function MenuItems<T extends Record<string, any>>({
                 color: (theme) => theme.palette.primary.main,
               }),
             }}
-            onClick={() => onSelectItem(itemID, item.link as string)}
+            onClick={() => onSelectItem(listType, item.link as string)}
           >
             <ListItemIcon
               sx={{
