@@ -18,13 +18,9 @@ import {
 export default {
   title: 'tables/DynamicV2',
   component: DynamicTable,
-  /* argTypes: {
-    paginationOptions: { changeSize: 'action' },
-    hideColumnAction: { action: 'hide' },
-    onSingleRowClick: { action: 'clickRow' },
-    setSelected: { action: 'select' },
-    onAction: { action: 'onAction' },
-  }, */
+  argTypes: {
+    backgroundColor: { control: 'color' },
+  },
 } as Meta<DynamicTableProps<any>>;
 
 export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
@@ -33,7 +29,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
     [
       { accessor: 'id', label: 'ID', visible: false },
       { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
-      { accessor: 'code', label: 'Code', visible: true },
+      { accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell() },
       { accessor: 'name', label: 'Name', visible: true },
       { accessor: 'description', label: 'Description', visible: true },
       {
@@ -45,7 +41,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
         Cell: SelectCell([
           { id: 1, type: 'success', label: 'Published' },
           { id: 0, type: 'warning', label: 'Pending' },
-        ]), visible: true
+        ])
       },
     ] as DynColumnsDef[];
 
@@ -63,10 +59,10 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
       setIsFetching(true);
 
-      const rowCount = await generateAsyncCount(15);
+      const rowCount = await generateAsyncCount(10);
       setExpectedRowCount(rowCount);
 
-      const itemData = await generateAsyncData(limit);
+      const itemData = await generateAsyncData(10);
 
       firstLoad
         ? setData(itemData)
@@ -117,7 +113,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
   };
 
   /* Readonly? queryParamString to set URL */
-  const [queryParamString, setQueryParamString] = useState<string>('');
+  //const [queryParamString, setQueryParamString] = useState<string>('');
 
 
   return (
@@ -128,26 +124,28 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           tableData: data,
           columns: columns,
           expectedRowCount: expectedRowCount,
+          emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
           paginationOptions: {
             customPageRowCount: 5,
-            customSelectPages: [5, 10]
+            customSelectPages: [5, 10, 20],
+            autoSizeHeight: true,
           },
         }}
         fetchInfo={{
           fetchData: fetchItemsHandler,
           isFetching: isFetching
         }}
-        queryInfo={{
+        /* queryInfo={{
           onLoadQuery: queryParamString,
           setCurrentQuery: setQueryParamString
-        }}
+        }} */
         onRowClick={(row) => {
           console.log('Row clicked:', row);
         }}
-        defineActions={{
+        /* defineActions={{
           actionList: actionList,
           onAction: (action, selectedRows) => actionHandler(action, selectedRows)
-        }}
+        }} */
         newItemButton={{
           label: 'New Item',
           buttonClick: () => {

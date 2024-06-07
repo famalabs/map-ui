@@ -11,8 +11,11 @@ export interface SelectCellOption {
 export const SelectCell = (selectOptions: SelectCellOption[]) =>
   ({ cellValue }) => {
 
-    if (typeof cellValue === 'undefined' || cellValue === null) return null;
-
+    if (typeof cellValue === 'undefined' || cellValue === null) {
+      <Grid2 container>
+        {''}
+      </Grid2>
+    }
 
     const chipColorMap = {
       warning: '#FFA500',
@@ -23,8 +26,6 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
     
     const cellData = selectOptions.find((option) => option.id === cellValue);
     const customColor = cellData && cellData.type ? chipColorMap[cellData.type] : chipColorMap.default;
-
-    if (cellValue === null) return null;
 
     return (
       <Grid2 container>

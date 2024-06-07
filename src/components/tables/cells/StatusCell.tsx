@@ -4,6 +4,7 @@ import CancelPresentation from '@mui/icons-material/CancelPresentation';
 import Rowing from '@mui/icons-material/Rowing';
 import HourglassEmpty from '@mui/icons-material/HourglassEmpty';
 import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
+import Grid2 from '@mui/material/Unstable_Grid2';
 
 export const ALL_STATUS = ['pending', 'active', 'terminated', 'canceled'] as const;
 export type IStatus = typeof ALL_STATUS[number];
@@ -17,9 +18,13 @@ export const StatusCell = (
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
 ) => ({ cellValue }) => {
 
-  if (typeof cellValue === 'undefined' || cellValue === null) return null;
-
-  if (!isStatus(cellValue)) return null;
+  if (typeof cellValue === 'undefined' || cellValue === null || !isStatus(cellValue)) {
+    return (
+      <Grid2 container>
+        {''}
+      </Grid2>
+    )
+  }
 
   const statusMap = {
     canceled: <CancelPresentation />,
@@ -31,8 +36,10 @@ export const StatusCell = (
   const statusIcon = statusMap[cellValue];
 
   return (
-    <Tooltip title={tooltip(cellValue)} {...tooltipProps}>
-      {statusIcon}
-    </Tooltip>
+    <Grid2 container>
+      <Tooltip title={tooltip(cellValue)} {...tooltipProps}>
+        {statusIcon}
+      </Tooltip>
+    </Grid2>
   );
 };

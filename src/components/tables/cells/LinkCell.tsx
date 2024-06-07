@@ -6,8 +6,6 @@ export const LinkCell = (
   label: (value) => string,
   linkProps?: Omit<LinkProps, 'onClick' | 'href' | 'ref' | 'type'>
 ) => ({ cellValue } : { cellValue: string }) => {
-
-  if (typeof cellValue === 'undefined' || cellValue === null) return null;
   
   const onLinkClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     e.stopPropagation();
@@ -16,7 +14,7 @@ export const LinkCell = (
 
   return (
     <Link color="secondary" onClick={onLinkClick} {...linkProps}>
-      {label(cellValue)}
+      {cellValue ? label(cellValue) : ''}
     </Link>
   );
 };

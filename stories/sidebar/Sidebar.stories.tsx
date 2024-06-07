@@ -3,6 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import { SidebarItem, SidebarLayout, SidebarLayoutProps } from '../../src/components/sidebar';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 
+
 export default {
   title: 'sidebar/SidebarTemplate',
   component: SidebarLayout,
@@ -56,7 +57,7 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
       link: "user/account",
       icon: <ViewModuleIcon />
     },
-    {
+    /* {
       title: 'Preferences',
       link: "/preferences",
       icon: <ViewModuleIcon />
@@ -65,20 +66,32 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
       title: 'Logout',
       link: "/preferences/logout",
       icon: <ViewModuleIcon />
-    }
+    } */
   ];
 
   return (
     <>
       <SidebarLayout 
-        itemsList={menuList} 
-        onSelectMenuItem={() => {}}
+        itemsList={menuList}
+        customHeader={
+          <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span> TEST </span>
+          </div>
+        }
+        mainLogo={{
+          fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
+          miniLogo: ''
+        }}
+        brandLogo={{
+          fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
+          miniLogo: ''
+        }}
+        onSelectMenuItem={(itemID, title, link) => console.log(itemID, title, link)}
         selectedLink="/dashboard"
         footerData={{
           itemsList: popupList,
-          appTitle: 'My App',
           avatar: {
-            username: 'Tango',
+            username: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
             imageSrc: 'https://live.staticflickr.com/65535/52232153379_a96ddd1233_k.jpg'
           }
         }}

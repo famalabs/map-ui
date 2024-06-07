@@ -1,14 +1,12 @@
 import React from 'react';
 import Avatar, { AvatarProps } from '@mui/material/Avatar';
-import { Stack } from '@mui/system';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 
 export const AvatarCell = (
   avatarOnly: boolean = false,
-  avatarProps: AvatarProps,
+  avatarProps?: AvatarProps,
   clickAction?: (value) => void,
 ) => ({ cellValue }: { cellValue: string }) => {
-
-  if (typeof cellValue === 'undefined' || cellValue === null) return null;
 
   const onAvatarClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
@@ -16,20 +14,36 @@ export const AvatarCell = (
   }
 
   return (
-    <Stack 
-      direction='row'
-      justifyContent='flex-start'
+    <Grid2
+      container
+      justifyContent='center'
       alignItems='center'
     >
-      <Avatar
-        component={'div'}
-        style={{ marginRight: 10 }}
-        onClick={clickAction && onAvatarClick}
-        {...avatarProps}
+      <Grid2
+        container
+        xs={2}
+        justifyContent='flex-start'
+        alignItems='center'
       >
-        {avatarProps.children}
-      </Avatar>
-      {!avatarOnly && cellValue}
-    </Stack>
+        <Avatar
+          component={'div'}
+          style={{ marginRight: 10 }}
+          onClick={clickAction && onAvatarClick}
+          {...avatarProps}
+        >
+          {avatarProps && avatarProps.children}
+        </Avatar>
+      </Grid2>
+
+      <Grid2
+        container
+        xs={10}
+        justifyContent='flex-start'
+        alignItems='center'
+        px={1}
+      >
+        {!avatarOnly ? cellValue : null}
+      </Grid2>
+    </Grid2>
   );
 };

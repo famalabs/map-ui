@@ -8,7 +8,7 @@ export type MenuID = "body" | "footer" | string;
 export interface MenuItemsProps<T extends Record<string, any>> {
   listType: MenuID;
   displayItems: T[];
-  onSelectItem: (itemID: MenuID, link: string) => void;
+  onSelectItem: (itemID: MenuID, title: string, link: string) => void;
   selectedLink?: string;
   listProps?: Record<string, any>;
 }
@@ -28,7 +28,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
                 color: (theme) => theme.palette.primary.main,
               }),
             }}
-            onClick={() => onSelectItem(listType, item.link as string)}
+            onClick={() => onSelectItem(listType, item.title, item.link)}
           >
             <ListItemIcon
               sx={{

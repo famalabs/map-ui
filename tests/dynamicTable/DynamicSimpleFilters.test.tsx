@@ -6,17 +6,20 @@ import { SelectCell } from '../../src/components/tables';
 
 const columns =
   [
-    { accessor: 'id', label: 'ID', type: 'string', visible: false },
-    { accessor: 'supplier.name', label: 'Supplier', type: 'string', visible: false },
+    { accessor: 'id', label: 'ID', visible: false },
+    { accessor: 'supplier.name', label: 'Supplier', visible: false },
     { accessor: 'code', label: 'Code', type: 'string', visible: true },
-    { accessor: 'name', label: 'Name', type: 'string', isFilter: true, visible: true },
-    { accessor: 'description', label: 'Description', type: 'string', visible: true },
+    { accessor: 'name', label: 'Name', filterOptions: { type: 'string' }, visible: true },
+    { accessor: 'description', label: 'Description', visible: true },
     {
-      accessor: 'status', label: 'Status', type: 'select', isFilter: true,
-      filterOptions: [
-        { id: 1, type: 'success', label: 'Published' },
-        { id: 0, type: 'warning', label: 'Pending' },
-      ],
+      accessor: 'status', label: 'Status',
+      filterOptions: {
+        type: 'select',
+        options: [
+          { id: 1, label: 'Published' },
+          { id: 0, label: 'Pending' },
+        ]
+      },
       Cell: SelectCell([
         { id: 1, type: 'success', label: 'Published' },
         { id: 0, type: 'warning', label: 'Pending' },
@@ -45,7 +48,7 @@ describe('DynamicSimpleFilters', () => {
 
   it('Renders the correct number of filters', () => {
 
-    const filterColumns = columns.filter(column => column.isFilter && column.visible);
+    const filterColumns = columns.filter(column => 'filterOptions' in column && column.visible);
     const filterColumnsNumber = filterColumns.length;
 
     const { queryAllByLabelText } = render(<DynamicSimpleFilters {...mockProps} />);

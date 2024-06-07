@@ -58,6 +58,7 @@ export function SelectFilterForm(props: SelectFilterFormProps) {
         onChange={(event, option) => updateFilters(option ? option.id : undefined, column, setActiveFilters)}
         options={column.filterOptions.options ?? []}
         getOptionLabel={(option) => option.label}
+        getOptionKey={(option) => option.id as any}
         renderOption={(props, option) => <ListItem {...props}>{option.label}</ListItem>}
         renderInput={
           (params) => (

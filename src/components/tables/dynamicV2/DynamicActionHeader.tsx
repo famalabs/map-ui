@@ -39,7 +39,7 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
 
     // save array of objects with { accessor, visible } to local storage from visibleColumns
     const localVisibleCols = visibleColumns.map(column => {
-      return { accessor: column.accessor, visible: column.visible }
+      return { accessor: column.accessor, visible: column.visible ?? false }
     });
     localStorage.setItem(tableName, JSON.stringify(localVisibleCols));
 
@@ -51,7 +51,7 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
 
     setVisibleColumns(visibleColumns.map(column => {
       if (column.accessor === accessor) {
-        column.visible = !column.visible;
+        column.visible = !(column.visible ?? false);
       }
       return column;
     }
@@ -61,7 +61,7 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
 
   return (
     <>
-      <Tooltip title={localeStr ? localeStr.visibleColumns : 'Column Visibility' }>
+      <Tooltip title={localeStr ? localeStr.visibleColumns : 'Column Visibility'}>
         <IconButton color='primary' onClick={handlePopClick}>
           <VisibilityOffIcon />
         </IconButton>
@@ -91,7 +91,7 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
-                    checked={column.visible}
+                    checked={column.visible ?? false}
                     tabIndex={-1}
                     disableRipple
                   />
@@ -125,7 +125,6 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
       direction="row"
       sm={12} md={12}
     >
-
       <Grid2
         container
         sm={6} md={6}
@@ -133,7 +132,9 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         alignItems='center'
         p={1}
       >
-        <Typography fontSize={14} marginInlineStart={1}> {`${localeStr ? localeStr.itemsSelected : 'Items Selected: '} ${quickSelectedRows.length}`} </Typography>
+        <Typography fontSize={14} marginInlineStart={1}>
+          {`${localeStr ? localeStr.itemsSelected : 'Items Selected: '} ${quickSelectedRows.length}`}
+        </Typography>
       </Grid2>
 
       {/* Action Buttons */}
@@ -148,27 +149,26 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         {actionList && actionList.map((action, index) => (
           <Grid2 p={1} key={index}>
 
-            {
-              action.isIconButton
+            {action.isIconButton
 
-                ? <Tooltip title={action.label ?? action.type}>
-                  <IconButton
-                    color={action.color ?? 'primary'}
-                    onClick={() => onAction(action.type, quickSelectedRows)}
-                  >
-                    {action.icon && action.icon}
-                  </IconButton>
-                </Tooltip>
-
-                : <Button
-                  variant="contained"
-                  size="small"
+              ? <Tooltip title={action.label ?? action.type}>
+                <IconButton
                   color={action.color ?? 'primary'}
-                  onClick={() => onAction(action.type, quickSelectedRows)}
+                  onClick={() => onAction && onAction(action.type, quickSelectedRows)}
                 >
                   {action.icon && action.icon}
-                  <Typography fontSize={14}> {action.label ?? action.type} </Typography>
-                </Button>
+                </IconButton>
+              </Tooltip>
+
+              : <Button
+                variant="contained"
+                size="small"
+                color={action.color ?? 'primary'}
+                onClick={() => onAction && onAction(action.type, quickSelectedRows)}
+              >
+                {action.icon && action.icon}
+                <Typography fontSize={14}> {action.label ?? action.type} </Typography>
+              </Button>
             }
 
           </Grid2>
@@ -208,6 +208,7 @@ export interface DynamicActionsProps<T> {
   quickSelectedRows: T[];
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
   newItemButton?: CustomButton;
+  showVisibleColumnsButton: boolean;
   localeStr?: i18nStrings
 }
 
@@ -223,6 +224,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     quickSelectedRows,
     setQuickSelectedRows,
     newItemButton,
+    showVisibleColumnsButton,
     localeStr,
   } = props;
 
@@ -241,26 +243,29 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
         alignItems="center"
         p={1}
       >
-        <Grid2 p={0.5}>
-          <Tooltip title={localeStr ? localeStr.quickActions : 'Quick Actions'}>
-            <IconButton
-              color={quickActions ? 'secondary' : 'primary'}
-              onClick={toggleQuickActions}
-            >
-              <ElectricBoltIcon />
-            </IconButton>
-          </Tooltip>
+        {defineActions.actionList?.length &&
+          <Grid2 p={0.5}>
+            <Tooltip title={localeStr ? localeStr.quickActions : 'Quick Actions'}>
+              <IconButton
+                color={quickActions ? 'secondary' : 'primary'}
+                onClick={toggleQuickActions}
+              >
+                <ElectricBoltIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid2>
+        }
 
-        </Grid2>
-
-        <Grid2 p={0.5}>
-          <ColumnVisibilityPopper
-            tableName={tableName}
-            visibleColumns={visibleColumns} 
-            setVisibleColumns={setVisibleColumns}
-            localeStr={localeStr}
-          />
-        </Grid2>
+        {showVisibleColumnsButton &&
+          <Grid2 p={0.5}>
+            <ColumnVisibilityPopper
+              tableName={tableName}
+              visibleColumns={visibleColumns}
+              setVisibleColumns={setVisibleColumns}
+              localeStr={localeStr}
+            />
+          </Grid2>
+        }
 
         {newItemButton &&
           <Grid2 p={0.5}>

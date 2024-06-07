@@ -13,8 +13,6 @@ export const ActionCell = (
   buttonProps: ExtButtonProps | ExtIconButtonProps
 ) => ({ cellValue }: { cellValue: string }) => {
 
-  if (typeof cellValue === 'undefined' || cellValue === null) return null;
-
   const onButtonClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
     clickAction(cellValue);

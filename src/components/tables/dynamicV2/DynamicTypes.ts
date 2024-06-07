@@ -30,7 +30,7 @@ export type ColumnType = 'string'
 export interface DynColumnsDef {
   accessor: string;
   label: string;
-  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[]}
+  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[] }
   Cell?: React.FC<unknown>;
   visible: boolean;
 }
@@ -78,6 +78,78 @@ export interface ActionEventItem {
   isIconButton?: boolean;
 }
 
+/* --------------------------------------------------------------------------------------------------------------------- */
+
+/**
+ * Interface for the props accepted by the TableInfo prop.
+ * @param {string} tableName - The name of the table.
+ * @param {Array<T>} tableData - The data of the table.
+ * @param {Dispatch<SetStateAction<T[]>>} setTableData - The function to set the table data.
+ * @param {DynColumnsDef[]} columns - The columns of the table.
+ * @param {number} expectedRowCount - The expected row count.
+ * @param {Object} paginationOptions - The options for the pagination.
+ */
+export interface TableInfoProps<T> {
+  tableName: string;
+  tableData: Array<T>;
+  setTableData?: Dispatch<SetStateAction<T[]>>;
+  columns: DynColumnsDef[];
+  expectedRowCount: number;
+  showVisibleColumnsButton?: boolean;
+  emptyTablePlaceholderSrc?: string;
+  paginationOptions?: {
+    customPageRowCount?: number;
+    customSelectPages?: number[];
+    autoSizeHeight?: boolean;
+  },
+}
+
+/**
+  * Interface for the props accepted by the FetchInfo prop.
+  * @param {(limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>} fetchData - The function to fetch data.
+  * @param {boolean} isFetching - Indicates whether the data is being fetched.
+ */
+export interface FetchInfoProps {
+  fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
+  isFetching: boolean;
+}
+
+/**
+  * Interface for the props accepted by the QueryInfo prop.
+  * @param {string} onLoadQuery - The query to be loaded.
+  * @param {Dispatch<SetStateAction<string>>} setCurrentQuery - The function to set the current query.
+ */
+export interface QueryInfoProps {
+  onLoadQuery: string;
+  setCurrentQuery: Dispatch<SetStateAction<string>>;
+}
+
+/**
+  * Interface for the props accepted by the DefineActions prop.
+  * @param {ActionEventItem[]} actionList - The list of actions.
+  * @param {ActionEvent<Record<string, any>>} onAction - The function to be called when an action is clicked.
+ */
+export interface DefineActionsProps {
+  actionList: ActionEventItem[];
+  onAction: ActionEvent<Record<string, any>>;
+}
+
+/**
+  * Interface for the props accepted by the i18nStrings prop.
+  * @param {string} quickActions - The string for the quick actions.
+  * @param {string} visibleColumns - The string for the visible columns.
+  * @param {string} itemsSelected - The string for the items selected.
+  * @param {string} rowsPerPage - The string for the rows per page.
+  * @param {string} of - The string for the of.
+ */
+export interface i18nStrings {
+  quickActions: string,
+  visibleColumns: string,
+  itemsSelected: string,
+  rowsPerPage: string,
+  of: string,
+}
+
 /**
  * Interface for the newItemButton.
  * @param {string} label - The label of the button.
@@ -90,61 +162,23 @@ export interface CustomButton {
   buttonClick: () => void;
 }
 
-export interface i18nStrings {
-  quickActions: string,
-  visibleColumns: string,
-  itemsSelected: string,
-  rowsPerPage: string,
-  of: string,
-}
-
-
 /**
  * Interface for the props accepted by the DynamicTable component.
- * @param {string} tableName - The name of the table (required for localStorage).
- * @param {Object} tableInfo - Contains information about the table.
- * @param {Array<T>} tableInfo.tableData - The data to be displayed in the table.
- * @param {Dispatch<SetStateAction<T[]>>} tableInfo.setTableData - Function to update the table data.
- * @param {DynColumnsDef[]} tableInfo.columns - Definitions for the columns of the table.
- * @param {number} tableInfo.expectedRowCount - The expected number of rows in the table.
- * @param {Object} fetchInfo - Contains information about the data fetching.
- * @param {(page: number, limit: number) => Promise<void>} fetchInfo.fetchData - Function to fetch data for the table.
- * @param {boolean} fetchInfo.isFetching - Indicates whether data is currently being fetched.
- * @param {Object} [queryInfo] - Contains information about the query string.
- * @param {string} [queryInfo.onLoadQuery] - Optional query string to be used when the component is loaded.
- * @param {Dispatch<SetStateAction<string>>} [queryInfo.setCurrentQuery] - Optional function to update the query string.
- * @param {(row: Record<string, any>) => void} [onRowClick] - Optional function that is called when a row in the table is clicked.
- * @param {Object} [defineActions] - Contains information about the actions that can be performed on the selected rows.
- * @param {ActionEventItem[]} [defineActions.actionList] - Optional array of actions that can be performed on the selected rows.
- * @param {(action: any, selectedRows: Record<string, any>[]) => void} [defineActions.onAction] - Optional function that is called when an action is performed.
- * @param {CustomButton} [newItemButton] - Optional button to create a new item.
- * @param {i18nStrings} [localeStr] - Optional object containing localized strings.
+  * @param {TableInfoProps} tableInfo - The general props of the table.
+  * @param {FetchInfoProps} fetchInfo - The props for fetching data.
+  * @param {QueryInfoProps} queryInfo - The props for the searchParam query.
+  * @param {() => void} onRowClick - Function to be called when a row is clicked.
+  * @param {DefineActionsProps} defineActions - The props for the actions.
+  * @param {CustomButton} newItemButton - The props for the new item button.
+  * @param {i18nStrings} localeStr - The props for the locale strings.
+  * 
  */
 export interface DynamicTableProps<T extends Record<string, any>> {
-  tableInfo: {
-    tableName: string;
-    tableData: Array<T>;
-    setTableData?: Dispatch<SetStateAction<T[]>>;
-    columns: DynColumnsDef[];
-    expectedRowCount: number;
-    paginationOptions?: {
-      customPageRowCount?: number;
-      customSelectPages?: number[];
-    },
-  },
-  fetchInfo: {
-    fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
-    isFetching: boolean;
-  }
-  queryInfo: {
-    onLoadQuery: string;
-    setCurrentQuery: Dispatch<SetStateAction<string>>;
-  };
+  tableInfo: TableInfoProps<T>;
+  fetchInfo: FetchInfoProps;
+  queryInfo?: QueryInfoProps;
   onRowClick?: (row: T) => void;
-  defineActions: {
-    actionList: ActionEventItem[];
-    onAction: ActionEvent<T>;
-  }
+  defineActions?: DefineActionsProps
   newItemButton?: CustomButton;
   localeStr?: i18nStrings;
 }

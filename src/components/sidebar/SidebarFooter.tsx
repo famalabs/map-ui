@@ -1,7 +1,6 @@
 import React from "react";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -14,10 +13,8 @@ import Typography from "@mui/material/Typography";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import { SidebarItem } from "./SidebarLayout";
 import { MenuItems } from "../common/MenuItems";
-
 export interface FooterData {
   itemsList: SidebarItem[];
-  appTitle: string;
   avatar: {
     username: string;
     imageSrc: string;
@@ -27,7 +24,7 @@ export interface FooterData {
 export interface SidebarFooterProps {
   footerData: FooterData;
   isSidebarOpen: boolean;
-  onSelectItem: (itemID: string, link: string) => void;
+  onSelectItem: (itemID: string, title: string, link: string) => void;
 }
 
 export function SidebarFooter(props: SidebarFooterProps) {
@@ -35,11 +32,10 @@ export function SidebarFooter(props: SidebarFooterProps) {
   const {
     footerData: {
       itemsList,
-      appTitle,
       avatar
     },
     isSidebarOpen,
-    onSelectItem
+    onSelectItem,
   } = props;
 
   const [anchorElMenu, setAnchorElMenu] = React.useState(null);
@@ -67,11 +63,19 @@ export function SidebarFooter(props: SidebarFooterProps) {
             <Avatar
               alt={avatar.username || ''}
               src={avatar.imageSrc || ''}
-            >
-              {avatar.username.toUpperCase().charAt(0) || 'User'}
-            </Avatar>
+            />
           </ListItemAvatar>
-          <ListItemText primary={avatar.username || "User"} />
+          <ListItemText primary={
+            <Typography
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {avatar.username || 'User'}
+            </Typography>
+          } />
           {isSidebarOpen ? (
             <ListItemSecondaryAction style={{ zIndex: -1 }}>
               <IconButton edge="end" aria-label="delete">
@@ -97,15 +101,21 @@ export function SidebarFooter(props: SidebarFooterProps) {
         }}
         elevation={6}
       >
-        <Box style={{ height: 300, padding: 20, width: 260 }}>
-          <Typography sx={{ padding: (theme) => theme.spacing(2) }}> {appTitle || 'App Title'} </Typography>
-          <Divider />
-          <Grid2 container style={{ marginTop: 10 }}>
-            <Grid2 xs={12} md={12} lg={12}>
+        <Box
+          sx={{ width: 260 }}
+        >
+          <Grid2
+            container
+            xs={12}
+          >
+            <Grid2 xs={12}>
               <MenuItems
                 displayItems={itemsList ?? []}
                 listType="footer"
-                onSelectItem={onSelectItem}
+                onSelectItem={(...args) => {
+                  onSelectItem(...args);
+                  handleClose();
+                }}
                 listProps={{
                   margin: 'auto 0'
                 }}
