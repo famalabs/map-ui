@@ -1,7 +1,7 @@
 import React from 'react';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
-import IconButton  from '@mui/material/IconButton';
-import  Close  from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Close from '@mui/icons-material/Close';
 
 export interface ISnackbar {
   message: SnackbarMessage;
@@ -35,10 +35,10 @@ export const Notifier: React.VFC<NotifierProps> = ({ snackbars, removeSnackbar }
 
       const action = manualClose
         ? (key) => (
-            <IconButton size="small" aria-label="close" color="inherit" onClick={() => closeSnackbar(key)}>
-              <Close fontSize="small" />
-            </IconButton>
-          )
+          <IconButton size="small" aria-label="close" color="inherit" onClick={() => closeSnackbar(key)}>
+            <Close fontSize="small" />
+          </IconButton>
+        )
         : options.action;
       enqueueSnackbar(message, {
         ...options,

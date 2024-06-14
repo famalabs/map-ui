@@ -105,6 +105,12 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  React.useEffect(() => {
+    if (isSmallScreen) {
+      setSidebarOpen(false);
+    }
+  }, [isSmallScreen, setSidebarOpen]);
+
   if (isSmallScreen) {
     return (
       <>
@@ -126,7 +132,7 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }) => {
         >
           <Box component="span">
             <DrawerHeader>
-              <IconButton color='inherit' onClick={() => setSidebarOpen(!sidebarOpen)}> 
+              <IconButton color='inherit' onClick={() => setSidebarOpen(!sidebarOpen)}>
                 <ChevronLeft />
               </IconButton>
             </DrawerHeader>
@@ -189,16 +195,19 @@ export interface SidebarLayoutProps {
 }
 
 export function SidebarLayout(props: SidebarLayoutProps) {
-  const { 
-    itemsList, 
+  const {
+    itemsList,
     customHeader,
-    mainLogo, 
-    brandLogo, 
-    onSelectMenuItem, 
-    selectedLink, 
-    footerData, 
-    children 
+    mainLogo,
+    brandLogo,
+    onSelectMenuItem,
+    selectedLink,
+    footerData,
+    children
   } = props;
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(true);
 
@@ -245,12 +254,16 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         <MenuItems
           displayItems={itemsList ?? []}
           listType="body"
-          onSelectItem={onSelectMenuItem}
+          onSelectItem={(...args) => {
+            onSelectMenuItem(...args);
+            if (isSmallScreen) setSidebarOpen(false);
+          }}
           selectedLink={selectedLink}
           listProps={{
             margin: '0',
             marginBottom: 'auto',
           }}
+          iconOnly={!sidebarOpen}
         />
 
         {brandLogo && (
@@ -277,7 +290,10 @@ export function SidebarLayout(props: SidebarLayoutProps) {
           <SidebarFooter
             footerData={footerData}
             isSidebarOpen={sidebarOpen}
-            onSelectItem={onSelectMenuItem}
+            onSelectItem={(...args) => {
+              onSelectMenuItem(...args);
+              if (isSmallScreen) setSidebarOpen(false);
+            }}
           />
         }
       </Sidebar>

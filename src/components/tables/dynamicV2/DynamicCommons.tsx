@@ -11,6 +11,10 @@ import { DynColumnsDef } from './DynamicTypes';
 import React from 'react';
 import { DynamicCellCreator } from './DynamicCellCreator';
 import Grid2 from '@mui/material/Unstable_Grid2';
+import Table from '@mui/material/Table';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import InfoIcon from '@mui/icons-material/Info';
 
 const StyledTableRow = styled(TableRow)(({ /* theme */ }) => ({
   height: 56,
@@ -23,7 +27,7 @@ const StyledTableRow = styled(TableRow)(({ /* theme */ }) => ({
 
 export interface CommonHeaderProps<T extends Record<string, any>> {
   currentPageRows: T[];
-  visibleColumns: DynColumnsDef[];
+  visibleColumns: DynColumnsDef<T>[];
   quickActions: boolean;
   quickSelectedRows: T[];
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
@@ -38,6 +42,8 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
     quickSelectedRows,
     setQuickSelectedRows
   } = props;
+
+  const [hoveredColumn, setHoveredColumn] = React.useState<number>(-1);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -74,8 +80,26 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
           if (!column.visible) return null;
 
           return (
-            <TableCell key={index} style={{ width: 160 }}>
+            <TableCell
+              key={index}
+              onMouseEnter={() => setHoveredColumn(index)}
+              onMouseLeave={() => setHoveredColumn(-1)}
+              sx={{ width: 160, position: 'relative' }}
+            >
               {column.label}
+              {'Tooltip' in column && hoveredColumn === index && (
+                <IconButton
+                  size="small"
+                  onClick={() => column.Tooltip?.action( column )}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    transform: 'translateY(-50%)'
+                  }}
+                >
+                  {column.Tooltip?.icon || <InfoIcon />}
+                </IconButton>
+              )}
             </TableCell>
           );
         })}
@@ -89,8 +113,8 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
 export interface CommonBodyProps<T extends Record<string, any>> {
   tableData: T[];
   expectedRowCount: number;
-  visibleColumns: DynColumnsDef[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef[]>>;
+  visibleColumns: DynColumnsDef<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
   page: number;
   quickActions: boolean;
   quickSelectedRows: T[];
@@ -99,7 +123,9 @@ export interface CommonBodyProps<T extends Record<string, any>> {
   isFetching: boolean;
   onRowClick?: (row: T) => void;
   autoSizeHeight: boolean;
-  emptyTablePlaceholderSrc: string;
+  emptyTablePlaceholderSrc?: string;
+  emptyTablePlaceholderText?: string;
+  hasDataFetched: boolean;
 }
 
 export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBodyProps<T>) {
@@ -117,6 +143,8 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     onRowClick,
     autoSizeHeight,
     emptyTablePlaceholderSrc,
+    emptyTablePlaceholderText,
+    hasDataFetched,
   } = props;
 
   const currentPageRows = rowsPerPage > 0
@@ -128,106 +156,125 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     ? rowsPerPage - currentPageRows.length
     : 0;
 
+  const isTableEmpty = (hasDataFetched && !isFetching) && (expectedRowCount === 0 || tableData.length === 0);
+
   const isQuickSelected = (row: T) => {
     return quickSelectedRows.some(quickRow => quickRow.id === row.id);
   }
 
-  const handleCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>, row: T) => {
+  const handleCheckBoxSelect = (row: T) => {
     setQuickSelectedRows(prevRows => {
-      if (!event.target.checked) {
+      const isRowSelected = prevRows.some(quickRow => quickRow.id === row.id);
+      if (isRowSelected) {
         return prevRows.filter(quickRow => quickRow.id !== row.id);
       }
       return [...prevRows, row];
     });
-  }
+  };
+
+  const HeadWrapper = isTableEmpty ? Table : React.Fragment;
 
   return (
     <>
-      {expectedRowCount > 0 ? (
-        <>
-          <CommonHeaderCreator
-            currentPageRows={currentPageRows}
-            visibleColumns={visibleColumns}
-            quickActions={quickActions}
-            quickSelectedRows={quickSelectedRows}
-            setQuickSelectedRows={setQuickSelectedRows}
-          />
+      <HeadWrapper>
+        <CommonHeaderCreator
+          currentPageRows={currentPageRows}
+          visibleColumns={visibleColumns}
+          quickActions={quickActions}
+          quickSelectedRows={quickSelectedRows}
+          setQuickSelectedRows={setQuickSelectedRows}
+        />
+      </HeadWrapper >
 
-          <TableBody>
-            {isFetching ? (
-              // Skeleton rows
-              Array.from({ length: rowsPerPage }, (_, index) => (
-                <TableRow key={`skeleton-${index}`} style={{ height: 56 }}>
-                  {visibleColumns.map((column, colIndex) => {
-                    if (!column.visible) return null;
+      {isTableEmpty ? (
 
-                    return (
-                      <TableCell key={`skeleton-cell-${colIndex}`} style={{ width: 180 }}>
-                        <Skeleton animation="wave" />
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))
-            ) : (
-              // Table rows
-              currentPageRows.map((row) => (
-                <StyledTableRow
-                  hover
-                  key={`table-row-${row.id}`}
-                  selected={isQuickSelected(row)}
-                  onClick={quickActions ? undefined : () => onRowClick && onRowClick(row)}
-                  aria-label={`table-row-${row.id}`}
-                >
-                  {quickActions &&
-                    <TableCell
-                      key={`checkbox-${row.id}`}
-                      padding="checkbox"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                      }}
-                    >
-                      <Checkbox
-                        color="primary"
-                        onChange={(event) => handleCheckboxClick(event, row)}
-                        checked={isQuickSelected(row)}
-                      />
-                    </TableCell>
-                  }
-                  {visibleColumns.map((column, index) => {
-                    if (!column.visible) return null;
-
-                    return <DynamicCellCreator<T> key={`custom-cell-${index}`} row={row} column={column} />;
-                  })}
-                </StyledTableRow>
-              ))
-            )}
-
-            {/* Blank block */}
-            {!isFetching && blankRows > 0 && (
-              <TableRow style={{ height: 56 * blankRows }}>
-                <TableCell colSpan={visibleColumns.length} />
-              </TableRow>
-            )}
-          </TableBody>
-        </>
-      ) : (
         <Grid2
           container
           justifyContent='center'
           alignItems='center'
+          minHeight={rowsPerPage * 56}
         >
-          <img
-            src={emptyTablePlaceholderSrc}
-            alt="Empy Table"
-            style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-              objectFit: 'contain'
-            }}
-          />
-
+          {emptyTablePlaceholderSrc ? (
+            <img
+              src={emptyTablePlaceholderSrc}
+              alt={emptyTablePlaceholderText || 'No Data Found'}
+              style={{
+                width: 'auto',
+                height: '300px',
+                objectFit: 'cover'
+              }}
+            />
+          ) : (
+            <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
+          )}
         </Grid2>
+      ) : (
+        <TableBody>
+          {isFetching ? (
+            // Skeleton rows
+            Array.from({ length: rowsPerPage }, (_, index) => (
+              <TableRow key={`skeleton-${index}`} sx={{ height: 56 }}>
+                {visibleColumns.map((column, colIndex) => {
+                  if (!column.visible) return null;
+
+                  return (
+                    <TableCell key={`skeleton-cell-${colIndex}`} sx={{ width: 180 }}>
+                      <Skeleton animation="wave" />
+                    </TableCell>
+                  )
+                })}
+              </TableRow>
+            ))
+          ) : (
+            // Table rows
+            currentPageRows.map((row) => (
+              <StyledTableRow
+                hover
+                key={`table-row-${row.id}`}
+                selected={isQuickSelected(row)}
+                onClick={quickActions
+                  ? () => handleCheckBoxSelect(row)
+                  : () => onRowClick && onRowClick(row)
+                }
+                aria-label={`table-row-${row.id}`}
+              >
+                {quickActions &&
+                  <TableCell
+                    key={`checkbox-${row.id}`}
+                    padding="checkbox"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                  >
+                    <Checkbox
+                      color="primary"
+                      onChange={() => handleCheckBoxSelect(row)}
+                      checked={isQuickSelected(row)}
+                    />
+                  </TableCell>
+                }
+                {visibleColumns.map((column, index) => {
+                  if (!column.visible) return null;
+
+                  return (
+                    <DynamicCellCreator<T>
+                      key={`custom-cell-${index}`}
+                      row={row}
+                      column={column}
+                    />
+                  );
+                })}
+              </StyledTableRow>
+            ))
+          )}
+
+          {/* Blank block */}
+          {!isFetching && blankRows > 0 && (
+            <TableRow sx={{ height: 56 * blankRows }}>
+              <TableCell colSpan={visibleColumns.length} />
+            </TableRow>
+          )}
+        </TableBody>
       )}
     </>
   );

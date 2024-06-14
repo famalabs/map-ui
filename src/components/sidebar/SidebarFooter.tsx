@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import { SidebarItem } from "./SidebarLayout";
 import { MenuItems } from "../common/MenuItems";
+import ListItem from "@mui/material/ListItem";
 export interface FooterData {
   itemsList: SidebarItem[];
   avatar: {
@@ -54,7 +55,8 @@ export function SidebarFooter(props: SidebarFooterProps) {
   return (
     <>
       <List>
-        <ListItemButton
+        <ListItem
+          component={ itemsList.length > 0 ? ListItemButton : 'div' }
           aria-describedby={id}
           style={{ paddingLeft: 7 }}
           onClick={(event) => handleClick(event)}
@@ -75,55 +77,58 @@ export function SidebarFooter(props: SidebarFooterProps) {
             >
               {avatar.username || 'User'}
             </Typography>
-          } />
-          {isSidebarOpen ? (
+          }
+          />
+          {isSidebarOpen && itemsList.length > 0 ? (
             <ListItemSecondaryAction style={{ zIndex: -1 }}>
               <IconButton edge="end" aria-label="delete">
                 <MoreVertOutlined />
               </IconButton>
             </ListItemSecondaryAction>
           ) : null}
-        </ListItemButton>
+        </ListItem>
       </List>
 
-      <Popover
-        id={id}
-        open={isPopupOpen}
-        anchorEl={anchorElMenu}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        elevation={6}
-      >
-        <Box
-          sx={{ width: 260 }}
+      {itemsList.length > 0 &&
+        <Popover
+          id={id}
+          open={isPopupOpen}
+          anchorEl={anchorElMenu}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          elevation={6}
         >
-          <Grid2
-            container
-            xs={12}
+          <Box
+            sx={{ width: 260 }}
           >
-            <Grid2 xs={12}>
-              <MenuItems
-                displayItems={itemsList ?? []}
-                listType="footer"
-                onSelectItem={(...args) => {
-                  onSelectItem(...args);
-                  handleClose();
-                }}
-                listProps={{
-                  margin: 'auto 0'
-                }}
-              />
+            <Grid2
+              container
+              xs={12}
+            >
+              <Grid2 xs={12}>
+                <MenuItems
+                  displayItems={itemsList}
+                  listType="footer"
+                  onSelectItem={(...args) => {
+                    onSelectItem(...args);
+                    handleClose();
+                  }}
+                  listProps={{
+                    margin: 'auto 0'
+                  }}
+                />
+              </Grid2>
             </Grid2>
-          </Grid2>
-        </Box>
-      </Popover>
+          </Box>
+        </Popover>
+      }
     </>
   );
 }

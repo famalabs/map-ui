@@ -1,10 +1,9 @@
 import { ButtonOwnProps } from "@mui/material";
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 /**
  * Interface for the options of a select cell.
  * @param {string} id - The ID of the option.
- * @param {string} type - The type of the option.
  * @param {string} label - The label of the option.
  */
 export interface DynamicFilterOptions {
@@ -21,17 +20,17 @@ export type ColumnType = 'string'
  * Interface for the definition of a dynamic column.
  * @param {string} accessor - The accessor of the column.
  * @param {string} label - The label of the column.
- * @param {string} type - The type of the column.
- * @param {boolean} isFilter - Indicates whether the column is filterable.
  * @param {DynamicFilterOptions[]} filterOptions - The options for the filter in case of select.
+ * @param {(props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element} Cell - The custom cell component.
+ * @param {{ icon: JSX.Element, action: (currentColumn?: DynColumnsDef<T>) => void }} Tooltip - The tooltip component.
  * @param {boolean} visible - Indicates whether the column is visible.
- * @param {JSX.Element} Cell - The cell component for the column.
  */
-export interface DynColumnsDef {
+export interface DynColumnsDef<T> {
   accessor: string;
   label: string;
   filterOptions?: { type: FilterType, options?: DynamicFilterOptions[] }
-  Cell?: React.FC<unknown>;
+  Cell?: (props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element;
+  Tooltip?: { icon: JSX.Element, action: (currentColumn?: DynColumnsDef<T>) => void }
   visible: boolean;
 }
 
@@ -67,6 +66,7 @@ export type ActionEvent<T extends Record<string, any>> = (actionType: string, se
  * Only one of label or icon is required. Both can be provided.
  * @param {ActionType} type - The type of the action.
  * @param {string} label - Optional label of the button.
+ * @param {ButtonOwnProps['color']} color - Optional color of the button.
  * @param {JSX.Element} icon - Optional icon of the button.
  * @param {boolean} isIconButton - Indicates whether the button is an icon button.
  */
@@ -87,16 +87,20 @@ export interface ActionEventItem {
  * @param {Dispatch<SetStateAction<T[]>>} setTableData - The function to set the table data.
  * @param {DynColumnsDef[]} columns - The columns of the table.
  * @param {number} expectedRowCount - The expected row count.
+ * @param {boolean} showVisibleColumnsButton - Indicates whether the visible columns button is shown.
+ * @param {string} emptyTablePlaceholderSrc - The source of the empty table placeholder.
+ * @param {string} emptyTablePlaceholderText - The text of the empty table placeholder.
  * @param {Object} paginationOptions - The options for the pagination.
  */
 export interface TableInfoProps<T> {
   tableName: string;
   tableData: Array<T>;
   setTableData?: Dispatch<SetStateAction<T[]>>;
-  columns: DynColumnsDef[];
+  columns: DynColumnsDef<T>[];
   expectedRowCount: number;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
+  emptyTablePlaceholderText?: string;
   paginationOptions?: {
     customPageRowCount?: number;
     customSelectPages?: number[];
@@ -129,9 +133,9 @@ export interface QueryInfoProps {
   * @param {ActionEventItem[]} actionList - The list of actions.
   * @param {ActionEvent<Record<string, any>>} onAction - The function to be called when an action is clicked.
  */
-export interface DefineActionsProps {
+export interface DefineActionsProps<T> {
   actionList: ActionEventItem[];
-  onAction: ActionEvent<Record<string, any>>;
+  onAction: ActionEvent<T>;
 }
 
 /**
@@ -170,7 +174,8 @@ export interface CustomButton {
   * @param {() => void} onRowClick - Function to be called when a row is clicked.
   * @param {DefineActionsProps} defineActions - The props for the actions.
   * @param {CustomButton} newItemButton - The props for the new item button.
-  * @param {i18nStrings} localeStr - The props for the locale strings.
+  * @param {'en' | 'it'} tableLocale - The default locale of the table.
+  * @param {i18nStrings} localeStr - The props for custom locale strings.
   * 
  */
 export interface DynamicTableProps<T extends Record<string, any>> {
@@ -178,7 +183,8 @@ export interface DynamicTableProps<T extends Record<string, any>> {
   fetchInfo: FetchInfoProps;
   queryInfo?: QueryInfoProps;
   onRowClick?: (row: T) => void;
-  defineActions?: DefineActionsProps
+  defineActions?: DefineActionsProps<T>
   newItemButton?: CustomButton;
+  tableLocale?: 'en' | 'it';
   localeStr?: i18nStrings;
 }

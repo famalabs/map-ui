@@ -7,13 +7,13 @@ import { ActiveFilter, DynColumnsDef } from './DynamicTypes';
 
 /* ---------- String Filter ---------- */
 
-interface StringFilterFormProps {
-  column: DynColumnsDef;
+interface StringFilterFormProps<T> {
+  column: DynColumnsDef<T>;
   activeFilters?: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
 }
 
-export function StringFilterForm(props: StringFilterFormProps) {
+export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
 
   const { column, activeFilters, setActiveFilters } = props;
 
@@ -35,13 +35,13 @@ export function StringFilterForm(props: StringFilterFormProps) {
 
 /* ---------- Select Filter ---------- */
 
-interface SelectFilterFormProps {
-  column: DynColumnsDef;
+interface SelectFilterFormProps<T> {
+  column: DynColumnsDef<T>;
   activeFilters?: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
 }
 
-export function SelectFilterForm(props: SelectFilterFormProps) {
+export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
 
   const { column, activeFilters, setActiveFilters } = props;
 
@@ -75,9 +75,9 @@ export function SelectFilterForm(props: SelectFilterFormProps) {
 
 /* ---------- Update Filters Function ---------- */
 
-function updateFilters(
+function updateFilters<T>(
   value: string | number | boolean | undefined,
-  column: DynColumnsDef,
+  column: DynColumnsDef<T>,
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>,
 ) {
   setActiveFilters(prevFilters => {
@@ -107,37 +107,14 @@ function updateFilters(
 
 /* ---------- Main Component ---------- */
 
-export interface DynamicSimpleFiltersProps {
-  columns: DynColumnsDef[];
+export interface DynamicSimpleFiltersProps<T> {
+  columns: DynColumnsDef<T>[];
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
 }
 
-export function DynamicSimpleFilters(props: DynamicSimpleFiltersProps) {
-
+export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   const { columns, activeFilters, setActiveFilters } = props;
-
-  /* Renders row depending on its type */
-  const filterTypeMap = (column: DynColumnsDef) => {
-    switch (column.filterOptions.type) {
-
-      case 'string':
-        return <StringFilterForm
-          key={column.accessor}
-          column={column}
-          activeFilters={activeFilters}
-          setActiveFilters={setActiveFilters}
-        />;
-
-      case 'select':
-        return <SelectFilterForm
-          key={column.accessor}
-          column={column}
-          activeFilters={activeFilters}
-          setActiveFilters={setActiveFilters}
-        />;
-    }
-  }
 
   return (
     <Grid2
@@ -147,7 +124,34 @@ export function DynamicSimpleFilters(props: DynamicSimpleFiltersProps) {
       justifyContent="flex-start"
       alignItems="center"
     >
-      {columns.map(column => column.filterOptions && filterTypeMap(column))}
+      {columns.map(column => {
+        if (!column.filterOptions) return null;
+
+        switch (column.filterOptions.type) {
+          case 'string':
+            return (
+              <StringFilterForm
+                key={column.accessor}
+                column={column}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+              />
+            );
+
+          case 'select':
+            return (
+              <SelectFilterForm
+                key={column.accessor}
+                column={column}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+              />
+            );
+
+          default:
+            return null;
+        }
+      })}
     </Grid2>
-  )
+  );
 }

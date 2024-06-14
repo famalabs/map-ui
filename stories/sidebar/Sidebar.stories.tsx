@@ -73,11 +73,6 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
     <>
       <SidebarLayout 
         itemsList={menuList}
-        customHeader={
-          <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span> TEST </span>
-          </div>
-        }
         mainLogo={{
           fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
           miniLogo: ''

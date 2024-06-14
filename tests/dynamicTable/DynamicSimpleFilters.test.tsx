@@ -26,7 +26,7 @@ const columns =
       ]),
       visible: true
     },
-  ] as DynColumnsDef[];
+  ] as DynColumnsDef<any>[];
 
 const mockSetFilters = jest.fn();
 
@@ -34,7 +34,7 @@ const mockProps = {
   columns: columns,
   activeFilters: [],
   setActiveFilters: mockSetFilters,
-} as DynamicSimpleFiltersProps;
+} as DynamicSimpleFiltersProps<any>;
 
 describe('DynamicSimpleFilters', () => {
 

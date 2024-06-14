@@ -17,16 +17,17 @@ import Grid2 from "@mui/material/Unstable_Grid2";
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { ActionEvent, ActionEventItem, CustomButton, DynColumnsDef, i18nStrings } from './DynamicTypes';
 
-export interface ColumnVisibilityPopperProps {
+export interface ColumnVisibilityPopperProps<T> {
   tableName: string;
-  visibleColumns: DynColumnsDef[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef[]>>;
+  visibleColumns: DynColumnsDef<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
+  selectedLocale: i18nStrings;
   localeStr?: i18nStrings;
 }
 
-export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
+export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
 
-  const { tableName, visibleColumns, setVisibleColumns, localeStr } = props;
+  const { tableName, visibleColumns, setVisibleColumns, selectedLocale, localeStr } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -61,7 +62,7 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
 
   return (
     <>
-      <Tooltip title={localeStr ? localeStr.visibleColumns : 'Column Visibility'}>
+      <Tooltip title={localeStr ? localeStr.visibleColumns : selectedLocale.visibleColumns}>
         <IconButton color='primary' onClick={handlePopClick}>
           <VisibilityOffIcon />
         </IconButton>
@@ -110,12 +111,13 @@ export function ColumnVisibilityPopper(props: ColumnVisibilityPopperProps) {
 interface ActionButtonsProps<T> {
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
+  selectedLocale: i18nStrings;
   localeStr?: i18nStrings;
 }
 
 export function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
 
-  const { quickSelectedRows, defineActions: { actionList, onAction }, localeStr } = props;
+  const { quickSelectedRows, defineActions: { actionList, onAction }, selectedLocale, localeStr } = props;
 
   if (quickSelectedRows.length === 0) return null;
 
@@ -133,7 +135,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         p={1}
       >
         <Typography fontSize={14} marginInlineStart={1}>
-          {`${localeStr ? localeStr.itemsSelected : 'Items Selected: '} ${quickSelectedRows.length}`}
+          {`${localeStr ? localeStr.itemsSelected : selectedLocale.itemsSelected} ${quickSelectedRows.length}`}
         </Typography>
       </Grid2>
 
@@ -147,7 +149,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
       >
 
         {actionList && actionList.map((action, index) => (
-          <Grid2 p={1} key={index}>
+          <Grid2 key={index} p={1} >
 
             {action.isIconButton
 
@@ -200,8 +202,8 @@ export function NewItemButton(props: CustomButton) {
 
 export interface DynamicActionsProps<T> {
   tableName: string;
-  visibleColumns: DynColumnsDef[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef[]>>;
+  visibleColumns: DynColumnsDef<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> }
   quickActions: boolean;
   setQuickActions: Dispatch<SetStateAction<boolean>>;
@@ -209,6 +211,7 @@ export interface DynamicActionsProps<T> {
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
   newItemButton?: CustomButton;
   showVisibleColumnsButton: boolean;
+  selectedLocale: i18nStrings;
   localeStr?: i18nStrings
 }
 
@@ -225,6 +228,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     setQuickSelectedRows,
     newItemButton,
     showVisibleColumnsButton,
+    selectedLocale,
     localeStr,
   } = props;
 
@@ -243,9 +247,9 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
         alignItems="center"
         p={1}
       >
-        {defineActions.actionList?.length &&
+        {defineActions.actionList?.length > 0 &&
           <Grid2 p={0.5}>
-            <Tooltip title={localeStr ? localeStr.quickActions : 'Quick Actions'}>
+            <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
               <IconButton
                 color={quickActions ? 'secondary' : 'primary'}
                 onClick={toggleQuickActions}
@@ -262,6 +266,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
               tableName={tableName}
               visibleColumns={visibleColumns}
               setVisibleColumns={setVisibleColumns}
+              selectedLocale={selectedLocale}
               localeStr={localeStr}
             />
           </Grid2>
@@ -282,6 +287,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
       <ActionButtons
         quickSelectedRows={quickSelectedRows}
         defineActions={defineActions}
+        selectedLocale={selectedLocale}
         localeStr={localeStr}
       />
 

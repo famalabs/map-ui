@@ -12,6 +12,7 @@ import { CommonBodyCreator } from './DynamicCommons';
 import { DynamicSimpleFilters } from './DynamicFilters';
 import { TablePaginationActions } from './DynamicPagination';
 import { ActiveFilter, DefineActionsProps, DynColumnsDef, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
+import { en_locale, it_locale } from './DynamicTableLocale';
 
 export function DynamicTable<T extends Record<string, any>>(props: DynamicTableProps<T>) {
 
@@ -21,7 +22,8 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       tableData,
       columns,
       expectedRowCount,
-      emptyTablePlaceholderSrc = '',
+      emptyTablePlaceholderSrc,
+      emptyTablePlaceholderText,
       showVisibleColumnsButton = true,
       paginationOptions: {
         customPageRowCount,
@@ -37,9 +39,10 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       onLoadQuery,
       setCurrentQuery
     } = {} as QueryInfoProps,
-    defineActions = {} as DefineActionsProps,
+    defineActions = {} as DefineActionsProps<T>,
     onRowClick,
     newItemButton,
+    tableLocale = 'en',
     localeStr,
   } = props;
 
@@ -58,18 +61,26 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Visible columns state (define structure later) */
   const localVisibleCols = localStorage.getItem(tableName);
-  const [visibleColumns, setVisibleColumns] = useState<DynColumnsDef[]>([]);
+  const [visibleColumns, setVisibleColumns] = useState<DynColumnsDef<T>[]>([]);
 
   /* Quick actions */
   const [quickActions, setQuickActions] = useState<boolean>(false);
   const [quickSelectedRows, setQuickSelectedRows] = useState<T[]>([]);
 
+  /* Has the fetch function been called */
+  const [hasDataFetched, setHasDataFetched] = useState<boolean>(false);
+
+  /* Has table loaded */
   const [hasTableLoaded, setHasTableLoaded] = useState<boolean>(false);
+
+  /* Selected locale */
+  const selectedLocale = tableLocale === 'it' ? it_locale : en_locale;
 
   /* Fetching event function */
   const fetchEvent = async (firstLoad: boolean = false) => {
     if (firstLoad || highestFetchedPage < page) {
       await fetchData(rowsPerPage, activeFilters, firstLoad);
+      setHasDataFetched(true);
       setHighestFetchedPage(firstLoad ? 0 : page);
     }
   }
@@ -184,6 +195,8 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   }, [activeFilters]);
 
+  const isTableEmpty = (hasDataFetched && !isFetching) && (expectedRowCount === 0 || tableData.length === 0);
+
   useEffect(() => {
     setHasTableLoaded(true);
   }, []);
@@ -200,9 +213,6 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   return (
     <TableContainer
       component={Paper}
-    /* sx={{
-      color: (theme) => theme.palette.background.paper,
-    }} */
     >
 
       <Grid2 container>
@@ -226,6 +236,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           setQuickSelectedRows={setQuickSelectedRows}
           newItemButton={newItemButton}
           showVisibleColumnsButton={showVisibleColumnsButton}
+          selectedLocale={selectedLocale}
           localeStr={localeStr}
         />
 
@@ -249,26 +260,30 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           onRowClick={onRowClick}
           autoSizeHeight={autoSizeHeight}
           emptyTablePlaceholderSrc={emptyTablePlaceholderSrc}
+          emptyTablePlaceholderText={emptyTablePlaceholderText}
+          hasDataFetched={hasDataFetched}
         />
 
         {/* Table Pagination */}
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              count={expectedRowCount}
-              rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={customSelectPages ?? [5, 10]}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              labelRowsPerPage={localeStr ? localeStr.rowsPerPage : 'Rows per page: '}
-              labelDisplayedRows={({ from, to, count }) => {
-                return `${from} - ${to} ${localeStr ? localeStr.of : 'of'} ${count}`
-              }}
-              ActionsComponent={CustomTablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
+        {!isTableEmpty &&
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                count={expectedRowCount}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={customSelectPages ?? [5, 10]}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage={localeStr ? localeStr.rowsPerPage : selectedLocale.rowsPerPage}
+                labelDisplayedRows={({ from, to, count }) => {
+                  return `${from} - ${to} ${localeStr ? localeStr.of : selectedLocale.of} ${count}`
+                }}
+                ActionsComponent={CustomTablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        }
 
       </Table>
     </TableContainer>

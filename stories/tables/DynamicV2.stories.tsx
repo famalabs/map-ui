@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Meta, Story } from '@storybook/react';
 import { ActionEventItem, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
 import { generateAsyncCount, generateAsyncData } from './mockdata';
+import InfoIcon from '@mui/icons-material/Info';
 
 import {
   BooleanCell,
@@ -27,10 +28,16 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
   const columns =
     [
-      { accessor: 'id', label: 'ID', visible: false },
+      { accessor: 'id', label: 'ID', 
+        Tooltip: { 
+          icon: null, 
+          action: (currentColumn) => console.log('Tooltip clicked:', currentColumn?.label) 
+        },
+        visible: false 
+      },
       { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
       { accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell() },
-      { accessor: 'name', label: 'Name', visible: true },
+      { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentColumn, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
       { accessor: 'description', label: 'Description', visible: true },
       {
         accessor: 'status', label: 'Status', 
@@ -43,7 +50,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           { id: 0, type: 'warning', label: 'Pending' },
         ])
       },
-    ] as DynColumnsDef[];
+    ] as DynColumnsDef<any>[];
 
   const [data, setData] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -128,7 +135,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           paginationOptions: {
             customPageRowCount: 5,
             customSelectPages: [5, 10, 20],
-            autoSizeHeight: true,
+            autoSizeHeight: false,
           },
         }}
         fetchInfo={{
@@ -142,23 +149,24 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
         onRowClick={(row) => {
           console.log('Row clicked:', row);
         }}
-        /* defineActions={{
+        defineActions={{
           actionList: actionList,
           onAction: (action, selectedRows) => actionHandler(action, selectedRows)
-        }} */
+        }}
         newItemButton={{
           label: 'New Item',
           buttonClick: () => {
             console.log('New item clicked');
           }
         }}
-        localeStr={{
+        tableLocale='en'
+        /* localeStr={{
           quickActions: 'Azioni Veloci',
           visibleColumns: 'Colonne Visibili',
           itemsSelected: 'Righe Selezionate: ',
           rowsPerPage: 'Righe per pagina: ',
           of: 'di',
-        }}
+        }} */
       />
     </>
   );

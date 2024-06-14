@@ -4,7 +4,7 @@ import { DynColumnsDef } from './DynamicTypes';
 
 export interface DynamicCellProps<T> {
   row: T;
-  column: DynColumnsDef;
+  column: DynColumnsDef<T>;
 }
 
 export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
@@ -25,8 +25,13 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
   switch (true) {
 
     case 'Cell' in column && column.Cell !== undefined:
-      const CustomCell = column.Cell({ cellValue });
-      return <TableCell style={{ width: 160 }}>{CustomCell}</TableCell>;
+      const CustomCell = column.Cell;
+      return (
+        <TableCell
+          style={{ width: 160 }}>
+          <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
+        </TableCell>
+      );
 
     default:
       return <TableCell style={{ width: 160 }}>{cellValue}</TableCell>;

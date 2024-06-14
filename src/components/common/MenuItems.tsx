@@ -1,5 +1,6 @@
 import React from "react";
 import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -11,36 +12,43 @@ export interface MenuItemsProps<T extends Record<string, any>> {
   onSelectItem: (itemID: MenuID, title: string, link: string) => void;
   selectedLink?: string;
   listProps?: Record<string, any>;
+  iconOnly?: boolean;
 }
 
 export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T>) {
 
-  const { displayItems, listType, onSelectItem, selectedLink, listProps } = props;
+  const { displayItems, listType, onSelectItem, selectedLink, listProps, iconOnly = false } = props;
 
   return (
     <>
-      <List sx={{...listProps}}>
+      <List sx={{ ...listProps }}>
         {displayItems.map((item, index) => (
-          <ListItemButton
-            key={index}
-            sx={{
-              ...(selectedLink === item.link && {
-                color: (theme) => theme.palette.primary.main,
-              }),
-            }}
-            onClick={() => onSelectItem(listType, item.title, item.link)}
+          <ListItem
+            key={`${item.title}-${index}`}
+            component="div" 
+            disablePadding
           >
-            <ListItemIcon
+            <ListItemButton
               sx={{
                 ...(selectedLink === item.link && {
                   color: (theme) => theme.palette.primary.main,
                 }),
               }}
+              onClick={() => onSelectItem(listType, item.title, item.link)}
             >
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.title} />
-          </ListItemButton>
+              <ListItemIcon 
+                sx={{ 
+                  ...(selectedLink === item.link && {
+                    color: (theme) => theme.palette.primary.main,
+                  }),
+                  minWidth: '32px' 
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              {!iconOnly && <ListItemText primary={item.title} />}
+            </ListItemButton>
+          </ListItem>
         ))}
       </List>
     </>
