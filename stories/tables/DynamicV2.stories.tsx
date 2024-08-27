@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Meta, Story } from '@storybook/react';
 import { ActionEventItem, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
-import { generateAsyncCount, generateAsyncData } from './mockdata';
+import { generateAsyncCount, generateAsyncData, generateComplexData } from './mockdata';
 import InfoIcon from '@mui/icons-material/Info';
 
 import {
@@ -14,6 +14,7 @@ import {
   ImageCell,
   SelectCell,
 } from '../../src/components/tables';
+import Box from '@mui/material/Box';
 
 
 export default {
@@ -28,23 +29,35 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
   const columns =
     [
-      { accessor: 'id', label: 'ID', 
-        Tooltip: { 
-          icon: null, 
-          action: (currentColumn) => console.log('Tooltip clicked:', currentColumn?.label) 
+      {
+        accessor: 'id', label: 'ID',
+        Tooltip: {
+          label: 'The ID of the item',
+          color: 'primary'
         },
-        visible: false 
+        visible: false
       },
       { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
-      { accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell() },
-      { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentColumn, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
+      {
+        accessor: 'code', label: 'Code', ColumnCell: () => {
+          return (
+            <Box minHeight={100} minWidth={400}>
+              <InfoIcon />
+            </Box>
+          );
+        }, visible: true, Cell: AvatarCell()
+      },
+      { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
       { accessor: 'description', label: 'Description', visible: true },
       {
-        accessor: 'status', label: 'Status', 
-        filterOptions: {type: 'select', options: [
-          { id: 1, label: 'Published' },
-          { id: 0, label: 'Pending' },
-        ]},
+        accessor: 'status', label: 'Status',
+        filterOptions: {
+          type: 'select',
+          options: [
+            { id: 1, label: 'Published' },
+            { id: 0, label: 'Pending' },
+          ]
+        },
         Cell: SelectCell([
           { id: 1, type: 'success', label: 'Published' },
           { id: 0, type: 'warning', label: 'Pending' },
@@ -70,6 +83,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
       setExpectedRowCount(rowCount);
 
       const itemData = await generateAsyncData(10);
+      console.log('Data fetched:', itemData);
 
       firstLoad
         ? setData(itemData)
@@ -131,11 +145,13 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           tableData: data,
           columns: columns,
           expectedRowCount: expectedRowCount,
+          staticMode: true,
           emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
           paginationOptions: {
-            customPageRowCount: 5,
-            customSelectPages: [5, 10, 20],
-            autoSizeHeight: false,
+            /* customPageRowCount: 5,
+            customSelectPages: [5, 10, 20], */
+            autoSizeHeight: true,
+            hideFooter: true,
           },
         }}
         fetchInfo={{
@@ -160,13 +176,13 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           }
         }}
         tableLocale='en'
-        /* localeStr={{
-          quickActions: 'Azioni Veloci',
-          visibleColumns: 'Colonne Visibili',
-          itemsSelected: 'Righe Selezionate: ',
-          rowsPerPage: 'Righe per pagina: ',
-          of: 'di',
-        }} */
+      /* localeStr={{
+        quickActions: 'Azioni Veloci',
+        visibleColumns: 'Colonne Visibili',
+        itemsSelected: 'Righe Selezionate: ',
+        rowsPerPage: 'Righe per pagina: ',
+        of: 'di',
+      }} */
       />
     </>
   );

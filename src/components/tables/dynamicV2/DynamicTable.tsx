@@ -22,6 +22,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       tableData,
       columns,
       expectedRowCount,
+      staticMode = false,
       emptyTablePlaceholderSrc,
       emptyTablePlaceholderText,
       showVisibleColumnsButton = true,
@@ -29,6 +30,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         customPageRowCount,
         customSelectPages,
         autoSizeHeight = false,
+        hideFooter = false,
       } = {},
     },
     fetchInfo: {
@@ -51,7 +53,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Rows displayed per page */
   const savedRowsPerPage = localStorage.getItem(`${tableName}-rowsPerPage`);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(parseInt(savedRowsPerPage, 10) || customPageRowCount || 5);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(customPageRowCount ? (parseInt(savedRowsPerPage, 10) || customPageRowCount) : expectedRowCount);
 
   /* Highest fetched page */
   const [highestFetchedPage, setHighestFetchedPage] = useState<number>(-1);
@@ -145,14 +147,16 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     }
   }, []);
 
-  /* Fetch event effects  */
+  /* Fetch event effects when page & rowsPerPage change  */
 
   useEffect(() => {
-    if (page !== 0) fetchEvent();
+    /* Skip fetch is static mode is enabled */
+    if (page !== 0 && !staticMode) fetchEvent();
   }, [page]);
 
   useEffect(() => {
-    if (hasTableLoaded) fetchEvent(true);
+    /* Skip fetch is static mode is enabled */
+    if (hasTableLoaded && !staticMode) fetchEvent(true);
   }, [rowsPerPage]);
 
   /* Parse filter query */
@@ -211,9 +215,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   }
 
   return (
-    <TableContainer
-      component={Paper}
-    >
+    <TableContainer component={Paper}>
 
       <Grid2 container>
 
@@ -242,9 +244,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
       </Grid2>
 
-      <Table
-        sx={{ minWidth: 500 }}
-      >
+      <Table sx={{ minWidth: 500 }}>
         {/* Table Body */}
         <CommonBodyCreator
           tableData={tableData}
@@ -265,7 +265,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         />
 
         {/* Table Pagination */}
-        {!isTableEmpty &&
+        {!isTableEmpty && !hideFooter &&
           <TableFooter>
             <TableRow>
               <TablePagination

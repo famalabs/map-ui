@@ -15,6 +15,7 @@ import Table from '@mui/material/Table';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip } from '@mui/material';
 
 const StyledTableRow = styled(TableRow)(({ /* theme */ }) => ({
   height: 56,
@@ -86,19 +87,22 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
               onMouseLeave={() => setHoveredColumn(-1)}
               sx={{ width: 160, position: 'relative' }}
             >
-              {column.label}
+              {column.ColumnCell ? column.ColumnCell() : (column.label || '')}
               {'Tooltip' in column && hoveredColumn === index && (
-                <IconButton
-                  size="small"
-                  onClick={() => column.Tooltip?.action( column )}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    transform: 'translateY(-50%)'
-                  }}
-                >
-                  {column.Tooltip?.icon || <InfoIcon />}
-                </IconButton>
+                <Tooltip title={column.Tooltip?.label || ''}>
+                  <IconButton
+                    disableRipple
+                    color={column.Tooltip?.color || 'default'}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      transform: 'translateY(-50%)'
+                    }}
+                  >
+                    {column.Tooltip?.icon || <InfoIcon />}
+                  </IconButton>
+                </Tooltip>
               )}
             </TableCell>
           );

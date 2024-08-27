@@ -78,7 +78,7 @@ export const generateDynamicData = (n = 1): DynamicData[] => {
       id: randomString(),
       supplier: {
         id: randomInt(1000),
-        name: 'TESTNAME',
+        name: `TESTNAME-${i}`,
         supplierCode: randomString(),
         supplierDescription: randomString(),
       },

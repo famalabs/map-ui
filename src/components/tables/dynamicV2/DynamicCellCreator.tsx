@@ -28,7 +28,8 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
       const CustomCell = column.Cell;
       return (
         <TableCell
-          style={{ width: 160 }}>
+          sx={{ width: 160 }}
+        >
           <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
         </TableCell>
       );

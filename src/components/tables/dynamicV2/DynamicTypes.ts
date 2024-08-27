@@ -1,4 +1,4 @@
-import { ButtonOwnProps } from "@mui/material";
+import { ButtonOwnProps, IconButtonOwnProps } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
 /**
@@ -29,8 +29,9 @@ export interface DynColumnsDef<T> {
   accessor: string;
   label: string;
   filterOptions?: { type: FilterType, options?: DynamicFilterOptions[] }
+  ColumnCell?: () => JSX.Element;
   Cell?: (props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element;
-  Tooltip?: { icon: JSX.Element, action: (currentColumn?: DynColumnsDef<T>) => void }
+  Tooltip?: { icon?: JSX.Element, color?: IconButtonOwnProps['color'], label: string }
   visible: boolean;
 }
 
@@ -87,6 +88,7 @@ export interface ActionEventItem {
  * @param {Dispatch<SetStateAction<T[]>>} setTableData - The function to set the table data.
  * @param {DynColumnsDef[]} columns - The columns of the table.
  * @param {number} expectedRowCount - The expected row count.
+ * @param {boolean} static - Indicates whether the table is static.
  * @param {boolean} showVisibleColumnsButton - Indicates whether the visible columns button is shown.
  * @param {string} emptyTablePlaceholderSrc - The source of the empty table placeholder.
  * @param {string} emptyTablePlaceholderText - The text of the empty table placeholder.
@@ -98,6 +100,7 @@ export interface TableInfoProps<T> {
   setTableData?: Dispatch<SetStateAction<T[]>>;
   columns: DynColumnsDef<T>[];
   expectedRowCount: number;
+  staticMode?: boolean;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
   emptyTablePlaceholderText?: string;
@@ -105,6 +108,7 @@ export interface TableInfoProps<T> {
     customPageRowCount?: number;
     customSelectPages?: number[];
     autoSizeHeight?: boolean;
+    hideFooter?: boolean;
   },
 }
 
