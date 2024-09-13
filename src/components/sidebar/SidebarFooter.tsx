@@ -1,30 +1,35 @@
-import React from "react";
+import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ChevronRight from "@mui/icons-material/ChevronRight";
+import { useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
+import List, { ListOwnProps } from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
-import { SidebarItem } from "./SidebarLayout";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import React from "react";
 import { MenuItems } from "../common/MenuItems";
-import ListItem from "@mui/material/ListItem";
+import { SidebarItem } from "./SidebarLayout";
 export interface FooterData {
   itemsList: SidebarItem[];
   avatar: {
     username: string;
     imageSrc: string;
-  }
+  };
+  listProps?: ListOwnProps;
+  listStyle?: Record<string, any>;
 }
 
 export interface SidebarFooterProps {
   footerData: FooterData;
-  isSidebarOpen: boolean;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
   onSelectItem: (itemID: string, title: string, link: string) => void;
 }
 
@@ -33,11 +38,16 @@ export function SidebarFooter(props: SidebarFooterProps) {
   const {
     footerData: {
       itemsList,
-      avatar
+      avatar,
+      listProps = {},
+      listStyle = {},
     },
-    isSidebarOpen,
+    sidebarOpen,
+    setSidebarOpen,
     onSelectItem,
   } = props;
+
+  const theme = useTheme();
 
   const [anchorElMenu, setAnchorElMenu] = React.useState(null);
 
@@ -56,10 +66,10 @@ export function SidebarFooter(props: SidebarFooterProps) {
     <>
       <List>
         <ListItem
-          component={ itemsList.length > 0 ? ListItemButton : 'div' }
+          component={itemsList.length > 0 ? ListItemButton : 'div'}
           aria-describedby={id}
-          style={{ paddingLeft: 7 }}
           onClick={(event) => handleClick(event)}
+          sx={{ paddingInline: '12px', paddingRight: '32px' }}
         >
           <ListItemAvatar>
             <Avatar
@@ -79,14 +89,26 @@ export function SidebarFooter(props: SidebarFooterProps) {
             </Typography>
           }
           />
-          {isSidebarOpen && itemsList.length > 0 ? (
-            <ListItemSecondaryAction style={{ zIndex: -1 }}>
-              <IconButton edge="end" aria-label="delete">
-                <MoreVertOutlined />
-              </IconButton>
-            </ListItemSecondaryAction>
-          ) : null}
         </ListItem>
+        <ListItemSecondaryAction>
+          <IconButton
+            edge='end'
+            color='inherit'
+            disableRipple
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            sx={{
+              position: 'absolute',
+              backgroundColor: theme.palette.background.paper,
+              border: '1px solid rgba(0, 0, 0, 0.12)',
+              borderRadius: '8px',
+              padding: 0,
+              right: sidebarOpen ? '5px' : '-15px',
+              bottom: '-10px'
+            }}
+          >
+            {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
+          </IconButton>
+        </ListItemSecondaryAction>
       </List>
 
       {itemsList.length > 0 &&
@@ -120,8 +142,10 @@ export function SidebarFooter(props: SidebarFooterProps) {
                     onSelectItem(...args);
                     handleClose();
                   }}
-                  listProps={{
-                    margin: 'auto 0'
+                  listProps={listProps}
+                  listStyle={{
+                    margin: 'auto 0',
+                    ...listStyle,
                   }}
                 />
               </Grid2>

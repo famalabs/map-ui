@@ -2,6 +2,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 import Grid2 from "@mui/material/Unstable_Grid2";
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import React, { Dispatch, SetStateAction } from 'react';
 import { ActiveFilter, DynColumnsDef } from './DynamicTypes';
 
@@ -11,23 +14,39 @@ interface StringFilterFormProps<T> {
   column: DynColumnsDef<T>;
   activeFilters?: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
+  showSearchIcon?: boolean;
 }
 
 export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
 
-  const { column, activeFilters, setActiveFilters } = props;
+  const { column, activeFilters, setActiveFilters, showSearchIcon } = props;
 
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
 
   return (
-    <Grid2 sm={'auto'} p={2}>
+    <Grid2 sm={'auto'} minWidth={200} p={2}>
       <TextField
+        fullWidth
         size='small'
         label={column.label}
         variant="outlined"
         onChange={(event) => updateFilters(event.target.value, column, setActiveFilters)}
         value={loadedValue ?? ''}
         aria-label='filter-text'
+        InputProps={{
+          startAdornment: showSearchIcon && <SearchIcon />,
+          endAdornment: (
+            <IconButton
+              size='small'
+              onClick={() => {
+                updateFilters('', column, setActiveFilters);
+              }}
+              sx={{ visibility: loadedValue ? 'visible' : 'hidden' }}
+            >
+              <CloseIcon fontSize='small' />
+            </IconButton>
+          )
+        }}
       />
     </Grid2>
   )
@@ -125,6 +144,8 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       alignItems="center"
     >
       {columns.map(column => {
+        const filterableColumnsCount = columns.filter(col => col.filterOptions).length;
+
         if (!column.filterOptions) return null;
 
         switch (column.filterOptions.type) {
@@ -135,6 +156,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
                 column={column}
                 activeFilters={activeFilters}
                 setActiveFilters={setActiveFilters}
+                showSearchIcon={filterableColumnsCount === 1}
               />
             );
 

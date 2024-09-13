@@ -1,4 +1,5 @@
 import React from 'react';
+import Box from '@mui/material/Box';
 import { Meta, Story } from '@storybook/react';
 import { SidebarItem, SidebarLayout, SidebarLayoutProps } from '../../src/components/sidebar';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -71,7 +72,7 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
 
   return (
     <>
-      <SidebarLayout 
+      <SidebarLayout
         itemsList={menuList}
         mainLogo={{
           fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
@@ -83,15 +84,29 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
         }}
         onSelectMenuItem={(itemID, title, link) => console.log(itemID, title, link)}
         selectedLink="/dashboard"
+        listProps={{
+          dense: true,
+        }}
+        listStyle={{
+          mx: '4px',
+        }}
         footerData={{
           itemsList: popupList,
           avatar: {
             username: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
             imageSrc: 'https://live.staticflickr.com/65535/52232153379_a96ddd1233_k.jpg'
+          },
+          listProps: {
+            dense: true,
+          },
+          listStyle: {
+            mx: '4px',
           }
         }}
       >
-        {args.children}
+        <Box>
+          {args.children}
+        </Box>
       </SidebarLayout>
     </>
   );

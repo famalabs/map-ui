@@ -39,17 +39,11 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
       },
       { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
       {
-        accessor: 'code', label: 'Code', ColumnCell: () => {
-          return (
-            <Box minHeight={100} minWidth={400}>
-              <InfoIcon />
-            </Box>
-          );
-        }, visible: true, Cell: AvatarCell()
+        accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell()
       },
       { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
       { accessor: 'description', label: 'Description', visible: true },
-      {
+      /* {
         accessor: 'status', label: 'Status',
         filterOptions: {
           type: 'select',
@@ -62,7 +56,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           { id: 1, type: 'success', label: 'Published' },
           { id: 0, type: 'warning', label: 'Pending' },
         ])
-      },
+      }, */
     ] as DynColumnsDef<any>[];
 
   const [data, setData] = useState<any[]>([]);

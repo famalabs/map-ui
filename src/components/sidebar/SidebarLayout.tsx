@@ -1,19 +1,17 @@
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
-import MenuIcon from '@mui/icons-material/Menu';
-import { Avatar, Theme, useMediaQuery, useTheme } from "@mui/material";
-import { alpha } from '@mui/material/styles';
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Fab from '@mui/material/Fab';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import List, { ListOwnProps } from "@mui/material/List";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import { alpha, styled, Theme, useTheme } from '@mui/material/styles';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
-import { MainDiv } from "../common/MainDiv";
 import { MenuItems } from "../common/MenuItems";
 import { FooterData, SidebarFooter } from "./SidebarFooter";
 
@@ -36,7 +34,7 @@ const closedMixin = (theme: Theme): typeof closedMixin => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)})`
+  width: `calc(${theme.spacing(8)})`
 });
 
 const MiniDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== "open" })(
@@ -46,13 +44,21 @@ const MiniDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== "open"
     whiteSpace: "nowrap",
     boxSizing: "border-box",
     overflow: "hidden",
+    "& .MuiDrawer-paper": {
+      overflow: "visible"
+    },
     ...(open && {
       ...openedMixin(theme),
-      "& .MuiDrawer-paper": openedMixin(theme),
+      "& .MuiDrawer-paper": {
+        ...openedMixin(theme),
+        overflow: "visible"
+      },
     }),
     ...(!open && {
       ...closedMixin(theme),
-      "& .MuiDrawer-paper": closedMixin(theme),
+      "& .MuiDrawer-paper": {
+        ...closedMixin(theme), overflow: "visible"
+      },
     }),
   })
 ) as typeof Drawer;
@@ -132,7 +138,10 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }) => {
         >
           <Box component="span">
             <DrawerHeader>
-              <IconButton color='inherit' onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <IconButton
+                color='inherit'
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
                 <ChevronLeft />
               </IconButton>
             </DrawerHeader>
@@ -148,20 +157,13 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }) => {
   }
 
   return (
-    <Box sx={{ display: "flex", height: '100%' }}>
+    <Box display='flex'>
       <MiniDrawer
         open={sidebarOpen}
         elevation={10}
         variant="permanent"
+        sx={{ overflow: 'visible' }}
       >
-        <Box component="span">
-          <DrawerHeader>
-            <IconButton color='inherit' onClick={() => setSidebarOpen(!sidebarOpen)}>
-              {sidebarOpen ? <ChevronLeft /> : <MenuIcon />}
-            </IconButton>
-          </DrawerHeader>
-        </Box>
-
         {children}
       </MiniDrawer>
       {mainContent}
@@ -191,6 +193,8 @@ export interface SidebarLayoutProps {
   onSelectMenuItem: (itemID: string, title: string, link: string) => void;
   selectedLink?: string;
   footerData?: FooterData;
+  listProps?: ListOwnProps;
+  listStyle?: Record<string, any>;
   children: React.ReactNode;
 }
 
@@ -203,6 +207,8 @@ export function SidebarLayout(props: SidebarLayoutProps) {
     onSelectMenuItem,
     selectedLink,
     footerData,
+    listProps,
+    listStyle,
     children
   } = props;
 
@@ -212,9 +218,9 @@ export function SidebarLayout(props: SidebarLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(true);
 
   const mainContent = (
-    <MainDiv>
+    <>
       {children}
-    </MainDiv>
+    </>
   );
 
   return (
@@ -232,38 +238,43 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         {/* Sidebar Logo */}
 
         {!customHeader && mainLogo && (
-          <List>
-            <ListItemIcon
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                padding: '10px 0',
-              }}
-            >
-              <Box component='div'>
-                {
-                  sidebarOpen
-                    ? <img src={mainLogo.fullLogo || ''} alt="FullLogo" style={{ width: '10rem', height: 'auto' }} />
-                    : <Avatar variant={mainLogo.variant || 'square'} alt="Minilogo" src={mainLogo.miniLogo} />
-                }
-              </Box>
-            </ListItemIcon>
-          </List>
+          <>
+            <List>
+              <ListItemIcon
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box component='div'>
+                  {
+                    sidebarOpen
+                      ? <img src={mainLogo.fullLogo || ''} alt="FullLogo" style={{ width: '10rem', height: 'auto' }} />
+                      : <Avatar variant={mainLogo.variant || 'square'} alt="Minilogo" src={mainLogo.miniLogo} />
+                  }
+                </Box>
+              </ListItemIcon>
+            </List>
+            <Divider />
+          </>
         )}
 
         <MenuItems
           displayItems={itemsList ?? []}
           listType="body"
+          iconOnly={!sidebarOpen}
           onSelectItem={(...args) => {
             onSelectMenuItem(...args);
             if (isSmallScreen) setSidebarOpen(false);
           }}
           selectedLink={selectedLink}
-          listProps={{
+          listProps={listProps}
+          listStyle={{
             margin: '0',
+            marginTop: 1,
             marginBottom: 'auto',
+            ...listStyle,
           }}
-          iconOnly={!sidebarOpen}
         />
 
         {brandLogo && (
@@ -286,16 +297,20 @@ export function SidebarLayout(props: SidebarLayoutProps) {
           </List>
         )}
 
+        <Divider />
+
         {footerData &&
           <SidebarFooter
             footerData={footerData}
-            isSidebarOpen={sidebarOpen}
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
             onSelectItem={(...args) => {
               onSelectMenuItem(...args);
               if (isSmallScreen) setSidebarOpen(false);
             }}
           />
         }
+
       </Sidebar>
     </>
   );
