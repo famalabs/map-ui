@@ -38,8 +38,9 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
                 ...(selectedLink === item.link && {
                   color: (theme) => theme.palette.primary.main,
                 }),
+                justifyContent:'center',
                 paddingInline: iconOnly ? 0 : 'auto',
-                paddingY: 0.8,
+                paddingY: iconOnly ? 0.8 : 0.5,
                 transition: `padding ${theme.transitions.easing.sharp} ${theme.transitions.duration.leavingScreen}ms`,
               }}
             >
@@ -49,7 +50,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
                     color: (theme) => theme.palette.primary.main,
                   }),
                   minWidth: '32px',
-                  paddingLeft: '12px',
+                  padding: 0,
                   justifyContent: 'center',
                 }}
               >

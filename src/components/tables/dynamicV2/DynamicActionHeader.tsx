@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Grid2 from "@mui/material/Unstable_Grid2";
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { ActionEvent, ActionEventItem, CustomButton, DynColumnsDef, i18nStrings } from './DynamicTypes';
+import { ActionEvent, ActionEventItem, ActiveFilter, CustomButton, DynColumnsDef, i18nStrings } from './DynamicTypes';
 
 export interface ColumnVisibilityPopperProps<T> {
   tableName: string;
@@ -109,15 +109,31 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
 }
 
 interface ActionButtonsProps<T> {
+  fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
+  activeFilters: ActiveFilter[];
   selectedLocale: i18nStrings;
   localeStr?: i18nStrings;
 }
 
 export function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
 
-  const { quickSelectedRows, defineActions: { actionList, onAction }, selectedLocale, localeStr } = props;
+  const {
+    fetchData,
+    quickSelectedRows,
+    defineActions,
+    activeFilters,
+    selectedLocale,
+    localeStr
+  } = props;
+
+  const { actionList, onAction } = defineActions;
+
+  const handleAction = async (action: ActionEventItem, quickSelectedRows: T[], activeFilters: ActiveFilter[]) => {
+    onAction && onAction(action.type, quickSelectedRows, activeFilters);
+    if (action.refetch) await fetchData(quickSelectedRows.length, activeFilters, false);
+  }
 
   if (quickSelectedRows.length === 0) return null;
 
@@ -156,7 +172,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
               ? <Tooltip title={action.label ?? action.type}>
                 <IconButton
                   color={action.color ?? 'primary'}
-                  onClick={() => onAction && onAction(action.type, quickSelectedRows)}
+                  onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
                 >
                   {action.icon && action.icon}
                 </IconButton>
@@ -166,7 +182,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
                 variant="contained"
                 size="small"
                 color={action.color ?? 'primary'}
-                onClick={() => onAction && onAction(action.type, quickSelectedRows)}
+                onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
               >
                 {action.icon && action.icon}
                 <Typography fontSize={14}> {action.label ?? action.type} </Typography>
@@ -202,6 +218,7 @@ export function NewItemButton(props: CustomButton) {
 
 export interface DynamicActionsProps<T> {
   tableName: string;
+  fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>
   visibleColumns: DynColumnsDef<T>[];
   setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> }
@@ -209,6 +226,7 @@ export interface DynamicActionsProps<T> {
   setQuickActions: Dispatch<SetStateAction<boolean>>;
   quickSelectedRows: T[];
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
+  activeFilters: ActiveFilter[];
   newItemButton?: CustomButton;
   showVisibleColumnsButton: boolean;
   selectedLocale: i18nStrings;
@@ -219,6 +237,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
 
   const {
     tableName,
+    fetchData,
     visibleColumns,
     setVisibleColumns,
     defineActions,
@@ -226,6 +245,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     setQuickActions,
     quickSelectedRows,
     setQuickSelectedRows,
+    activeFilters,
     newItemButton,
     showVisibleColumnsButton,
     selectedLocale,
@@ -285,8 +305,10 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
       </Grid2>
 
       <ActionButtons
+        fetchData={fetchData}
         quickSelectedRows={quickSelectedRows}
         defineActions={defineActions}
+        activeFilters={activeFilters}
         selectedLocale={selectedLocale}
         localeStr={localeStr}
       />

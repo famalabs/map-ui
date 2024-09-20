@@ -188,6 +188,7 @@ export interface SidebarLogo {
 export interface SidebarLayoutProps {
   itemsList: SidebarItem[];
   customHeader?: React.ReactNode;
+  customHeaderCompact?: React.ReactNode;
   mainLogo?: SidebarLogo;
   brandLogo?: SidebarLogo;
   onSelectMenuItem: (itemID: string, title: string, link: string) => void;
@@ -202,6 +203,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
   const {
     itemsList,
     customHeader,
+    customHeaderCompact,
     mainLogo,
     brandLogo,
     onSelectMenuItem,
@@ -231,15 +233,11 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         mainContent={mainContent}
       >
 
-        {/* Custom Header */}
-        {sidebarOpen && customHeader}
-
-
         {/* Sidebar Logo */}
 
-        {!customHeader && mainLogo && (
+        {mainLogo && (
           <>
-            <List>
+            <List sx={{ padding: '1rem 0 0.5rem 0' }}>
               <ListItemIcon
                 sx={{
                   display: 'flex',
@@ -250,7 +248,12 @@ export function SidebarLayout(props: SidebarLayoutProps) {
                   {
                     sidebarOpen
                       ? <img src={mainLogo.fullLogo || ''} alt="FullLogo" style={{ width: '10rem', height: 'auto' }} />
-                      : <Avatar variant={mainLogo.variant || 'square'} alt="Minilogo" src={mainLogo.miniLogo} />
+                      : <Avatar
+                        variant={mainLogo.variant || 'square'}
+                        alt="Minilogo"
+                        src={mainLogo.miniLogo}
+                        sx={{ padding: '4px' }}
+                      />
                   }
                 </Box>
               </ListItemIcon>
@@ -258,6 +261,12 @@ export function SidebarLayout(props: SidebarLayoutProps) {
             <Divider />
           </>
         )}
+
+        {/* Custom Header */}
+        
+        {sidebarOpen && customHeader}
+
+        {!sidebarOpen && customHeaderCompact}
 
         <MenuItems
           displayItems={itemsList ?? []}

@@ -229,6 +229,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         {/* Action Header */}
         <DynamicActionHeader
           tableName={tableName}
+          fetchData={fetchData}
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
           defineActions={defineActions}
@@ -236,6 +237,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           setQuickActions={setQuickActions}
           quickSelectedRows={quickSelectedRows}
           setQuickSelectedRows={setQuickSelectedRows}
+          activeFilters={activeFilters}
           newItemButton={newItemButton}
           showVisibleColumnsButton={showVisibleColumnsButton}
           selectedLocale={selectedLocale}

@@ -60,7 +60,7 @@ export interface ActiveFilter {
 /**
  * Type for the action event.
  */
-export type ActionEvent<T extends Record<string, any>> = (actionType: string, selectedRows: T[]) => void;
+export type ActionEvent<T extends Record<string, any>> = (actionType: string, selectedRows: T[], activeFilters: ActiveFilter[]) => void;
 
 /**
  * Interface for an action event button.
@@ -77,6 +77,7 @@ export interface ActionEventItem {
   color?: ButtonOwnProps['color'];
   icon?: JSX.Element;
   isIconButton?: boolean;
+  refetch?: boolean;
 }
 
 /* --------------------------------------------------------------------------------------------------------------------- */

@@ -76,7 +76,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
       const rowCount = await generateAsyncCount(10);
       setExpectedRowCount(rowCount);
 
-      const itemData = await generateAsyncData(10);
+      const itemData = await generateAsyncData(5);
       console.log('Data fetched:', itemData);
 
       firstLoad
@@ -92,12 +92,12 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
   };
 
   const actionList = [
-    { type: 'delete', label: 'Delete', color: 'error', isIconButton: false },
+    { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
   ] as ActionEventItem[];
 
   const [quickActions, setQuickActions] = useState<boolean>(false);
 
-  const actionHandler = async (actionType: string, selectedRows: any[]) => {
+  const actionHandler = async (actionType: string, selectedRows: any[], activeFilters: ActiveFilter[]) => {
 
     const requestArray: Promise<any>[] = [];
 
@@ -113,11 +113,9 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
         await Promise.all(requestArray)
           .then(() => {
-
             setData(prevData => prevData.filter(item => !selectedRows.some(selected => selected.code === item.code)));
             console.log('Deleted');
             setQuickActions(false);
-
           })
           .catch(() => {
             console.error('Error deleting');
@@ -139,13 +137,13 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
           tableData: data,
           columns: columns,
           expectedRowCount: expectedRowCount,
-          staticMode: true,
+          staticMode: false,
           emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
           paginationOptions: {
-            /* customPageRowCount: 5,
-            customSelectPages: [5, 10, 20], */
-            autoSizeHeight: true,
-            hideFooter: true,
+            customPageRowCount: 5,
+            customSelectPages: [5, 10, 20],
+            autoSizeHeight: false,
+            hideFooter: false,
           },
         }}
         fetchInfo={{
@@ -161,7 +159,7 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
         }}
         defineActions={{
           actionList: actionList,
-          onAction: (action, selectedRows) => actionHandler(action, selectedRows)
+          onAction: actionHandler,
         }}
         newItemButton={{
           label: 'New Item',
