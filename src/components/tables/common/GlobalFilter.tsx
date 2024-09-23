@@ -25,7 +25,7 @@ export function GlobalFilter({ globalFilter = '', setGlobalFilter, gotoPage, loc
   }
 
   return (
-    <TextField
+    (<TextField
       variant="outlined"
       size="small"
       style={{ width: 200, marginRight: 15 }}
@@ -33,20 +33,22 @@ export function GlobalFilter({ globalFilter = '', setGlobalFilter, gotoPage, loc
       name={'search'}
       placeholder={localeObj}
       onChange={(e) => editGlobalFIlter(e.target.value)}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon style={{ marginRight: 10 }} />
-          </InputAdornment>
-        ),
-        endAdornment: !!globalFilter ? (
-          <InputAdornment position="end">
-            <IconButton edge="end" size="small" onClick={() => clearGlobalFilter()}>
-              <Clear />
-            </IconButton>
-          </InputAdornment>
-        ) : null,
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon style={{ marginRight: 10 }} />
+            </InputAdornment>
+          ),
+          endAdornment: !!globalFilter ? (
+            <InputAdornment position="end">
+              <IconButton edge="end" size="small" onClick={() => clearGlobalFilter()}>
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        }
       }}
-    />
+    />)
   );
 }

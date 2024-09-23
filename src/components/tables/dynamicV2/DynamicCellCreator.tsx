@@ -22,20 +22,17 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
 
   const cellValue = getNestedProperty(row, column.accessor);
 
-  switch (true) {
+  const CustomCell = 'Cell' in column && column.Cell !== undefined
+    ? column.Cell
+    : undefined;
 
-    case 'Cell' in column && column.Cell !== undefined:
-      const CustomCell = column.Cell;
-      return (
-        <TableCell
-          sx={{ width: 160 }}
-        >
-          <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
-        </TableCell>
-      );
-
-    default:
-      return <TableCell style={{ width: 160 }}>{cellValue}</TableCell>;
-  }
+  return (
+    <TableCell sx={{ width: 160 }}>
+      {CustomCell
+        ? <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
+        : <>{cellValue}</>
+      }
+    </TableCell>
+  );
 
 }

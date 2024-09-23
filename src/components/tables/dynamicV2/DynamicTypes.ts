@@ -121,6 +121,7 @@ export interface TableInfoProps<T> {
 export interface FetchInfoProps {
   fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
   isFetching: boolean;
+  prefetchNextPage?: boolean;
 }
 
 /**

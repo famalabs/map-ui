@@ -43,6 +43,15 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
       },
       { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
       { accessor: 'description', label: 'Description', visible: true },
+      { accessor: 'description2', label: 'Description', visible: true },
+      { accessor: 'description3', label: 'Description', visible: true },
+      { accessor: 'description4', label: 'Description', visible: true },
+      { accessor: 'description5', label: 'Description', visible: true },
+      { accessor: 'description6', label: 'Description', visible: true },
+      { accessor: 'description7', label: 'Description', visible: true },
+      { accessor: 'description8', label: 'Description', visible: true },
+      { accessor: 'description9', label: 'Description', visible: true },
+      { accessor: 'description10', label: 'Description', visible: true },
       /* {
         accessor: 'status', label: 'Status',
         filterOptions: {
@@ -69,14 +78,14 @@ export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
 
     try {
 
-      console.log('Active Filters: ', filters);
+      console.log('Fetching: ', limit, filters, firstLoad);
 
       setIsFetching(true);
 
-      const rowCount = await generateAsyncCount(10);
+      const rowCount = await generateAsyncCount(20);
       setExpectedRowCount(rowCount);
 
-      const itemData = await generateAsyncData(5);
+      const itemData = await generateAsyncData(limit);
       console.log('Data fetched:', itemData);
 
       firstLoad

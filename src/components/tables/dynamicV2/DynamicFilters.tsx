@@ -1,7 +1,7 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,7 +24,9 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
 
   return (
-    <Grid2 sm={'auto'} minWidth={200} p={2}>
+    (<Grid minWidth={200} p={2} size={{
+      sm: 'auto'
+    }}>
       <TextField
         fullWidth
         size='small'
@@ -33,23 +35,25 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
         onChange={(event) => updateFilters(event.target.value, column, setActiveFilters)}
         value={loadedValue ?? ''}
         aria-label='filter-text'
-        InputProps={{
-          startAdornment: showSearchIcon && <SearchIcon />,
-          endAdornment: (
-            <IconButton
-              size='small'
-              onClick={() => {
-                updateFilters('', column, setActiveFilters);
-              }}
-              sx={{ visibility: loadedValue ? 'visible' : 'hidden' }}
-            >
-              <CloseIcon fontSize='small' />
-            </IconButton>
-          )
+        slotProps={{
+          input: {
+            startAdornment: showSearchIcon && <SearchIcon />,
+            endAdornment: (
+              <IconButton
+                size='small'
+                onClick={() => {
+                  updateFilters('', column, setActiveFilters);
+                }}
+                sx={{ visibility: loadedValue ? 'visible' : 'hidden' }}
+              >
+                <CloseIcon fontSize='small' />
+              </IconButton>
+            )
+          }
         }}
       />
-    </Grid2>
-  )
+    </Grid>)
+  );
 }
 
 /* ---------- Select Filter ---------- */
@@ -68,7 +72,9 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
   const foundValue = column.filterOptions?.options.find(option => option.id === loadedValue);
 
   return (
-    <Grid2 sm={'auto'} minWidth={200} p={2}>
+    (<Grid minWidth={200} p={2} size={{
+      sm: 'auto'
+    }}>
       <Autocomplete
         size='small'
         blurOnSelect
@@ -88,7 +94,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
         }
         aria-label='filter-select'
       />
-    </Grid2>
+    </Grid>)
   );
 }
 
@@ -136,13 +142,15 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   const { columns, activeFilters, setActiveFilters } = props;
 
   return (
-    <Grid2
+    (<Grid
       container
-      sm={8} md={8}
       direction="row"
       justifyContent="flex-start"
       alignItems="center"
-    >
+      size={{
+        sm: 8,
+        md: 8
+      }}>
       {columns.map(column => {
         const filterableColumnsCount = columns.filter(col => col.filterOptions).length;
 
@@ -174,6 +182,6 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
             return null;
         }
       })}
-    </Grid2>
+    </Grid>)
   );
 }

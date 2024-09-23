@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import Grid2 from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import React from 'react';
 import { CardItemProps } from './DynamicCardsTypes';
 
@@ -105,39 +105,43 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
 
   const skeletonItems = isFetching ? (rowsPerPage - currentPageRows.length) : 0;
 
-  return (
-    <>
-      <Grid2
-        container
-        justifyContent="center"
-        alignItems="center"
-        spacing={{ sm: 2, md: 3, lg: 4 }}
-      >
+  return (<>
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      spacing={{ sm: 2, md: 3, lg: 4 }}
+    >
 
-        {currentPageRows.map((row) => (
-          <Grid2
-            sm={12} md={6} lg={4}
-            onClick={() => onCardClick(row)}
-          >
-            <CardItem
-              key={row.id}
-              image={image}
-              titleAccessor={getNestedProperty(row, titleAccessor)}
-              descAccessor={getNestedProperty(row, descAccessor)}
-              onCardClick={() => onCardClick(row)}
-            />
-          </Grid2>
-        ))}
+      {currentPageRows.map((row) => (
+        <Grid
+          onClick={() => onCardClick(row)}
+          size={{
+            sm: 12,
+            md: 6,
+            lg: 4
+          }}>
+          <CardItem
+            key={row.id}
+            image={image}
+            titleAccessor={getNestedProperty(row, titleAccessor)}
+            descAccessor={getNestedProperty(row, descAccessor)}
+            onCardClick={() => onCardClick(row)}
+          />
+        </Grid>
+      ))}
 
-        {Array.from({ length: skeletonItems }, (_, index) => (
-          <Grid2
-            sm={12} md={6} lg={4}
-          >
-            <SkeletonCard key={index} />
-          </Grid2>
-        ))}
+      {Array.from({ length: skeletonItems }, (_, index) => (
+        <Grid
+          size={{
+            sm: 12,
+            md: 6,
+            lg: 4
+          }}>
+          <SkeletonCard key={index} />
+        </Grid>
+      ))}
 
-      </Grid2>
-    </>
-  );
+    </Grid>
+  </>);
 }

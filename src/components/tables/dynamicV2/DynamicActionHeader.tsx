@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { ActionEvent, ActionEventItem, ActiveFilter, CustomButton, DynColumnsDef, i18nStrings } from './DynamicTypes';
 
@@ -138,34 +138,39 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
   if (quickSelectedRows.length === 0) return null;
 
   return (
-    <Grid2
+    (<Grid
       container
       direction="row"
-      sm={12} md={12}
-    >
-      <Grid2
+      size={{
+        sm: 12,
+        md: 12
+      }}>
+      <Grid
         container
-        sm={6} md={6}
         justifyContent='flex-start'
         alignItems='center'
         p={1}
-      >
+        size={{
+          sm: 6,
+          md: 6
+        }}>
         <Typography fontSize={14} marginInlineStart={1}>
           {`${localeStr ? localeStr.itemsSelected : selectedLocale.itemsSelected} ${quickSelectedRows.length}`}
         </Typography>
-      </Grid2>
-
+      </Grid>
       {/* Action Buttons */}
-      <Grid2
+      <Grid
         container
-        sm={6} md={6}
         justifyContent='flex-end'
         alignItems='center'
         p={1}
-      >
+        size={{
+          sm: 6,
+          md: 6
+        }}>
 
         {actionList && actionList.map((action, index) => (
-          <Grid2 key={index} p={1} >
+          <Grid key={index} p={1} >
 
             {action.isIconButton
 
@@ -189,13 +194,12 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
               </Button>
             }
 
-          </Grid2>
+          </Grid>
         ))}
 
-      </Grid2>
-
-    </Grid2>
-  )
+      </Grid>
+    </Grid>)
+  );
 
 }
 
@@ -257,62 +261,60 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     quickActions && setQuickSelectedRows([]);
   }
 
-  return (
-    <>
-      <Grid2
-        container
-        sm={4} md={4}
-        direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
-        p={1}
-      >
-        {defineActions.actionList?.length > 0 &&
-          <Grid2 p={0.5}>
-            <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
-              <IconButton
-                color={quickActions ? 'secondary' : 'primary'}
-                onClick={toggleQuickActions}
-              >
-                <ElectricBoltIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid2>
-        }
+  return (<>
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-end"
+      alignItems="center"
+      p={1}
+      size={{
+        sm: 4,
+        md: 4
+      }}>
+      {defineActions.actionList?.length > 0 &&
+        <Grid p={0.5}>
+          <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
+            <IconButton
+              color={quickActions ? 'secondary' : 'primary'}
+              onClick={toggleQuickActions}
+            >
+              <ElectricBoltIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      }
 
-        {showVisibleColumnsButton &&
-          <Grid2 p={0.5}>
-            <ColumnVisibilityPopper
-              tableName={tableName}
-              visibleColumns={visibleColumns}
-              setVisibleColumns={setVisibleColumns}
-              selectedLocale={selectedLocale}
-              localeStr={localeStr}
-            />
-          </Grid2>
-        }
+      {showVisibleColumnsButton &&
+        <Grid p={0.5}>
+          <ColumnVisibilityPopper
+            tableName={tableName}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+            selectedLocale={selectedLocale}
+            localeStr={localeStr}
+          />
+        </Grid>
+      }
 
-        {newItemButton &&
-          <Grid2 p={0.5}>
-            <NewItemButton
-              label={newItemButton.label}
-              icon={newItemButton.icon}
-              buttonClick={newItemButton.buttonClick}
-            />
-          </Grid2>
-        }
+      {newItemButton &&
+        <Grid p={0.5}>
+          <NewItemButton
+            label={newItemButton.label}
+            icon={newItemButton.icon}
+            buttonClick={newItemButton.buttonClick}
+          />
+        </Grid>
+      }
 
-      </Grid2>
-
-      <ActionButtons
-        fetchData={fetchData}
-        quickSelectedRows={quickSelectedRows}
-        defineActions={defineActions}
-        activeFilters={activeFilters}
-        selectedLocale={selectedLocale}
-        localeStr={localeStr}
-      />
-
-    </>
-  )
+    </Grid>
+    <ActionButtons
+      fetchData={fetchData}
+      quickSelectedRows={quickSelectedRows}
+      defineActions={defineActions}
+      activeFilters={activeFilters}
+      selectedLocale={selectedLocale}
+      localeStr={localeStr}
+    />
+  </>);
 }

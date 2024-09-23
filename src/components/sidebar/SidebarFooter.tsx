@@ -12,7 +12,7 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import Grid from "@mui/material/Grid2";
 import React from "react";
 import { MenuItems } from "../common/MenuItems";
 import { SidebarItem } from "./SidebarLayout";
@@ -62,97 +62,94 @@ export function SidebarFooter(props: SidebarFooterProps) {
   const isPopupOpen = Boolean(anchorElMenu);
   const id = isPopupOpen ? "popover" : undefined;
 
-  return (
-    <>
-      <List>
-        <ListItem
-          component={itemsList.length > 0 ? ListItemButton : 'div'}
-          aria-describedby={id}
-          onClick={(event) => handleClick(event)}
-          sx={{ paddingInline: '12px', paddingRight: '32px' }}
-        >
-          <ListItemAvatar>
-            <Avatar
-              alt={avatar.username || ''}
-              src={avatar.imageSrc || ''}
-            />
-          </ListItemAvatar>
-          <ListItemText primary={
-            <Typography
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {avatar.username || 'User'}
-            </Typography>
-          }
+  return (<>
+    <List>
+      <ListItem
+        component={itemsList.length > 0 ? ListItemButton : 'div'}
+        aria-describedby={id}
+        onClick={(event) => handleClick(event)}
+        sx={{ paddingInline: '12px', paddingRight: '32px' }}
+      >
+        <ListItemAvatar>
+          <Avatar
+            alt={avatar.username || ''}
+            src={avatar.imageSrc || ''}
           />
-        </ListItem>
-        <ListItemSecondaryAction>
-          <IconButton
-            edge='end'
-            color='inherit'
-            disableRipple
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+        </ListItemAvatar>
+        <ListItemText primary={
+          <Typography
             sx={{
-              position: 'absolute',
-              backgroundColor: theme.palette.background.paper,
-              border: '1px solid rgba(0, 0, 0, 0.12)',
-              borderRadius: '8px',
-              padding: 0,
-              right: sidebarOpen ? '5px' : '-15px',
-              bottom: '-10px'
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
             }}
           >
-            {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
-          </IconButton>
-        </ListItemSecondaryAction>
-      </List>
-
-      {itemsList.length > 0 &&
-        <Popover
-          id={id}
-          open={isPopupOpen}
-          anchorEl={anchorElMenu}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
+            {avatar.username || 'User'}
+          </Typography>
+        }
+        />
+      </ListItem>
+      <ListItemSecondaryAction>
+        <IconButton
+          edge='end'
+          color='inherit'
+          disableRipple
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          sx={{
+            position: 'absolute',
+            backgroundColor: theme.palette.background.paper,
+            border: '1px solid rgba(0, 0, 0, 0.12)',
+            borderRadius: '8px',
+            padding: 0,
+            right: sidebarOpen ? '5px' : '-15px',
+            bottom: '-10px'
           }}
-          transformOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          elevation={6}
         >
-          <Box
-            sx={{ width: 260 }}
+          {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
+        </IconButton>
+      </ListItemSecondaryAction>
+    </List>
+    {itemsList.length > 0 &&
+      <Popover
+        id={id}
+        open={isPopupOpen}
+        anchorEl={anchorElMenu}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        elevation={6}
+      >
+        <Box
+          sx={{ width: 260 }}
+        >
+          <Grid
+            container
+            size={12}
           >
-            <Grid2
-              container
-              xs={12}
-            >
-              <Grid2 xs={12}>
-                <MenuItems
-                  displayItems={itemsList}
-                  listType="footer"
-                  onSelectItem={(...args) => {
-                    onSelectItem(...args);
-                    handleClose();
-                  }}
-                  listProps={listProps}
-                  listStyle={{
-                    margin: 'auto 0',
-                    ...listStyle,
-                  }}
-                />
-              </Grid2>
-            </Grid2>
-          </Box>
-        </Popover>
-      }
-    </>
-  );
+            <Grid size={12}>
+              <MenuItems
+                displayItems={itemsList}
+                listType="footer"
+                onSelectItem={(...args) => {
+                  onSelectItem(...args);
+                  handleClose();
+                }}
+                listProps={listProps}
+                listStyle={{
+                  margin: 'auto 0',
+                  ...listStyle,
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </Popover>
+    }
+  </>);
 }

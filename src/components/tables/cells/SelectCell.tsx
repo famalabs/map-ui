@@ -1,5 +1,5 @@
 import React from "react";
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import Chip, { ChipOwnProps } from "@mui/material/Chip";
 
 export interface SelectCellOption {
@@ -12,9 +12,9 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
   ({ cellValue }) => {
 
     if (typeof cellValue === 'undefined' || cellValue === null) {
-      <Grid2 container>
+      <Grid container>
         {''}
-      </Grid2>
+      </Grid>
     }
 
     const chipColorMap = {
@@ -28,7 +28,7 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
     const customColor = cellData && cellData.type ? chipColorMap[cellData.type] : chipColorMap.default;
 
     return (
-      <Grid2 container>
+      <Grid container>
         <Chip
           size="small"
           label={cellData ? cellData.label : ''}
@@ -37,6 +37,6 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
             color: customColor,
           }}
         />
-      </Grid2>
+      </Grid>
     );
   };

@@ -2,7 +2,7 @@ import Table from '@mui/material/Table';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import React, { useEffect, useRef, useState } from 'react';
 import qs from 'qs';
 import { CardsSimpleFilters } from './CardsSimpleFilters';
@@ -171,7 +171,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
   return (
     <>
 
-      <Grid2 container>
+      <Grid container>
 
         {/* Filters Header */}
         <CardsSimpleFilters
@@ -180,7 +180,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
           setActiveFilters={setActiveFilters}
         />
 
-      </Grid2>
+      </Grid>
 
       <Table sx={{ minWidth: 500 }}>
 

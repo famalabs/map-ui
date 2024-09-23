@@ -71,7 +71,7 @@ export function AutoSelect<T extends string | string[]>({
   );
 
   return (
-    <Autocomplete
+    (<Autocomplete
       id={null}
       options={builtOptions}
       sx={{
@@ -101,14 +101,16 @@ export function AutoSelect<T extends string | string[]>({
           label={title}
           variant="outlined"
           {...textfieldProps}
-          inputProps={{
-            ...params.inputProps,
-            autoComplete: 'new-password', // disable autocomplete and autofill
-            ...textfieldProps?.inputProps,
+          slotProps={{
+            htmlInput: {
+              ...params.inputProps,
+              autoComplete: 'new-password', // disable autocomplete and autofill
+              ...textfieldProps?.inputProps,
+            }
           }}
         />
       )}
       {...autocompleteProps}
-    />
+    />)
   );
 }

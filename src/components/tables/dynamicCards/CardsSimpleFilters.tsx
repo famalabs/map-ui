@@ -1,7 +1,7 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
-import Grid2 from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import React, { Dispatch, SetStateAction } from 'react';
 import { ActiveCardFilter, CardFilterDef } from './DynamicCardsTypes';
 
@@ -20,7 +20,7 @@ function StringFilterForm(props: StringFilterFormProps) {
   const loadedValue = activeFilters?.find(filter => filter.filterName === filtersDef.accessor)?.filterValue ?? null;
 
   return (
-    <Grid2 mr={2} marginY={1}>
+    <Grid mr={2} marginY={1}>
       <TextField
         fullWidth
         size='small'
@@ -29,7 +29,7 @@ function StringFilterForm(props: StringFilterFormProps) {
         onChange={(event) => updateFilters(event.target.value, filtersDef, setActiveFilters)}
         value={loadedValue ?? ''}
       />
-    </Grid2>
+    </Grid>
   )
 }
 
@@ -49,7 +49,7 @@ function SelectFilterForm(props: SelectFilterFormProps) {
   const foundValue = filtersDef.SelectCell?.find(option => option.id === loadedValue);
 
   return (
-    <Grid2 minWidth={200} mr={2} marginY={1}>
+    <Grid minWidth={200} mr={2} marginY={1}>
       <Autocomplete
         fullWidth
         size='small'
@@ -68,7 +68,7 @@ function SelectFilterForm(props: SelectFilterFormProps) {
             />)
         }
       />
-    </Grid2>
+    </Grid>
   );
 }
 
@@ -138,15 +138,17 @@ export function CardsSimpleFilters(props: CardsSimpleFiltersProps) {
   }
 
   return (
-    <Grid2
+    (<Grid
       container
-      md={12}
       direction="row"
       justifyContent="flex-start"
       alignItems="center"
-      p={2} pl={0}
+      p={2}
+      pl={0} size={{
+      md: 12
+    }}
     >
       {filtersDef.map(filter => filterTypeMap(filter))}
-    </Grid2>
-  )
+    </Grid>)
+  );
 }

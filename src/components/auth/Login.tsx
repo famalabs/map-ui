@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { ValidTextField, useValidatorState } from '../validators';
 import { AuthContainer, AuthForm, EmailTextField, SubmitButton } from './common';
 
@@ -40,7 +40,7 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
   const { allValid, setValid } = useValidatorState(['email', 'psw']);
 
   return (
-    <AuthContainer title={title} error={error}>
+    (<AuthContainer title={title} error={error}>
       {/*onEmailVerificationClick && error && (
         <Grid item>
           <ButtonLoading
@@ -52,7 +52,6 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
           />
         </Grid>
       )*/}
-
       <AuthForm onSubmit={() => onSubmit(email, psw)}>
         <EmailTextField
           value={email}
@@ -75,16 +74,15 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
 
         <SubmitButton loading={loading} validForm={allValid} label={submitButtonText} />
       </AuthForm>
-
       <Grid container>
-        <Grid item xs>
+        <Grid size="grow">
           {onForgotPswClick && (
             <Link onClick={onForgotPswClick} component="button" color="secondary">
               {forgotPswText}
             </Link>
           )}
         </Grid>
-        <Grid item>
+        <Grid>
           {onSignupClick && (
             <Link onClick={onSignupClick} component="button" color="secondary">
               {signupText}
@@ -92,6 +90,6 @@ export const LoginForm: React.VFC<LoginFormProps> = ({
           )}
         </Grid>
       </Grid>
-    </AuthContainer>
+    </AuthContainer>)
   );
 };

@@ -57,27 +57,27 @@ export function InputDate({
   }, [value, validate, setValid]);
 
   return (
-        // <div>
-        //   {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
-        //   <MobileDatePicker
-        //       label={label}
-        //       inputFormat="YYYYY-MM-DD"
-        //       // inputFormat="MM/DD/YYYY"
-        //       value={value}
-        //       onChange={((value:boolean)=>console.log(value))}
-        //       renderInput={(params) => <TextField {...params} helperText={showError ? error : ''}/>}
-        //   />
-        // </div>
-        <InputString
-            nameid={nameid}
-            title={title}
-            label={label}
-            value={value}
-            setValue={setValue}
-            required={required}
-            // required={item.options.required}
-            emptyMessage={'empty message'}
-            showError={showError}
-            />
+    // <div>
+    //   {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+    //   <MobileDatePicker
+    //       label={label}
+    //       inputFormat="YYYYY-MM-DD"
+    //       // inputFormat="MM/DD/YYYY"
+    //       value={value}
+    //       onChange={((value:boolean)=>console.log(value))}
+    //       renderInput={(params) => <TextField {...params} helperText={showError ? error : ''}/>}
+    //   />
+    // </div>
+    (<InputString
+        nameid={nameid}
+        title={title}
+        label={label}
+        value={value}
+        setValue={setValue}
+        required={required}
+        // required={item.options.required}
+        emptyMessage={'empty message'}
+        showError={showError}
+        />)
   );
 }

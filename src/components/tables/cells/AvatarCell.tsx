@@ -1,6 +1,6 @@
 import React from 'react';
 import Avatar, { AvatarProps } from '@mui/material/Avatar';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import Grid from '@mui/material/Grid2';
 
 export const AvatarCell = (
   avatarOnly: boolean = false,
@@ -14,36 +14,37 @@ export const AvatarCell = (
   }
 
   return (
-    <Grid2
+    <Grid
       container
       justifyContent='center'
       alignItems='center'
     >
-      <Grid2
+      <Grid
         container
-        xs={2}
+        size={2}
         justifyContent='flex-start'
         alignItems='center'
       >
         <Avatar
           component={'div'}
-          style={{ marginRight: 10 }}
           onClick={clickAction && onAvatarClick}
+          sx={{ marginRight: 10 }}
           {...avatarProps}
         >
           {avatarProps && avatarProps.children}
         </Avatar>
-      </Grid2>
+      </Grid>
 
-      <Grid2
+      <Grid
         container
-        xs={10}
+        size={10}
         justifyContent='flex-start'
         alignItems='center'
         px={1}
       >
         {!avatarOnly ? cellValue : null}
-      </Grid2>
-    </Grid2>
+      </Grid>
+
+    </Grid>
   );
 };
