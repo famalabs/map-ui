@@ -11,6 +11,7 @@ export interface MenuItemsProps<T extends Record<string, any>> {
   listType: MenuID;
   displayItems: T[];
   onSelectItem: (itemID: MenuID, title: string, link: string) => void;
+  onHoverItem?: (itemID: MenuID, title: string, link: string) => Promise<void> | void;
   selectedLink?: string;
   listProps?: ListOwnProps;
   listStyle?: Record<string, any>;
@@ -19,7 +20,16 @@ export interface MenuItemsProps<T extends Record<string, any>> {
 
 export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T>) {
 
-  const { displayItems, listType, onSelectItem, selectedLink, listProps, listStyle, iconOnly = false } = props;
+  const { 
+    displayItems, 
+    listType, 
+    onSelectItem, 
+    onHoverItem,
+    selectedLink, 
+    listProps, 
+    listStyle, 
+    iconOnly = false 
+  } = props;
 
   const theme = useTheme();
 
@@ -34,6 +44,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
           >
             <ListItemButton
               onClick={() => onSelectItem(listType, item.title, item.link)}
+              onMouseEnter={async () => onHoverItem && await onHoverItem(listType, item.title, item.link)}
               sx={{
                 ...(selectedLink === item.link && {
                   color: (theme) => theme.palette.primary.main,

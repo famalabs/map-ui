@@ -83,6 +83,7 @@ export const SidebarTemplate: Story<SidebarLayoutProps> = (args) => {
           miniLogo: ''
         }}
         onSelectMenuItem={(itemID, title, link) => console.log(itemID, title, link)}
+        onHoverMenuItem={(itemID, title, link) => console.log(itemID, title, link)}
         selectedLink="/dashboard"
         listProps={{
           dense: true,

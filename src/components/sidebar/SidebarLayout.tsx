@@ -192,6 +192,7 @@ export interface SidebarLayoutProps {
   mainLogo?: SidebarLogo;
   brandLogo?: SidebarLogo;
   onSelectMenuItem: (itemID: string, title: string, link: string) => void;
+  onHoverMenuItem?: (itemID: string, title: string, link: string) => Promise<void> | void;
   selectedLink?: string;
   footerData?: FooterData;
   listProps?: ListOwnProps;
@@ -207,6 +208,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
     mainLogo,
     brandLogo,
     onSelectMenuItem,
+    onHoverMenuItem,
     selectedLink,
     footerData,
     listProps,
@@ -276,6 +278,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
             onSelectMenuItem(...args);
             if (isSmallScreen) setSidebarOpen(false);
           }}
+          onHoverItem={onHoverMenuItem}
           selectedLink={selectedLink}
           listProps={listProps}
           listStyle={{
@@ -313,6 +316,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
             footerData={footerData}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
+            onHoverItem={onHoverMenuItem}
             onSelectItem={(...args) => {
               onSelectMenuItem(...args);
               if (isSmallScreen) setSidebarOpen(false);

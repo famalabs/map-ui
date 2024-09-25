@@ -8,7 +8,6 @@ import List, { ListOwnProps } from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import ListItemText from "@mui/material/ListItemText";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
@@ -31,6 +30,7 @@ export interface SidebarFooterProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   onSelectItem: (itemID: string, title: string, link: string) => void;
+  onHoverItem?: (itemID: string, title: string, link: string) => Promise<void> | void;
 }
 
 export function SidebarFooter(props: SidebarFooterProps) {
@@ -45,6 +45,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
     sidebarOpen,
     setSidebarOpen,
     onSelectItem,
+    onHoverItem,
   } = props;
 
   const theme = useTheme();
@@ -62,12 +63,36 @@ export function SidebarFooter(props: SidebarFooterProps) {
   const isPopupOpen = Boolean(anchorElMenu);
   const id = isPopupOpen ? "popover" : undefined;
 
+
   return (<>
     <List>
       <ListItem
         component={itemsList.length > 0 ? ListItemButton : 'div'}
         aria-describedby={id}
         onClick={(event) => handleClick(event)}
+        disableRipple
+        secondaryAction={
+          <IconButton
+            edge='end'
+            color='inherit'
+            disableRipple
+            onClick={(e) => {
+              e.stopPropagation();
+              setSidebarOpen(!sidebarOpen);
+            }}
+            sx={{
+              position: 'absolute',
+              backgroundColor: theme.palette.background.paper,
+              border: '1px solid rgba(0, 0, 0, 0.12)',
+              borderRadius: '8px',
+              padding: 0,
+              right: sidebarOpen ? '5px' : '-15px',
+              bottom: '-10px'
+            }}
+          >
+            {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
+          </IconButton>
+        }
         sx={{ paddingInline: '12px', paddingRight: '32px' }}
       >
         <ListItemAvatar>
@@ -89,25 +114,6 @@ export function SidebarFooter(props: SidebarFooterProps) {
         }
         />
       </ListItem>
-      <ListItemSecondaryAction>
-        <IconButton
-          edge='end'
-          color='inherit'
-          disableRipple
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          sx={{
-            position: 'absolute',
-            backgroundColor: theme.palette.background.paper,
-            border: '1px solid rgba(0, 0, 0, 0.12)',
-            borderRadius: '8px',
-            padding: 0,
-            right: sidebarOpen ? '5px' : '-15px',
-            bottom: '-10px'
-          }}
-        >
-          {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
-        </IconButton>
-      </ListItemSecondaryAction>
     </List>
     {itemsList.length > 0 &&
       <Popover
@@ -140,6 +146,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
                   onSelectItem(...args);
                   handleClose();
                 }}
+                onHoverItem={onHoverItem}
                 listProps={listProps}
                 listStyle={{
                   margin: 'auto 0',
