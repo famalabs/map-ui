@@ -12,13 +12,13 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
   const { row, column } = props;
 
   /* Extract potential nested objects values */
-  const getNestedProperty = (row: T, path: string,) => {
+  const getNestedProperty = (row: T, path: string): string => {
     return path.split('.').reduce((nestedObject, property) => {
       return (nestedObject && property in nestedObject)
         ? nestedObject[property]
         : '';
     }, row) ?? '';
-  };
+  }
 
   const cellValue = getNestedProperty(row, column.accessor);
 

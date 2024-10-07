@@ -2,8 +2,8 @@ import React from 'react';
 import Link, { LinkProps } from '@mui/material/Link';
 
 export const LinkCell = (
-  clickAction: (value) => void,
-  label: (value) => string,
+  clickAction: (value: unknown) => void,
+  label: (value: string) => string,
   linkProps?: Omit<LinkProps, 'onClick' | 'href' | 'ref' | 'type'>
 ) => ({ cellValue } : { cellValue: string }) => {
   

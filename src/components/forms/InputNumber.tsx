@@ -10,7 +10,7 @@ export interface InputNumberProps
   nameid: string;
   title: string;
   value: number | null;
-  setValue: (text: number) => void;
+  setValue: (value: number | null) => void;
   setValid?: (valid: boolean) => void;
   emptyMessage?: string;
   defaultErrorMessage?: string;
@@ -21,7 +21,7 @@ export interface InputNumberProps
 
 const emptyValidators: any = [];
 
-export const InputNumber: React.VFC<InputNumberProps> = ({
+export const InputNumber: React.FC<InputNumberProps> = ({
   nameid,
   title,
   value,
@@ -39,15 +39,16 @@ export const InputNumber: React.VFC<InputNumberProps> = ({
   showError = false,
   ...props
 }) => {
-  const [error, setError] = React.useState(required ? emptyMessage : '');
-  const [showErr, setShowErr] = React.useState(false);
+
+  const [error, setError] = React.useState<string>(required ? emptyMessage : '');
+  const [showErr, setShowErr] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback(
-    (input: number): boolean => {
-      if (required && input == null) {
+  const validate = React.useCallback((input: number | null): boolean => {
+      if (required && input === null) {
         setError(emptyMessage);
         return false;
       }
@@ -70,14 +71,13 @@ export const InputNumber: React.VFC<InputNumberProps> = ({
   }, [value, validate, setValid]);
 
   return (
-    <div>
+    <>
       {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}
         fullWidth={fullWidth}
         id={nameid}
-        // label={label ?? nameid.toUpperCase()}
         label={label}
         name={nameid}
         required={required}
@@ -92,6 +92,6 @@ export const InputNumber: React.VFC<InputNumberProps> = ({
         error={showErr && !!error}
         helperText={showErr ? error : ''}
       />
-    </div>
+    </>
   );
 };

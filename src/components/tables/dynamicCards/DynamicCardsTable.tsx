@@ -102,11 +102,11 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
   /* Fetch event effects  */
 
   useEffect(() => {
-    (page !== 0) && fetchEvent();
+    if (page !== 0) fetchEvent();
   }, [page]);
 
   useEffect(() => {
-    hasLoaded && fetchEvent(true);
+    if (hasLoaded) fetchEvent(true);
   }, [rowsPerPage]);
 
   /* Parse filter query */
@@ -135,7 +135,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
 
     debounceTimeoutRef.current = setTimeout(() => {
 
-      hasLoaded && parseFilterQuery();
+      if (hasLoaded) parseFilterQuery();
 
       setPage(0);
       setHighestFetchedPage(-1);

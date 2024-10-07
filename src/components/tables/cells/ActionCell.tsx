@@ -9,7 +9,7 @@ interface ExtIconButtonProps extends Omit<IconButtonProps, 'onClick'> {
 }
 
 export const ActionCell = (
-  clickAction: (value) => void,
+  clickAction: (value: unknown) => void,
   buttonProps: ExtButtonProps | ExtIconButtonProps
 ) => ({ cellValue }: { cellValue: string }) => {
 

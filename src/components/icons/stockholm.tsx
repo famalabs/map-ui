@@ -1,4 +1,4 @@
-import { SvgIcon } from "@mui/material";
+import SvgIcon from "@mui/material/SvgIcon";
 import React from "react";
 
 export function MenuIcon(props) {

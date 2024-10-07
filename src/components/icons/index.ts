@@ -1,1 +1,1 @@
-export * from './stockholm'
+export { HomeIcon, MenuIcon } from './stockholm'

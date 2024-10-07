@@ -1,5 +1,5 @@
 
-import { fireEvent, getByLabelText, getByText, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables/dynamicV2';
 import { generateComplexData } from '../../stories/tables/mockdata';
@@ -31,7 +31,7 @@ const columns =
       ]),
       visible: true
     },
-  ] as DynColumnsDef[];
+  ] as DynColumnsDef<any>[];
 
 const mockProps = {
   tableInfo: {

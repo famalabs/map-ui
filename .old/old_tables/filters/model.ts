@@ -1,6 +1,6 @@
 import React from 'react';
 import { FilterType } from 'react-table';
-import { AutoSelectOption } from '../../simple';
+import { AutoSelectOption } from '../../../../.old/simple';
 
 export type DataType = Exclude<any, undefined>;
 export interface ConditionType<T, D> {

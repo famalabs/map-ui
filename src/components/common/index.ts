@@ -1,2 +1,2 @@
-export * from './MainDiv';
-export * from './MenuItems';
+export { MainDiv, IProps } from './MainDiv';
+export { MenuID, MenuItems, MenuItemsProps } from './MenuItems';

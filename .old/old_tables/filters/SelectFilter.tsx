@@ -1,7 +1,7 @@
 /* tslint:disable */
 import React from 'react';
 import FilterModel from './model';
-import { AutoSelect, AutoSelectOption } from '../../simple';
+import { AutoSelect, AutoSelectOption } from '../../../../.old/simple';
 
 export function SelectFilter(options: string[] | AutoSelectOption[]) {
   return new FilterModel<string[], string>(

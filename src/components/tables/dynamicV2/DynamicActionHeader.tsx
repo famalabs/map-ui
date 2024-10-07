@@ -108,7 +108,7 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
   )
 }
 
-interface ActionButtonsProps<T> {
+interface ActionButtonsProps<T extends Record<string, any>> {
   fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
@@ -131,7 +131,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
   const { actionList, onAction } = defineActions;
 
   const handleAction = async (action: ActionEventItem, quickSelectedRows: T[], activeFilters: ActiveFilter[]) => {
-    onAction && onAction(action.type, quickSelectedRows, activeFilters);
+    onAction?.(action.type, quickSelectedRows, activeFilters);
     if (action.refetch) await fetchData(quickSelectedRows.length, activeFilters, false);
   }
 
@@ -220,7 +220,7 @@ export function NewItemButton(props: CustomButton) {
   )
 }
 
-export interface DynamicActionsProps<T> {
+export interface DynamicActionsProps<T extends Record<string, any>> {
   tableName: string;
   fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>
   visibleColumns: DynColumnsDef<T>[];
@@ -258,7 +258,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
 
   const toggleQuickActions = () => {
     setQuickActions(!quickActions);
-    quickActions && setQuickSelectedRows([]);
+    if (quickActions) setQuickSelectedRows([]);
   }
 
   return (<>

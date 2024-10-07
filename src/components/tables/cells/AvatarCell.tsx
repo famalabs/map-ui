@@ -5,12 +5,12 @@ import Grid from '@mui/material/Grid2';
 export const AvatarCell = (
   avatarOnly: boolean = false,
   avatarProps?: AvatarProps,
-  clickAction?: (value) => void,
+  clickAction?: (value: unknown) => void,
 ) => ({ cellValue }: { cellValue: string }) => {
 
   const onAvatarClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
-    clickAction(cellValue);
+    clickAction?.(cellValue);
   }
 
   return (

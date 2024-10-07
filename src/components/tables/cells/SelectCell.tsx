@@ -1,15 +1,15 @@
 import React from "react";
 import Grid from "@mui/material/Grid2";
-import Chip, { ChipOwnProps } from "@mui/material/Chip";
+import Chip from "@mui/material/Chip";
 
 export interface SelectCellOption {
   id: string | number | boolean;
-  type: ChipOwnProps['color'];
+  type: 'warning' | 'success' | 'error' | 'default';
   label: string;
 }
 
 export const SelectCell = (selectOptions: SelectCellOption[]) =>
-  ({ cellValue }) => {
+  ({ cellValue }: { cellValue: string }) => {
 
     if (typeof cellValue === 'undefined' || cellValue === null) {
       <Grid container>

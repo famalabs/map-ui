@@ -15,6 +15,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types", "src/types"],
     "baseUrl": ".",
     "paths": {
       "@src": ["src"],
@@ -27,6 +28,6 @@
       "@stories/*": ["stories/*"]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "tests", "stories", "src/**/*.stories.tsx", ".old"]
+  "include": ["src", ".old/simple"],
+  "exclude": ["node_modules", "dist", "tests", "stories", "**/*.stories.tsx", "**/*.test.tsx", ".old", ".storybook"]
 }

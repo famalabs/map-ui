@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { pathsToModuleNameMapper } = require('ts-jest');
 const paths = require('./tsconfig.json').compilerOptions.paths;
 
 module.exports = {
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   moduleDirectories: ['node_modules'],
-
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '\\.(css|less|scss)$': 'identity-obj-proxy',

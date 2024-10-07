@@ -10,10 +10,10 @@ const defaultProps: Partial<any> = {
 };
 
 export type DatePickerProps = MuiDatePickerProps<any>;
+
 export const DatePicker: React.FC<DatePickerProps> = ({ ...props }) => (
   <MuiDatePicker
     {...defaultProps}
     {...props}
   />
 );
-

@@ -139,7 +139,7 @@ export interface QueryInfoProps {
   * @param {ActionEventItem[]} actionList - The list of actions.
   * @param {ActionEvent<Record<string, any>>} onAction - The function to be called when an action is clicked.
  */
-export interface DefineActionsProps<T> {
+export interface DefineActionsProps<T extends Record<string, any>> {
   actionList: ActionEventItem[];
   onAction: ActionEvent<T>;
 }

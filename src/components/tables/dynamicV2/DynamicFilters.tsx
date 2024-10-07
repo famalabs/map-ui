@@ -69,7 +69,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
   const { column, activeFilters, setActiveFilters } = props;
 
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
-  const foundValue = column.filterOptions?.options.find(option => option.id === loadedValue);
+  const foundValue = column.filterOptions?.options?.find(option => option.id === loadedValue);
 
   return (
     (<Grid minWidth={200} p={2} size={{
@@ -81,7 +81,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
         clearOnBlur
         value={foundValue ?? null}
         onChange={(event, option) => updateFilters(option ? option.id : undefined, column, setActiveFilters)}
-        options={column.filterOptions.options ?? []}
+        options={column.filterOptions?.options ?? []}
         getOptionLabel={(option) => option.label}
         getOptionKey={(option) => option.id as any}
         renderOption={(props, option) => <ListItem {...props}>{option.label}</ListItem>}

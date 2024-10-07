@@ -19,7 +19,7 @@ const drawerWidth = 240;
 
 /* ------------ Standard Mini Drawer ------------  */
 
-const openedMixin = (theme: Theme): typeof openedMixin => ({
+const openedMixin = (theme: Theme): Record<string, string | number | boolean> => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -28,7 +28,7 @@ const openedMixin = (theme: Theme): typeof openedMixin => ({
   overflowX: "hidden",
 });
 
-const closedMixin = (theme: Theme): typeof closedMixin => ({
+const closedMixin = (theme: Theme): Record<string, string | number | boolean> => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -107,7 +107,14 @@ const SwipeFab = styled(Fab)(({ theme }) => ({
 
 /* ------------ Final Drawer component ------------  */
 
-const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }) => {
+export interface SidebarProps {
+  children: React.ReactNode;
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  mainContent: React.ReactNode;
+}
+
+const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent } : SidebarProps) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 

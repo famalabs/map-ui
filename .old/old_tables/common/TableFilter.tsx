@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
 
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
-import { AutoSelect, AutoSelectOption } from "../../simple";
+import { AutoSelect, AutoSelectOption } from "../../../../.old/simple";
 import { BooleanFilter } from "../filters";
 import { FilterIcon } from "./Table";
 import { styled } from "@mui/material/styles";

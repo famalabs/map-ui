@@ -3,10 +3,9 @@ import { CssBaseline, Theme, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
 import moment from 'moment';
 
-type ThemeLoaderProps = {
+interface ThemeLoaderProps {
   loaded: () => void;
   theme: Theme;
   load: () => void | Promise<void>;

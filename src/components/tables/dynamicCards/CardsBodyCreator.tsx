@@ -113,8 +113,9 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
       spacing={{ sm: 2, md: 3, lg: 4 }}
     >
 
-      {currentPageRows.map((row) => (
+      {currentPageRows.map((row, index) => (
         <Grid
+          key={row.id + index}
           onClick={() => onCardClick(row)}
           size={{
             sm: 12,
@@ -133,6 +134,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
 
       {Array.from({ length: skeletonItems }, (_, index) => (
         <Grid
+          key={index}
           size={{
             sm: 12,
             md: 6,

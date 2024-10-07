@@ -1,5 +1,3 @@
-export * from './Login';
-export * from './Register';
-export * from './ResetPswRequest';
-export * from './ResetPsw';
-export * from './AuthSuccess';
+export { AuthSuccess, AuthSuccessProps } from './AuthSuccess';
+export * from './common';
+

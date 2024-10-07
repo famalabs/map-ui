@@ -5,7 +5,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import Grid from '@mui/material/Grid2';
 
 export const BooleanCell = (
-  toolTip?: (value) => string,
+  toolTip?: (value: string) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
 ) => ({ cellValue }: { cellValue: any }) => {
 

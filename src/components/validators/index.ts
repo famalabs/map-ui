@@ -1,3 +1,3 @@
-export * from './ValidTextField';
+export { TextValidator, ValidTextField, ValidTextFieldProps } from './ValidTextField';
 export { default as useValidatorState } from './useValidatorState';
-export * from './common';
+export { checkRegEx, checkValidEmail } from './common';

@@ -1,15 +1,20 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { AuthSuccess, AuthSuccessProps } from '../../src/components/auth';
 
-// controls docs at https://storybook.js.org/docs/react/essentials/controls
-export default {
-  title: 'auth/Success',
-  component: AuthSuccess,
-  argTypes: {},
-} as Meta<AuthSuccessProps>;
+const meta: Meta<typeof AuthSuccess> = { component: AuthSuccess };
+export default meta;
 
-const Template: Story<AuthSuccessProps> = (args) => <AuthSuccess {...args} />;
+type Story = StoryObj<AuthSuccessProps>;
 
-export const Primary: Story<AuthSuccessProps> = Template.bind({});
-Primary.args = {};
+export const AuthSuccessTemplate: Story = {
+
+  args: {
+    success: "Login effettuato",
+    title: "Login",
+  },
+
+  render: (args) => {
+    return <AuthSuccess {...args} />
+  }
+};

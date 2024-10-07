@@ -45,9 +45,8 @@ export const InputString: React.FC<InputStringProps> = ({
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback(
-    (text: string): boolean => {
-      if (required && (text === '' || text == null)) {
+  const validate = React.useCallback((text: string | null): boolean => {
+      if (required && (text === '' || text === null)) {
         setError(emptyMessage);
         return false;
       }
@@ -70,14 +69,13 @@ export const InputString: React.FC<InputStringProps> = ({
   }, [value, validate, setValid]);
 
   return (
-    <div>
+    <>
       {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}
         fullWidth={fullWidth}
         id={nameid}
-        // label={label ?? nameid.toUpperCase()}
         label={label}
         name={nameid}
         required={required}
@@ -91,6 +89,6 @@ export const InputString: React.FC<InputStringProps> = ({
         error={showErr && !!error}
         helperText={showErr ? error : ''}
       />
-    </div>
+    </>
   );
 };

@@ -16,7 +16,7 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { DynamicCellCreator } from './DynamicCellCreator';
 import { DynColumnsDef } from './DynamicTypes';
 
-const StyledTableRow = styled(TableRow)(({ /* theme */ }) => ({
+const StyledTableRow = styled(TableRow)(() => ({
   minHeight: 56,
   '&:hover': {
     cursor: 'pointer',

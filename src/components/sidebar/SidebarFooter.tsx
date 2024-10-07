@@ -50,7 +50,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
 
   const theme = useTheme();
 
-  const [anchorElMenu, setAnchorElMenu] = React.useState(null);
+  const [anchorElMenu, setAnchorElMenu] = React.useState <EventTarget & HTMLDivElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setAnchorElMenu(event.currentTarget);

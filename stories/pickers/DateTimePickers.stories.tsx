@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { DatePicker, DatePickerProps } from '../../src/components/pickers';
 import moment from 'moment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -14,7 +14,7 @@ export default {
   },
 } as Meta<DatePickerProps>;
 
-export const DateTime: Story<DatePickerProps> = (args) => {
+export const DateTime: StoryFn<DatePickerProps> = (args) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>

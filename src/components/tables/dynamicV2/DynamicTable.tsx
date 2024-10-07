@@ -146,7 +146,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
       const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
 
-      switch (typeof selectColumn?.filterOptions.options[0].id) {
+      switch (typeof selectColumn?.filterOptions?.options?.[0].id) {
         case 'string':
           return { filterColumn, filterValue } as ActiveFilter;
         case 'number':
@@ -179,7 +179,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const parseFilterQuery = React.useCallback(() => {
     if (!setCurrentQuery) return;
 
-    const filterQuery = activeFilters.reduce((obj, filter) => {
+    const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
       obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
       return obj;
     }, {});

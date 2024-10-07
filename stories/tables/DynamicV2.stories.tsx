@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { ActionEventItem, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
 import { generateAsyncCount, generateAsyncData, generateComplexData } from './mockdata';
-import InfoIcon from '@mui/icons-material/Info';
-
 import {
   BooleanCell,
   DateCell,
@@ -14,177 +12,180 @@ import {
   ImageCell,
   SelectCell,
 } from '../../src/components/tables';
-import Box from '@mui/material/Box';
 
+const meta: Meta<typeof DynamicTable> = { component: DynamicTable };
+export default meta;
 
-export default {
-  title: 'tables/DynamicV2',
-  component: DynamicTable,
-  argTypes: {
-    backgroundColor: { control: 'color' },
+type Story = StoryObj<DynamicTableProps<any>>;
+
+export const DynamicV2Template: Story = {
+
+  args: {
+    tableLocale: "it"
   },
-} as Meta<DynamicTableProps<any>>;
 
-export const DynamicV2Template: Story<DynamicTableProps<any>> = (args) => {
-
-  const columns =
-    [
-      {
-        accessor: 'id', label: 'ID',
-        Tooltip: {
-          label: 'The ID of the item',
-          color: 'primary'
+  render: (args) => {
+    const columns =
+      [
+        {
+          accessor: 'id', label: 'ID',
+          Tooltip: {
+            label: 'The ID of the item',
+            color: 'primary'
+          },
+          visible: false
         },
-        visible: false
-      },
-      { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
-      {
-        accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell()
-      },
-      { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
-      { accessor: 'description', label: 'Description', visible: true },
-      { accessor: 'description2', label: 'Description', visible: true },
-      { accessor: 'description3', label: 'Description', visible: true },
-      { accessor: 'description4', label: 'Description', visible: true },
-      { accessor: 'description5', label: 'Description', visible: true },
-      { accessor: 'description6', label: 'Description', visible: true },
-      { accessor: 'description7', label: 'Description', visible: true },
-      { accessor: 'description8', label: 'Description', visible: true },
-      { accessor: 'description9', label: 'Description', visible: true },
-      { accessor: 'description10', label: 'Description', visible: true },
-      /* {
-        accessor: 'status', label: 'Status',
-        filterOptions: {
-          type: 'select',
-          options: [
-            { id: 1, label: 'Published' },
-            { id: 0, label: 'Pending' },
-          ]
+        { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
+        {
+          accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell()
         },
-        Cell: SelectCell([
-          { id: 1, type: 'success', label: 'Published' },
-          { id: 0, type: 'warning', label: 'Pending' },
-        ])
-      }, */
-    ] as DynColumnsDef<any>[];
+        { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
+        { accessor: 'description', label: 'Description', visible: true },
+        { accessor: 'description2', label: 'Description', visible: true },
+        { accessor: 'description3', label: 'Description', visible: true },
+        { accessor: 'description4', label: 'Description', visible: true },
+        { accessor: 'description5', label: 'Description', visible: true },
+        { accessor: 'description6', label: 'Description', visible: true },
+        { accessor: 'description7', label: 'Description', visible: true },
+        { accessor: 'description8', label: 'Description', visible: true },
+        { accessor: 'description9', label: 'Description', visible: true },
+        { accessor: 'description10', label: 'Description', visible: true },
+        /* {
+          accessor: 'status', label: 'Status',
+          filterOptions: {
+            type: 'select',
+            options: [
+              { id: 1, label: 'Published' },
+              { id: 0, label: 'Pending' },
+            ]
+          },
+          Cell: SelectCell([
+            { id: 1, type: 'success', label: 'Published' },
+            { id: 0, type: 'warning', label: 'Pending' },
+          ])
+        }, */
+      ] as DynColumnsDef<any>[];
 
-  const [data, setData] = useState<any[]>([]);
-  const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [expectedRowCount, setExpectedRowCount] = useState<number>(0);
+    const [data, setData] = useState<any[]>([]);
+    const [isFetching, setIsFetching] = useState<boolean>(true);
+    const [expectedRowCount, setExpectedRowCount] = useState<number>(0);
 
-  //const [fetchToken, setFetchToken] = useState<string>('');
+    //const [fetchToken, setFetchToken] = useState<string>('');
 
-  const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => {
+    const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => {
 
-    try {
+      try {
 
-      console.log('Fetching: ', limit, filters, firstLoad);
+        console.log('Fetching: ', limit, filters, firstLoad);
 
-      setIsFetching(true);
+        setIsFetching(true);
 
-      const rowCount = await generateAsyncCount(20);
-      setExpectedRowCount(rowCount);
+        const rowCount = await generateAsyncCount(20);
+        setExpectedRowCount(rowCount);
 
-      const itemData = await generateAsyncData(limit);
-      console.log('Data fetched:', itemData);
+        const itemData = await generateAsyncData(limit);
+        console.log('Data fetched:', itemData);
 
-      firstLoad
-        ? setData(itemData)
-        : setData(prevData => [...prevData, ...itemData]);
-
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsFetching(false);
-    }
-
-  };
-
-  const actionList = [
-    { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
-  ] as ActionEventItem[];
-
-  const [quickActions, setQuickActions] = useState<boolean>(false);
-
-  const actionHandler = async (actionType: string, selectedRows: any[], activeFilters: ActiveFilter[]) => {
-
-    const requestArray: Promise<any>[] = [];
-
-    switch (actionType) {
-      case 'import':
-
-        break;
-      case 'delete':
-
-        for (const item of selectedRows) {
-          requestArray.push(item.code);
+        if (firstLoad) {
+          setData(itemData)
+        } else {
+          setData(prevData => [...prevData, ...itemData])
         }
 
-        await Promise.all(requestArray)
-          .then(() => {
-            setData(prevData => prevData.filter(item => !selectedRows.some(selected => selected.code === item.code)));
-            console.log('Deleted');
-            setQuickActions(false);
-          })
-          .catch(() => {
-            console.error('Error deleting');
-          });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsFetching(false);
+      }
 
-        break;
-    }
-  };
+    };
 
-  /* Readonly? queryParamString to set URL */
-  //const [queryParamString, setQueryParamString] = useState<string>('');
+    const actionList = [
+      { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
+    ] as ActionEventItem[];
 
+    const [quickActions, setQuickActions] = useState<boolean>(false);
 
-  return (
-    <>
-      <DynamicTable
-        tableInfo={{
-          tableName: 'DynamicV2',
-          tableData: data,
-          columns: columns,
-          expectedRowCount: expectedRowCount,
-          staticMode: false,
-          emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
-          paginationOptions: {
-            customPageRowCount: 5,
-            customSelectPages: [5, 10, 20],
-            autoSizeHeight: false,
-            hideFooter: false,
-          },
-        }}
-        fetchInfo={{
-          fetchData: fetchItemsHandler,
-          isFetching: isFetching
-        }}
-        /* queryInfo={{
-          onLoadQuery: queryParamString,
-          setCurrentQuery: setQueryParamString
-        }} */
-        onRowClick={(row) => {
-          console.log('Row clicked:', row);
-        }}
-        defineActions={{
-          actionList: actionList,
-          onAction: actionHandler,
-        }}
-        newItemButton={{
-          label: 'New Item',
-          buttonClick: () => {
-            console.log('New item clicked');
+    const actionHandler = async (actionType: string, selectedRows: any[], activeFilters: ActiveFilter[]) => {
+
+      const requestArray: Promise<any>[] = [];
+
+      switch (actionType) {
+        case 'import':
+
+          break;
+        case 'delete':
+
+          for (const item of selectedRows) {
+            requestArray.push(item.code);
           }
-        }}
-        tableLocale='en'
-      /* localeStr={{
-        quickActions: 'Azioni Veloci',
-        visibleColumns: 'Colonne Visibili',
-        itemsSelected: 'Righe Selezionate: ',
-        rowsPerPage: 'Righe per pagina: ',
-        of: 'di',
-      }} */
-      />
-    </>
-  );
+
+          await Promise.all(requestArray)
+            .then(() => {
+              setData(prevData => prevData.filter(item => !selectedRows.some(selected => selected.code === item.code)));
+              console.log('Deleted');
+              setQuickActions(false);
+            })
+            .catch(() => {
+              console.error('Error deleting');
+            });
+
+          break;
+      }
+    };
+
+    /* Readonly? queryParamString to set URL */
+    //const [queryParamString, setQueryParamString] = useState<string>('');
+
+
+    return (
+      <>
+        <DynamicTable
+          tableInfo={{
+            tableName: 'DynamicV2',
+            tableData: data,
+            columns: columns,
+            expectedRowCount: expectedRowCount,
+            staticMode: false,
+            emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
+            paginationOptions: {
+              customPageRowCount: 5,
+              customSelectPages: [5, 10, 20],
+              autoSizeHeight: false,
+              hideFooter: false,
+            },
+          }}
+          fetchInfo={{
+            fetchData: fetchItemsHandler,
+            isFetching: isFetching
+          }}
+          /* queryInfo={{
+            onLoadQuery: queryParamString,
+            setCurrentQuery: setQueryParamString
+          }} */
+          onRowClick={(row) => {
+            console.log('Row clicked:', row);
+          }}
+          defineActions={{
+            actionList: actionList,
+            onAction: actionHandler,
+          }}
+          newItemButton={{
+            label: 'New Item',
+            buttonClick: () => {
+              console.log('New item clicked');
+            }
+          }}
+          tableLocale={args.tableLocale}
+        /* localeStr={{
+          quickActions: 'Azioni Veloci',
+          visibleColumns: 'Colonne Visibili',
+          itemsSelected: 'Righe Selezionate: ',
+          rowsPerPage: 'Righe per pagina: ',
+          of: 'di',
+        }} */
+        />
+      </>
+    );
+  }
 };

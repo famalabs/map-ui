@@ -16,7 +16,7 @@ function isStatus(status: IStatus | string): status is IStatus {
 export const StatusCell = (
   tooltip?: (value: IStatus) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
-) => ({ cellValue }) => {
+) => ({ cellValue }: { cellValue: string }) => {
 
   if (typeof cellValue === 'undefined' || cellValue === null || !isStatus(cellValue)) {
     return (
@@ -37,7 +37,7 @@ export const StatusCell = (
 
   return (
     <Grid container>
-      <Tooltip title={tooltip(cellValue)} {...tooltipProps}>
+      <Tooltip title={tooltip?.(cellValue)} {...tooltipProps}>
         {statusIcon}
       </Tooltip>
     </Grid>

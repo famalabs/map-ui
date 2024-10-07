@@ -3,10 +3,10 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { i18nStrings } from './DynamicTypes';
-import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
 
 export interface TablePaginationActionsProps {
   count: number;
@@ -89,7 +89,7 @@ export function DynamicTableFooter(props: TableFooterProps) {
 
   if (isTableEmpty && hideFooter) return null;
 
-  const CustomTablePaginationActions = (props) => {
+  const CustomTablePaginationActions: React.ElementType<TablePaginationActionsProps> = (props) => {
     return (
       <TablePaginationActions
         {...props}
@@ -111,7 +111,7 @@ export function DynamicTableFooter(props: TableFooterProps) {
         labelDisplayedRows={({ from, to, count }) => {
           return `${from} - ${to} ${localeStr ? localeStr.of : selectedLocale.of} ${count}`
         }}
-        ActionsComponent={CustomTablePaginationActions}
+        ActionsComponent={CustomTablePaginationActions as any}
       />
     </TableRow>
   );

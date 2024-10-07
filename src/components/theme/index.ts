@@ -1,1 +1,1 @@
-export * from './Loader';
+export { ThemeLoader } from './Loader';
