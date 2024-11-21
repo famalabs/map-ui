@@ -34,8 +34,10 @@ export function TablePaginationActions(props: TablePaginationActionsProps) {
   };
 
   return (
-    <Box component='div' sx={{ flexShrink: 0, ml: 2.5 }}>
-
+    <Box
+      component='div'
+      sx={{ flexShrink: 0, ml: 2.5 }}
+    >
       <IconButton
         onClick={handleBackButtonClick}
         disabled={page === 0}
@@ -51,7 +53,7 @@ export function TablePaginationActions(props: TablePaginationActionsProps) {
       >
         {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
-      
+
     </Box>
   );
 }
@@ -99,8 +101,9 @@ export function DynamicTableFooter(props: TableFooterProps) {
   }
 
   return (
-    <TableRow>
+    <TableRow component='div'>
       <TablePagination
+        component='div'
         count={expectedRowCount}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={customSelectPages ?? [5, 10]}
@@ -112,6 +115,9 @@ export function DynamicTableFooter(props: TableFooterProps) {
           return `${from} - ${to} ${localeStr ? localeStr.of : selectedLocale.of} ${count}`
         }}
         ActionsComponent={CustomTablePaginationActions as any}
+        sx={{
+          border: 'none',
+        }}
       />
     </TableRow>
   );

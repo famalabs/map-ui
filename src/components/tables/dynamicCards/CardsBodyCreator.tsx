@@ -5,12 +5,13 @@ import CardMedia from '@mui/material/CardMedia';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
-import React from 'react';
-import { CardItemProps } from './DynamicCardsTypes';
+import React, { useCallback, useMemo } from 'react';
+import Box from '@mui/material/Box';
+import { InfiniteViewType } from './DynamicCardsTypes';
 
 /* ---------- Cards ---------- */
 
-export function SkeletonCard() {
+export function DefaultSkeletonCard() {
 
   return (
     <Card
@@ -35,9 +36,15 @@ export function SkeletonCard() {
 
 }
 
-export function CardItem<T extends Record<string, any>>(props: CardItemProps<T>) {
+interface CardItemProps<T extends Record<string, any>> {
+  entry: T;
+  paperVariant?: 'outlined' | 'elevation';
+  onCardClick: () => void;
+}
 
-  const { image, titleAccessor, descAccessor, paperVariant, onCardClick } = props;
+export function DefaultCardItem<T extends Record<string, any>>(props: CardItemProps<T>) {
+
+  const { entry, paperVariant, onCardClick } = props;
 
   return (
     <Card
@@ -47,17 +54,17 @@ export function CardItem<T extends Record<string, any>>(props: CardItemProps<T>)
     >
       <CardActionArea>
         <CardMedia
-          component={image ? 'img' : Skeleton}
+          component={entry?.image ? 'img' : Skeleton}
           variant='rectangular'
           height={240}
-          image={image}
+          image={entry?.image ?? ''}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {titleAccessor}
+            {entry?.title ?? 'Title'}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {descAccessor}
+            {entry?.description ?? 'Description'}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -69,8 +76,24 @@ export function CardItem<T extends Record<string, any>>(props: CardItemProps<T>)
 /* ---------- Body of Cards ---------- */
 
 export interface CardBodyProps<T extends Record<string, any>> {
+  tableVariant: 'standard' | 'infinite';
   tableData: T[];
-  cardInfo: CardItemProps<T>;
+  standardOptions: {
+    customPageItemCount: number;
+    customSelectPages: number[];
+  };
+  infiniteOptions: {
+    loadingType: 'infiniteScroll' | 'loadMore';
+    gridSizings: Record<string, number>;
+    itemsPerPage: number;
+    viewType: InfiniteViewType;
+  };
+  cardInfo: {
+    CardItem: React.FC<T>;
+    ListItem?: React.FC<T>;
+    SkeletonCard?: React.FC;
+    SkeletonList?: React.FC;
+  };
   page: number;
   rowsPerPage: number;
   isFetching: boolean;
@@ -79,33 +102,42 @@ export interface CardBodyProps<T extends Record<string, any>> {
 export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyProps<T>) {
 
   const {
+    tableVariant,
     tableData,
-    cardInfo: {
-      image,
-      titleAccessor,
-      descAccessor,
-      onCardClick,
-    },
+    cardInfo,
+    // standardOptions,
+    infiniteOptions,
     page,
     rowsPerPage,
     isFetching,
   } = props;
 
-  const getNestedProperty = (row: T, path: string,) => {
-    return path.split('.').reduce((nestedObject, property) => {
-      return (nestedObject && property in nestedObject)
-        ? nestedObject[property]
-        : '';
-    }, row).toString() ?? '';
-  };
+  const { CardItem, ListItem, SkeletonCard, SkeletonList } = cardInfo;
+
+  const {
+    gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
+    viewType = 'cards',
+    itemsPerPage,
+  } = infiniteOptions;
 
   const currentPageRows = rowsPerPage > 0
     ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     : tableData;
 
-  const skeletonItems = isFetching ? (rowsPerPage - currentPageRows.length) : 0;
+  const skeletonItems = isFetching
+    ? tableVariant === 'standard' ? (rowsPerPage - currentPageRows.length) : itemsPerPage
+    : 0;
 
-  return (<>
+  const gridTemplateSizings = useMemo(() => ({
+    xs: `repeat(${gridSizings.xs}, minmax(0, 1fr))`,
+    sm: `repeat(${gridSizings.sm}, minmax(0, 1fr))`,
+    md: `repeat(${gridSizings.md}, minmax(0, 1fr))`,
+    lg: `repeat(${gridSizings.lg}, minmax(0, 1fr))`,
+    xl: `repeat(${gridSizings.xl}, minmax(0, 1fr))`,
+  }), [gridSizings]);
+
+
+  const StandardBodyLayout = useCallback(() => (
     <Grid
       container
       justifyContent="center"
@@ -116,18 +148,15 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
       {currentPageRows.map((row, index) => (
         <Grid
           key={row.id + index}
-          onClick={() => onCardClick(row)}
           size={{
             sm: 12,
             md: 6,
             lg: 4
-          }}>
+          }}
+        >
           <CardItem
             key={row.id}
-            image={image}
-            titleAccessor={getNestedProperty(row, titleAccessor)}
-            descAccessor={getNestedProperty(row, descAccessor)}
-            onCardClick={() => onCardClick(row)}
+            {...row}
           />
         </Grid>
       ))}
@@ -139,11 +168,51 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
             sm: 12,
             md: 6,
             lg: 4
-          }}>
-          <SkeletonCard key={index} />
+          }}
+        >
+          {SkeletonCard ? <SkeletonCard /> : <DefaultSkeletonCard />}
         </Grid>
       ))}
 
     </Grid>
-  </>);
+  ), [currentPageRows, skeletonItems, CardItem, SkeletonCard]);
+
+
+  const InfiniteBodyLayout = useCallback(() => {
+
+    const CardElement = viewType === 'cards' ? CardItem : ListItem;
+    const SkeletonElement = viewType === 'cards' ? SkeletonCard : SkeletonList;
+
+    return (
+      <Box
+        id='cards-table-body'
+        component="div"
+        sx={{
+          display: 'grid',
+          gridTemplateColumns:
+            viewType === 'cards' ? gridTemplateSizings : '1fr',
+          gap: '32px 32px',
+        }}
+      >
+        {tableData.map((row) => (
+          <CardElement
+            key={row.id}
+            {...row}
+          />
+        ))}
+
+        {Array.from({ length: skeletonItems }, (_, index) => (
+          <Grid key={`grid-skeleton-${index}`} size={12}>
+            {SkeletonElement ? <SkeletonElement /> : <DefaultSkeletonCard />}
+          </Grid>
+        ))}
+      </Box>
+    );
+
+  }, [viewType, CardItem, ListItem, SkeletonCard, SkeletonList, gridTemplateSizings, tableData, skeletonItems]);
+
+  return tableVariant === 'standard'
+    ? <StandardBodyLayout />
+    : <InfiniteBodyLayout />;
+
 }

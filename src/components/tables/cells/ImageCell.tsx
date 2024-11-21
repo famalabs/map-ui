@@ -4,6 +4,6 @@ export const ImageCell = (
   imgProps?: Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src">
 ) => () => {
   return (
-      <img height="100px" {...imgProps} />
+      <img height="100px" alt='' {...imgProps} />
   );
 };

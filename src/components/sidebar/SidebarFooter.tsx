@@ -3,6 +3,7 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 import { useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid2";
 import IconButton from "@mui/material/IconButton";
 import List, { ListOwnProps } from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -11,7 +12,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid2";
 import React from "react";
 import { MenuItems } from "../common/MenuItems";
 import { SidebarItem } from "./SidebarLayout";
@@ -23,7 +23,7 @@ export interface FooterData {
   };
   listProps?: ListOwnProps;
   listStyle?: Record<string, any>;
-}
+};
 
 export interface SidebarFooterProps {
   footerData: FooterData;

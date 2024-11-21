@@ -2,8 +2,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 import Grid from "@mui/material/Grid2";
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { ActiveCardFilter, CardFilterDef } from './DynamicCardsTypes';
+import qs from 'qs';
 
 /* ---------- String Filter ---------- */
 
@@ -108,11 +109,41 @@ export interface CardsSimpleFiltersProps {
   filtersDef: CardFilterDef[];
   activeFilters: ActiveCardFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveCardFilter[]>>;
+  onLoadQuery: string;
 }
 
 export function CardsSimpleFilters(props: CardsSimpleFiltersProps) {
 
-  const { filtersDef, activeFilters, setActiveFilters } = props;
+  const { filtersDef, activeFilters, setActiveFilters, onLoadQuery } = props;
+
+  /* Load filters from querystring */
+
+  useEffect(() => {
+    if (onLoadQuery) {
+      const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
+      const filterQuery = parsedObject.filter as Record<string, any>;
+
+      const updatedActiveFilters = Object.entries(filterQuery).map(([filterName, filterValue]) => {
+
+        const selectColumn = filtersDef.find(column => column.type === 'select' && column.accessor === filterName);
+
+        switch (typeof selectColumn?.SelectCell?.[0].id) {
+          case 'string':
+            return { filterName, filterValue } as ActiveCardFilter;
+          case 'number':
+            return { filterName, filterValue: Number(filterValue) } as ActiveCardFilter;
+          case 'boolean':
+            return { filterName, filterValue: JSON.parse(filterValue.toLowerCase()) } as ActiveCardFilter;
+          default:
+            return { filterName, filterValue } as ActiveCardFilter;
+        }
+
+      });
+
+      setActiveFilters(updatedActiveFilters);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersDef]);
 
   /* Renders row depending on its type */
   const filterTypeMap = (filter: CardFilterDef) => {

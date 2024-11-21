@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { FilterType, FilterValue, DynamicFilterOptions } from "../dynamicV2";
 
 /**
@@ -27,6 +27,8 @@ export interface ActiveCardFilter {
   filterType?: FilterType;
 }
 
+export type InfiniteViewType = 'list' | 'cards' | 'dual';
+
 /**
  * Interface for the props accepted by the CardItem component.
  * @param {string} image - The image of the card.
@@ -34,13 +36,6 @@ export interface ActiveCardFilter {
  * @param {string} description - The description of the card.
  * @param {'outlined' | 'elevation'} paperVariant - The variant of the paper.
  */
-export interface CardItemProps<T extends Record<string, any>>{
-  image: string;
-  titleAccessor: string;
-  descAccessor: string;
-  paperVariant?: 'outlined' | 'elevation';
-  onCardClick: (row: T) => void;
-}
 
 /**
  * Interface for the props accepted by the CardsTable component.
@@ -65,17 +60,30 @@ export interface DynamicCardsProps<T extends Record<string, any>> {
     tableData: Array<T>;
     setTableData?: Dispatch<SetStateAction<T[]>>;
     filtersDef: CardFilterDef[];
-    expectedRowCount: number;
-    paginationOptions: {
-      customPageRowCount?: number;
+    expectedItemCount: number;
+    tableVariant: 'standard' | 'infinite';
+    standardOptions?: {
+      customPageItemCount?: number;
       customSelectPages?: number[];
-    },
+    }
+    infiniteOptions?: {
+      loadingType: 'infiniteScroll' | 'loadMore';
+      gridSizings?: Record<string, number>;
+      itemsPerPage?: number;
+      viewType: InfiniteViewType;
+    }
   },
   fetchInfo: {
     fetchData: (limit: number, filters: ActiveCardFilter[], firstLoad?: boolean) => Promise<void>;
     isFetching: boolean;
+    prefetchNextPage?: boolean;
   }
-  cardInfo: CardItemProps<T>;
+  cardInfo: {
+    CardItem: React.FC<T>;
+    ListItem?: React.FC<T>;
+    SkeletonItem?: React.FC;
+    SkeletonListItem?: React.FC;
+  };
   queryInfo: {
     onLoadQuery: string;
     setCurrentQuery: Dispatch<SetStateAction<string>>;

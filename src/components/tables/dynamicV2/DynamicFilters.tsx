@@ -5,7 +5,8 @@ import Grid from "@mui/material/Grid2";
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { Dispatch, SetStateAction } from 'react';
+import qs from 'qs';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { ActiveFilter, DynColumnsDef } from './DynamicTypes';
 
 /* ---------- String Filter ---------- */
@@ -24,20 +25,21 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
   const loadedValue = activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null;
 
   return (
-    (<Grid minWidth={200} p={2} size={{
+    <Grid minWidth={200} p={2} size={{
       sm: 'auto'
     }}>
       <TextField
         fullWidth
         size='small'
-        label={column.label}
+        // label={column.label}
+        placeholder={column.label}
         variant="outlined"
         onChange={(event) => updateFilters(event.target.value, column, setActiveFilters)}
         value={loadedValue ?? ''}
         aria-label='filter-text'
         slotProps={{
           input: {
-            startAdornment: showSearchIcon && <SearchIcon />,
+            startAdornment: showSearchIcon && <SearchIcon sx={{ marginRight: '.4rem' }} />,
             endAdornment: (
               <IconButton
                 size='small'
@@ -52,7 +54,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
           }
         }}
       />
-    </Grid>)
+    </Grid>
   );
 }
 
@@ -134,15 +136,41 @@ function updateFilters<T>(
 
 export interface DynamicSimpleFiltersProps<T> {
   columns: DynColumnsDef<T>[];
+  onLoadQuery?: string;
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
 }
 
 export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
-  const { columns, activeFilters, setActiveFilters } = props;
+  const { columns, onLoadQuery, activeFilters, setActiveFilters } = props;
+
+  /* Load filters from querystring */
+  useEffect(() => {
+    if (!onLoadQuery) return;
+
+    const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
+    const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
+
+    const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
+      const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
+      switch (typeof selectColumn?.filterOptions?.options?.[0].id) {
+        case 'string':
+          return { filterColumn, filterValue } as ActiveFilter;
+        case 'number':
+          return { filterColumn, filterValue: Number(filterValue) } as ActiveFilter;
+        case 'boolean':
+          return { filterColumn, filterValue: JSON.parse(filterValue.toLowerCase()) } as ActiveFilter;
+        default:
+          return { filterColumn, filterValue } as ActiveFilter;
+      }
+    });
+
+    setActiveFilters(updatedActiveFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    (<Grid
+    <Grid
       container
       direction="row"
       justifyContent="flex-start"
@@ -150,7 +178,8 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       size={{
         sm: 8,
         md: 8
-      }}>
+      }}
+    >
       {columns.map(column => {
         const filterableColumnsCount = columns.filter(col => col.filterOptions).length;
 
@@ -182,6 +211,6 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
             return null;
         }
       })}
-    </Grid>)
+    </Grid>
   );
 }

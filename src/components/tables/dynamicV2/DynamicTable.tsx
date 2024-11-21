@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import qs from 'qs';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DynamicActionHeader } from './DynamicActionHeader';
 import { CommonBodyCreator } from './DynamicCommons';
 import { DynamicSimpleFilters } from './DynamicFilters';
@@ -50,10 +50,10 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const { onLoadQuery, setCurrentQuery } = queryInfo;
 
   /* Page index */
-  const [page, setPage] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   /* Rows displayed per page */
-  const savedRowsPerPage = localStorage.getItem(`${tableName}-rowsPerPage`);
+  const savedRowsPerPage = useMemo(() => localStorage.getItem(`${tableName}-rowsPerPage`), [tableName]);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
     customPageRowCount
       ? (parseInt(savedRowsPerPage, 10) || customPageRowCount)
@@ -64,13 +64,13 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const [highestFetchedPage, setHighestFetchedPage] = useState<number>(-1);
 
   /* Check for prefetched data */
-  const isActuallyFetching = isFetching && tableData.length === page * rowsPerPage;
+  const isActuallyFetching = isFetching && tableData.length === currentPage * rowsPerPage;
 
   /* Active filters object */
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
 
   /* Visible columns state (define structure later) */
-  const localVisibleCols = localStorage.getItem(tableName);
+  const localVisibleCols = useMemo(() => localStorage.getItem(tableName), [tableName]);
   const [visibleColumns, setVisibleColumns] = useState<DynColumnsDef<T>[]>([]);
 
   /* Quick actions */
@@ -87,16 +87,16 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const selectedLocale = tableLocale === 'it' ? it_locale : en_locale;
 
   /* Fetching event function */
-  const fetchEvent = async (firstLoad: boolean = false) => {
-    if (firstLoad || highestFetchedPage < page) {
+  const fetchEvent = async (fetchType: 'first' | 'next' = 'next') => {
+    if (fetchType === 'first' || highestFetchedPage < currentPage) {
 
       const itemsPerPage = prefetchNextPage && rowsPerPage * columns?.length < 100
         ? rowsPerPage * 2
         : rowsPerPage;
 
-      await fetchData(itemsPerPage, activeFilters, firstLoad);
+      await fetchData(itemsPerPage, activeFilters, fetchType === 'first');
       setHasDataFetched(true);
-      setHighestFetchedPage(firstLoad ? 0 : page);
+      setHighestFetchedPage(fetchType === 'first' ? 0 : currentPage);
     }
   }
 
@@ -104,107 +104,70 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
-    setPage(newPage);
+    setCurrentPage(newPage);
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    localStorage.setItem(`${tableName}-rowsPerPage`, event.target.value);
-    setPage(0);
+    setCurrentPage(0);
     setHighestFetchedPage(-1);
+    localStorage.setItem(`${tableName}-rowsPerPage`, event.target.value);
   };
 
   /* Update visible columns state */
   useEffect(() => {
-
     if (!localVisibleCols) {
       setVisibleColumns(columns);
       return;
     }
-
     const parsedVisibleCols = JSON.parse(localVisibleCols) as { accessor: string, visible: boolean }[];
-
     setVisibleColumns(columns.map(column => {
       const localColumn = parsedVisibleCols.find(localCol => localCol.accessor === column.accessor);
       return { ...column, visible: localColumn ? localColumn.visible : column.visible ?? false };
     }));
 
-  }, [columns]);
-
-
-  /* Load filters from querystring */
-  useEffect(() => {
-
-    if (!onLoadQuery) return;
-
-    const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
-    const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
-
-    const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
-
-      const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
-
-      switch (typeof selectColumn?.filterOptions?.options?.[0].id) {
-        case 'string':
-          return { filterColumn, filterValue } as ActiveFilter;
-        case 'number':
-          return { filterColumn, filterValue: Number(filterValue) } as ActiveFilter;
-        case 'boolean':
-          return { filterColumn, filterValue: JSON.parse(filterValue.toLowerCase()) } as ActiveFilter;
-        default:
-          return { filterColumn, filterValue } as ActiveFilter;
-      }
-
-    });
-
-    setActiveFilters(updatedActiveFilters);
-
-  }, []);
+  }, [columns, localVisibleCols]);
 
   /* Fetch event effects when page & rowsPerPage change  */
 
   useEffect(() => {
     /* Skip fetch is static mode is enabled */
-    if (page !== 0 && !staticMode) fetchEvent();
-  }, [page]);
+    if (currentPage !== 0 && !staticMode) fetchEvent();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   useEffect(() => {
     /* Skip fetch is static mode is enabled */
-    if (hasTableLoaded && !staticMode) fetchEvent(true);
+    if (hasTableLoaded && !staticMode) fetchEvent('first');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowsPerPage]);
-
-  /* Parse filter query */
-  const parseFilterQuery = React.useCallback(() => {
-    if (!setCurrentQuery) return;
-
-    const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
-      obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
-      return obj;
-    }, {});
-
-    setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
-
-  }, [activeFilters]);
 
   /* Debounce filter for Load & Filters*/
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
 
+    /* Parse filter query */
+    const parseFilterQuery = () => {
+      if (!setCurrentQuery) return;
+      const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
+        obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
+        return obj;
+      }, {});
+      setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
+    };
+
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
     debounceTimeoutRef.current = setTimeout(async () => {
-
       if (hasTableLoaded) parseFilterQuery();
-
-      setPage(0);
+      setCurrentPage(0);
       setHighestFetchedPage(-1);
-      await fetchEvent(true);
-
+      await fetchEvent('first');
     }, 300);
 
     return () => {
@@ -213,6 +176,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       }
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilters]);
 
   const isTableEmpty = (hasDataFetched && !isActuallyFetching) && (expectedRowCount === 0 || tableData.length === 0);
@@ -224,7 +188,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   return (
     <TableContainer
       component={Paper}
-      sx={{ overflowX: 'hidden' }}
+      sx={{ overflowX: 'hidden', tableLayout: 'fixed', width: '100%' }}
     >
 
       <Grid container>
@@ -232,6 +196,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         {/* Filters Header */}
         <DynamicSimpleFilters
           columns={columns}
+          onLoadQuery={onLoadQuery}
           activeFilters={activeFilters}
           setActiveFilters={setActiveFilters}
         />
@@ -253,7 +218,6 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           selectedLocale={selectedLocale}
           localeStr={localeStr}
         />
-
       </Grid>
 
       <Grid
@@ -271,7 +235,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
             expectedRowCount={expectedRowCount}
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
-            page={page}
+            page={currentPage}
             rowsPerPage={rowsPerPage}
             quickActions={quickActions}
             quickSelectedRows={quickSelectedRows}
@@ -289,6 +253,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
       {/* Table Pagination */}
       <Grid
+        component="div"
         container
         sx={{
           display: 'flex',
@@ -299,7 +264,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         <DynamicTableFooter
           expectedRowCount={expectedRowCount}
           rowsPerPage={rowsPerPage}
-          page={page}
+          page={currentPage}
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
           customSelectPages={customSelectPages}

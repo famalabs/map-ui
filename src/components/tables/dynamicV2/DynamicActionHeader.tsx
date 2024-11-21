@@ -110,6 +110,7 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
 
 interface ActionButtonsProps<T extends Record<string, any>> {
   fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
+  quickActions: boolean;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
   activeFilters: ActiveFilter[];
@@ -121,6 +122,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
 
   const {
     fetchData,
+    quickActions,
     quickSelectedRows,
     defineActions,
     activeFilters,
@@ -135,25 +137,26 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
     if (action.refetch) await fetchData(quickSelectedRows.length, activeFilters, false);
   }
 
-  if (quickSelectedRows.length === 0) return null;
+  if (!quickActions) return null;
 
   return (
-    (<Grid
+    <Grid
       container
-      direction="row"
       size={{
         sm: 12,
         md: 12
-      }}>
+      }}
+      p={2}
+    >
       <Grid
         container
         justifyContent='flex-start'
         alignItems='center'
-        p={1}
         size={{
           sm: 6,
           md: 6
-        }}>
+        }}
+      >
         <Typography fontSize={14} marginInlineStart={1}>
           {`${localeStr ? localeStr.itemsSelected : selectedLocale.itemsSelected} ${quickSelectedRows.length}`}
         </Typography>
@@ -163,42 +166,42 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         container
         justifyContent='flex-end'
         alignItems='center'
-        p={1}
         size={{
           sm: 6,
           md: 6
-        }}>
+        }}
+      >
 
-        {actionList && actionList.map((action, index) => (
-          <Grid key={index} p={1} >
-
-            {action.isIconButton
-
-              ? <Tooltip title={action.label ?? action.type}>
+        {actionList && actionList?.map((action, index) => (
+          <Grid key={index}>
+            {action.isIconButton ? (
+              <Tooltip title={action.label ?? action.type}>
                 <IconButton
                   color={action.color ?? 'primary'}
                   onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
+                  disabled={quickSelectedRows.length === 0}
                 >
-                  {action.icon && action.icon}
+                  {action.icon ?? undefined}
                 </IconButton>
               </Tooltip>
-
-              : <Button
+            ) : (
+              <Button
                 variant="contained"
                 size="small"
                 color={action.color ?? 'primary'}
                 onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
+                disabled={quickSelectedRows.length === 0}
               >
-                {action.icon && action.icon}
+                {action.icon ?? undefined}
                 <Typography fontSize={14}> {action.label ?? action.type} </Typography>
               </Button>
-            }
+            )}
 
           </Grid>
         ))}
 
       </Grid>
-    </Grid>)
+    </Grid>
   );
 
 }
@@ -310,11 +313,13 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     </Grid>
     <ActionButtons
       fetchData={fetchData}
+      quickActions={quickActions}
       quickSelectedRows={quickSelectedRows}
       defineActions={defineActions}
       activeFilters={activeFilters}
       selectedLocale={selectedLocale}
       localeStr={localeStr}
     />
-  </>);
+  </>
+  );
 }
