@@ -1,12 +1,12 @@
-import React from 'react';
-import TextField, {BaseTextFieldProps} from '@mui/material/TextField';
 import FormLabel from '@mui/material/FormLabel';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
+import React from 'react';
 import { FormNodeValidator } from './useFormState';
 
 export type NumberValidator = FormNodeValidator<number>;
 
 export interface InputNumberProps
-  extends Omit<BaseTextFieldProps, 'value' | 'onChange' | 'error' | 'helperText' | 'type'> {
+  extends Omit<TextFieldProps, 'value' | 'onChange' | 'error' | 'helperText' | 'type'> {
   nameid: string;
   title: string;
   value: number | null;
@@ -47,7 +47,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback((input: number | null): boolean => {
+  const validate = React.useCallback((input?: number): boolean => {
       if (required && input === null) {
         setError(emptyMessage);
         return false;
@@ -72,7 +72,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
 
   return (
     <>
-      {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      {title !== '' && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}

@@ -1,12 +1,12 @@
-import React from 'react';
 import FormLabel from '@mui/material/FormLabel';
-import TextField, {BaseTextFieldProps} from '@mui/material/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
+import React from 'react';
 import { FormNodeValidator } from './useFormState';
 
 export type StringValidator = FormNodeValidator<string>;
 
 export interface InputStringProps
-  extends Omit<BaseTextFieldProps, 'value' | 'onChange' | 'error' | 'helperText'> {
+  extends Omit<TextFieldProps, 'value' | 'onChange' | 'error' | 'helperText'> {
   nameid: string;
   title: string;
   value: string | null;
@@ -39,13 +39,15 @@ export const InputString: React.FC<InputStringProps> = ({
     showError = false,
     ...props
   }) => {
-  const [error, setError] = React.useState(required ? emptyMessage : '');
-  const [showErr, setShowErr] = React.useState(showError);
+
+  const [error, setError] = React.useState<string>(required ? emptyMessage : '');
+  const [showErr, setShowErr] = React.useState<boolean>(showError);
+
   React.useEffect(() => {
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback((text: string | null): boolean => {
+  const validate = React.useCallback((text?: string): boolean => {
       if (required && (text === '' || text === null)) {
         setError(emptyMessage);
         return false;
@@ -59,9 +61,7 @@ export const InputString: React.FC<InputStringProps> = ({
 
       setError('');
       return true;
-    },
-    [required, emptyMessage, validators, defaultErrorMessage]
-  );
+    }, [required, emptyMessage, validators, defaultErrorMessage]);
 
   React.useEffect(() => {
     if (setValid) setValid(validate(value));
@@ -70,7 +70,7 @@ export const InputString: React.FC<InputStringProps> = ({
 
   return (
     <>
-      {title === '' ? null : <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      {title !== '' && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}

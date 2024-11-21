@@ -234,7 +234,7 @@ function initFormIsValid<T extends Form>(
       {}
     ) as any;
     return {
-      allValid: Object.entries(children).every(([key, valid]: [string, any]) =>
+      allValid: Object.entries(children).every(([, valid]: [string, any]) =>
         typeof valid === 'boolean' ? valid : valid.allValid
       ),
       children,
@@ -278,19 +278,15 @@ function mergeValueUpdates<T extends Form>(
  * Use this hook for complex form data management
  */
 export default function useFormState<T extends Form>(form: T, initValue?: InferFormPartialValue<T>) {
-  const validators: InferFormValidator<T> = React.useMemo(() => initFormValidator(form), []);
-  const requires: InferFormRequired<T> = React.useMemo(() => initFormRequired(form), []);
-  const [Value, setValueDict] = React.useState<InferFormValue<T>>(
-    mergeValueUpdates(initFormValues(form), initValue)
-  );
 
-  const updatePartial = React.useCallback(
-    (changes: InferFormPartialValue<T>) => setValueDict((old) => mergeValueUpdates(old, changes)),
-    []
-  );
-  const setValue = React.useMemo(() => initFormSetValue(form, setValueDict), []);
+  const validators: InferFormValidator<T> = React.useMemo(() => initFormValidator(form), [form]);
+  const requires: InferFormRequired<T> = React.useMemo(() => initFormRequired(form), [form]);
 
-  const Valid = React.useMemo(() => initFormIsValid(form, Value, requires, validators), [Value]);
+  const [Value, setValueDict] = React.useState<InferFormValue<T>>(mergeValueUpdates(initFormValues(form), initValue));
+
+  const updatePartial = React.useCallback((changes: InferFormPartialValue<T>) => setValueDict((old) => mergeValueUpdates(old, changes)), []);
+  const setValue = React.useMemo(() => initFormSetValue(form, setValueDict), [form]);
+  const Valid = React.useMemo(() => initFormIsValid(form, Value, requires, validators), [Value, form, requires, validators]);
 
   return {
     Value,

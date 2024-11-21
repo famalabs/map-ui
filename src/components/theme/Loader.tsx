@@ -25,6 +25,7 @@ export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, l
         console.log(err);
       });
     else loaded();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useMemo(() => {

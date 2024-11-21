@@ -8,9 +8,7 @@ export default function useValidatorState<T extends string>(names: T[]) {
     names.reduce((acc, name) => ({ ...acc, [name]: false }), {})
   );
 
-  const valid = React.useMemo(() => names.map((name) => validState[name]).every((value) => value), [
-    validState,
-  ]);
+  const valid = React.useMemo(() => names.map((name) => validState[name]).every((value) => value), [names, validState]);
 
   const setSingleState = (name: any) => (value: boolean) => {
     if (validState[name] !== value) setValidState((prevState) => ({ ...prevState, [name]: value }));
