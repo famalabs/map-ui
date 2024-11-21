@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:storybook/recommended"
+  ],
+  "ignorePatterns": ["!**/*", "node_modules/", "dist/", "build/", ".storybook/", ".old/"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "react/prop-types": "off",
+        "react/jsx-uses-react": "off",
+        "react/display-name": "off"
+      }
+    }
+  ]
+}
