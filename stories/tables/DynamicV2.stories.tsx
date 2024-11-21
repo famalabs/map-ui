@@ -1,17 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Meta, StoryFn, StoryObj } from '@storybook/react';
-import { ActionEventItem, ActiveFilter, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
-import { generateAsyncCount, generateAsyncData, generateComplexData } from './mockdata';
-import {
-  BooleanCell,
-  DateCell,
-  ActionCell,
-  LinkCell,
-  AvatarCell,
-  StatusCell,
-  ImageCell,
-  SelectCell,
-} from '../../src/components/tables';
+import Grid from '@mui/material/Grid2';
+import { Meta, StoryObj } from '@storybook/react';
+import React, { useState } from 'react';
+import { ActionEventItem, ActiveFilter, AvatarCell, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
+import { generateAsyncCount, generateAsyncData } from './mockdata';
 
 const meta: Meta<typeof DynamicTable> = { component: DynamicTable };
 export default meta;
@@ -139,53 +130,61 @@ export const DynamicV2Template: Story = {
 
 
     return (
-      <>
-        <DynamicTable
-          tableInfo={{
-            tableName: 'DynamicV2',
-            tableData: data,
-            columns: columns,
-            expectedRowCount: expectedRowCount,
-            staticMode: false,
-            emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
-            paginationOptions: {
-              customPageRowCount: 5,
-              customSelectPages: [5, 10, 20],
-              autoSizeHeight: false,
-              hideFooter: false,
-            },
-          }}
-          fetchInfo={{
-            fetchData: fetchItemsHandler,
-            isFetching: isFetching
-          }}
-          /* queryInfo={{
-            onLoadQuery: queryParamString,
-            setCurrentQuery: setQueryParamString
+      <Grid
+        container
+        size={12}
+        spacing={2}
+      >
+
+        <Grid size={12}>
+          <DynamicTable
+            tableInfo={{
+              tableName: 'DynamicV2',
+              tableData: data,
+              columns: columns,
+              expectedRowCount: expectedRowCount,
+              staticMode: false,
+              emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
+              paginationOptions: {
+                customPageRowCount: 5,
+                customSelectPages: [5, 10, 20],
+                autoSizeHeight: false,
+                hideFooter: false,
+              },
+            }}
+            fetchInfo={{
+              fetchData: fetchItemsHandler,
+              isFetching: isFetching
+            }}
+            /* queryInfo={{
+              onLoadQuery: queryParamString,
+              setCurrentQuery: setQueryParamString
+            }} */
+            onRowClick={(row) => {
+              console.log('Row clicked:', row);
+            }}
+            defineActions={{
+              actionList: actionList,
+              onAction: actionHandler,
+            }}
+            newItemButton={{
+              label: 'New Item',
+              buttonClick: () => {
+                console.log('New item clicked');
+              }
+            }}
+            tableLocale={args.tableLocale}
+          /* localeStr={{
+            quickActions: 'Azioni Veloci',
+            visibleColumns: 'Colonne Visibili',
+            itemsSelected: 'Righe Selezionate: ',
+            rowsPerPage: 'Righe per pagina: ',
+            of: 'di',
           }} */
-          onRowClick={(row) => {
-            console.log('Row clicked:', row);
-          }}
-          defineActions={{
-            actionList: actionList,
-            onAction: actionHandler,
-          }}
-          newItemButton={{
-            label: 'New Item',
-            buttonClick: () => {
-              console.log('New item clicked');
-            }
-          }}
-          tableLocale={args.tableLocale}
-        /* localeStr={{
-          quickActions: 'Azioni Veloci',
-          visibleColumns: 'Colonne Visibili',
-          itemsSelected: 'Righe Selezionate: ',
-          rowsPerPage: 'Righe per pagina: ',
-          of: 'di',
-        }} */
-        />
-      </>
+          />
+        </Grid>
+      
+      </Grid>
     );
   }
 };
