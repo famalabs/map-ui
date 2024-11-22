@@ -26,12 +26,23 @@ export const DynamicV2Template: Story = {
           },
           visible: false
         },
-        { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string' }, visible: true },
+        { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string', priority: true }, visible: true },
         {
-          accessor: 'code', label: 'Code', visible: true, Cell: AvatarCell()
+          accessor: 'code', 
+          label: 'Code', 
+          visible: true, 
+          Cell: AvatarCell(), 
+          filterOptions: {
+            type: 'select', options: [
+              { id: 'A', label: 'A' },
+              { id: 'B', label: 'B' },
+              { id: 'C', label: 'C' },
+            ],
+            priority: true
+          },
         },
-        { accessor: 'name', label: 'Name', visible: true, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
-        { accessor: 'description', label: 'Description', visible: true },
+        { accessor: 'name', label: 'Name', visible: true, filterOptions: { type: 'date', priority: true }, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
+        { accessor: 'description', label: 'Description', filterOptions: { type: 'string' }, visible: true },
         { accessor: 'description2', label: 'Description', visible: true },
         { accessor: 'description3', label: 'Description', visible: true },
         { accessor: 'description4', label: 'Description', visible: true },
@@ -143,6 +154,7 @@ export const DynamicV2Template: Story = {
               tableData: data,
               columns: columns,
               expectedRowCount: expectedRowCount,
+              variant: 'standard',
               staticMode: false,
               emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
               paginationOptions: {
@@ -183,7 +195,7 @@ export const DynamicV2Template: Story = {
           }} */
           />
         </Grid>
-      
+
       </Grid>
     );
   }

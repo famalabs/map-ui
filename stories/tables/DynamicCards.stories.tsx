@@ -2,7 +2,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid2';
-import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
@@ -19,7 +18,8 @@ export const DynamicCardsTableStory: Story = {
   render: (args) => {
     const columns = [
       { accessor: 'id', label: 'ID', },
-      { accessor: 'name', label: 'Nome' },
+      { accessor: 'name', label: 'Nome', type: 'string', SelectCell: [{ id: 0, label: 'TEST' }] },
+      { accessor: 'sss', label: 'Tangpo', type: 'string', SelectCell: [{ id: 0, label: 'TEST' }] },
     ] as CardFilterDef[];
 
     const [data, setData] = useState<any[]>([]);
@@ -108,30 +108,32 @@ export const DynamicCardsTableStory: Story = {
               tableData: data,
               filtersDef: columns,
               expectedItemCount: expectedRowCount,
-              tableVariant: 'standard',
+              tableVariant: 'infinite',
+              gridSizings: { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
               standardOptions: {
-                customPageItemCount: 6,
+                customPageItemCount: 8,
                 customSelectPages: [6, 12, 24],
               },
               infiniteOptions: {
-                viewType: 'cards',
-                loadingType: 'loadMore',
-                itemsPerPage: 6,
-                gridSizings: { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
+                viewType: 'dual',
+                loadingType: 'infiniteScroll',
+                itemsPerPage: 8,
+                switcherPosition: 'right',
               }
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
               isFetching: isFetching,
             }}
-
             queryInfo={{
               onLoadQuery: '',
               setCurrentQuery: () => null,
             }}
             cardInfo={{
               CardItem: CardTest,
-              SkeletonItem: undefined
+              ListItem: CardTest,
+              SkeletonItem: undefined,
+              SkeletonListItem: undefined
             }}
           />
         </Grid>
@@ -152,7 +154,7 @@ function CardTest<T>(entry: T) {
       <CardMedia
         height={210}
         component="img"
-        src='https://source.unsplash.com/random'
+        src='https://hiroshi-nagai/unsplash.com'
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">

@@ -32,6 +32,12 @@ export const StyledTableCell = styled(TableCell)(() => ({
   whiteSpace: 'nowrap',
 }));
 
+export const variantHeightMap = {
+  standard: 56,
+  dense: 48,
+  compact: 40,
+};
+
 
 /* ---------- Common header ---------- */
 
@@ -76,14 +82,14 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
     <TableHead style={{ backgroundColor: 'rgba(224, 227, 235, 0.5)' }}>
       <TableRow>
         {quickActions &&
-          <TableCell padding="checkbox">
+          <StyledTableCell padding="checkbox">
             <Checkbox
               color="primary"
               onChange={(event) => handleSelectAllClick(event)}
               checkedIcon={allCurrentRowsSelected ? <IndeterminateCheckBoxIcon /> : undefined}
               checked={allCurrentRowsSelected}
             />
-          </TableCell>
+          </StyledTableCell>
         }
         {visibleColumns.length > 0 ? (
           visibleColumns.map((column, index) => {
@@ -141,6 +147,7 @@ export interface CommonBodyProps<T extends Record<string, any>> {
   emptyTablePlaceholderText?: string;
   hasDataFetched: boolean;
   isTableEmpty: boolean;
+  variant: 'standard' | 'dense' | 'compact';
 }
 
 export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBodyProps<T>) {
@@ -159,6 +166,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
     isTableEmpty,
+    variant,
   } = props;
 
   const currentPageRows = rowsPerPage > 0
@@ -214,17 +222,24 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
       {visibleColumns.length > 0 ? (visibleColumns.map((column, colIndex) => {
         if (!column.visible) return null;
         return (
-          <StyledTableCell key={`skeleton-cell-${colIndex}`}>
-            <Skeleton animation="wave" variant='rounded' />
+          <StyledTableCell
+            key={`skeleton-cell-${colIndex}`}
+            sx={{ height: variantHeightMap[variant] }}
+          >
+            <Skeleton
+              animation="wave"
+              variant='rounded'
+              height={variant === 'dense' ? undefined : 20}
+            />
           </StyledTableCell>
         )
       })) : (
-        <TableRow sx={{ height: 56 }}>
+        <TableRow sx={{ height: variantHeightMap[variant] }}>
           <TableCell colSpan={visibleColumns.length} />
         </TableRow>
       )}
     </TableRow>
-  ))), [rowsPerPage, visibleColumns]);
+  ))), [rowsPerPage, variant, visibleColumns]);
 
   const TableContent = useMemo(() => (
     <TableBody>
@@ -248,6 +263,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
                 onClick={(event) => {
                   event.stopPropagation();
                 }}
+                sx={{ height: variantHeightMap[variant] }}
               >
                 <Checkbox
                   color="primary"
@@ -264,6 +280,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
                   key={`custom-cell-${index}`}
                   row={row}
                   column={column}
+                  variant={variant}
                 />
               );
             })}
@@ -278,7 +295,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
         </TableRow>
       )}
     </TableBody>
-  ), [SkeletonRows, blankRows, currentPageRows, handleCheckBoxSelect, isFetching, isQuickSelected, onRowClick, quickActions, visibleColumns]);
+  ), [SkeletonRows, blankRows, currentPageRows, handleCheckBoxSelect, isFetching, isQuickSelected, onRowClick, quickActions, variant, visibleColumns]);
 
   return (
     <>

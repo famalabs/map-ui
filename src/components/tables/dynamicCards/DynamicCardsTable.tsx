@@ -12,6 +12,8 @@ import { CardBodyCreator } from './CardsBodyCreator';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton';
 import Button from '@mui/material/Button';
+import WindowIcon from '@mui/icons-material/Window';
+import ViewStreamIcon from '@mui/icons-material/ViewStream';
 
 export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicCardsProps<T>) {
 
@@ -21,6 +23,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
       filtersDef,
       expectedItemCount,
       tableVariant = 'standard',
+      gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
       standardOptions,
       infiniteOptions,
     },
@@ -42,9 +45,9 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
    
   const {
     loadingType = 'loadMore',
-    gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
     itemsPerPage = 6,
     viewType = 'cards',
+    switcherPosition = 'right',
   } = infiniteOptions;
 
   const savedView = useMemo(() => localStorage.getItem('view') as InfiniteViewType, []);
@@ -160,7 +163,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
     event: React.MouseEvent<HTMLElement>,
     newView: InfiniteViewType | undefined,
   ) => {
-    if (newView !== undefined) {
+    if (newView) {
       setSelectedView(newView);
       localStorage.setItem('view', newView ?? viewType);
     }
@@ -266,31 +269,43 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
         }}
       >
 
-        {/* Filters Header */}
-        <CardsSimpleFilters
-          filtersDef={filtersDef}
-          activeFilters={activeFilters}
-          setActiveFilters={setActiveFilters}
-          onLoadQuery={onLoadQuery}
-        />
-
         {/* Dual View Button */}
         {(tableData?.length > 0 && viewType === 'dual') &&
-          <ToggleButtonGroup
-            value={selectedView}
-            exclusive
-            onChange={handleChageViewType}
-            aria-label="list view"
-            size='small'
-            sx={{ alignSelf: 'center' }}
-          >
-            <ToggleButton value="cards" aria-label="left aligned">
-              {/* <CloseIcon size={16} /> */}
-            </ToggleButton>
-            <ToggleButton value="list" aria-label="centered">
-              {/* <AlignJustify size={16} /> */}
-            </ToggleButton>
-          </ToggleButtonGroup>
+        <Grid
+          container
+          size={12}
+          direction={switcherPosition === 'left' ? 'row-reverse' : 'row'}
+          justifyContent={switcherPosition === 'left' ? 'left' : 'space-between'}
+          alignItems='center'
+          spacing={2}
+        >
+            {/* Filters Header */}
+            <CardsSimpleFilters
+              filtersDef={filtersDef}
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              onLoadQuery={onLoadQuery}
+            />
+
+            <Grid>
+              <ToggleButtonGroup
+                exclusive
+                value={selectedView}
+                onChange={handleChageViewType}
+                aria-label="list view"
+                size='small'
+                sx={{ alignSelf: 'center' }}
+              >
+                <ToggleButton value="cards" aria-label="left aligned">
+                  <WindowIcon />
+                </ToggleButton>
+                <ToggleButton value="list" aria-label="centered">
+                  <ViewStreamIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Grid>
+
+        </Grid>
         }
 
       </Grid>

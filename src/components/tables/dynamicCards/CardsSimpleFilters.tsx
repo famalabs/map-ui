@@ -168,18 +168,11 @@ export function CardsSimpleFilters(props: CardsSimpleFiltersProps) {
     }
   }
 
+  if (filtersDef?.length === 0) return null;
+
   return (
-    (<Grid
-      container
-      direction="row"
-      justifyContent="flex-start"
-      alignItems="center"
-      p={2}
-      pl={0} size={{
-      md: 12
-    }}
-    >
+    <Grid container>
       {filtersDef.map(filter => filterTypeMap(filter))}
-    </Grid>)
+    </Grid>
   );
 }

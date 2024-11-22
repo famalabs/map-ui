@@ -1,15 +1,16 @@
 import React, { useCallback } from 'react';
-import { StyledTableCell } from './DynamicCommons';
+import { StyledTableCell, variantHeightMap } from './DynamicCommons';
 import { DynColumnsDef } from './DynamicTypes';
 
 export interface DynamicCellProps<T> {
   row: T;
   column: DynColumnsDef<T>;
+  variant?: 'standard' | 'dense' | 'compact';
 }
 
 export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
 
-  const { row, column } = props;
+  const { row, column, variant } = props;
 
   /* Extract potential nested objects values */
   const getNestedProperty = useCallback((row: T, path: string): string => {
@@ -27,7 +28,7 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
     : undefined;
 
   return (
-    <StyledTableCell>
+    <StyledTableCell sx={{ height: variantHeightMap[variant] }}>
       {CustomCell
         ? <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
         : <>{cellValue}</>

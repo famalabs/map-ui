@@ -28,7 +28,7 @@ export type ColumnType = 'string'
 export interface DynColumnsDef<T> {
   accessor: string;
   label: string;
-  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[] }
+  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[], priority?: boolean }
   ColumnCell?: () => JSX.Element;
   Cell?: (props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element;
   Tooltip?: { icon?: JSX.Element, color?: IconButtonOwnProps['color'], label: string }
@@ -38,12 +38,12 @@ export interface DynColumnsDef<T> {
 /**
  * Type for the filter type.
  */
-export type FilterType = 'string' | 'select';
+export type FilterType = 'string' | 'number' | 'select' | 'date';
 
 /**
  * Type for the filter value.
  */
-export type FilterValue = string | number | boolean | undefined;
+export type FilterValue = unknown;
 
 /**
  * Interface for an active filter.
@@ -53,7 +53,7 @@ export type FilterValue = string | number | boolean | undefined;
  */
 export interface ActiveFilter {
   filterColumn: string;
-  filterValue: FilterValue;
+  filterValue?: FilterValue;
   filterType?: FilterType;
 }
 
@@ -101,6 +101,7 @@ export interface TableInfoProps<T> {
   setTableData?: Dispatch<SetStateAction<T[]>>;
   columns: DynColumnsDef<T>[];
   expectedRowCount: number;
+  variant?: 'standard' | 'dense' | 'compact';
   staticMode?: boolean;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
@@ -191,6 +192,7 @@ export interface DynamicTableProps<T extends Record<string, any>> {
   onRowClick?: (row: T) => void;
   defineActions?: DefineActionsProps<T>
   newItemButton?: CustomButton;
+  paperVariant?: 'elevation' | 'outlined';
   tableLocale?: 'en' | 'it';
   localeStr?: i18nStrings;
 }

@@ -62,15 +62,16 @@ export interface DynamicCardsProps<T extends Record<string, any>> {
     filtersDef: CardFilterDef[];
     expectedItemCount: number;
     tableVariant: 'standard' | 'infinite';
+    gridSizings?: { xs: number, sm: number, md: number, lg: number, xl: number };
     standardOptions?: {
       customPageItemCount?: number;
       customSelectPages?: number[];
     }
     infiniteOptions?: {
       loadingType: 'infiniteScroll' | 'loadMore';
-      gridSizings?: Record<string, number>;
       itemsPerPage?: number;
       viewType: InfiniteViewType;
+      switcherPosition?: 'left' | 'right';
     }
   },
   fetchInfo: {

@@ -138,43 +138,20 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
 
 
   const StandardBodyLayout = useCallback(() => (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      spacing={{ sm: 2, md: 3, lg: 4 }}
-    >
-
-      {currentPageRows.map((row, index) => (
-        <Grid
-          key={row.id + index}
-          size={{
-            sm: 12,
-            md: 6,
-            lg: 4
-          }}
-        >
-          <CardItem
-            key={row.id}
-            {...row}
-          />
-        </Grid>
+    <>
+      {currentPageRows.map((row) => (
+        <CardItem
+          key={row.id}
+          {...row}
+        />
       ))}
 
       {Array.from({ length: skeletonItems }, (_, index) => (
-        <Grid
-          key={index}
-          size={{
-            sm: 12,
-            md: 6,
-            lg: 4
-          }}
-        >
+        <Grid key={`grid-skeleton-${index}`} size={12}>
           {SkeletonCard ? <SkeletonCard /> : <DefaultSkeletonCard />}
         </Grid>
       ))}
-
-    </Grid>
+    </>
   ), [currentPageRows, skeletonItems, CardItem, SkeletonCard]);
 
 
@@ -184,16 +161,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     const SkeletonElement = viewType === 'cards' ? SkeletonCard : SkeletonList;
 
     return (
-      <Box
-        id='cards-table-body'
-        component="div"
-        sx={{
-          display: 'grid',
-          gridTemplateColumns:
-            viewType === 'cards' ? gridTemplateSizings : '1fr',
-          gap: '32px 32px',
-        }}
-      >
+      <>
         {tableData.map((row) => (
           <CardElement
             key={row.id}
@@ -206,13 +174,24 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
             {SkeletonElement ? <SkeletonElement /> : <DefaultSkeletonCard />}
           </Grid>
         ))}
-      </Box>
+      </>
     );
 
-  }, [viewType, CardItem, ListItem, SkeletonCard, SkeletonList, gridTemplateSizings, tableData, skeletonItems]);
+  }, [viewType, CardItem, ListItem, SkeletonCard, SkeletonList, tableData, skeletonItems]);
 
-  return tableVariant === 'standard'
-    ? <StandardBodyLayout />
-    : <InfiniteBodyLayout />;
+  return (
+    <Box
+      id={`cards-table-body-${tableVariant}`}
+      component="div"
+      sx={{
+        display: 'grid',
+        gridTemplateColumns:
+          viewType === 'cards' ? gridTemplateSizings : '1fr',
+        gap: '32px 32px',
+      }}
+    >
+      {tableVariant === 'standard' ? <StandardBodyLayout /> : <InfiniteBodyLayout />}
+    </Box>
+  );
 
 }

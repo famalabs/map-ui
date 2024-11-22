@@ -20,6 +20,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     defineActions = {} as DefineActionsProps<T>,
     onRowClick,
     newItemButton,
+    paperVariant = 'outlined',
     tableLocale = 'en',
     localeStr,
   } = props;
@@ -29,6 +30,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     tableData,
     columns,
     expectedRowCount,
+    variant = 'standard',
     staticMode = false,
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
@@ -188,6 +190,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   return (
     <TableContainer
       component={Paper}
+      variant={paperVariant}
       sx={{ overflowX: 'hidden', tableLayout: 'fixed', width: '100%' }}
     >
 
@@ -247,6 +250,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
             emptyTablePlaceholderText={emptyTablePlaceholderText}
             hasDataFetched={hasDataFetched}
             isTableEmpty={isTableEmpty}
+            variant={variant}
           />
         </Table>
       </Grid>

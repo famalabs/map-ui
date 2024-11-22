@@ -1,6 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
-import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
@@ -64,7 +64,7 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
     <>
       <Tooltip title={localeStr ? localeStr.visibleColumns : selectedLocale.visibleColumns}>
         <IconButton color='primary' onClick={handlePopClick}>
-          <VisibilityOffIcon />
+          <SettingsOutlinedIcon />
         </IconButton>
       </Tooltip>
       <Popover
@@ -80,28 +80,48 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
           horizontal: 'center',
         }}
       >
-
-        <Paper
-          component={List}
-          variant="elevation"
-          dense
+        
+        <Grid
+          component={Paper}
+          container
+          maxHeight={300}
+          width={200}
+          sx={{ 
+            overflow: 'auto',
+            scrollbarWidth: 'thin',
+          }}
         >
-          {visibleColumns.map((column) => (
-            <ListItem key={column.accessor} disablePadding>
-              <ListItemButton onClick={handleHideColumn(column.accessor)}>
-                <ListItemIcon>
-                  <Checkbox
-                    edge="start"
-                    checked={column.visible ?? false}
-                    tabIndex={-1}
-                    disableRipple
-                  />
-                </ListItemIcon>
-                <ListItemText id={column.label} primary={column.label} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </Paper>
+
+          <Grid size={12} p={1}>
+            <Typography variant="body1">
+              {localeStr ? localeStr.visibleColumns : selectedLocale.visibleColumns}
+            </Typography>
+          </Grid>
+
+          <Grid size={12}>
+            <List 
+              dense 
+              sx={{ width: '100%', padding: 0 }}
+            >
+              {visibleColumns.map((column) => (
+                <ListItem key={column.accessor} disablePadding>
+                  <ListItemButton onClick={handleHideColumn(column.accessor)}>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={column.visible ?? false}
+                        tabIndex={-1}
+                        disableRipple
+                      />
+                    </ListItemIcon>
+                    <ListItemText id={column.label} primary={column.label} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+          
+        </Grid>
 
       </Popover>
     </>
@@ -264,62 +284,63 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     if (quickActions) setQuickSelectedRows([]);
   }
 
-  return (<>
-    <Grid
-      container
-      direction="row"
-      justifyContent="flex-end"
-      alignItems="center"
-      p={1}
-      size={{
-        sm: 4,
-        md: 4
-      }}>
-      {defineActions.actionList?.length > 0 &&
-        <Grid p={0.5}>
-          <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
-            <IconButton
-              color={quickActions ? 'secondary' : 'primary'}
-              onClick={toggleQuickActions}
-            >
-              <ElectricBoltIcon />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-      }
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="flex-end"
+        alignItems="center"
+        p={1}
+        size={{
+          sm: 4,
+          md: 4
+        }}
+      >
+        {defineActions.actionList?.length > 0 &&
+          <Grid p={0.5}>
+            <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
+              <IconButton
+                color={quickActions ? 'secondary' : 'primary'}
+                onClick={toggleQuickActions}
+              >
+                <LayersOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        }
 
-      {showVisibleColumnsButton &&
-        <Grid p={0.5}>
-          <ColumnVisibilityPopper
-            tableName={tableName}
-            visibleColumns={visibleColumns}
-            setVisibleColumns={setVisibleColumns}
-            selectedLocale={selectedLocale}
-            localeStr={localeStr}
-          />
-        </Grid>
-      }
+        {showVisibleColumnsButton &&
+          <Grid p={0.5}>
+            <ColumnVisibilityPopper
+              tableName={tableName}
+              visibleColumns={visibleColumns}
+              setVisibleColumns={setVisibleColumns}
+              selectedLocale={selectedLocale}
+              localeStr={localeStr}
+            />
+          </Grid>
+        }
 
-      {newItemButton &&
-        <Grid p={0.5}>
-          <NewItemButton
-            label={newItemButton.label}
-            icon={newItemButton.icon}
-            buttonClick={newItemButton.buttonClick}
-          />
-        </Grid>
-      }
+        {newItemButton &&
+          <Grid p={0.5}>
+            <NewItemButton
+              label={newItemButton.label}
+              icon={newItemButton.icon}
+              buttonClick={newItemButton.buttonClick}
+            />
+          </Grid>
+        }
 
-    </Grid>
-    <ActionButtons
-      fetchData={fetchData}
-      quickActions={quickActions}
-      quickSelectedRows={quickSelectedRows}
-      defineActions={defineActions}
-      activeFilters={activeFilters}
-      selectedLocale={selectedLocale}
-      localeStr={localeStr}
-    />
-  </>
+      </Grid>
+      <ActionButtons
+        fetchData={fetchData}
+        quickActions={quickActions}
+        quickSelectedRows={quickSelectedRows}
+        defineActions={defineActions}
+        activeFilters={activeFilters}
+        selectedLocale={selectedLocale}
+        localeStr={localeStr}
+      />
+    </>
   );
 }
