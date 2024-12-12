@@ -65,8 +65,7 @@ export interface TableFooterProps {
   handleChangePage: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
   customSelectPages?: number[];
-  selectedLocale: i18nStrings;
-  localeStr?: i18nStrings;
+  localeStr: i18nStrings["footer"]
   isTableEmpty: boolean;
   hideFooter: boolean;
   isFetching: boolean;
@@ -82,7 +81,6 @@ export function DynamicTableFooter(props: TableFooterProps) {
     handleChangeRowsPerPage,
     customSelectPages,
     localeStr,
-    selectedLocale,
     isTableEmpty,
     hideFooter,
     isFetching,
@@ -110,9 +108,9 @@ export function DynamicTableFooter(props: TableFooterProps) {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={localeStr ? localeStr.rowsPerPage : selectedLocale.rowsPerPage}
+        labelRowsPerPage={localeStr.rowsPerPage}
         labelDisplayedRows={({ from, to, count }) => {
-          return `${from} - ${to} ${localeStr ? localeStr.of : selectedLocale.of} ${count}`
+          return `${from} - ${to} ${localeStr.of} ${count}`
         }}
         ActionsComponent={CustomTablePaginationActions as any}
         sx={{

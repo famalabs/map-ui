@@ -1,9 +1,6 @@
-import React from 'react';
 import { CssBaseline, Theme, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import moment from 'moment';
+import React from 'react';
 
 interface ThemeLoaderProps {
   loaded: () => void;
@@ -16,7 +13,7 @@ interface ThemeLoaderProps {
 /*
  * Wrapper component for loading and providing theme on Material-UI
  */
-export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, lang = 'en', children }) => {
+export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, children }) => {
   React.useEffect(() => {
     const waitLoad = load();
     if (waitLoad instanceof Promise)
@@ -25,21 +22,15 @@ export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, l
         console.log(err);
       });
     else loaded();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  React.useMemo(() => {
-    moment.locale(lang);
-  }, [lang]);
 
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={lang}>
-        <SnackbarProvider maxSnack={3}>
-          <CssBaseline />
-          {children}
-        </SnackbarProvider>
-      </LocalizationProvider>
+      <SnackbarProvider maxSnack={3}>
+        <CssBaseline />
+        {children}
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

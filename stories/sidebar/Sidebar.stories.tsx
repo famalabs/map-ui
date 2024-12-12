@@ -74,7 +74,7 @@ export const SidebarLayoutTemplate: Story = {
     },
     onSelectMenuItem: (itemID, title, link) => console.log(itemID, title, link),
     onHoverMenuItem: (itemID, title, link) => console.log(itemID, title, link),
-    selectedLink: "/dashboard",
+    selectedLink: "/dashboard/catalog/1",
     listProps: {
       dense: true,
     },

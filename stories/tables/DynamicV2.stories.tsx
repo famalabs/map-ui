@@ -2,7 +2,8 @@ import Grid from '@mui/material/Grid2';
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 import { ActionEventItem, ActiveFilter, AvatarCell, DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables';
-import { generateAsyncCount, generateAsyncData } from './mockdata';
+import { generateAsyncData } from './mockdata';
+
 
 const meta: Meta<typeof DynamicTable> = { component: DynamicTable };
 export default meta;
@@ -26,12 +27,12 @@ export const DynamicV2Template: Story = {
           },
           visible: false
         },
-        { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'string', priority: true }, visible: true },
+        { accessor: 'supplier.name', label: 'Supplier', filterOptions: { type: 'number', priority: true }, visible: true },
         {
-          accessor: 'code', 
-          label: 'Code', 
-          visible: true, 
-          Cell: AvatarCell(), 
+          accessor: 'code',
+          label: 'Code',
+          visible: true,
+          Cell: AvatarCell(),
           filterOptions: {
             type: 'select', options: [
               { id: 'A', label: 'A' },
@@ -82,11 +83,13 @@ export const DynamicV2Template: Story = {
 
         setIsFetching(true);
 
-        const rowCount = await generateAsyncCount(20);
-        setExpectedRowCount(rowCount);
+        // const rowCount = await generateAsyncCount(20);
+        setExpectedRowCount(4);
 
-        const itemData = await generateAsyncData(limit);
+        const itemData = await generateAsyncData(4);
         console.log('Data fetched:', itemData);
+
+        console.log('IS FIRST LOAD:', firstLoad);
 
         if (firstLoad) {
           setData(itemData)
@@ -155,18 +158,20 @@ export const DynamicV2Template: Story = {
               columns: columns,
               expectedRowCount: expectedRowCount,
               variant: 'standard',
+              filterMode: 'multiple',
               staticMode: false,
               emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
               paginationOptions: {
                 customPageRowCount: 5,
                 customSelectPages: [5, 10, 20],
-                autoSizeHeight: false,
+                // autoSizeHeight: false,
                 hideFooter: false,
               },
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
-              isFetching: isFetching
+              isFetching: isFetching,
+              // prefetchNextPage: false,
             }}
             /* queryInfo={{
               onLoadQuery: queryParamString,
@@ -186,13 +191,7 @@ export const DynamicV2Template: Story = {
               }
             }}
             tableLocale={args.tableLocale}
-          /* localeStr={{
-            quickActions: 'Azioni Veloci',
-            visibleColumns: 'Colonne Visibili',
-            itemsSelected: 'Righe Selezionate: ',
-            rowsPerPage: 'Righe per pagina: ',
-            of: 'di',
-          }} */
+            
           />
         </Grid>
 

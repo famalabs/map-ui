@@ -52,9 +52,11 @@ export type FilterValue = unknown;
  * @param {FilterType} filterType - The type of the filter.
  */
 export interface ActiveFilter {
+  filterIndex: number;
   filterColumn: string;
   filterValue?: FilterValue;
   filterType?: FilterType;
+  filterComparator?: string;
 }
 
 /**
@@ -102,6 +104,7 @@ export interface TableInfoProps<T> {
   columns: DynColumnsDef<T>[];
   expectedRowCount: number;
   variant?: 'standard' | 'dense' | 'compact';
+  filterMode?: 'single' | 'multiple';
   staticMode?: boolean;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
@@ -154,11 +157,27 @@ export interface DefineActionsProps<T extends Record<string, any>> {
   * @param {string} of - The string for the of.
  */
 export interface i18nStrings {
-  quickActions: string,
-  visibleColumns: string,
-  itemsSelected: string,
-  rowsPerPage: string,
-  of: string,
+  header?: {
+    quickActions: string,
+    visibleColumns: string,
+    itemsSelected: string,
+  }
+  filters?: {
+    addFilter: string,
+    removeFilter: string,
+    filterBy: string,
+    moreFilters: string,
+    date: string,
+    dateFrom: string,
+    dateTo: string,
+    dateLanguage: string;
+    apply: string,
+    clear: string,
+  }
+  footer?: {
+    rowsPerPage: string,
+    of: string,
+  }
 }
 
 /**

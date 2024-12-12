@@ -21,13 +21,12 @@ export interface ColumnVisibilityPopperProps<T> {
   tableName: string;
   visibleColumns: DynColumnsDef<T>[];
   setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
-  selectedLocale: i18nStrings;
-  localeStr?: i18nStrings;
+  localeStr: i18nStrings['header'];
 }
 
 export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
 
-  const { tableName, visibleColumns, setVisibleColumns, selectedLocale, localeStr } = props;
+  const { tableName, visibleColumns, setVisibleColumns, localeStr } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -62,7 +61,7 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
 
   return (
     <>
-      <Tooltip title={localeStr ? localeStr.visibleColumns : selectedLocale.visibleColumns}>
+      <Tooltip title={localeStr.visibleColumns}>
         <IconButton color='primary' onClick={handlePopClick}>
           <SettingsOutlinedIcon />
         </IconButton>
@@ -80,13 +79,13 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
           horizontal: 'center',
         }}
       >
-        
+
         <Grid
           component={Paper}
           container
           maxHeight={300}
           width={200}
-          sx={{ 
+          sx={{
             overflow: 'auto',
             scrollbarWidth: 'thin',
           }}
@@ -94,13 +93,13 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
 
           <Grid size={12} p={1}>
             <Typography variant="body1">
-              {localeStr ? localeStr.visibleColumns : selectedLocale.visibleColumns}
+              {localeStr.visibleColumns}
             </Typography>
           </Grid>
 
           <Grid size={12}>
-            <List 
-              dense 
+            <List
+              dense
               sx={{ width: '100%', padding: 0 }}
             >
               {visibleColumns.map((column) => (
@@ -120,7 +119,7 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
               ))}
             </List>
           </Grid>
-          
+
         </Grid>
 
       </Popover>
@@ -134,8 +133,7 @@ interface ActionButtonsProps<T extends Record<string, any>> {
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
   activeFilters: ActiveFilter[];
-  selectedLocale: i18nStrings;
-  localeStr?: i18nStrings;
+  localeStr: i18nStrings['header'];
 }
 
 export function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
@@ -146,7 +144,6 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
     quickSelectedRows,
     defineActions,
     activeFilters,
-    selectedLocale,
     localeStr
   } = props;
 
@@ -178,7 +175,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         }}
       >
         <Typography fontSize={14} marginInlineStart={1}>
-          {`${localeStr ? localeStr.itemsSelected : selectedLocale.itemsSelected} ${quickSelectedRows.length}`}
+          {`${localeStr.itemsSelected} ${quickSelectedRows.length}`}
         </Typography>
       </Grid>
       {/* Action Buttons */}
@@ -256,8 +253,7 @@ export interface DynamicActionsProps<T extends Record<string, any>> {
   activeFilters: ActiveFilter[];
   newItemButton?: CustomButton;
   showVisibleColumnsButton: boolean;
-  selectedLocale: i18nStrings;
-  localeStr?: i18nStrings
+  localeStr: i18nStrings['header'];
 }
 
 export function DynamicActionHeader<T extends Record<string, any>>(props: DynamicActionsProps<T>) {
@@ -275,7 +271,6 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     activeFilters,
     newItemButton,
     showVisibleColumnsButton,
-    selectedLocale,
     localeStr,
   } = props;
 
@@ -284,61 +279,61 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     if (quickActions) setQuickSelectedRows([]);
   }
 
+  const shouldActionBeHidden = defineActions.actionList?.length === 0 && !newItemButton && !showVisibleColumnsButton;
+
   return (
     <>
-      <Grid
-        container
-        justifyContent="flex-end"
-        alignItems="center"
-        p={1}
-        size={{
-          sm: 4,
-          md: 4
-        }}
-      >
-        {defineActions.actionList?.length > 0 &&
-          <Grid p={0.5}>
-            <Tooltip title={localeStr ? localeStr.quickActions : selectedLocale.quickActions}>
-              <IconButton
-                color={quickActions ? 'secondary' : 'primary'}
-                onClick={toggleQuickActions}
-              >
-                <LayersOutlinedIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        }
+      {!shouldActionBeHidden &&
+        <Grid
+          container
+          size={4}
+          justifyContent="flex-end"
+          alignItems="center"
+          p={1}
+        >
+          {defineActions.actionList?.length > 0 &&
+            <Grid p={0.5}>
+              <Tooltip title={localeStr.quickActions}>
+                <IconButton
+                  color={quickActions ? 'secondary' : 'primary'}
+                  onClick={toggleQuickActions}
+                >
+                  <LayersOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          }
 
-        {showVisibleColumnsButton &&
-          <Grid p={0.5}>
-            <ColumnVisibilityPopper
-              tableName={tableName}
-              visibleColumns={visibleColumns}
-              setVisibleColumns={setVisibleColumns}
-              selectedLocale={selectedLocale}
-              localeStr={localeStr}
-            />
-          </Grid>
-        }
+          {showVisibleColumnsButton &&
+            <Grid p={0.5}>
+              <ColumnVisibilityPopper
+                tableName={tableName}
+                visibleColumns={visibleColumns}
+                setVisibleColumns={setVisibleColumns}
+                localeStr={localeStr}
+              />
+            </Grid>
+          }
 
-        {newItemButton &&
-          <Grid p={0.5}>
-            <NewItemButton
-              label={newItemButton.label}
-              icon={newItemButton.icon}
-              buttonClick={newItemButton.buttonClick}
-            />
-          </Grid>
-        }
+          {newItemButton &&
+            <Grid p={0.5}>
+              <NewItemButton
+                label={newItemButton.label}
+                icon={newItemButton.icon}
+                buttonClick={newItemButton.buttonClick}
+              />
+            </Grid>
+          }
 
-      </Grid>
+        </Grid>
+      }
+
       <ActionButtons
         fetchData={fetchData}
         quickActions={quickActions}
         quickSelectedRows={quickSelectedRows}
         defineActions={defineActions}
         activeFilters={activeFilters}
-        selectedLocale={selectedLocale}
         localeStr={localeStr}
       />
     </>

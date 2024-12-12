@@ -1,51 +1,50 @@
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
 import Grid from "@mui/material/Grid2";
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Popover from '@mui/material/Popover';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import 'dayjs/locale/it';
-import qs from 'qs';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { ActiveFilter, DynamicFilterOptions, DynColumnsDef, FilterValue } from './DynamicTypes';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
+import 'dayjs/locale/it';
+import 'dayjs/locale/en';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { ActiveFilter, DynamicFilterOptions, DynColumnsDef, i18nStrings } from './DynamicTypes';
 
 /* ---------- Update Filters Function ---------- */
 
-function updateFilters<T>(
+export function updateFilters<T>(
   value: unknown,
+  index: number = 0,
+  comparator: string,
   column: DynColumnsDef<T>,
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>,
 ) {
   setActiveFilters(prevFilters => {
 
-    const filterIndex = prevFilters.findIndex(filter => filter.filterColumn === column.accessor);
+    const filterIndex = prevFilters.findIndex(filter =>
+      filter.filterColumn === column.accessor
+      && filter.filterIndex === index
+      && filter.filterComparator === comparator
+      && filter.filterType === column.filterOptions?.type
+    );
 
-    if (value === undefined || value === '') {
-      return prevFilters.filter((filter, index) => index !== filterIndex);
+    if (!value) {
+      return prevFilters.filter(filter => filter.filterColumn !== column.accessor || filter.filterIndex !== index);
     }
 
     const currentFilter = {
+      filterIndex: index,
       filterColumn: column.accessor,
       filterValue: value,
       filterType: column.filterOptions?.type,
+      filterComparator: comparator,
     } as ActiveFilter;
 
     if (filterIndex === -1) {
@@ -57,80 +56,37 @@ function updateFilters<T>(
   });
 }
 
-/* ---------- Filter Switcher ---------- */
-
-interface FilterSwitcherProps<T> {
-  column: DynColumnsDef<T>;
-  filterValue: FilterValue;
-  selectedFilterOption?: DynamicFilterOptions;
-  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
-  handleClose: () => void;
-}
-
-function FilterSwitcher<T>(props: FilterSwitcherProps<T>) {
-
-  const { column, filterValue, selectedFilterOption, setActiveFilters, handleClose } = props;
-
-  switch (column.filterOptions?.type) {
-    case 'string':
-      return (
-        <StringFilterForm
-          key={column.accessor}
-          column={column}
-          filterValue={filterValue}
-          setActiveFilters={setActiveFilters}
-          closePopover={handleClose}
-        />
-      );
-
-    case 'select':
-      return (
-        <SelectFilterForm
-          key={column.accessor}
-          column={column}
-          selectedFilterOption={selectedFilterOption}
-          setActiveFilters={setActiveFilters}
-          closePopover={handleClose}
-        />
-      );
-
-    case 'date':
-      return (
-        <DateFilterForm
-          key={column.accessor}
-          column={column}
-          filterValue={filterValue}
-          setActiveFilters={setActiveFilters}
-          closePopover={handleClose}
-        />
-      );
-
-    default:
-      return null;
-  }
-};
-
 /* ---------- String Filter ---------- */
 
 interface StringFilterFormProps<T> {
   column: DynColumnsDef<T>;
-  filterValue?: FilterValue;
+  filterMode: 'single' | 'multiple';
+  activeFilters: ActiveFilter[];
+  filterIndex?: number;
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   closePopover?: () => void;
   aloneFilter?: boolean;
+  localeStr: i18nStrings['filters'];
 }
 
 export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
 
   const {
     column,
-    filterValue,
+    filterMode,
+    activeFilters,
+    filterIndex,
     setActiveFilters,
     closePopover,
-    aloneFilter = false
+    aloneFilter = false,
+    localeStr,
   } = props;
 
-  const [inputValue, setInputValue] = useState<string>(filterValue?.toString() ?? '');
+  const filterValue = useMemo(() =>
+    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
+    , [activeFilters, column.accessor, filterIndex]);
+
+  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' ? filterValue?.toString() : '');
 
   useEffect(() => {
     if (aloneFilter) {
@@ -139,9 +95,12 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
   }, [filterValue, aloneFilter]);
 
   const handleApply = () => {
-    updateFilters(inputValue, column, setActiveFilters);
+    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
   };
+
+  const isApplyDisabled = useMemo(() => inputValue === filterValue || !inputValue, [inputValue, filterValue]);
 
   return (
     <Grid
@@ -156,9 +115,9 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
           label={!aloneFilter ? column.label : ''}
           placeholder={aloneFilter ? column.label : ''}
           variant="outlined"
-          value={inputValue}
+          value={aloneFilter ? (activeFilters[0]?.filterValue ?? '') : inputValue}
           onChange={aloneFilter
-            ? (event) => updateFilters(event.target.value, column, setActiveFilters)
+            ? (event) => updateFilters(event.target.value, 0, '', column, setActiveFilters)
             : (event) => setInputValue(event.target.value)
           }
           aria-label="filter-text"
@@ -171,10 +130,14 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
                 <IconButton
                   size="small"
                   onClick={aloneFilter
-                    ? () => updateFilters('', column, setActiveFilters)
+                    ? () => setActiveFilters([])
                     : () => setInputValue('')
                   }
-                  sx={{ visibility: inputValue ? 'visible' : 'hidden' }}
+                  sx={{ 
+                    visibility: aloneFilter 
+                    ? (activeFilters.length ? 'visible' : 'hidden' )
+                    : inputValue ? 'visible' : 'hidden'
+                  }}
                   aria-label="clear-filter"
                 >
                   <CloseIcon fontSize="small" />
@@ -192,10 +155,121 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
             color="primary"
             size="small"
             onClick={handleApply}
-            disabled={inputValue === (filterValue ?? '')}
+            disabled={isApplyDisabled}
             aria-label="apply-filter"
           >
-            Apply
+            {localeStr.apply}
+          </Button>
+        </Grid>
+      }
+    </Grid>
+  );
+}
+
+/* ---------- Number Filter ---------- */
+
+interface NumberFilterFormProps<T> {
+  column: DynColumnsDef<T>;
+  filterMode: 'single' | 'multiple';
+  activeFilters: ActiveFilter[];
+  filterIndex?: number;
+  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
+  closePopover?: () => void;
+  aloneFilter?: boolean;
+  localeStr: i18nStrings['filters'];
+}
+
+export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
+
+  const {
+    column,
+    filterMode,
+    activeFilters,
+    filterIndex,
+    setActiveFilters,
+    closePopover,
+    aloneFilter = false,
+    localeStr,
+  } = props;
+
+  const filterValue = useMemo(() =>
+    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
+    , [activeFilters, column.accessor, filterIndex]);
+
+  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' ? filterValue?.toString() : '');
+
+  useEffect(() => {
+    if (aloneFilter) {
+      setInputValue(filterValue?.toString() ?? '');
+    }
+  }, [filterValue, aloneFilter]);
+
+  const handleApply = () => {
+    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
+    closePopover?.();
+  };
+
+  const isApplyDisabled = useMemo(() => inputValue === filterValue || !inputValue, [inputValue, filterValue]);
+
+  return (
+    <Grid
+      container
+      alignItems="center"
+      gap={2}
+    >
+      <Grid size={12}>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          label={!aloneFilter ? column.label : ''}
+          placeholder={aloneFilter ? column.label : ''}
+          variant="outlined"
+          value={aloneFilter ? (activeFilters[0]?.filterValue ?? '') : inputValue}
+          onChange={aloneFilter
+            ? (event) => updateFilters(event.target.value, 0, '', column, setActiveFilters)
+            : (event) => setInputValue(event.target.value)
+          }
+          aria-label="filter-number"
+          slotProps={{
+            input: {
+              startAdornment: aloneFilter && (
+                <SearchIcon sx={{ marginRight: '.4rem' }} />
+              ),
+              endAdornment: filterValue ? (
+                <IconButton
+                  size="small"
+                  onClick={aloneFilter
+                    ? () => setActiveFilters([])
+                    : () => setInputValue('')
+                  }
+                  sx={{
+                    visibility: aloneFilter
+                      ? (activeFilters.length ? 'visible' : 'hidden')
+                      : inputValue ? 'visible' : 'hidden'
+                  }}
+                  aria-label="clear-filter"
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              ) : null,
+            }
+          }}
+        />
+      </Grid>
+      {!aloneFilter &&
+        <Grid size={12}>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={handleApply}
+            disabled={isApplyDisabled}
+            aria-label="apply-filter"
+          >
+            {localeStr.apply}
           </Button>
         </Grid>
       }
@@ -207,27 +281,45 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
 
 interface SelectFilterFormProps<T> {
   column: DynColumnsDef<T>;
-  selectedFilterOption?: DynamicFilterOptions;
+  filterMode: 'single' | 'multiple';
+  filterIndex?: number;
+  activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   closePopover: () => void;
+  localeStr: i18nStrings['filters'];
 }
 
 export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
 
   const {
     column,
-    selectedFilterOption,
+    filterMode,
+    activeFilters,
+    filterIndex,
     setActiveFilters,
     closePopover,
+    localeStr,
   } = props;
+
+  const filterValue = useMemo(() => activeFilters?.find(filter =>
+    filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
+    , [activeFilters, column.accessor, filterIndex]);
+  const selectedFilterOption = useMemo(() => column.filterOptions?.options?.find(option => option.id === filterValue), [column.filterOptions?.options, filterValue]);
 
   const [localSelectedOption, setLocalSelectedOption] = useState<DynamicFilterOptions | null>(
     selectedFilterOption ?? null
   );
 
   const handleApply = () => {
-    updateFilters(localSelectedOption ? localSelectedOption.id : undefined, column, setActiveFilters);
-    closePopover();
+    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    updateFilters(
+      localSelectedOption ? localSelectedOption.id : undefined,
+      columnFilters,
+      '',
+      column,
+      setActiveFilters
+    );
+    closePopover?.();
   };
 
   return (
@@ -241,7 +333,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
           size='small'
           blurOnSelect
           clearOnBlur
-          defaultValue={selectedFilterOption}
+          defaultValue={filterMode === 'single' ? selectedFilterOption : null}
           onChange={(event, option, reason) => {
             if (reason === 'selectOption') {
               setLocalSelectedOption(option);
@@ -273,7 +365,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
           disabled={localSelectedOption?.id === selectedFilterOption?.id}
           aria-label="apply-filter"
         >
-          Apply
+          {localeStr.apply}
         </Button>
       </Grid>
     </Grid>
@@ -284,66 +376,83 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
 
 interface DateFilterFormProps<T> {
   column: DynColumnsDef<T>;
-  filterValue?: FilterValue;
+  filterIndex?: number;
+  activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   closePopover: () => void;
+  localeStr: i18nStrings['filters'];
 }
 
 export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
 
   const {
     column,
-    filterValue,
+    filterIndex,
+    activeFilters,
     setActiveFilters,
     closePopover,
+    localeStr,
   } = props;
 
-  const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
-    date_start: filterValue?.toString().split('|')[0] ?? '',
-    date_end: filterValue?.toString().split('|')[1] ?? '',
-  });
 
-  const updateDateRange = (start: string, end: string) => {
-    setValue(prevDate => ({
-      date_start: start ?? prevDate.date_start,
-      date_end: end ?? prevDate.date_end,
-    }));
+  const dateValue = useMemo(() =>
+    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue as string ?? null
+    , [activeFilters, column.accessor, filterIndex]);
+
+  const [dateError, setDateError] = useState<boolean>(false);
+  const [localDate, setValue] = useState<string>(dateValue ?? '');
+
+  const updateDateRange = (date: string) => {
+    console.log(date);
+    setDateError(false);
+    setValue(date);
   }
 
-  const applyFilters = () => {
-    updateFilters(`${localDate.date_start}|${localDate.date_end}`, column, setActiveFilters);
-    closePopover();
+  const [selectType, setSelectType] = useState<'from' | 'to'>('from');
+  const updateFilterType = (event: SelectChangeEvent<"from" | "to">) => {
+    setSelectType(event.target.value as 'from' | 'to');
+  }
+
+  const handleApply = () => {
+    const dateFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    updateFilters(localDate, dateFilters, selectType, column, setActiveFilters);
+    closePopover?.();
   };
 
-  const isApplyDisabled = useMemo(() => {
-    return localDate.date_start === (filterValue as string)?.split('|')[0] && localDate.date_end === (filterValue as string)?.split('|')[1];
-  }, [filterValue, localDate.date_start, localDate.date_end]);
+  const isApplyDisabled = useMemo(() => localDate === dateValue || dateError || !localDate, [localDate, dateValue, dateError]);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
-      <Grid
-        container
-        size={12}
-        alignItems="center"
-        gap={1}
-      >
+    <Grid
+      container
+      size={12}
+      alignItems="center"
+      gap={1}
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr.dateLanguage}>
         <Grid size={12}>
-          <DatePicker
-            label="Data Inizio"
-            defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
-            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), undefined) : null}
-            sx={{
-              width: '100%',
-            }}
-          />
+          <Select
+            fullWidth
+            value={selectType}
+            onChange={updateFilterType}
+            size='small'
+          >
+            <MenuItem value='from' > {localeStr.dateFrom} </MenuItem>
+            <MenuItem value='to'> {localeStr.dateTo} </MenuItem>
+          </Select>
         </Grid>
+
         <Grid size={12}>
           <DatePicker
-            label="Data Fine"
-            defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-            onChange={(date, context) => !context.validationError ? updateDateRange(undefined, date?.toISOString()) : null}
-            sx={{
-              width: '100%',
+            label={localeStr.date}
+            defaultValue={localDate ? dayjs(localDate) : null}
+            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString()) : null}
+            onError={(error) => setDateError(Boolean(error))}
+            format='DD/MM/YYYY'
+            slotProps={{
+              textField: {
+                size: 'small',
+                fullWidth: true,
+              }
             }}
           />
         </Grid>
@@ -353,457 +462,160 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
             variant='contained'
             color='primary'
             size='small'
-            onClick={applyFilters}
+            onClick={handleApply}
             disabled={isApplyDisabled}
           >
-            Apply
+            {localeStr.apply}
           </Button>
         </Grid>
-      </Grid>
-    </LocalizationProvider>
-  );
-}
-
-/* ---------- Filter Chips ---------- */
-
-interface FilterChip<T> {
-  column: DynColumnsDef<T>;
-  activeFilters?: ActiveFilter[];
-  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
-}
-
-export function FilterChip<T>(props: FilterChip<T>) {
-
-  const { column, activeFilters, setActiveFilters } = props;
-
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const handleClose = () => setAnchorEl(null);
-  const handleChipClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const open = Boolean(anchorEl);
-
-  const filterValue = useMemo(() => activeFilters?.find(filter => filter.filterColumn === column.accessor)?.filterValue ?? null, [activeFilters, column.accessor]);
-  const selectedFilterOption = useMemo(() => column.filterOptions?.options?.find(option => option.id === filterValue), [column.filterOptions, filterValue]);
-
-  const dateFilterValue = useMemo(() => {
-    if (column.filterOptions?.type !== 'date') return '';
-
-    const dateValue = filterValue as string;
-    const isoDateStart = dateValue?.split('|')[0];
-    const isoDateEnd = dateValue?.split('|')[1];
-
-    const dateStart = isoDateStart ? dayjs(isoDateStart).format('DD/MM/YYYY') : '';
-    const dateEnd = isoDateEnd ? dayjs(isoDateEnd).format('DD/MM/YYYY') : '';
-
-    const formattedDate = dateEnd ? `${dateStart} - ${dateEnd}` : dateStart;
-    return formattedDate;
-
-
-  }, [column.filterOptions?.type, filterValue]);
-
-  const chipLabel = useMemo(() => {
-    switch (column.filterOptions?.type) {
-      case 'select':
-        return selectedFilterOption?.label;
-      case 'date':
-        return dateFilterValue;
-      default:
-        return filterValue as string;
-    }
-  }, [column.filterOptions?.type, selectedFilterOption?.label, dateFilterValue, filterValue]);
-
-
-  const clearFilter = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    e.stopPropagation();
-    updateFilters(undefined, column, setActiveFilters);
-    handleClose();
-  }
-
-  return (
-    <Grid p={1}>
-      <Chip
-        clickable
-        skipFocusWhenDisabled
-        variant='outlined'
-        size='medium'
-        onClick={handleChipClick}
-        icon={filterValue
-          ? <HighlightOffIcon
-            fontSize='small'
-            color='action'
-            onClick={clearFilter}
-          />
-          : <AddCircleOutlineIcon fontSize='small' color='action' />
-        }
-        onDelete={filterValue ? handleChipClick : undefined}
-        deleteIcon={<KeyboardArrowDownIcon fontSize='small' />}
-        label={
-          <Grid
-            container
-            justifyContent='space-between'
-            alignItems='center'
-            gap={1}
-          >
-            <Grid height={'18px'}>
-              <Typography
-                variant='body2'
-              >
-                {column.label}
-              </Typography>
-            </Grid>
-
-            {filterValue && (
-              <>
-                <Divider orientation='vertical' flexItem />
-
-                <Grid height={'18px'}>
-                  <Typography
-                    variant='body2'
-                    color='primary'
-                  >
-                    {chipLabel}
-                  </Typography>
-                </Grid>
-              </>
-            )}
-
-          </Grid>
-        }
-        sx={{
-          borderStyle: !filterValue ? 'dashed' : 'solid',
-        }}
-      />
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        slotProps={{
-          paper: {
-            variant: 'outlined',
-            sx: {
-              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-            }
-          }
-        }}
-      >
-        <Grid
-          container
-          size={12}
-          p={2}
-          gap={1}
-          maxWidth={300}
-        >
-
-          <Grid size={12}>
-            <Typography
-              variant='subtitle2'
-              color='textSecondary'
-              fontWeight='bold'
-            >
-              {`Filter by ${column.label}`}
-            </Typography>
-          </Grid>
-
-          <Grid size={12}>
-            <FilterSwitcher
-              column={column}
-              filterValue={filterValue}
-              selectedFilterOption={selectedFilterOption}
-              setActiveFilters={setActiveFilters}
-              handleClose={handleClose}
-            />
-          </Grid>
-
-        </Grid>
-      </Popover>
+      </LocalizationProvider>
     </Grid>
   );
 }
 
-interface MoreFiltersChipProps<T> {
-  columns: DynColumnsDef<T>[];
-  activeFilters: ActiveFilter[];
-  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
-}
+/* ---------- Multiple Date Filter ---------- */
 
-export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
+// interface MultipleDateFilterFormProps<T> {
+//   column: DynColumnsDef<T>;
+//   filterMode: 'single' | 'multiple';
+//   filterIndex?: number;
+//   activeFilters: ActiveFilter[];
+//   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
+//   closePopover: () => void;
+// }
 
-  const { columns, activeFilters, setActiveFilters } = props;
+// export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>) {
 
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const handleChipClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const open = Boolean(anchorEl);
-
-  const [selectedColumn, setSelectedColumn] = useState<DynColumnsDef<T> | null>(null);
-  const handleColumnSelect = (column: DynColumnsDef<T>) => {
-    setSelectedColumn(column);
-  }
-
-  const filterValue = useMemo(() => activeFilters?.find(filter => filter.filterColumn === selectedColumn?.accessor)?.filterValue ?? null, [activeFilters, selectedColumn?.accessor]);
-  const selectedFilterOption = useMemo(() => selectedColumn?.filterOptions?.options?.find(option => option.id === filterValue), [selectedColumn?.filterOptions, filterValue]);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-    setSelectedColumn(null);
-  }
-
-  return (
-    <Grid p={1}>
-      <Chip
-        clickable
-        skipFocusWhenDisabled
-        variant='outlined'
-        size='medium'
-        onClick={handleChipClick}
-        icon={<AddCircleOutlineIcon fontSize='small' color='action' />}
-        label='More filters'
-        deleteIcon={<KeyboardArrowDownIcon fontSize='small' />}
-        sx={{
-          borderStyle: 'dashed',
-        }}
-      />
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        slotProps={{
-          paper: {
-            variant: 'outlined',
-            elevation: 0,
-            sx: {
-              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-            }
-          }
-        }}
-      >
-        <Grid
-          container
-          size={12}
-          gap={1}
-          maxWidth={300}
-        >
-
-          {!selectedColumn ? (
-            <List dense sx={{ width: 200 }}>
-              {columns.map(column => {
-                return (
-                  <ListItemButton
-                    key={column.accessor}
-                    alignItems='center'
-                    onClick={() => handleColumnSelect(column)}
-                  >
-                    <ListItemIcon sx={{ minWidth: '30px' }}>
-                      <AddCircleOutlineIcon fontSize='small' color='action' />
-                    </ListItemIcon>
-                    <ListItemText>
-                      {column.label}
-                    </ListItemText>
-                  </ListItemButton>
-                );
-              })}
-            </List>
-          ) : (
-            <Grid
-              container
-              size={12}
-              gap={1}
-              p={2}
-            >
-              <Grid
-                container
-                size={12}
-                justifyContent='flex-start'
-                alignItems='center'
-                gap={1}
-              >
-
-                <Grid>
-                  <IconButton
-                    size='small'
-                    onClick={() => setSelectedColumn(null)}
-                  >
-                    <KeyboardArrowLeftIcon fontSize='small' />
-                  </IconButton>
-                </Grid>
-
-                <Grid>
-                  <Typography
-                    variant='subtitle2'
-                    color='textSecondary'
-                    fontWeight='bold'
-                    height='18px'
-                  >
-                    {`Filter by ${selectedColumn?.label}`}
-                  </Typography>
-                </Grid>
-              </Grid>
-
-              <Grid size={12}>
-                <FilterSwitcher
-                  column={selectedColumn}
-                  filterValue={filterValue}
-                  selectedFilterOption={selectedFilterOption}
-                  setActiveFilters={setActiveFilters}
-                  handleClose={handleClose}
-                />
-              </Grid>
-            </Grid>
-          )}
-
-        </Grid>
-      </Popover>
-    </Grid>
-  );
-}
+//   const {
+//     column,
+//     filterMode,
+//     filterIndex,
+//     activeFilters,
+//     setActiveFilters,
+//     closePopover,
+//   } = props;
 
 
-/* ---------- Main Component ---------- */
+//   const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
+//   const minDate = dateFilters?.find(filter => filter.filterComparator === 'dateMin')?.filterValue as string;
+//   const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
 
-export interface DynamicSimpleFiltersProps<T> {
-  columns: DynColumnsDef<T>[];
-  onLoadQuery?: string;
-  activeFilters: ActiveFilter[];
-  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
-}
+//   const [dateError, setDateError] = useState<boolean>(false);
+//   const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
+//     date_start: filterMode === 'single' ? minDate : '',
+//     date_end: filterMode === 'single' ? maxDate : '',
+//   });
 
-export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
+//   const updateDateRange = (date: string, type: 'start' | 'end') => {
+//     setDateError(false);
+//     console.log(date);
+//     setValue(prevDate => ({
+//       date_start: type === 'start' ? date : prevDate.date_start,
+//       date_end: type === 'end' ? date : prevDate.date_end
+//     }));
+//   }
 
-  const { columns, onLoadQuery, activeFilters, setActiveFilters } = props;
+//   const [filterType, setFilterType] = useState<'single' | 'range'>(minDate && maxDate ? 'range' : 'single');
+//   const updateFilterType = (event: SelectChangeEvent<"single" | "range">) => {
+//     if (filterType === 'single') {
+//       setValue(prevDate => ({
+//         date_start: prevDate.date_start,
+//         date_end: '',
+//       }));
+//     }
+//     setFilterType(event.target.value as 'single' | 'range');
+//   }
 
-  const isFilterActive = useMemo(() => {
-    return (column: DynColumnsDef<T>) => activeFilters.some(filter => filter.filterColumn === column.accessor);
-  }, [activeFilters]);
+//   const handleApply = () => {
 
-  const filterableColumns = columns.filter(column => column.filterOptions);
-  const priorityFilterColumns = filterableColumns.filter(column => column.filterOptions?.priority || isFilterActive(column));
+//     const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
+//     const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
 
-  const visibleFilterColumns = priorityFilterColumns.length > 0
-    ? priorityFilterColumns
-    : filterableColumns;
+//     if (filterType === 'single') {
+//       console.log('Updating filter: ', dateMinFilters, dateMaxFilters);
+//       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
+//       if (localDate.date_end) updateFilters(undefined, dateMaxFilters, 'dateMax', column, setActiveFilters);
+//     } else {
+//       console.log('Updating filters: ', dateMinFilters, dateMaxFilters);
+//       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
+//       updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
+//     }
+//     closePopover?.();
+//   };
 
-  const moreFilterColumns = useMemo(() => {
-    return visibleFilterColumns.length !== filterableColumns.length
-      ? filterableColumns.filter(column => !column.filterOptions?.priority && !isFilterActive(column))
-      : [];
-  }, [filterableColumns, isFilterActive, visibleFilterColumns]);
+//   const isApplyDisabled = useMemo(() => {
+//     if (filterType === 'single') {
+//       return localDate.date_start === minDate || !localDate.date_start || dateError;
+//     } else {
+//       return !localDate.date_start || !localDate.date_end || dateError;
+//     }
+//   }, [filterType, localDate.date_start, localDate.date_end, minDate, dateError]);
 
-  const singleTextFilter = filterableColumns.length === 1
-    ? filterableColumns.find(column => column.filterOptions?.type === 'string')
-    : undefined;
+//   return (
+//     <Grid
+//       container
+//       size={12}
+//       alignItems="center"
+//       gap={1}
+//     >
+//       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
+//         <Grid size={12}>
+//           <Select
+//             fullWidth
+//             value={filterType}
+//             onChange={updateFilterType}
+//             size='small'
+//           >
+//             <MenuItem value='single' > Data Singola </MenuItem>
+//             <MenuItem value='range'> Intervallo </MenuItem>
+//           </Select>
+//         </Grid>
 
-  const singleFilterValue = singleTextFilter
-    ? activeFilters.find(filter => filter.filterColumn === singleTextFilter.accessor)?.filterValue
-    : undefined;
-
-  /* Load filters from querystring */
-  useEffect(() => {
-    if (!onLoadQuery) return;
-
-    const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
-    const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
-
-    const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
-      const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
-      switch (typeof selectColumn?.filterOptions?.options?.[0].id) {
-        case 'string':
-          return { filterColumn, filterValue } as ActiveFilter;
-        case 'number':
-          return { filterColumn, filterValue: Number(filterValue) } as ActiveFilter;
-        case 'boolean':
-          return { filterColumn, filterValue: JSON.parse(filterValue.toLowerCase()) } as ActiveFilter;
-        default:
-          return { filterColumn, filterValue } as ActiveFilter;
-      }
-    });
-
-    setActiveFilters(updatedActiveFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const RenderChipFilters = useCallback(() => {
-    return (
-      <Grid
-        container
-        size={12}
-        justifyContent='flex-start'
-        alignItems='center'
-      >
-        <Grid container>
-          {visibleFilterColumns.map(column => {
-            return (
-              <FilterChip
-                key={column.accessor}
-                column={column}
-                activeFilters={activeFilters}
-                setActiveFilters={setActiveFilters}
-              />
-            )
-          })}
-
-          {moreFilterColumns.length > 0 && (
-            <MoreFiltersChip
-              columns={moreFilterColumns}
-              activeFilters={activeFilters}
-              setActiveFilters={setActiveFilters}
-            />
-          )}
-        </Grid>
-
-        <Grid>
-          <Chip
-            clickable
-            label='Clear all filters'
-            variant='outlined'
-            size='small'
-            color='primary'
-            onClick={() => { if (activeFilters.length > 0) setActiveFilters([]) }}
-            sx={{ borderStyle: 'none' }}
-          />
-        </Grid>
-
-      </Grid>
-    );
-  }, [activeFilters, moreFilterColumns, setActiveFilters, visibleFilterColumns]);
-
-  return (
-    <Grid
-      container
-      direction="row"
-      justifyContent="flex-start"
-      alignItems="center"
-      size={{
-        sm: 8,
-        md: 8
-      }}
-    >
-
-      {singleTextFilter ? (
-        <Grid padding={1}>
-          <StringFilterForm
-            column={singleTextFilter}
-            filterValue={singleFilterValue}
-            setActiveFilters={setActiveFilters}
-            aloneFilter
-          />
-        </Grid>
-      ) : (
-        <RenderChipFilters />
-      )}
-
-
-    </Grid>
-  );
-}
+//         <Grid size={12}>
+//           <DatePicker
+//             label={filterType === 'single' ? 'Data' : 'Data Inizio'}
+//             defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+//             onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
+//             maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+//             onError={(error) => setDateError(Boolean(error))}
+//             slotProps={{
+//               textField: {
+//                 size: 'small',
+//                 fullWidth: true,
+//               }
+//             }}
+//           />
+//         </Grid>
+//         {filterType === 'range' &&
+//           <Grid size={12}>
+//             <DatePicker
+//               label="Data Fine"
+//               defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
+//               onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
+//               minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
+//               onError={(error) => setDateError(Boolean(error))}
+//               slotProps={{
+//                 textField: {
+//                   size: 'small',
+//                   fullWidth: true,
+//                 }
+//               }}
+//             />
+//           </Grid>
+//         }
+//         <Grid size={12}>
+//           <Button
+//             fullWidth
+//             variant='contained'
+//             color='primary'
+//             size='small'
+//             onClick={handleApply}
+//             disabled={isApplyDisabled}
+//           >
+//             Apply
+//           </Button>
+//         </Grid>
+//       </LocalizationProvider>
+//     </Grid>
+//   );
+// }

@@ -175,7 +175,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
 
   const blankRows = !autoSizeHeight
     ? rowsPerPage - currentPageRows.length
-    : 0;
+    : 5 - currentPageRows.length || 0;
 
   const isQuickSelected = useCallback((row: T) => {
     return quickSelectedRows.some(quickRow => quickRow.id === row.id);
@@ -245,10 +245,10 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     <TableBody>
       {isFetching ? SkeletonRows : (
         // Table rows
-        (currentPageRows?.map((row) => (
+        (currentPageRows?.map((row, index) => (
           <StyledTableRow
             hover
-            key={`table-row-${row.id}`}
+            key={`table-row-${row.id}-${index}`}
             selected={isQuickSelected(row)}
             onClick={quickActions
               ? () => handleCheckBoxSelect(row)
@@ -258,7 +258,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
           >
             {quickActions &&
               <StyledTableCell
-                key={`checkbox-${row.id}`}
+                key={`checkbox-${row.id}-${index}`}
                 padding="checkbox"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -277,7 +277,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
 
               return (
                 <DynamicCellCreator<T>
-                  key={`custom-cell-${index}`}
+                  key={`custom-cell-${column.accessor}-${index}`}
                   row={row}
                   column={column}
                   variant={variant}

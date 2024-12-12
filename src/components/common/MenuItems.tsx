@@ -33,6 +33,25 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
 
   const theme = useTheme();
 
+  const getLongestMatchingLink = (items: T[], selectedLink: string) => {
+    let longestMatch = '';
+
+    items.forEach(item => {
+      if (
+        selectedLink === item.link ||
+        selectedLink.startsWith(`${item.link}/`)
+      ) {
+        if (item.link.length > longestMatch.length) {
+          longestMatch = item.link;
+        }
+      }
+    });
+
+    return longestMatch;
+  };
+
+  const longestMatchingLink = getLongestMatchingLink(displayItems, selectedLink);
+
   return (
     <>
       <List {...listProps} sx={{ ...listStyle }}>
@@ -46,7 +65,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
               onClick={() => onSelectItem(listType, item.title, item.link)}
               onMouseEnter={async () => onHoverItem && await onHoverItem(listType, item.title, item.link)}
               sx={{
-                ...(selectedLink === item.link && {
+                ...(longestMatchingLink === item.link && {
                   color: (theme) => theme.palette.primary.main,
                 }),
                 justifyContent:'center',
@@ -57,7 +76,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
             >
               <ListItemIcon
                 sx={{
-                  ...(selectedLink === item.link && {
+                  ...(longestMatchingLink === item.link && {
                     color: (theme) => theme.palette.primary.main,
                   }),
                   minWidth: '32px',

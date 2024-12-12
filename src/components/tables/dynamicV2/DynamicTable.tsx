@@ -6,10 +6,10 @@ import qs from 'qs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DynamicActionHeader } from './DynamicActionHeader';
 import { CommonBodyCreator } from './DynamicCommons';
-import { DynamicSimpleFilters } from './DynamicFilters';
+import { DynamicSimpleFilters } from './DynamicFilterHeader';
 import { DynamicTableFooter } from './DynamicPagination';
-import { en_locale, it_locale } from './DynamicTableLocale';
 import { ActiveFilter, DefineActionsProps, DynColumnsDef, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
+import { localizedTableStrings } from "./DynamicTableLocale";
 
 export function DynamicTable<T extends Record<string, any>>(props: DynamicTableProps<T>) {
 
@@ -31,6 +31,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     columns,
     expectedRowCount,
     variant = 'standard',
+    filterMode = 'single',
     staticMode = false,
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
@@ -38,7 +39,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     paginationOptions: {
       customPageRowCount,
       customSelectPages,
-      autoSizeHeight = false,
+      autoSizeHeight = true,
       hideFooter = false,
     },
   } = tableInfo;
@@ -50,6 +51,11 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   } = fetchInfo;
 
   const { onLoadQuery, setCurrentQuery } = queryInfo;
+
+  const currentLocale = useMemo(() => ({
+    ...localizedTableStrings[tableLocale],
+    ...localeStr,
+  }), [tableLocale, localeStr]);
 
   /* Page index */
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -85,17 +91,10 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   /* Has table loaded */
   const [hasTableLoaded, setHasTableLoaded] = useState<boolean>(false);
 
-  /* Selected locale */
-  const selectedLocale = tableLocale === 'it' ? it_locale : en_locale;
-
   /* Fetching event function */
   const fetchEvent = async (fetchType: 'first' | 'next' = 'next') => {
     if (fetchType === 'first' || highestFetchedPage < currentPage) {
-
-      const itemsPerPage = prefetchNextPage && rowsPerPage * columns?.length < 100
-        ? rowsPerPage * 2
-        : rowsPerPage;
-
+      const itemsPerPage = prefetchNextPage ? rowsPerPage * 2 : rowsPerPage;
       await fetchData(itemsPerPage, activeFilters, fetchType === 'first');
       setHasDataFetched(true);
       setHighestFetchedPage(fetchType === 'first' ? 0 : currentPage);
@@ -195,13 +194,14 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     >
 
       <Grid container>
-
         {/* Filters Header */}
         <DynamicSimpleFilters
           columns={columns}
+          filterMode={filterMode}
           onLoadQuery={onLoadQuery}
           activeFilters={activeFilters}
           setActiveFilters={setActiveFilters}
+          localeStr={currentLocale.filters}
         />
 
         {/* Action Header */}
@@ -218,8 +218,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           activeFilters={activeFilters}
           newItemButton={newItemButton}
           showVisibleColumnsButton={showVisibleColumnsButton}
-          selectedLocale={selectedLocale}
-          localeStr={localeStr}
+          localeStr={currentLocale.header}
         />
       </Grid>
 
@@ -272,8 +271,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
           customSelectPages={customSelectPages}
-          selectedLocale={selectedLocale}
-          localeStr={localeStr}
+          localeStr={currentLocale.footer}
           isTableEmpty={isTableEmpty}
           hideFooter={hideFooter}
           isFetching={isActuallyFetching}

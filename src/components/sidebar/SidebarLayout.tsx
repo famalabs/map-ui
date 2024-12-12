@@ -1,11 +1,9 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Fab from '@mui/material/Fab';
-import IconButton from "@mui/material/IconButton";
 import List, { ListOwnProps } from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { alpha, styled, Theme, useTheme } from '@mui/material/styles';
@@ -57,19 +55,12 @@ const MiniDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== "open"
     ...(!open && {
       ...closedMixin(theme),
       "& .MuiDrawer-paper": {
-        ...closedMixin(theme), overflow: "visible"
+        ...closedMixin(theme),
+        overflow: "visible"
       },
     }),
   })
 ) as typeof Drawer;
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-}));
 
 /* ------------ Swipeable Drawer ------------  */
 
@@ -97,7 +88,7 @@ const SwipeFab = styled(Fab)(({ theme }) => ({
   position: 'fixed',
   bottom: theme.spacing(2),
   left: theme.spacing(2),
-  zIndex: theme.zIndex.drawer - 1,
+  zIndex: theme.zIndex.drawer + 100,
   backgroundColor: alpha(theme.palette.grey[800], 0.3),
   boxShadow: 'none',
   '&:hover': {
@@ -114,7 +105,7 @@ export interface SidebarProps {
   mainContent: React.ReactNode;
 }
 
-const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent } : SidebarProps) => {
+const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }: SidebarProps) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -143,19 +134,6 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent } : Sideba
           onClose={() => setSidebarOpen(!sidebarOpen)}
           onOpen={() => setSidebarOpen(!sidebarOpen)}
         >
-          <Box component="span">
-            <DrawerHeader>
-              <IconButton
-                color='inherit'
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                <ChevronLeft />
-              </IconButton>
-            </DrawerHeader>
-          </Box>
-
-          <Divider />
-
           {children}
         </SwipeDrawer>
         {mainContent}
@@ -272,7 +250,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         )}
 
         {/* Custom Header */}
-        
+
         {sidebarOpen && customHeader}
 
         {!sidebarOpen && customHeaderCompact}
