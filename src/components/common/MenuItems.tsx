@@ -34,20 +34,17 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
   const theme = useTheme();
 
   const getLongestMatchingLink = (items: T[], selectedLink: string) => {
-    let longestMatch = '';
+    if (!items.length || !selectedLink) return '';
 
-    items.forEach(item => {
+    return items.reduce((longestMatch, item) => {
       if (
         selectedLink === item.link ||
         selectedLink.startsWith(`${item.link}/`)
       ) {
-        if (item.link.length > longestMatch.length) {
-          longestMatch = item.link;
-        }
+        return item.link.length > longestMatch.length ? item.link : longestMatch;
       }
-    });
-
-    return longestMatch;
+      return longestMatch;
+    }, '');
   };
 
   const longestMatchingLink = getLongestMatchingLink(displayItems, selectedLink);
@@ -55,7 +52,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
   return (
     <>
       <List {...listProps} sx={{ ...listStyle }}>
-        {displayItems.map((item, index) => (
+        {displayItems?.map((item, index) => (
           <ListItem
             key={`${item.title}-${index}`}
             component="div"
@@ -63,7 +60,7 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
           >
             <ListItemButton
               onClick={() => onSelectItem(listType, item.title, item.link)}
-              onMouseEnter={async () => onHoverItem && await onHoverItem(listType, item.title, item.link)}
+              onMouseEnter={async () => await onHoverItem?.(listType, item.title, item.link)}
               sx={{
                 ...(longestMatchingLink === item.link && {
                   color: (theme) => theme.palette.primary.main,

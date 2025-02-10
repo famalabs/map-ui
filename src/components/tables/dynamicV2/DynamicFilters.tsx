@@ -35,7 +35,7 @@ export function updateFilters<T>(
       && filter.filterType === column.filterOptions?.type
     );
 
-    if (!value) {
+    if (value === null || value === undefined || value === '') {
       return prevFilters.filter(filter => filter.filterColumn !== column.accessor || filter.filterIndex !== index);
     }
 
@@ -196,21 +196,32 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
     activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
     , [activeFilters, column.accessor, filterIndex]);
 
-  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' ? filterValue?.toString() : '');
-
+  const [inputValue, setInputValue] = useState<number | null>(filterMode === 'single' ? Number(filterValue) : null);
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (isNaN(Number(event.target.value))) {
+      setInputValue(null);
+      return;
+    }
+    if (aloneFilter) {
+      updateFilters(event.target.value, 0, '', column, setActiveFilters);
+    } else {
+      setInputValue(Number(event.target.value) || null);
+    }
+  }
+  
   useEffect(() => {
     if (aloneFilter) {
-      setInputValue(filterValue?.toString() ?? '');
+      setInputValue(Number(filterValue) || null);
     }
   }, [filterValue, aloneFilter]);
 
   const handleApply = () => {
-    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length ?? null);
     updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
   };
 
-  const isApplyDisabled = useMemo(() => inputValue === filterValue || !inputValue, [inputValue, filterValue]);
+  const isApplyDisabled = useMemo(() => inputValue === filterValue || (inputValue === null || inputValue === undefined), [inputValue, filterValue]);
 
   return (
     <Grid
@@ -226,14 +237,12 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
           label={!aloneFilter ? column.label : ''}
           placeholder={aloneFilter ? column.label : ''}
           variant="outlined"
-          value={aloneFilter ? (activeFilters[0]?.filterValue ?? '') : inputValue}
-          onChange={aloneFilter
-            ? (event) => updateFilters(event.target.value, 0, '', column, setActiveFilters)
-            : (event) => setInputValue(event.target.value)
-          }
+          value={aloneFilter ? (activeFilters[0]?.filterValue ?? null) : inputValue}
+          onChange={handleInputChange}
           aria-label="filter-number"
           slotProps={{
             input: {
+              type: 'number',
               startAdornment: aloneFilter && (
                 <SearchIcon sx={{ marginRight: '.4rem' }} />
               ),
@@ -242,7 +251,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
                   size="small"
                   onClick={aloneFilter
                     ? () => setActiveFilters([])
-                    : () => setInputValue('')
+                    : () => setInputValue(null)
                   }
                   sx={{
                     visibility: aloneFilter

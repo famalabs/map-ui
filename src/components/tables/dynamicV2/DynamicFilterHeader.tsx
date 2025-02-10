@@ -14,7 +14,7 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import qs from 'qs';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DateFilterForm, NumberFilterForm, SelectFilterForm, StringFilterForm, updateFilters } from './DynamicFilters';
 import { ActiveFilter, DynColumnsDef, i18nStrings } from './DynamicTypes';
 
@@ -33,12 +33,12 @@ interface FilterSwitcherProps<T> {
 
 function FilterSwitcher<T>(props: FilterSwitcherProps<T>) {
 
-  const { 
-    column, 
-    filterMode, 
+  const {
+    column,
+    filterMode,
     filterIndex,
-    activeFilters, 
-    setActiveFilters, 
+    activeFilters,
+    setActiveFilters,
     handleClose,
     localeStr
   } = props;
@@ -147,14 +147,14 @@ export function FilterChip<T>(props: FilterChip<T>) {
   }
 
   return (
-    <Grid p={1}>
+    <Grid>
       <Chip
         clickable
         skipFocusWhenDisabled
         variant='outlined'
         size='medium'
         onClick={handleChipClick}
-        icon={filterValue
+        icon={filterValue !== null
           ? (
             <Tooltip title={localeStr.removeFilter} arrow>
               <HighlightOffIcon
@@ -163,20 +163,21 @@ export function FilterChip<T>(props: FilterChip<T>) {
                 onClick={clearFilter}
               />
             </Tooltip>
-        )
+          )
           : (
             <Tooltip title={localeStr.addFilter} arrow>
               <AddCircleOutlineIcon fontSize='small' color='action' />
             </Tooltip>
           )
         }
-        onDelete={filterValue ? handleChipClick : undefined}
+        onDelete={filterValue !== null ? handleChipClick : undefined}
         deleteIcon={<KeyboardArrowDownIcon fontSize='small' />}
         label={
           <Grid
             container
             justifyContent='space-between'
             alignItems='center'
+            flexWrap='nowrap'
             gap={1}
           >
             <Grid>
@@ -188,7 +189,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
               </Typography>
             </Grid>
 
-            {filterValue && (
+            {filterValue !== null && (
               <>
                 <Divider orientation='vertical' flexItem />
 
@@ -205,7 +206,9 @@ export function FilterChip<T>(props: FilterChip<T>) {
           </Grid>
         }
         sx={{
-          borderStyle: 'dashed',
+          borderStyle: filterValue !== null ? 'solid' : 'dashed',
+          borderColor: filterValue !== null ? 'primary.main' : 'text.info',
+          minWidth: '80px',
         }}
       />
       <Popover
@@ -281,14 +284,14 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
   const handleColumnSelect = (column: DynColumnsDef<T>) => {
     setSelectedColumn(column);
   }
-  
+
   const handleClose = () => {
     setAnchorEl(null);
     setSelectedColumn(null);
   }
 
   return (
-    <Grid p={1}>
+    <Grid>
       <Chip
         clickable
         skipFocusWhenDisabled
@@ -309,6 +312,9 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
           </Typography>
         }
         deleteIcon={<KeyboardArrowDownIcon fontSize='small' />}
+        sx={{
+          minWidth: '80px',
+        }}
       />
       <Popover
         open={open}
@@ -414,15 +420,32 @@ interface ChipItems<T> extends DynColumnsDef<T> {
 export interface DynamicSimpleFiltersProps<T> {
   columns: DynColumnsDef<T>[];
   filterMode: 'single' | 'multiple';
-  onLoadQuery?: string;
+  onLoadQuery?: ActiveFilter[] | string;
+  setCurrentQuery?: Dispatch<React.SetStateAction<string>>;
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
+  fetchEvent: (fetchType?: "first" | "next") => Promise<void>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  setHighestFetchedPage: Dispatch<SetStateAction<number>>;
+  hasTableLoaded: boolean;
   localeStr: i18nStrings['filters'];
 }
 
 export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
 
-  const { columns, filterMode, onLoadQuery, activeFilters, setActiveFilters, localeStr } = props;
+  const {
+    columns,
+    filterMode,
+    onLoadQuery,
+    setCurrentQuery,
+    activeFilters,
+    setActiveFilters,
+    fetchEvent,
+    setCurrentPage,
+    setHighestFetchedPage,
+    hasTableLoaded,
+    localeStr
+  } = props;
 
   const isFilterActive = useMemo(() => {
     return (column: DynColumnsDef<T>) => activeFilters.some(filter =>
@@ -458,7 +481,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       .map(filter => {
         const matchingColumn = visibleFilterColumns.find(
           column => column.accessor === filter.filterColumn
-          && column.filterOptions?.type === filter.filterType
+            && column.filterOptions?.type === filter.filterType
         );
 
         // skips dateMax filter since the provided dateMin filter is enough to avoid duplicates
@@ -473,11 +496,9 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       })
       .filter(filter => filter);
 
-    console.log('Active filter chips: ', activeFilterChips);
-
     setVisibleChips(activeFilterChips as ChipItems<T>[]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilters, columns, filterMode]);
 
   // columns in the more filters chip
@@ -502,38 +523,114 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   /* Load filters from querystring */
   useEffect(() => {
     if (!onLoadQuery) return;
+    if (typeof onLoadQuery === 'string') {
+      const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
+      const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
 
-    const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
-    const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
+      const filterTypeIndexMap: Record<string, number> = {};
 
-    const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
-      const selectColumn = columns.find(column => (column.filterOptions && column.filterOptions.type === 'select') && column.accessor === filterColumn);
-      switch (typeof selectColumn?.filterOptions?.options?.[0].id) {
-        case 'string':
-          return { filterColumn, filterValue } as ActiveFilter;
-        case 'number':
-          return { filterColumn, filterValue: Number(filterValue) } as ActiveFilter;
-        case 'boolean':
-          return { filterColumn, filterValue: JSON.parse(filterValue.toLowerCase()) } as ActiveFilter;
-        default:
-          return { filterColumn, filterValue } as ActiveFilter;
-      }
-    });
+      const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
+        const selectColumn = columns.find(column => column.filterOptions && column.accessor === filterColumn);
+        const filterType = selectColumn?.filterOptions.type;
 
-    setActiveFilters(updatedActiveFilters);
+        if (!filterType) return null;
+
+        if (!filterTypeIndexMap[filterType]) {
+          filterTypeIndexMap[filterType] = 0;
+        }
+
+        const filterIndex = filterTypeIndexMap[filterType]++;
+
+        switch (filterType) {
+          case 'string':
+            return {
+              filterColumn,
+              filterValue,
+              filterIndex,
+              filterType: 'string'
+            } as ActiveFilter;
+          case 'number':
+            return {
+              filterColumn,
+              filterValue: Number(filterValue),
+              filterIndex,
+              filterType: 'number'
+            } as ActiveFilter;
+          case 'select': {
+            if (Array.isArray(filterValue)) {
+              return filterValue.map((value: string, selectIndex) => ({
+                filterColumn,
+                filterValue: value,
+                filterIndex: filterIndex + selectIndex,
+                filterType: 'select'
+              }));
+            } else {
+              return {
+                filterColumn,
+                filterValue,
+                filterIndex,
+                filterType: 'select'
+              } as ActiveFilter;
+            }
+          }
+          default:
+            return {
+              filterColumn,
+              filterValue,
+              filterIndex,
+            } as ActiveFilter;
+        }
+      })
+      .flat()
+      .filter(filter => filter.filterValue !== undefined || filter.filterValue !== null);
+
+      setActiveFilters(updatedActiveFilters as ActiveFilter[]);
+    } else {
+      setActiveFilters(onLoadQuery);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    /* Parse filter query */
+    const parseFilterQuery = () => {
+      if (!setCurrentQuery) return;
+      const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
+        obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
+        return obj;
+      }, {});
+      setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
+    };
+
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(async () => {
+      if (hasTableLoaded) parseFilterQuery();
+      setCurrentPage(0);
+      setHighestFetchedPage(-1);
+      await fetchEvent('first');
+    }, 300);
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFilters]);
 
   return (
     <Grid
       container
-      direction="row"
+      size={8}
       justifyContent="flex-start"
       alignItems="center"
-      size={{
-        sm: 8,
-        md: 8
-      }}
+      spacing={1}
+      p={1}
     >
 
       {singleTextFilter ? (
@@ -548,70 +645,67 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
           />
         </Grid>
       ) : (
-          <Grid
-            container
-            size={12}
-            justifyContent='flex-start'
-            alignItems='center'
-          >
+        <Grid
+          container
+          size={12}
+          justifyContent='flex-start'
+          alignItems='center'
+        >
 
-            {visibleFilterColumns.map(column => (
-              <FilterChip
-                key={column.accessor}
-                filterIndex={0}
-                column={column}
-                activeFilters={activeFilters}
-                setActiveFilters={setActiveFilters}
-                localeStr={localeStr}
+          {visibleFilterColumns.map(column => (
+            <FilterChip
+              key={column.accessor}
+              filterIndex={0}
+              column={column}
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              localeStr={localeStr}
+            />
+          ))}
+
+          {visibleChips.map(column => (
+            <FilterChip
+              key={`${column.accessor}-${column.filterIndex}`}
+              filterIndex={column.filterIndex ?? 0}
+              column={column}
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              localeStr={localeStr}
+            />
+          ))}
+
+          {moreFilterColumns.length > 0 && (
+            <MoreFiltersChip
+              columns={moreFilterColumns}
+              filterMode={filterMode}
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+              localeStr={localeStr}
+            />
+          )}
+
+          {activeFilters.length > 0 &&
+            <Grid>
+              <Chip
+                clickable
+                label={
+                  <Typography
+                    variant='body2'
+                    fontWeight='light'
+                  >
+                    {localeStr.clear}
+                  </Typography>
+                }
+                variant='outlined'
+                size='small'
+                color='primary'
+                onClick={clearAllFilters}
+                sx={{ borderStyle: 'none' }}
               />
-            ))}
-
-            {visibleChips.map(column => (
-              <FilterChip
-                key={`${column.accessor}-${column.filterIndex}`}
-                filterIndex={column.filterIndex ?? 0}
-                column={column}
-                activeFilters={activeFilters}
-                setActiveFilters={setActiveFilters}
-                localeStr={localeStr}
-              />
-            ))}
-
-            {moreFilterColumns.length > 0 && (
-              <MoreFiltersChip
-                columns={moreFilterColumns}
-                filterMode={filterMode}
-                activeFilters={activeFilters}
-                setActiveFilters={setActiveFilters}
-                localeStr={localeStr}
-              />
-            )}
-
-            {activeFilters.length > 0 &&
-              <Grid>
-                <Chip
-                  clickable
-                  label={
-                    <Typography
-                      variant='body2'
-                      fontWeight='light'
-                    >
-                      {localeStr.clear}
-                    </Typography>
-                  }
-                  variant='outlined'
-                  size='small'
-                  color='primary'
-                  onClick={clearAllFilters}
-                  sx={{ borderStyle: 'none' }}
-                />
-              </Grid>
-            }
-
-          </Grid>
+            </Grid>
+          }
+        </Grid>
       )}
-
-
     </Grid>
   );
 }

@@ -245,47 +245,50 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     <TableBody>
       {isFetching ? SkeletonRows : (
         // Table rows
-        (currentPageRows?.map((row, index) => (
-          <StyledTableRow
-            hover
-            key={`table-row-${row.id}-${index}`}
-            selected={isQuickSelected(row)}
-            onClick={quickActions
-              ? () => handleCheckBoxSelect(row)
-              : () => onRowClick && onRowClick(row)
-            }
-            aria-label={`table-row-${row.id}`}
-          >
-            {quickActions &&
-              <StyledTableCell
-                key={`checkbox-${row.id}-${index}`}
-                padding="checkbox"
-                onClick={(event) => {
-                  event.stopPropagation();
-                }}
-                sx={{ height: variantHeightMap[variant] }}
-              >
-                <Checkbox
-                  color="primary"
-                  onChange={() => handleCheckBoxSelect(row)}
-                  checked={isQuickSelected(row)}
-                />
-              </StyledTableCell>
-            }
-            {visibleColumns.map((column, index) => {
-              if (!column.visible) return null;
+        (currentPageRows?.map((row, index) => {
+          const randomId = Math.random().toString(36).substring(7);
+          return (
+            <StyledTableRow
+              key={`table-row-${row.id || randomId}-${index}`}
+              hover
+              selected={isQuickSelected(row)}
+              onClick={quickActions
+                ? () => handleCheckBoxSelect(row)
+                : () => onRowClick && onRowClick(row)
+              }
+              aria-label={`table-row-${row.id || randomId}-${index}`}
+            >
+              {quickActions &&
+                <StyledTableCell
+                  key={`checkbox-${row.id || randomId}-${index}`}
+                  padding="checkbox"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
+                  sx={{ height: variantHeightMap[variant] }}
+                >
+                  <Checkbox
+                    color="primary"
+                    onChange={() => handleCheckBoxSelect(row)}
+                    checked={isQuickSelected(row)}
+                  />
+                </StyledTableCell>
+              }
+              {visibleColumns.map((column, index) => {
+                if (!column.visible) return null;
 
-              return (
-                <DynamicCellCreator<T>
-                  key={`custom-cell-${column.accessor}-${index}`}
-                  row={row}
-                  column={column}
-                  variant={variant}
-                />
-              );
-            })}
-          </StyledTableRow>
-        )))
+                return (
+                  <DynamicCellCreator<T>
+                    key={`custom-cell-${column.accessor}-${index}`}
+                    row={row}
+                    column={column}
+                    variant={variant}
+                  />
+                );
+              })}
+            </StyledTableRow>
+          )
+        }))
       )}
 
       {/* Blank block */}

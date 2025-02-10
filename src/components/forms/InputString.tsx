@@ -7,8 +7,8 @@ export type StringValidator = FormNodeValidator<string>;
 
 export interface InputStringProps
   extends Omit<TextFieldProps, 'value' | 'onChange' | 'error' | 'helperText'> {
-  nameid: string;
-  title: string;
+  nameid?: string;
+  title?: string;
   value: string | null;
   setValue: (text: string) => void;
   setValid?: (valid: boolean) => void;
@@ -70,7 +70,7 @@ export const InputString: React.FC<InputStringProps> = ({
 
   return (
     <>
-      {title !== '' && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      {title && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}
@@ -80,7 +80,7 @@ export const InputString: React.FC<InputStringProps> = ({
         name={nameid}
         required={required}
         {...props}
-        value={value ?? ''}
+        value={value ?? null}
         onChange={(event) => setValue(event.target.value)}
         onBlur={(e) => {
           setShowErr(true);

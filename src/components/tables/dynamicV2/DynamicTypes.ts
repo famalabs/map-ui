@@ -134,7 +134,7 @@ export interface FetchInfoProps {
   * @param {Dispatch<SetStateAction<string>>} setCurrentQuery - The function to set the current query.
  */
 export interface QueryInfoProps {
-  onLoadQuery: string;
+  onLoadQuery: ActiveFilter[] | string;
   setCurrentQuery: Dispatch<SetStateAction<string>>;
 }
 

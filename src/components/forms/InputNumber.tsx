@@ -7,8 +7,8 @@ export type NumberValidator = FormNodeValidator<number>;
 
 export interface InputNumberProps
   extends Omit<TextFieldProps, 'value' | 'onChange' | 'error' | 'helperText' | 'type'> {
-  nameid: string;
-  title: string;
+  nameid?: string;
+  title?: string;
   value: number | null;
   setValue: (value: number | null) => void;
   setValid?: (valid: boolean) => void;
@@ -72,7 +72,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
 
   return (
     <>
-      {title !== '' && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
+      {title && <FormLabel component="legend">{title ?? nameid}</FormLabel>}
       <TextField
         variant={variant}
         margin={margin}
@@ -82,7 +82,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
         name={nameid}
         required={required}
         {...props}
-        value={value ?? ''}
+        value={value ?? null}
         type="number"
         onChange={(event) => setValue(event.target.value === '' ? null : Number(event.target.value))}
         onBlur={(e) => {

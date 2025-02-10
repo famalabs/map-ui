@@ -2,14 +2,13 @@ import Grid from "@mui/material/Grid2";
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
-import qs from 'qs';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DynamicActionHeader } from './DynamicActionHeader';
 import { CommonBodyCreator } from './DynamicCommons';
 import { DynamicSimpleFilters } from './DynamicFilterHeader';
 import { DynamicTableFooter } from './DynamicPagination';
-import { ActiveFilter, DefineActionsProps, DynColumnsDef, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
 import { localizedTableStrings } from "./DynamicTableLocale";
+import { ActiveFilter, DefineActionsProps, DynColumnsDef, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
 
 export function DynamicTable<T extends Record<string, any>>(props: DynamicTableProps<T>) {
 
@@ -73,6 +72,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Check for prefetched data */
   const isActuallyFetching = isFetching && tableData.length === currentPage * rowsPerPage;
+  const isNextPageFetched = !staticMode ? highestFetchedPage >= currentPage : true;
 
   /* Active filters object */
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
@@ -97,7 +97,9 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       const itemsPerPage = prefetchNextPage ? rowsPerPage * 2 : rowsPerPage;
       await fetchData(itemsPerPage, activeFilters, fetchType === 'first');
       setHasDataFetched(true);
-      setHighestFetchedPage(fetchType === 'first' ? 0 : currentPage);
+
+      const highestFetchedPage = prefetchNextPage ? currentPage + 1 : currentPage;
+      setHighestFetchedPage(fetchType === 'first' ? 0 : highestFetchedPage);
     }
   }
 
@@ -145,41 +147,6 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowsPerPage]);
 
-  /* Debounce filter for Load & Filters*/
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-
-    /* Parse filter query */
-    const parseFilterQuery = () => {
-      if (!setCurrentQuery) return;
-      const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
-        obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
-        return obj;
-      }, {});
-      setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
-    };
-
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    debounceTimeoutRef.current = setTimeout(async () => {
-      if (hasTableLoaded) parseFilterQuery();
-      setCurrentPage(0);
-      setHighestFetchedPage(-1);
-      await fetchEvent('first');
-    }, 300);
-
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFilters]);
-
   const isTableEmpty = (hasDataFetched && !isActuallyFetching) && (expectedRowCount === 0 || tableData.length === 0);
 
   useEffect(() => {
@@ -199,8 +166,13 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           columns={columns}
           filterMode={filterMode}
           onLoadQuery={onLoadQuery}
+          setCurrentQuery={setCurrentQuery}
           activeFilters={activeFilters}
           setActiveFilters={setActiveFilters}
+          fetchEvent={fetchEvent}
+          setCurrentPage={setCurrentPage}
+          setHighestFetchedPage={setHighestFetchedPage}
+          hasTableLoaded={hasTableLoaded}
           localeStr={currentLocale.filters}
         />
 
@@ -223,6 +195,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       </Grid>
 
       <Grid
+        component="div"
         container
         sx={{
           overflowX: 'auto',
@@ -274,7 +247,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           localeStr={currentLocale.footer}
           isTableEmpty={isTableEmpty}
           hideFooter={hideFooter}
-          isFetching={isActuallyFetching}
+          isFetching={!isNextPageFetched && (highestFetchedPage !== currentPage)}
         />
       </Grid>
 

@@ -84,9 +84,9 @@ export const DynamicV2Template: Story = {
         setIsFetching(true);
 
         // const rowCount = await generateAsyncCount(20);
-        setExpectedRowCount(4);
+        setExpectedRowCount(60);
 
-        const itemData = await generateAsyncData(4);
+        const itemData = await generateAsyncData(60);
         console.log('Data fetched:', itemData);
 
         console.log('IS FIRST LOAD:', firstLoad);
@@ -107,6 +107,7 @@ export const DynamicV2Template: Story = {
 
     const actionList = [
       { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
+      { type: 'export', label: 'Export', color: 'success', isIconButton: false, refetch: true },
     ] as ActionEventItem[];
 
     const [quickActions, setQuickActions] = useState<boolean>(false);
@@ -140,7 +141,10 @@ export const DynamicV2Template: Story = {
     };
 
     /* Readonly? queryParamString to set URL */
-    //const [queryParamString, setQueryParamString] = useState<string>('');
+    const [queryParamString, setQueryParamString] = useState<string>('?filter[supplier.name]=5&filter[code]=A&filter[code]=B');
+    React.useEffect(() => {
+      console.log('Query string:', queryParamString);
+    }, [queryParamString]);
 
 
     return (
@@ -159,7 +163,7 @@ export const DynamicV2Template: Story = {
               expectedRowCount: expectedRowCount,
               variant: 'standard',
               filterMode: 'multiple',
-              staticMode: false,
+              staticMode: true,
               emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
               paginationOptions: {
                 customPageRowCount: 5,
@@ -173,10 +177,10 @@ export const DynamicV2Template: Story = {
               isFetching: isFetching,
               // prefetchNextPage: false,
             }}
-            /* queryInfo={{
-              onLoadQuery: queryParamString,
-              setCurrentQuery: setQueryParamString
-            }} */
+            // queryInfo={{
+            //   onLoadQuery: queryParamString,
+            //   setCurrentQuery: setQueryParamString
+            // }}
             onRowClick={(row) => {
               console.log('Row clicked:', row);
             }}

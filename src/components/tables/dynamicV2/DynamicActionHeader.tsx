@@ -183,12 +183,12 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
         container
         justifyContent='flex-end'
         alignItems='center'
+        spacing={1}
         size={{
           sm: 6,
           md: 6
         }}
       >
-
         {actionList && actionList?.map((action, index) => (
           <Grid key={index}>
             {action.isIconButton ? (
@@ -213,10 +213,8 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
                 <Typography fontSize={14}> {action.label ?? action.type} </Typography>
               </Button>
             )}
-
           </Grid>
         ))}
-
       </Grid>
     </Grid>
   );

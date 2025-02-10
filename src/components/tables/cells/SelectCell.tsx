@@ -11,7 +11,11 @@ export interface SelectCellOption {
 export const SelectCell = (selectOptions: SelectCellOption[]) =>
   ({ cellValue }: { cellValue: string }) => {
 
-    if (typeof cellValue === 'undefined' || cellValue === null) {
+    if (
+      cellValue === undefined 
+      || cellValue === null 
+      || cellValue === ''
+    ) {
       <Grid container>
         {''}
       </Grid>
@@ -26,6 +30,8 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
     
     const cellData = selectOptions.find((option) => option.id === cellValue);
     const customColor = cellData && cellData.type ? chipColorMap[cellData.type] : chipColorMap.default;
+
+    if (!cellData) return null;
 
     return (
       <Grid container>

@@ -90,8 +90,8 @@ type InferFormValidator<T extends Form> = T extends FormNode
   ? InferFormNodeValidator<T>
   : T extends FormGroup
   ? {
-      [Prop in keyof T['value']]: InferFormValidator<T['value'][Prop]>;
-    }
+    [Prop in keyof T['value']]: InferFormValidator<T['value'][Prop]>;
+  }
   : T extends FormArray
   ? InferFormValidator<T['value']>
   : never;
@@ -100,8 +100,8 @@ type InferFormRequired<T extends Form> = T extends FormNode
   ? boolean
   : T extends FormGroup
   ? {
-      [Prop in keyof T['value']]: InferFormRequired<T['value'][Prop]>;
-    }
+    [Prop in keyof T['value']]: InferFormRequired<T['value'][Prop]>;
+  }
   : T extends FormArray
   ? InferFormRequired<T['value']>
   : never;
@@ -110,15 +110,15 @@ type InferFormSetValue<T extends Form> = T extends FormNode
   ? (value: InferFormNodeValue<T>) => void
   : T extends FormGroup
   ? {
-      [Prop in keyof T['value']]: InferFormSetValue<T['value'][Prop]>;
-    }
+    [Prop in keyof T['value']]: InferFormSetValue<T['value'][Prop]>;
+  }
   : T extends FormArray
   ? {
-      setAll: (value: InferFormArrayPartialValue<T>) => void;
-      set: (index: number) => InferFormSetValue<T['value']>;
-      add: (value?: InferFormPartialValue<T['value']>) => void;
-      remove: (index: number) => void;
-    }
+    setAll: (value: InferFormArrayPartialValue<T>) => void;
+    set: (index: number) => InferFormSetValue<T['value']>;
+    add: (value?: InferFormPartialValue<T['value']>) => void;
+    remove: (index: number) => void;
+  }
   : never;
 
 type InferFormIsValid<T extends Form> = T extends FormNode
@@ -209,19 +209,22 @@ function initFormIsValid<T extends Form>(
   requires: InferFormRequired<T>,
   validators: InferFormValidator<T>
 ): InferFormIsValid<T> {
-  if (formIsNode(form) && Array.isArray(validators))
+  
+  if (formIsNode(form) && Array.isArray(validators)) {
     return (
       (!requires || (value != null && value !== '')) &&
       (validators.map((validator) => validator.f(value)).every((val) => val) as any)
     );
+  }
+    
   if (formIsArray(form) && Array.isArray(value)) {
     const children = value.map((v) => initFormIsValid(form.value, v, requires, validators));
     return {
       allValid: formIsNode(form.value)
         ? children.every((valid: any) => valid)
         : formIsGroup(form.value)
-        ? children.every((group: any) => group.allValid)
-        : null,
+          ? children.every((group: any) => group.allValid)
+          : null,
       children,
     } as any;
   }
@@ -245,7 +248,7 @@ function initFormIsValid<T extends Form>(
 
 function initFormValues<T extends Form>(form: T): InferFormValue<T> {
   if (formIsNode(form)) {
-    if (nodeIsString(form)) return '' as any;
+    if (nodeIsString(form)) return null as any;
     return null;
   }
   if (formIsArray(form)) return [] as any;

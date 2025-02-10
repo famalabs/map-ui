@@ -32,7 +32,7 @@ export function TablePaginationActions(props: TablePaginationActionsProps) {
   const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, page + 1);
   };
-
+  
   return (
     <Box
       component='div'
@@ -85,7 +85,6 @@ export function DynamicTableFooter(props: TableFooterProps) {
     hideFooter,
     isFetching,
   } = props;
-
 
   if (isTableEmpty && hideFooter) return null;
 
