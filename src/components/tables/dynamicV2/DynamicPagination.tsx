@@ -69,6 +69,7 @@ export interface TableFooterProps {
   isTableEmpty: boolean;
   hideFooter: boolean;
   isFetching: boolean;
+  footerVariant?: 'standard' | 'simple';
 }
 
 export function DynamicTableFooter(props: TableFooterProps) {
@@ -84,6 +85,7 @@ export function DynamicTableFooter(props: TableFooterProps) {
     isTableEmpty,
     hideFooter,
     isFetching,
+    footerVariant,
   } = props;
 
   if (isTableEmpty && hideFooter) return null;
@@ -97,20 +99,28 @@ export function DynamicTableFooter(props: TableFooterProps) {
     );
   }
 
+  const rowsPerPageOptions = footerVariant === 'standard' ? (customSelectPages ?? [5, 10]) : [];
+  const labelRowsPerPage = footerVariant === 'standard' ? localeStr.rowsPerPage : '';
+  const labelDisplayedRows = footerVariant === 'standard' 
+  ? ({ from, to, count }) => {
+    return `${from} - ${to} ${localeStr.of} ${count}`
+  }
+  : ({ count }) => {
+    return `${count} ${localeStr.elements}`
+  };
+
   return (
     <TableRow component='div'>
       <TablePagination
         component='div'
         count={expectedRowCount}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={customSelectPages ?? [5, 10]}
+        rowsPerPageOptions={rowsPerPageOptions}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={localeStr.rowsPerPage}
-        labelDisplayedRows={({ from, to, count }) => {
-          return `${from} - ${to} ${localeStr.of} ${count}`
-        }}
+        labelRowsPerPage={labelRowsPerPage}
+        labelDisplayedRows={labelDisplayedRows}
         ActionsComponent={CustomTablePaginationActions as any}
         sx={{
           border: 'none',

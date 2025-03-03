@@ -5,8 +5,9 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
-import { ActionEventItem, ActiveCardFilter, CardFilterDef, DynamicCardsProps, DynamicCardsTable } from '../../src/components/tables';
-import { generateAsyncCount, generateAsyncData } from './mockdata';
+import { ActiveFilter, DynamicCardsProps, DynamicCardsTable } from '../../src/components/tables';
+import { CardFilters } from '../../src/components/tables/dynamicCards/DynamicCardsTypes';
+import { DynamicData, generateAsyncCount, generateAsyncData } from './mockdata';
 
 const meta: Meta<typeof DynamicCardsTable> = { component: DynamicCardsTable };
 export default meta;
@@ -16,11 +17,12 @@ type Story = StoryObj<DynamicCardsProps<any>>;
 export const DynamicCardsTableStory: Story = {
 
   render: (args) => {
+
     const columns = [
-      { accessor: 'id', label: 'ID', },
-      { accessor: 'name', label: 'Nome', type: 'string', SelectCell: [{ id: 0, label: 'TEST' }] },
-      { accessor: 'sss', label: 'Tangpo', type: 'string', SelectCell: [{ id: 0, label: 'TEST' }] },
-    ] as CardFilterDef[];
+      { accessor: 'id', label: 'ID' },
+      { accessor: 'name', label: 'Nome', filterOptions: { type: 'string' } },
+      { accessor: 'description', label: 'Description', filterOptions: { type: 'date' } },
+    ] as CardFilters<any>[];
 
     const [data, setData] = useState<any[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -28,7 +30,7 @@ export const DynamicCardsTableStory: Story = {
 
     //const [fetchToken, setFetchToken] = useState<string>('');
 
-    const fetchItemsHandler = async (limit: number, filters: ActiveCardFilter[], firstLoad?: boolean) => {
+    const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => {
 
       try {
 
@@ -36,7 +38,7 @@ export const DynamicCardsTableStory: Story = {
 
         setIsFetching(true);
 
-        const rowCount = await generateAsyncCount(20);
+        const rowCount = await generateAsyncCount(24);
         setExpectedRowCount(rowCount);
 
         const itemData = await generateAsyncData(limit);
@@ -56,44 +58,6 @@ export const DynamicCardsTableStory: Story = {
 
     };
 
-    const actionList = [
-      { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
-    ] as ActionEventItem[];
-
-    const [quickActions, setQuickActions] = useState<boolean>(false);
-
-    const actionHandler = async (actionType: string, selectedRows: any[], activeFilters: ActiveCardFilter[]) => {
-
-      const requestArray: Promise<any>[] = [];
-
-      switch (actionType) {
-        case 'import':
-
-          break;
-        case 'delete':
-
-          for (const item of selectedRows) {
-            requestArray.push(item.code);
-          }
-
-          await Promise.all(requestArray)
-            .then(() => {
-              setData(prevData => prevData.filter(item => !selectedRows.some(selected => selected.code === item.code)));
-              console.log('Deleted');
-              setQuickActions(false);
-            })
-            .catch(() => {
-              console.error('Error deleting');
-            });
-
-          break;
-      }
-    };
-
-    /* Readonly? queryParamString to set URL */
-    //const [queryParamString, setQueryParamString] = useState<string>('');
-
-
     return (
       <Grid
         container
@@ -102,7 +66,7 @@ export const DynamicCardsTableStory: Story = {
       >
 
         <Grid size={12}>
-          <DynamicCardsTable
+          <DynamicCardsTable<DynamicData>
             tableInfo={{
               tableName: 'UserEventsTable',
               tableData: data,
@@ -110,24 +74,22 @@ export const DynamicCardsTableStory: Story = {
               expectedItemCount: expectedRowCount,
               tableVariant: 'infinite',
               gridSizings: { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
+              filterMode: 'multiple',
+              // defaultShowFilters: true,
               standardOptions: {
-                customPageItemCount: 8,
+                customPageItemCount: 6,
                 customSelectPages: [6, 12, 24],
               },
               infiniteOptions: {
                 viewType: 'dual',
-                loadingType: 'infiniteScroll',
-                itemsPerPage: 8,
+                loadingType: 'loadMore',
+                itemsPerPage: 6,
                 switcherPosition: 'right',
               }
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
               isFetching: isFetching,
-            }}
-            queryInfo={{
-              onLoadQuery: '',
-              setCurrentQuery: () => null,
             }}
             cardInfo={{
               CardItem: CardTest,
@@ -143,8 +105,7 @@ export const DynamicCardsTableStory: Story = {
   }
 };
 
-function CardTest<T>(entry: T) {
-
+function CardTest(entry: DynamicData) {
 
   return (
     <Card
@@ -154,14 +115,14 @@ function CardTest<T>(entry: T) {
       <CardMedia
         height={210}
         component="img"
-        src='https://hiroshi-nagai/unsplash.com'
+        src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV3J7LwvhQh-hnL-YPvTn2A5JaIt6NVfpcqA&s'
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {entry['id']}
+          {entry.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {entry['name']}
+          {entry.description}
         </Typography>
       </CardContent>
     </Card>

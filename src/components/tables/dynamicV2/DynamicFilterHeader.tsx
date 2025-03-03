@@ -13,16 +13,18 @@ import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
 import qs from 'qs';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DateFilterForm, NumberFilterForm, SelectFilterForm, StringFilterForm, updateFilters } from './DynamicFilters';
-import { ActiveFilter, DynColumnsDef, i18nStrings } from './DynamicTypes';
+import { ActiveFilter, DynamicColumns, i18nStrings } from './DynamicTypes';
 
 
 /* ---------- Filter Switcher ---------- */
 
 interface FilterSwitcherProps<T> {
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   filterMode: 'single' | 'multiple';
   activeFilters: ActiveFilter[];
   filterIndex?: number;
@@ -106,7 +108,7 @@ function FilterSwitcher<T>(props: FilterSwitcherProps<T>) {
 /* ---------- Filter Chips ---------- */
 interface FilterChip<T> {
   filterIndex: number;
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   activeFilters?: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   localeStr: i18nStrings['filters'];
@@ -262,7 +264,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
 }
 
 interface MoreFiltersChipProps<T> {
-  columns: DynColumnsDef<T>[];
+  columns: DynamicColumns<T>[];
   filterMode: 'single' | 'multiple';
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
@@ -280,8 +282,8 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
 
   const open = Boolean(anchorEl);
 
-  const [selectedColumn, setSelectedColumn] = useState<DynColumnsDef<T> | null>(null);
-  const handleColumnSelect = (column: DynColumnsDef<T>) => {
+  const [selectedColumn, setSelectedColumn] = useState<DynamicColumns<T> | null>(null);
+  const handleColumnSelect = (column: DynamicColumns<T>) => {
     setSelectedColumn(column);
   }
 
@@ -413,18 +415,20 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
 
 /* ---------- Main Component ---------- */
 
-interface ChipItems<T> extends DynColumnsDef<T> {
+interface ChipItems<T> extends DynamicColumns<T> {
   filterIndex?: number;
 }
 
 export interface DynamicSimpleFiltersProps<T> {
-  columns: DynColumnsDef<T>[];
+  columns: DynamicColumns<T>[];
   filterMode: 'single' | 'multiple';
+  defaultShowFilters?: boolean;
   onLoadQuery?: ActiveFilter[] | string;
   setCurrentQuery?: Dispatch<React.SetStateAction<string>>;
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   fetchEvent: (fetchType?: "first" | "next") => Promise<void>;
+  currentPage: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
   setHighestFetchedPage: Dispatch<SetStateAction<number>>;
   hasTableLoaded: boolean;
@@ -436,6 +440,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   const {
     columns,
     filterMode,
+    defaultShowFilters,
     onLoadQuery,
     setCurrentQuery,
     activeFilters,
@@ -448,14 +453,14 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   } = props;
 
   const isFilterActive = useMemo(() => {
-    return (column: DynColumnsDef<T>) => activeFilters.some(filter =>
+    return (column: DynamicColumns<T>) => activeFilters.some(filter =>
       filter.filterColumn === column.accessor
       && filter.filterType === column.filterOptions?.type
     );
   }, [activeFilters]);
 
-  const filterableColumns = columns.filter(column => column.filterOptions);
-  const priorityFilterColumns = filterableColumns.filter(column => column.filterOptions?.priority || isFilterActive(column));
+  const filterableColumns = useMemo(() => columns.filter(column => column.filterOptions), [columns]);
+  const priorityFilterColumns = useMemo(() => filterableColumns.filter(column => column.filterOptions?.priority || isFilterActive(column)), [filterableColumns, isFilterActive]);
 
   // visible columns that have filters
   const visibleFilterColumns = useMemo(() => {
@@ -465,18 +470,16 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   }, [filterableColumns, priorityFilterColumns]);
 
   const [visibleChips, setVisibleChips] = useState<ChipItems<T>[]>([]);
-  useEffect(() => {
 
+  useEffect(() => {
     if (filterMode === 'single') {
       setVisibleChips([]);
       return;
     }
-
     if (activeFilters.length === 0) {
       setVisibleChips([]);
       return;
     }
-
     const activeFilterChips = activeFilters
       .map(filter => {
         const matchingColumn = visibleFilterColumns.find(
@@ -511,9 +514,11 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   }, [filterMode, filterableColumns, isFilterActive, visibleFilterColumns]);
 
   // single text filter for the search bar
-  const singleTextFilter = filterableColumns.length === 1
-    ? filterableColumns.find(column => column.filterOptions?.type === 'string')
-    : undefined;
+  const singleTextFilter = useMemo(() =>
+    filterableColumns.length === 1
+      ? filterableColumns.find(column => column.filterOptions?.type === 'string')
+      : undefined
+    , [filterableColumns]);
 
   const clearAllFilters = useCallback(() => {
     if (activeFilters.length > 0) setActiveFilters([]);
@@ -581,8 +586,8 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
             } as ActiveFilter;
         }
       })
-      .flat()
-      .filter(filter => filter.filterValue !== undefined || filter.filterValue !== null);
+        .flat()
+        .filter(filter => filter.filterValue !== undefined || filter.filterValue !== null);
 
       setActiveFilters(updatedActiveFilters as ActiveFilter[]);
     } else {
@@ -623,89 +628,123 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilters]);
 
+
+  const [showFilters, setShowFilters] = useState<boolean>(defaultShowFilters !== undefined ? defaultShowFilters : true);
+  const handleToggleFilters = () => setShowFilters(prev => !prev);
+
   return (
     <Grid
       container
-      size={8}
       justifyContent="flex-start"
       alignItems="center"
+      flexGrow={1}
       spacing={1}
       p={1}
     >
 
-      {singleTextFilter ? (
-        <Grid padding={1}>
-          <StringFilterForm
-            column={singleTextFilter}
-            filterMode={filterMode}
-            activeFilters={activeFilters}
-            setActiveFilters={setActiveFilters}
-            aloneFilter
-            localeStr={localeStr}
-          />
-        </Grid>
-      ) : (
-        <Grid
-          container
-          size={12}
-          justifyContent='flex-start'
-          alignItems='center'
-        >
-
-          {visibleFilterColumns.map(column => (
-            <FilterChip
-              key={column.accessor}
-              filterIndex={0}
-              column={column}
-              activeFilters={activeFilters}
-              setActiveFilters={setActiveFilters}
-              localeStr={localeStr}
-            />
-          ))}
-
-          {visibleChips.map(column => (
-            <FilterChip
-              key={`${column.accessor}-${column.filterIndex}`}
-              filterIndex={column.filterIndex ?? 0}
-              column={column}
-              activeFilters={activeFilters}
-              setActiveFilters={setActiveFilters}
-              localeStr={localeStr}
-            />
-          ))}
-
-          {moreFilterColumns.length > 0 && (
-            <MoreFiltersChip
-              columns={moreFilterColumns}
+      {showFilters && (
+        singleTextFilter ? (
+          <Grid
+            container
+            justifyContent='flex-start'
+            alignItems='center'
+            flexGrow={1}
+            padding={1}
+          >
+            <StringFilterForm
+              column={singleTextFilter}
               filterMode={filterMode}
               activeFilters={activeFilters}
               setActiveFilters={setActiveFilters}
+              aloneFilter
               localeStr={localeStr}
             />
-          )}
+          </Grid>
+        ) : (
+          <Grid
+            container
+            justifyContent='flex-start'
+            alignItems='center'
+            flexGrow={1}
+          >
 
-          {activeFilters.length > 0 &&
-            <Grid>
-              <Chip
-                clickable
-                label={
-                  <Typography
-                    variant='body2'
-                    fontWeight='light'
-                  >
-                    {localeStr.clear}
-                  </Typography>
-                }
-                variant='outlined'
-                size='small'
-                color='primary'
-                onClick={clearAllFilters}
-                sx={{ borderStyle: 'none' }}
+            {visibleFilterColumns.map(column => (
+              <FilterChip
+                key={column.accessor}
+                filterIndex={0}
+                column={column}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                localeStr={localeStr}
               />
-            </Grid>
-          }
+            ))}
+
+            {visibleChips.map(column => (
+              <FilterChip
+                key={`${column.accessor}-${column.filterIndex}`}
+                filterIndex={column.filterIndex ?? 0}
+                column={column}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                localeStr={localeStr}
+              />
+            ))}
+
+            {moreFilterColumns.length > 0 && (
+              <MoreFiltersChip
+                columns={moreFilterColumns}
+                filterMode={filterMode}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+                localeStr={localeStr}
+              />
+            )}
+
+            {activeFilters.length > 0 &&
+              <Grid>
+                <Chip
+                  clickable
+                  label={
+                    <Typography
+                      variant='body2'
+                      fontWeight='light'
+                    >
+                      {localeStr.clear}
+                    </Typography>
+                  }
+                  variant='outlined'
+                  size='small'
+                  color='primary'
+                  onClick={clearAllFilters}
+                  sx={{ borderStyle: 'none' }}
+                />
+              </Grid>
+            }
+          </Grid>
+        )
+      )}
+
+      {!showFilters && (
+        <Grid flexGrow={1}>
+          <span />
         </Grid>
       )}
-    </Grid>
+
+      {defaultShowFilters !== undefined &&
+        <Grid>
+          <IconButton
+            size='medium'
+            color='primary'
+            onClick={handleToggleFilters}
+          >
+            {showFilters
+              ? <FilterAltOutlinedIcon />
+              : <FilterAltOffOutlinedIcon />
+            }
+          </IconButton>
+        </Grid>
+      }
+
+    </Grid >
   );
 }

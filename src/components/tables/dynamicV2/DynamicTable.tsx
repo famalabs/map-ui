@@ -2,13 +2,13 @@ import Grid from "@mui/material/Grid2";
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DynamicActionHeader } from './DynamicActionHeader';
 import { CommonBodyCreator } from './DynamicCommons';
 import { DynamicSimpleFilters } from './DynamicFilterHeader';
 import { DynamicTableFooter } from './DynamicPagination';
 import { localizedTableStrings } from "./DynamicTableLocale";
-import { ActiveFilter, DefineActionsProps, DynColumnsDef, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
+import { ActiveFilter, DefineActionsProps, DynamicColumns, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
 
 export function DynamicTable<T extends Record<string, any>>(props: DynamicTableProps<T>) {
 
@@ -19,6 +19,9 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     defineActions = {} as DefineActionsProps<T>,
     onRowClick,
     newItemButton,
+    columnsButton,
+    actionButton,
+    exportButton,
     paperVariant = 'outlined',
     tableLocale = 'en',
     localeStr,
@@ -27,10 +30,12 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const {
     tableName,
     tableData,
+    // startingPage,
     columns,
     expectedRowCount,
     variant = 'standard',
     filterMode = 'single',
+    defaultShowFilters,
     staticMode = false,
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
@@ -40,6 +45,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       customSelectPages,
       autoSizeHeight = true,
       hideFooter = false,
+      footerVariant = 'standard',
     },
   } = tableInfo;
 
@@ -79,7 +85,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Visible columns state (define structure later) */
   const localVisibleCols = useMemo(() => localStorage.getItem(tableName), [tableName]);
-  const [visibleColumns, setVisibleColumns] = useState<DynColumnsDef<T>[]>([]);
+  const [visibleColumns, setVisibleColumns] = useState<DynamicColumns<T>[]>([]);
 
   /* Quick actions */
   const [quickActions, setQuickActions] = useState<boolean>(false);
@@ -92,16 +98,22 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const [hasTableLoaded, setHasTableLoaded] = useState<boolean>(false);
 
   /* Fetching event function */
-  const fetchEvent = async (fetchType: 'first' | 'next' = 'next') => {
+  const fetchEvent = useCallback(async (fetchType: 'first' | 'next' = 'next') => {
+
+    // This tells how many pages to fetch
+    const itemsPerPage = prefetchNextPage ? rowsPerPage * 2 : rowsPerPage;
+    // This tells how many pages are being fetched at startup
+    const firstFetchPages = prefetchNextPage ? 1 : 0;
+    // This tells the current highest fetched page
+    const currentHighestFetchedPage = prefetchNextPage ? currentPage + 1 : currentPage;
+
     if (fetchType === 'first' || highestFetchedPage < currentPage) {
-      const itemsPerPage = prefetchNextPage ? rowsPerPage * 2 : rowsPerPage;
       await fetchData(itemsPerPage, activeFilters, fetchType === 'first');
       setHasDataFetched(true);
-
-      const highestFetchedPage = prefetchNextPage ? currentPage + 1 : currentPage;
-      setHighestFetchedPage(fetchType === 'first' ? 0 : highestFetchedPage);
+      setHighestFetchedPage(fetchType === 'first' ? firstFetchPages : currentHighestFetchedPage);
     }
-  }
+
+  }, [currentPage, fetchData, activeFilters, rowsPerPage, highestFetchedPage, prefetchNextPage]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -110,14 +122,14 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     setCurrentPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
+  const handleChangeRowsPerPage = useCallback((
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setCurrentPage(0);
     setHighestFetchedPage(-1);
     localStorage.setItem(`${tableName}-rowsPerPage`, event.target.value);
-  };
+  }, [tableName]);
 
   /* Update visible columns state */
   useEffect(() => {
@@ -138,13 +150,13 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   useEffect(() => {
     /* Skip fetch is static mode is enabled */
     if (currentPage !== 0 && !staticMode) fetchEvent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
     /* Skip fetch is static mode is enabled */
     if (hasTableLoaded && !staticMode) fetchEvent('first');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowsPerPage]);
 
   const isTableEmpty = (hasDataFetched && !isActuallyFetching) && (expectedRowCount === 0 || tableData.length === 0);
@@ -165,11 +177,13 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         <DynamicSimpleFilters
           columns={columns}
           filterMode={filterMode}
+          defaultShowFilters={defaultShowFilters}
           onLoadQuery={onLoadQuery}
           setCurrentQuery={setCurrentQuery}
           activeFilters={activeFilters}
           setActiveFilters={setActiveFilters}
           fetchEvent={fetchEvent}
+          currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           setHighestFetchedPage={setHighestFetchedPage}
           hasTableLoaded={hasTableLoaded}
@@ -189,6 +203,9 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           setQuickSelectedRows={setQuickSelectedRows}
           activeFilters={activeFilters}
           newItemButton={newItemButton}
+          columnsButton={columnsButton}
+          actionButton={actionButton}
+          exportButton={exportButton}
           showVisibleColumnsButton={showVisibleColumnsButton}
           localeStr={currentLocale.header}
         />
@@ -200,7 +217,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         sx={{
           overflowX: 'auto',
           scrollbarWidth: 'thin',
-          minWidth: 500,
+          minWidth: 150,
         }}
       >
         <Table>
@@ -222,6 +239,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
             emptyTablePlaceholderText={emptyTablePlaceholderText}
             hasDataFetched={hasDataFetched}
             isTableEmpty={isTableEmpty}
+            hideFooter={hideFooter}
             variant={variant}
           />
         </Table>
@@ -247,7 +265,8 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           localeStr={currentLocale.footer}
           isTableEmpty={isTableEmpty}
           hideFooter={hideFooter}
-          isFetching={!isNextPageFetched && (highestFetchedPage !== currentPage)}
+          isFetching={!isNextPageFetched}
+          footerVariant={footerVariant}
         />
       </Grid>
 

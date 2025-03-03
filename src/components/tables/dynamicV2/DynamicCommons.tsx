@@ -13,8 +13,7 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
-import { DynamicCellCreator } from './DynamicCellCreator';
-import { DynColumnsDef } from './DynamicTypes';
+import { DynamicColumns } from './DynamicTypes';
 
 const StyledTableRow = styled(TableRow)(() => ({
   minHeight: 56,
@@ -38,12 +37,71 @@ export const variantHeightMap = {
   compact: 40,
 };
 
+export const getMaxWidth = (column: DynamicColumns<unknown>) => {
+  switch (typeof column.maxWidth) {
+    case 'number':
+      return `${column.maxWidth}px`;
+    case 'string': {
+      if (column.maxWidth === 'stretch') {
+        return '100%';
+      }
+      if (column.maxWidth.endsWith('px')) {
+        return column.maxWidth as string;
+      }
+      break;
+    }
+    default:
+      return '180px';
+  }
+};
+
+
+/* ---------- Dynamic Cell Creator ---------- */
+
+export interface DynamicCellProps<T> {
+  row: T;
+  column: DynamicColumns<T>;
+  variant?: 'standard' | 'dense' | 'compact';
+}
+
+export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
+
+  const { row, column, variant } = props;
+
+  /* Extract potential nested objects values */
+  const getNestedProperty = useCallback((row: T, path: string): string => {
+    return path.split('.').reduce((nestedObject, property) => {
+      return (nestedObject && property in nestedObject)
+        ? nestedObject[property]
+        : '';
+    }, row) ?? '';
+  }, []);
+
+  const maxWidth = getMaxWidth(column);
+
+  const cellValue = getNestedProperty(row, column.accessor);
+
+  const CustomCell = 'Cell' in column && column.Cell !== undefined
+    ? column.Cell
+    : undefined;
+
+  return (
+    <StyledTableCell sx={{ height: variantHeightMap[variant], maxWidth: maxWidth }}>
+      {CustomCell
+        ? <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
+        : <>{cellValue}</>
+      }
+    </StyledTableCell>
+  );
+
+}
+ 
 
 /* ---------- Common header ---------- */
 
 export interface CommonHeaderProps<T extends Record<string, any>> {
   currentPageRows: T[];
-  visibleColumns: DynColumnsDef<T>[];
+  visibleColumns: DynamicColumns<T>[];
   quickActions: boolean;
   quickSelectedRows: T[];
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
@@ -93,13 +151,18 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
         }
         {visibleColumns.length > 0 ? (
           visibleColumns.map((column, index) => {
+            const maxWidth = getMaxWidth(column);
             if (!column.visible) return null;
             return (
               <StyledTableCell
                 key={index}
                 onMouseEnter={() => setHoveredColumn(index)}
                 onMouseLeave={() => setHoveredColumn(-1)}
-                sx={{ width: 160, position: 'relative' }}
+                sx={{
+                  width: 160,
+                  position: 'relative',
+                  maxWidth: maxWidth,
+                }}
               >
                 {column.ColumnCell ? column.ColumnCell() : (column.label || '')}
                 {'Tooltip' in column && hoveredColumn === index && (
@@ -133,8 +196,8 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
 export interface CommonBodyProps<T extends Record<string, any>> {
   tableData: T[];
   expectedRowCount: number;
-  visibleColumns: DynColumnsDef<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
+  visibleColumns: DynamicColumns<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
   page: number;
   quickActions: boolean;
   quickSelectedRows: T[];
@@ -147,6 +210,7 @@ export interface CommonBodyProps<T extends Record<string, any>> {
   emptyTablePlaceholderText?: string;
   hasDataFetched: boolean;
   isTableEmpty: boolean;
+  hideFooter: boolean;
   variant: 'standard' | 'dense' | 'compact';
 }
 
@@ -166,12 +230,15 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
     isTableEmpty,
+    hideFooter,
     variant,
   } = props;
 
-  const currentPageRows = rowsPerPage > 0
-    ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    : tableData;
+  const currentPageRows = useMemo(() => (
+    rowsPerPage > 0
+      ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : tableData
+  ), [tableData, page, rowsPerPage]);
 
   const blankRows = !autoSizeHeight
     ? rowsPerPage - currentPageRows.length
@@ -198,7 +265,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
       container
       justifyContent='center'
       alignItems='center'
-      minHeight={rowsPerPage * 56}
+      minHeight={(rowsPerPage * 56) + (hideFooter ? 52 : 0)}
     >
       {emptyTablePlaceholderSrc ? (
         <img
@@ -215,16 +282,20 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
         <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
       )}
     </Grid>
-  ), [emptyTablePlaceholderSrc, emptyTablePlaceholderText, rowsPerPage]);
+  ), [emptyTablePlaceholderSrc, emptyTablePlaceholderText, hideFooter, rowsPerPage]);
 
   const SkeletonRows = useMemo(() => (Array.from({ length: rowsPerPage }, (_, index) => (
     <TableRow key={`skeleton-${index}`}>
       {visibleColumns.length > 0 ? (visibleColumns.map((column, colIndex) => {
+        const maxWidth = getMaxWidth(column);
         if (!column.visible) return null;
         return (
           <StyledTableCell
             key={`skeleton-cell-${colIndex}`}
-            sx={{ height: variantHeightMap[variant] }}
+            sx={{
+              height: variantHeightMap[variant],
+              maxWidth: maxWidth,
+            }}
           >
             <Skeleton
               animation="wave"
@@ -315,3 +386,4 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     </>
   );
 }
+

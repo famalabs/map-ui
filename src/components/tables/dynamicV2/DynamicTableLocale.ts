@@ -22,6 +22,7 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
     footer: {
       rowsPerPage: 'Righe per pagina: ',
       of: 'di',
+      elements: 'elementi',
     },
   },
   en: {
@@ -45,6 +46,7 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
     footer: {
       rowsPerPage: 'Rows per page: ',
       of: 'of',
+      elements: 'elements',
     },
   }
 }

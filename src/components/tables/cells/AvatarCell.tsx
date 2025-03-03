@@ -16,19 +16,21 @@ export const AvatarCell = (
   return (
     <Grid
       container
+      size={12}
       justifyContent='center'
       alignItems='center'
+      flexWrap='nowrap'
+      spacing={1}
     >
       <Grid
         container
-        size={2}
         justifyContent='flex-start'
         alignItems='center'
+        flexGrow={0}
       >
         <Avatar
           component={'div'}
           onClick={clickAction && onAvatarClick}
-          sx={{ marginRight: 10 }}
           {...avatarProps}
         >
           {avatarProps && avatarProps.children}
@@ -37,9 +39,9 @@ export const AvatarCell = (
 
       <Grid
         container
-        size={10}
         justifyContent='flex-start'
         alignItems='center'
+        flexGrow={1}
         px={1}
       >
         {!avatarOnly ? cellValue : null}

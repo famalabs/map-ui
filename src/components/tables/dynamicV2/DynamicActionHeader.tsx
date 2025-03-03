@@ -1,8 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import Grid from "@mui/material/Grid2";
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -13,20 +15,20 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import Grid from "@mui/material/Grid2";
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { ActionEvent, ActionEventItem, ActiveFilter, CustomButton, DynColumnsDef, i18nStrings } from './DynamicTypes';
+import { ActionEvent, ActionEventItem, ActiveFilter, CustomButton, CustomIconButton, DynamicColumns, i18nStrings } from './DynamicTypes';
 
-export interface ColumnVisibilityPopperProps<T> {
+interface ColumnVisibilityPopperProps<T> {
+  columnsButton: CustomIconButton;
   tableName: string;
-  visibleColumns: DynColumnsDef<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
+  visibleColumns: DynamicColumns<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
   localeStr: i18nStrings['header'];
 }
 
-export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
+function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
 
-  const { tableName, visibleColumns, setVisibleColumns, localeStr } = props;
+  const { columnsButton, tableName, visibleColumns, setVisibleColumns, localeStr } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -61,9 +63,15 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
 
   return (
     <>
-      <Tooltip title={localeStr.visibleColumns}>
-        <IconButton color='primary' onClick={handlePopClick}>
-          <SettingsOutlinedIcon />
+      <Tooltip title={columnsButton?.label ?? localeStr.visibleColumns}>
+        <IconButton
+          color='primary'
+          onClick={(event) => {
+            handlePopClick(event);
+            columnsButton?.buttonClick?.(event);
+          }}
+        >
+          {columnsButton?.icon ?? <SettingsOutlinedIcon />}
         </IconButton>
       </Tooltip>
       <Popover
@@ -91,8 +99,8 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
           }}
         >
 
-          <Grid size={12} p={1}>
-            <Typography variant="body1">
+          <Grid size={12} p={2}>
+            <Typography variant="subtitle1">
               {localeStr.visibleColumns}
             </Typography>
           </Grid>
@@ -103,8 +111,15 @@ export function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>)
               sx={{ width: '100%', padding: 0 }}
             >
               {visibleColumns.map((column) => (
-                <ListItem key={column.accessor} disablePadding>
-                  <ListItemButton onClick={handleHideColumn(column.accessor)}>
+                <ListItem
+                  key={column.accessor}
+                  disablePadding
+                  disableGutters
+                >
+                  <ListItemButton
+                    onClick={handleHideColumn(column.accessor)}
+                    sx={{ py: 0 }}
+                  >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
@@ -136,7 +151,7 @@ interface ActionButtonsProps<T extends Record<string, any>> {
   localeStr: i18nStrings['header'];
 }
 
-export function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
+function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
 
   const {
     fetchData,
@@ -221,7 +236,7 @@ export function ActionButtons<T extends Record<string, any>>(props: ActionButton
 
 }
 
-export function NewItemButton(props: CustomButton) {
+function NewItemButton(props: CustomButton) {
 
   const { label, icon, buttonClick } = props;
 
@@ -238,11 +253,27 @@ export function NewItemButton(props: CustomButton) {
   )
 }
 
+function ExportButton(props: CustomButton) {
+
+  const { label, icon, buttonClick } = props;
+
+  return (
+    <Tooltip title={label ?? 'Export'}>
+      <IconButton
+        color="primary"
+        onClick={(event) => buttonClick?.(event)}
+      >
+        {icon ?? <FileUploadOutlinedIcon sx={{ mr: 0.5 }} />}
+      </IconButton>
+    </Tooltip>
+  )
+}
+
 export interface DynamicActionsProps<T extends Record<string, any>> {
   tableName: string;
   fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>
-  visibleColumns: DynColumnsDef<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynColumnsDef<T>[]>>;
+  visibleColumns: DynamicColumns<T>[];
+  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> }
   quickActions: boolean;
   setQuickActions: Dispatch<SetStateAction<boolean>>;
@@ -250,6 +281,9 @@ export interface DynamicActionsProps<T extends Record<string, any>> {
   setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
   activeFilters: ActiveFilter[];
   newItemButton?: CustomButton;
+  columnsButton?: CustomIconButton;
+  actionButton?: CustomIconButton;
+  exportButton?: CustomIconButton;
   showVisibleColumnsButton: boolean;
   localeStr: i18nStrings['header'];
 }
@@ -268,6 +302,9 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     setQuickSelectedRows,
     activeFilters,
     newItemButton,
+    actionButton,
+    columnsButton,
+    exportButton,
     showVisibleColumnsButton,
     localeStr,
   } = props;
@@ -277,6 +314,14 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     if (quickActions) setQuickSelectedRows([]);
   }
 
+  const CustomActionButton = actionButton?.icon 
+    ? actionButton?.icon
+    : <LayersOutlinedIcon />;
+
+  const CustomActiveActionButton = actionButton?.activeIcon
+    ? actionButton?.activeIcon
+    : <LayersOutlinedIcon />;
+
   const shouldActionBeHidden = defineActions.actionList?.length === 0 && !newItemButton && !showVisibleColumnsButton;
 
   return (
@@ -284,19 +329,32 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
       {!shouldActionBeHidden &&
         <Grid
           container
-          size={4}
           justifyContent="flex-end"
           alignItems="center"
           p={1}
         >
+
+          {exportButton &&
+            <Grid p={0.5}>
+              <ExportButton
+                label={exportButton?.label}
+                icon={exportButton?.icon}
+                buttonClick={exportButton?.buttonClick}
+              />
+            </Grid>
+          }
+
           {defineActions.actionList?.length > 0 &&
             <Grid p={0.5}>
-              <Tooltip title={localeStr.quickActions}>
+              <Tooltip title={actionButton?.label ?? localeStr.quickActions}>
                 <IconButton
-                  color={quickActions ? 'secondary' : 'primary'}
-                  onClick={toggleQuickActions}
+                  color='primary'
+                  onClick={(event) => {
+                    toggleQuickActions();
+                    actionButton?.buttonClick?.(event);
+                  }}
                 >
-                  <LayersOutlinedIcon />
+                  {quickActions ? CustomActiveActionButton : CustomActionButton}
                 </IconButton>
               </Tooltip>
             </Grid>
@@ -305,6 +363,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
           {showVisibleColumnsButton &&
             <Grid p={0.5}>
               <ColumnVisibilityPopper
+                columnsButton={columnsButton}
                 tableName={tableName}
                 visibleColumns={visibleColumns}
                 setVisibleColumns={setVisibleColumns}

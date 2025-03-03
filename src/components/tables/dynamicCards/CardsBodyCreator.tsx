@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
 import React, { useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
-import { InfiniteViewType } from './DynamicCardsTypes';
+import { CardItemInfo, InfiniteViewType } from './DynamicCardsTypes';
 
 /* ---------- Cards ---------- */
 
@@ -15,7 +15,7 @@ export function DefaultSkeletonCard() {
 
   return (
     <Card
-      sx={{ minWidth: 300, minHeight: 300 }}
+      sx={{ minWidth: 150, minHeight: 300 }}
     >
       <CardMedia
         component={Skeleton}
@@ -24,11 +24,10 @@ export function DefaultSkeletonCard() {
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          <Skeleton variant='text' width={180} />
+          <Skeleton variant='text' width='30%' />
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <Skeleton variant='text' />
-          <Skeleton variant='text' />
+          <Skeleton variant='text' width='70%' />
         </Typography>
       </CardContent>
     </Card>
@@ -78,22 +77,17 @@ export function DefaultCardItem<T extends Record<string, any>>(props: CardItemPr
 export interface CardBodyProps<T extends Record<string, any>> {
   tableVariant: 'standard' | 'infinite';
   tableData: T[];
-  standardOptions: {
+  standardOptions?: {
     customPageItemCount: number;
     customSelectPages: number[];
   };
-  infiniteOptions: {
+  infiniteOptions?: {
     loadingType: 'infiniteScroll' | 'loadMore';
     gridSizings: Record<string, number>;
     itemsPerPage: number;
     viewType: InfiniteViewType;
   };
-  cardInfo: {
-    CardItem: React.FC<T>;
-    ListItem?: React.FC<T>;
-    SkeletonCard?: React.FC;
-    SkeletonList?: React.FC;
-  };
+  cardInfo: CardItemInfo<T>;
   page: number;
   rowsPerPage: number;
   isFetching: boolean;
@@ -112,7 +106,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     isFetching,
   } = props;
 
-  const { CardItem, ListItem, SkeletonCard, SkeletonList } = cardInfo;
+  const { CardItem, ListItem, SkeletonItem, SkeletonListItem } = cardInfo;
 
   const {
     gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
@@ -120,9 +114,11 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     itemsPerPage,
   } = infiniteOptions;
 
-  const currentPageRows = rowsPerPage > 0
-    ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    : tableData;
+  const currentPageRows = useMemo(() =>
+    rowsPerPage > 0
+      ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : tableData
+    , [tableData, page, rowsPerPage]);
 
   const skeletonItems = isFetching
     ? tableVariant === 'standard' ? (rowsPerPage - currentPageRows.length) : itemsPerPage
@@ -136,7 +132,6 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     xl: `repeat(${gridSizings.xl}, minmax(0, 1fr))`,
   }), [gridSizings]);
 
-
   const StandardBodyLayout = useCallback(() => (
     <>
       {currentPageRows.map((row) => (
@@ -148,17 +143,17 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
 
       {Array.from({ length: skeletonItems }, (_, index) => (
         <Grid key={`grid-skeleton-${index}`} size={12}>
-          {SkeletonCard ? <SkeletonCard /> : <DefaultSkeletonCard />}
+          {SkeletonItem ? <SkeletonItem /> : <DefaultSkeletonCard />}
         </Grid>
       ))}
     </>
-  ), [currentPageRows, skeletonItems, CardItem, SkeletonCard]);
+  ), [currentPageRows, skeletonItems, CardItem, SkeletonItem]);
 
 
   const InfiniteBodyLayout = useCallback(() => {
 
     const CardElement = viewType === 'cards' ? CardItem : ListItem;
-    const SkeletonElement = viewType === 'cards' ? SkeletonCard : SkeletonList;
+    const SkeletonElement = viewType === 'cards' ? SkeletonItem : SkeletonListItem;
 
     return (
       <>
@@ -177,7 +172,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
       </>
     );
 
-  }, [viewType, CardItem, ListItem, SkeletonCard, SkeletonList, tableData, skeletonItems]);
+  }, [viewType, CardItem, ListItem, SkeletonItem, SkeletonListItem, tableData, skeletonItems]);
 
   return (
     <Box

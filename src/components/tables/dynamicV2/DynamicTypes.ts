@@ -21,18 +21,25 @@ export type ColumnType = 'string'
  * @param {string} accessor - The accessor of the column.
  * @param {string} label - The label of the column.
  * @param {DynamicFilterOptions[]} filterOptions - The options for the filter in case of select.
- * @param {(props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element} Cell - The custom cell component.
- * @param {{ icon: JSX.Element, action: (currentColumn?: DynColumnsDef<T>) => void }} Tooltip - The tooltip component.
+ * @param {(props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => JSX.Element} Cell - The custom cell component.
+ * @param {{ icon: JSX.Element, action: (currentColumn?: DynamicColumns<T>) => void }} Tooltip - The tooltip component.
  * @param {boolean} visible - Indicates whether the column is visible.
  */
-export interface DynColumnsDef<T> {
+export interface DynamicColumns<T> {
   accessor: string;
   label: string;
-  filterOptions?: { type: FilterType, options?: DynamicFilterOptions[], priority?: boolean }
+  filterOptions?: {
+    type: FilterType,
+    options?: DynamicFilterOptions[],
+    hideDateSelector?: boolean,
+    regex?: boolean,
+    priority?: boolean
+  }
   ColumnCell?: () => JSX.Element;
-  Cell?: (props: { cellValue: string, currentColumn?: DynColumnsDef<T>, currentRow?: T }) => JSX.Element;
+  Cell?: (props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => JSX.Element;
   Tooltip?: { icon?: JSX.Element, color?: IconButtonOwnProps['color'], label: string }
-  visible: boolean;
+  maxWidth?: number | string | 'stretch';
+  visible?: boolean;
 }
 
 /**
@@ -89,7 +96,7 @@ export interface ActionEventItem {
  * @param {string} tableName - The name of the table.
  * @param {Array<T>} tableData - The data of the table.
  * @param {Dispatch<SetStateAction<T[]>>} setTableData - The function to set the table data.
- * @param {DynColumnsDef[]} columns - The columns of the table.
+ * @param {DynamicColumns[]} columns - The columns of the table.
  * @param {number} expectedRowCount - The expected row count.
  * @param {boolean} static - Indicates whether the table is static.
  * @param {boolean} showVisibleColumnsButton - Indicates whether the visible columns button is shown.
@@ -101,10 +108,12 @@ export interface TableInfoProps<T> {
   tableName: string;
   tableData: Array<T>;
   setTableData?: Dispatch<SetStateAction<T[]>>;
-  columns: DynColumnsDef<T>[];
+  // startingPage?: number;
+  columns: DynamicColumns<T>[];
   expectedRowCount: number;
   variant?: 'standard' | 'dense' | 'compact';
   filterMode?: 'single' | 'multiple';
+  defaultShowFilters?: boolean;
   staticMode?: boolean;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
@@ -114,6 +123,7 @@ export interface TableInfoProps<T> {
     customSelectPages?: number[];
     autoSizeHeight?: boolean;
     hideFooter?: boolean;
+    footerVariant?: 'standard' | 'simple';
   },
 }
 
@@ -177,6 +187,7 @@ export interface i18nStrings {
   footer?: {
     rowsPerPage: string,
     of: string,
+    elements: string,
   }
 }
 
@@ -189,7 +200,14 @@ export interface i18nStrings {
 export interface CustomButton {
   label: string;
   icon?: JSX.Element;
-  buttonClick: () => void;
+  buttonClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
+export interface CustomIconButton {
+  label?: string;
+  icon?: JSX.Element;
+  activeIcon?: JSX.Element;
+  buttonClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 /**
@@ -211,6 +229,9 @@ export interface DynamicTableProps<T extends Record<string, any>> {
   onRowClick?: (row: T) => void;
   defineActions?: DefineActionsProps<T>
   newItemButton?: CustomButton;
+  columnsButton?: CustomIconButton;
+  actionButton?: CustomIconButton;
+  exportButton?: CustomIconButton;
   paperVariant?: 'elevation' | 'outlined';
   tableLocale?: 'en' | 'it';
   localeStr?: i18nStrings;

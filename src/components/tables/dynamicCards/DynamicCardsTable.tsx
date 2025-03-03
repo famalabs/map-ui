@@ -1,19 +1,16 @@
-import Table from '@mui/material/Table';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Grid from "@mui/material/Grid2";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import qs from 'qs';
-import { CardsSimpleFilters } from './CardsSimpleFilters';
-import { TablePaginationActions } from '../dynamicV2/DynamicPagination';
-import { ActiveCardFilter, DynamicCardsProps, InfiniteViewType } from './DynamicCardsTypes';
-import { CardBodyCreator } from './CardsBodyCreator';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import ToggleButton from '@mui/material/ToggleButton';
-import Button from '@mui/material/Button';
-import WindowIcon from '@mui/icons-material/Window';
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
+import WindowIcon from '@mui/icons-material/Window';
+import Grid from "@mui/material/Grid2";
+import Table from '@mui/material/Table';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActiveFilter, QueryInfoProps } from '../dynamicV2';
+import { DynamicSimpleFilters } from '../dynamicV2/DynamicFilterHeader';
+import { localizedTableStrings } from '../dynamicV2/DynamicTableLocale';
+import { CardBodyCreator } from './CardsBodyCreator';
+import { DynamicCardsFooter } from './DynamcCardsFooter';
+import { DynamicCardsProps, InfiniteViewType } from './DynamicCardsTypes';
 
 export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicCardsProps<T>) {
 
@@ -24,132 +21,117 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
       expectedItemCount,
       tableVariant = 'standard',
       gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
-      standardOptions,
-      infiniteOptions,
+      filterMode,
+      defaultShowFilters,
+      standardOptions = {
+        customPageItemCount: 6,
+        customSelectPages: [6, 12, 24],
+      },
+      infiniteOptions = {
+        loadingType: 'loadMore',
+        gridSizings,
+        itemsPerPage: 6,
+        viewType: 'cards',
+        switcherPosition: 'right',
+      },
     },
     fetchInfo: {
       fetchData,
       isFetching,
     },
     cardInfo,
-    queryInfo: {
-      onLoadQuery,
-      setCurrentQuery
-    }
+    queryInfo = {} as QueryInfoProps,
+    tableLocale = 'en',
+    localeStr,
   } = props;
 
   const {
-    customPageItemCount = 5,
-    customSelectPages = [5, 10, 25]
+    customPageItemCount,
+    customSelectPages
   } = standardOptions;
-   
+
   const {
-    loadingType = 'loadMore',
-    itemsPerPage = 6,
-    viewType = 'cards',
-    switcherPosition = 'right',
+    loadingType,
+    itemsPerPage,
+    viewType,
+    switcherPosition,
   } = infiniteOptions;
 
+  const { onLoadQuery, setCurrentQuery } = queryInfo;
+
+  const currentLocale = useMemo(() => ({
+    ...localizedTableStrings[tableLocale],
+    ...localeStr,
+  }), [tableLocale, localeStr]);
+
   const savedView = useMemo(() => localStorage.getItem('view') as InfiniteViewType, []);
-  const [selectedView, setSelectedView] = useState <InfiniteViewType | undefined>(savedView ?? viewType);
+  const [selectedView, setSelectedView] = useState<InfiniteViewType | undefined>(savedView ?? viewType);
 
   /* Page index */
-  const [page, setPage] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   /* Rows displayed per page */
-  const [rowsPerPage, setRowsPerPage] = useState<number>(customPageItemCount ?? 5);
+  const itemsPerPageCount = tableVariant === 'standard' ? customPageItemCount : itemsPerPage;
+  const [rowsPerPage, setRowsPerPage] = useState<number>(itemsPerPageCount);
 
   /* Highest fetched page */
   const [highestFetchedPage, setHighestFetchedPage] = useState<number>(-1);
 
+  /* Check for prefetched data */
+  // const isActuallyFetching = isFetching && tableData.length === currentPage * rowsPerPage;
+  const isNextPageFetched = highestFetchedPage >= currentPage;
+  const isTableFetching = tableVariant === 'standard' ? !isNextPageFetched && (highestFetchedPage !== currentPage) : isFetching
+
   /* Active filters object */
-  const [activeFilters, setActiveFilters] = useState<ActiveCardFilter[]>([]);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
 
   /* Has loaded flag */
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
+  /* Has the fetch function been called */
+  const [hasDataFetched, setHasDataFetched] = useState<boolean>(false);
+
   /* Fetching event function */
-  const fetchEvent = useCallback(async (firstLoad: boolean = false) => {
-    if (tableVariant === 'infinite') {
-      if (firstLoad || tableData?.length < expectedItemCount) {
-        fetchData(customPageItemCount, activeFilters, firstLoad);
-      }
-    } else {
-      if (firstLoad || highestFetchedPage < page) {
-        await fetchData(rowsPerPage, activeFilters, firstLoad);
-        setHighestFetchedPage(firstLoad ? 0 : page);
-      }
+  const fetchEvent = useCallback(async (fetchType: 'first' | 'next' = 'next') => {
+    const fetchCondition = tableVariant === 'standard' ? highestFetchedPage < currentPage : true;
+    const itemsPerPage = tableVariant === 'standard' || loadingType === 'infiniteScroll' ? rowsPerPage * 2 : rowsPerPage;
+    if (fetchType === 'first' || fetchCondition) {
+      await fetchData(itemsPerPage, activeFilters, fetchType === 'first');
+      setHasDataFetched(true);
+
+      const highestFetchedPage = currentPage + 1;
+      setHighestFetchedPage(fetchType === 'first' ? 0 : highestFetchedPage);
     }
-  }, [tableVariant, tableData?.length, expectedItemCount, fetchData, customPageItemCount, activeFilters, highestFetchedPage, page, rowsPerPage]);
+  }, [tableVariant, highestFetchedPage, currentPage, loadingType, rowsPerPage, fetchData, activeFilters]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
-    setPage(newPage);
+    setCurrentPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
+  const handleChangeRowsPerPage = useCallback((
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setCurrentPage(0);
     setHighestFetchedPage(-1);
-  };
+  }, []);
 
   /* Fetch event effects  */
 
   useEffect(() => {
-    if (page !== 0) fetchEvent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+    /* Skip fetch is static mode is enabled */
+    if (currentPage !== 0) fetchEvent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   useEffect(() => {
-    if (hasLoaded) fetchEvent(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    /* Skip fetch is static mode is enabled */
+    if (hasLoaded) fetchEvent('first');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowsPerPage]);
-
-
-  /* Debounce filter for Load & Filters*/
-
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-
-    const parseFilterQuery = () => {
-      if (setCurrentQuery) {
-
-        const filterQuery = activeFilters.reduce((obj, filter) => {
-          obj[`filter[${filter.filterName}]`] = filter.filterValue;
-          return obj;
-        }, {});
-
-        setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
-      }
-    }
-
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    debounceTimeoutRef.current = setTimeout(() => {
-
-      if (hasLoaded) parseFilterQuery();
-
-      setPage(0);
-      setHighestFetchedPage(-1);
-      fetchEvent(true);
-
-    }, 300);
-
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFilters]);
 
   /* Set has loaded flag */
 
@@ -170,92 +152,6 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
   };
 
 
-  /* Load More Pagination */
-
-  const InfiniteFooter = useCallback(() => {
-
-    const LoadMoreButton = () => {
-      if (tableData?.length === expectedItemCount || isFetching) return null;
-
-      return (
-        <Grid
-          container
-          sx={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            my: 4
-          }}
-        >
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={async () => await fetchEvent()}
-          >
-            {'Carica altri'}
-          </Button>
-        </Grid>
-      );
-    }
-
-    const ScrollDetector = () => {
-      const observer = useRef<IntersectionObserver | null>(null);
-
-      const lastElementRef = useCallback((node) => {
-        if (isFetching) return;
-        if (observer.current) observer.current.disconnect();
-        observer.current = new IntersectionObserver(async (entries) => {
-          if (entries[0].isIntersecting) {
-            await fetchEvent();
-          }
-        });
-        if (node) observer.current.observe(node);
-      }, []);
-
-      return (
-        <TableRow ref={lastElementRef}>
-          <td colSpan={6} />
-        </TableRow>
-      );
-    }
-
-    return loadingType === 'loadMore' 
-      ? LoadMoreButton()
-      : ScrollDetector();
-    
-  }, [loadingType, tableData?.length, expectedItemCount, isFetching, fetchEvent]);
-
-  const StandardTableFooter = useCallback(() => {
-
-    const CustomTablePaginationActions = (props) => {
-      return (
-        <TablePaginationActions
-          {...props}
-          isFetching={isFetching}
-        />
-      );
-    };
-
-    return (
-      <TableFooter>
-        <TableRow>
-          <TablePagination
-            count={expectedItemCount}
-            rowsPerPage={rowsPerPage}
-            rowsPerPageOptions={customSelectPages ?? [6, 12]}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            ActionsComponent={CustomTablePaginationActions}
-            sx={{ 
-              paddingY: '1rem !important',
-              borderBottom: 'none' 
-            }}
-          />
-        </TableRow>
-      </TableFooter>
-    );
-  }, [expectedItemCount, rowsPerPage, customSelectPages, page, isFetching]);
-
   return (
     <>
       <Grid
@@ -269,8 +165,8 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
         }}
       >
 
+
         {/* Dual View Button */}
-        {(tableData?.length > 0 && viewType === 'dual') &&
         <Grid
           container
           size={12}
@@ -279,14 +175,25 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
           alignItems='center'
           spacing={2}
         >
-            {/* Filters Header */}
-            <CardsSimpleFilters
-              filtersDef={filtersDef}
-              activeFilters={activeFilters}
-              setActiveFilters={setActiveFilters}
-              onLoadQuery={onLoadQuery}
-            />
 
+          {/* Filters Header */}
+          <DynamicSimpleFilters
+            columns={filtersDef}
+            filterMode={filterMode}
+            defaultShowFilters={defaultShowFilters}
+            onLoadQuery={onLoadQuery}
+            setCurrentQuery={setCurrentQuery}
+            activeFilters={activeFilters}
+            setActiveFilters={setActiveFilters}
+            fetchEvent={fetchEvent}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            setHighestFetchedPage={setHighestFetchedPage}
+            hasTableLoaded={hasLoaded}
+            localeStr={currentLocale.filters}
+          />
+
+          {viewType === 'dual' &&
             <Grid>
               <ToggleButtonGroup
                 exclusive
@@ -296,21 +203,32 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
                 size='small'
                 sx={{ alignSelf: 'center' }}
               >
-                <ToggleButton value="cards" aria-label="left aligned">
-                  <WindowIcon />
+                <ToggleButton
+                  value="cards"
+                  size='small'
+                  color='primary'
+                  sx={{ p: '5px' }}
+                >
+                  <WindowIcon fontSize='small' />
                 </ToggleButton>
-                <ToggleButton value="list" aria-label="centered">
-                  <ViewStreamIcon />
+                <ToggleButton
+                  // title='List View'
+                  value="list"
+                  size='small'
+                  color='primary'
+                  sx={{ p: '5px' }}
+                >
+                  <ViewStreamIcon fontSize='small' />
                 </ToggleButton>
               </ToggleButtonGroup>
             </Grid>
+          }
 
         </Grid>
-        }
 
       </Grid>
 
-      <Table sx={{ width: '100%', minWidth: 400 }}>
+      <Table sx={{ width: '100%', minWidth: 150 }}>
 
         {/* Table Body */}
         <CardBodyCreator
@@ -327,16 +245,26 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
             itemsPerPage,
             viewType: selectedView
           }}
-          page={page}
+          page={currentPage}
           rowsPerPage={rowsPerPage}
           isFetching={isFetching}
         />
 
         {/* Table Pagination */}
-        {tableVariant === 'infinite' 
-          ? <InfiniteFooter />
-          : <StandardTableFooter />
-        }
+        <DynamicCardsFooter
+          tableData={tableData}
+          tableVariant={tableVariant}
+          currentPage={currentPage}
+          expectedItemCount={expectedItemCount}
+          fetchEvent={fetchEvent}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          isFetching={isTableFetching}
+          hasDataFetched={hasDataFetched}
+          loadingType={loadingType}
+          rowsPerPage={rowsPerPage}
+          customSelectPages={customSelectPages}
+        />
 
       </Table>
     </>

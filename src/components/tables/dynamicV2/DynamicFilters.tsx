@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/it';
 import 'dayjs/locale/en';
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { ActiveFilter, DynamicFilterOptions, DynColumnsDef, i18nStrings } from './DynamicTypes';
+import { ActiveFilter, DynamicFilterOptions, DynamicColumns, i18nStrings } from './DynamicTypes';
 
 /* ---------- Update Filters Function ---------- */
 
@@ -23,7 +23,7 @@ export function updateFilters<T>(
   value: unknown,
   index: number = 0,
   comparator: string,
-  column: DynColumnsDef<T>,
+  column: DynamicColumns<T>,
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>,
 ) {
   setActiveFilters(prevFilters => {
@@ -59,7 +59,7 @@ export function updateFilters<T>(
 /* ---------- String Filter ---------- */
 
 interface StringFilterFormProps<T> {
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   filterMode: 'single' | 'multiple';
   activeFilters: ActiveFilter[];
   filterIndex?: number;
@@ -133,10 +133,10 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
                     ? () => setActiveFilters([])
                     : () => setInputValue('')
                   }
-                  sx={{ 
-                    visibility: aloneFilter 
-                    ? (activeFilters.length ? 'visible' : 'hidden' )
-                    : inputValue ? 'visible' : 'hidden'
+                  sx={{
+                    visibility: aloneFilter
+                      ? (activeFilters.length ? 'visible' : 'hidden')
+                      : inputValue ? 'visible' : 'hidden'
                   }}
                   aria-label="clear-filter"
                 >
@@ -169,7 +169,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
 /* ---------- Number Filter ---------- */
 
 interface NumberFilterFormProps<T> {
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   filterMode: 'single' | 'multiple';
   activeFilters: ActiveFilter[];
   filterIndex?: number;
@@ -208,7 +208,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
       setInputValue(Number(event.target.value) || null);
     }
   }
-  
+
   useEffect(() => {
     if (aloneFilter) {
       setInputValue(Number(filterValue) || null);
@@ -289,7 +289,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
 /* ---------- Select Filter ---------- */
 
 interface SelectFilterFormProps<T> {
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   filterMode: 'single' | 'multiple';
   filterIndex?: number;
   activeFilters: ActiveFilter[];
@@ -384,7 +384,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
 /* ---------- Date Filter ---------- */
 
 interface DateFilterFormProps<T> {
-  column: DynColumnsDef<T>;
+  column: DynamicColumns<T>;
   filterIndex?: number;
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
@@ -438,17 +438,19 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
       gap={1}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr.dateLanguage}>
-        <Grid size={12}>
-          <Select
-            fullWidth
-            value={selectType}
-            onChange={updateFilterType}
-            size='small'
-          >
-            <MenuItem value='from' > {localeStr.dateFrom} </MenuItem>
-            <MenuItem value='to'> {localeStr.dateTo} </MenuItem>
-          </Select>
-        </Grid>
+        {!column.filterOptions.hideDateSelector &&
+          <Grid size={12}>
+            <Select
+              fullWidth
+              value={selectType}
+              onChange={updateFilterType}
+              size='small'
+            >
+              <MenuItem value='from' > {localeStr.dateFrom} </MenuItem>
+              <MenuItem value='to'> {localeStr.dateTo} </MenuItem>
+            </Select>
+          </Grid>
+        }
 
         <Grid size={12}>
           <DatePicker
