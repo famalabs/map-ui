@@ -1,6 +1,6 @@
 import ViewStreamIcon from '@mui/icons-material/ViewStream';
 import WindowIcon from '@mui/icons-material/Window';
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Table from '@mui/material/Table';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -23,16 +23,17 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
       gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
       filterMode,
       defaultShowFilters,
+      // showEmptyTable = true,
       standardOptions = {
         customPageItemCount: 6,
         customSelectPages: [6, 12, 24],
       },
       infiniteOptions = {
         loadingType: 'loadMore',
-        gridSizings,
         itemsPerPage: 6,
         viewType: 'cards',
         switcherPosition: 'right',
+        onViewTypeChange: () => null,
       },
     },
     fetchInfo: {
@@ -54,6 +55,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
     loadingType,
     itemsPerPage,
     viewType,
+    onViewTypeChange,
     switcherPosition,
   } = infiniteOptions;
 
@@ -64,15 +66,14 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
     ...localeStr,
   }), [tableLocale, localeStr]);
 
-  const savedView = useMemo(() => localStorage.getItem('view') as InfiniteViewType, []);
-  const [selectedView, setSelectedView] = useState<InfiniteViewType | undefined>(savedView ?? viewType);
+  const [selectedView, setSelectedView] = useState<InfiniteViewType | undefined>(viewType);
 
   /* Page index */
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   /* Rows displayed per page */
   const itemsPerPageCount = tableVariant === 'standard' ? customPageItemCount : itemsPerPage;
-  const [rowsPerPage, setRowsPerPage] = useState<number>(itemsPerPageCount);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(itemsPerPageCount ?? 5);
 
   /* Highest fetched page */
   const [highestFetchedPage, setHighestFetchedPage] = useState<number>(-1);
@@ -147,7 +148,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
   ) => {
     if (newView) {
       setSelectedView(newView);
-      localStorage.setItem('view', newView ?? viewType);
+      onViewTypeChange?.(newView);
     }
   };
 
@@ -186,10 +187,10 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
             activeFilters={activeFilters}
             setActiveFilters={setActiveFilters}
             fetchEvent={fetchEvent}
-            currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             setHighestFetchedPage={setHighestFetchedPage}
             hasTableLoaded={hasLoaded}
+            showRefreshButton={false}
             localeStr={currentLocale.filters}
           />
 

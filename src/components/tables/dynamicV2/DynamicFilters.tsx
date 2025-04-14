@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,7 +14,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import 'dayjs/locale/it';
 import 'dayjs/locale/en';
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActiveFilter, DynamicFilterOptions, DynamicColumns, i18nStrings } from './DynamicTypes';
 
 /* ---------- Update Filters Function ---------- */
@@ -86,7 +86,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
     activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
     , [activeFilters, column.accessor, filterIndex]);
 
-  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' ? filterValue?.toString() : '');
+  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' && filterValue ? filterValue?.toString() : '');
 
   useEffect(() => {
     if (aloneFilter) {
@@ -158,7 +158,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
             disabled={isApplyDisabled}
             aria-label="apply-filter"
           >
-            {localeStr.apply}
+            {localeStr?.apply}
           </Button>
         </Grid>
       }
@@ -278,7 +278,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
             disabled={isApplyDisabled}
             aria-label="apply-filter"
           >
-            {localeStr.apply}
+            {localeStr?.apply}
           </Button>
         </Grid>
       }
@@ -374,7 +374,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
           disabled={localSelectedOption?.id === selectedFilterOption?.id}
           aria-label="apply-filter"
         >
-          {localeStr.apply}
+          {localeStr?.apply}
         </Button>
       </Grid>
     </Grid>
@@ -403,32 +403,87 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
     localeStr,
   } = props;
 
+  const firstDateComparators = ['dateMin', 'dateFrom', 'dateTo', 'exact'];
 
-  const dateValue = useMemo(() =>
-    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue as string ?? null
-    , [activeFilters, column.accessor, filterIndex]);
+  const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
+  const minDate = dateFilters?.find(filter => firstDateComparators.includes(filter.filterComparator))?.filterValue as string;
+  const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
+  const dateMinComparator = minDate 
+    ? firstDateComparators.find(comparator => dateFilters.find(filter => filter.filterComparator === comparator)) 
+    : 'dateFrom';
+
+  const currentSelectType = useMemo(() => {
+    if (minDate && maxDate) return 'range';
+    if (minDate) {
+      if (dateMinComparator === 'dateFrom') return 'from';
+      if (dateMinComparator === 'dateTo') return 'to';
+      if (dateMinComparator === 'exact') return 'exact';
+      return 'exact';
+    }
+    return 'exact';
+  }, [minDate, maxDate, dateMinComparator]);
+
+  const [selectType, setSelectType] = useState<'exact' | 'from' | 'to' | 'range'>(currentSelectType);
 
   const [dateError, setDateError] = useState<boolean>(false);
-  const [localDate, setValue] = useState<string>(dateValue ?? '');
+  const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
+    date_start: minDate ?? '',
+    date_end: selectType === 'range' ? maxDate : '',
+  });
 
-  const updateDateRange = (date: string) => {
-    console.log(date);
+  const updateFilterType = (event: SelectChangeEvent<"exact" | "from" | "to" | "range">) => {
+    if (selectType !== 'range') {
+      setValue(prevDate => ({
+        date_start: prevDate.date_start,
+        date_end: '',
+      }));
+    }
+    setSelectType(event.target.value as 'exact' | 'from' | 'to' | 'range');
+  }
+
+  const updateDateRange = (date: string, type: 'start' | 'end') => {
     setDateError(false);
-    setValue(date);
+    setValue(prevDate => ({
+      date_start: type === 'start' ? date : prevDate.date_start,
+      date_end: type === 'end' ? date : prevDate.date_end
+    }));
   }
 
-  const [selectType, setSelectType] = useState<'from' | 'to'>('from');
-  const updateFilterType = (event: SelectChangeEvent<"from" | "to">) => {
-    setSelectType(event.target.value as 'from' | 'to');
-  }
+  const handleApply = useCallback(() => {
 
-  const handleApply = () => {
-    const dateFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
-    updateFilters(localDate, dateFilters, selectType, column, setActiveFilters);
+    const dateMinComparator = selectType === 'range' 
+      ? 'dateMin'
+      : selectType === 'from'
+        ? 'dateFrom'
+        : selectType === 'to'
+          ? 'dateTo'
+          : 'exact';
+
+    const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
+    const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
+
+    // clear up previous date filters
+    activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex).forEach(filter => {
+      setActiveFilters(prevFilters => prevFilters.filter(prevFilter => prevFilter !== filter));
+    });
+
+    if (selectType !== 'range') {
+      updateFilters(localDate.date_start, dateMinFilters, dateMinComparator, column, setActiveFilters);
+    } else {
+      updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
+      updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
+    }
+
     closePopover?.();
-  };
+  }, [selectType, localDate, activeFilters, column, filterIndex, setActiveFilters, closePopover]);
 
-  const isApplyDisabled = useMemo(() => localDate === dateValue || dateError || !localDate, [localDate, dateValue, dateError]);
+  const isApplyDisabled = useMemo(() => {
+    if (selectType !== 'range') {
+      return dateError;
+    } else {
+      return !localDate.date_start || !localDate.date_end || dateError;
+    }
+  }, [selectType, localDate.date_start, localDate.date_end, dateError]);
 
   return (
     <Grid
@@ -437,8 +492,8 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
       alignItems="center"
       gap={1}
     >
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr.dateLanguage}>
-        {!column.filterOptions.hideDateSelector &&
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr?.dateLanguage}>
+        {!column.filterOptions?.singleDate &&
           <Grid size={12}>
             <Select
               fullWidth
@@ -446,19 +501,21 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
               onChange={updateFilterType}
               size='small'
             >
-              <MenuItem value='from' > {localeStr.dateFrom} </MenuItem>
-              <MenuItem value='to'> {localeStr.dateTo} </MenuItem>
+              <MenuItem value='exact' > {localeStr?.exact} </MenuItem>
+              <MenuItem value='from' > {localeStr?.dateFrom} </MenuItem>
+              <MenuItem value='to'> {localeStr?.dateTo} </MenuItem>
+              <MenuItem value='range'> {localeStr?.range} </MenuItem>
             </Select>
           </Grid>
         }
 
         <Grid size={12}>
           <DatePicker
-            label={localeStr.date}
-            defaultValue={localDate ? dayjs(localDate) : null}
-            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString()) : null}
+            label={selectType !== 'range' ? 'Data' : 'Data Inizio'}
+            defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
+            maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
             onError={(error) => setDateError(Boolean(error))}
-            format='DD/MM/YYYY'
             slotProps={{
               textField: {
                 size: 'small',
@@ -467,6 +524,25 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
             }}
           />
         </Grid>
+
+        {selectType === 'range' &&
+          <Grid size={12}>
+            <DatePicker
+              label="Data Fine"
+              defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
+              onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
+              minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
+              onError={(error) => setDateError(Boolean(error))}
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  fullWidth: true,
+                }
+              }}
+            />
+          </Grid>
+        }
+
         <Grid size={12}>
           <Button
             fullWidth
@@ -476,7 +552,7 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
             onClick={handleApply}
             disabled={isApplyDisabled}
           >
-            {localeStr.apply}
+            {localeStr?.apply}
           </Button>
         </Grid>
       </LocalizationProvider>
@@ -486,147 +562,150 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
 
 /* ---------- Multiple Date Filter ---------- */
 
-// interface MultipleDateFilterFormProps<T> {
-//   column: DynColumnsDef<T>;
-//   filterMode: 'single' | 'multiple';
-//   filterIndex?: number;
-//   activeFilters: ActiveFilter[];
-//   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
-//   closePopover: () => void;
-// }
+interface MultipleDateFilterFormProps<T> {
+  column: DynamicColumns<T>;
+  filterMode: 'single' | 'multiple';
+  filterIndex?: number;
+  activeFilters: ActiveFilter[];
+  setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
+  closePopover: () => void;
+  localeStr: i18nStrings['filters'];
+}
 
-// export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>) {
+export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>) {
 
-//   const {
-//     column,
-//     filterMode,
-//     filterIndex,
-//     activeFilters,
-//     setActiveFilters,
-//     closePopover,
-//   } = props;
+  const {
+    column,
+    filterMode,
+    filterIndex,
+    activeFilters,
+    setActiveFilters,
+    closePopover,
+  } = props;
 
 
-//   const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
-//   const minDate = dateFilters?.find(filter => filter.filterComparator === 'dateMin')?.filterValue as string;
-//   const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
+  const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
+  const minDate = dateFilters?.find(filter => filter.filterComparator === 'dateMin')?.filterValue as string;
+  const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
 
-//   const [dateError, setDateError] = useState<boolean>(false);
-//   const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
-//     date_start: filterMode === 'single' ? minDate : '',
-//     date_end: filterMode === 'single' ? maxDate : '',
-//   });
+  const [dateError, setDateError] = useState<boolean>(false);
+  const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
+    date_start: filterMode === 'single' ? minDate : '',
+    date_end: filterMode === 'single' ? maxDate : '',
+  });
 
-//   const updateDateRange = (date: string, type: 'start' | 'end') => {
-//     setDateError(false);
-//     console.log(date);
-//     setValue(prevDate => ({
-//       date_start: type === 'start' ? date : prevDate.date_start,
-//       date_end: type === 'end' ? date : prevDate.date_end
-//     }));
-//   }
+  const updateDateRange = (date: string, type: 'start' | 'end') => {
+    setDateError(false);
+    console.log(date);
+    setValue(prevDate => ({
+      date_start: type === 'start' ? date : prevDate.date_start,
+      date_end: type === 'end' ? date : prevDate.date_end
+    }));
+  }
 
-//   const [filterType, setFilterType] = useState<'single' | 'range'>(minDate && maxDate ? 'range' : 'single');
-//   const updateFilterType = (event: SelectChangeEvent<"single" | "range">) => {
-//     if (filterType === 'single') {
-//       setValue(prevDate => ({
-//         date_start: prevDate.date_start,
-//         date_end: '',
-//       }));
-//     }
-//     setFilterType(event.target.value as 'single' | 'range');
-//   }
+  const [filterType, setFilterType] = useState<'single' | 'range'>(minDate && maxDate ? 'range' : 'single');
+  const updateFilterType = (event: SelectChangeEvent<"single" | "range">) => {
+    if (filterType === 'single') {
+      setValue(prevDate => ({
+        date_start: prevDate.date_start,
+        date_end: '',
+      }));
+    }
+    setFilterType(event.target.value as 'single' | 'range');
+  }
 
-//   const handleApply = () => {
+  const handleApply = () => {
 
-//     const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
-//     const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
+    const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
+    const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
 
-//     if (filterType === 'single') {
-//       console.log('Updating filter: ', dateMinFilters, dateMaxFilters);
-//       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
-//       if (localDate.date_end) updateFilters(undefined, dateMaxFilters, 'dateMax', column, setActiveFilters);
-//     } else {
-//       console.log('Updating filters: ', dateMinFilters, dateMaxFilters);
-//       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
-//       updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
-//     }
-//     closePopover?.();
-//   };
+    if (filterType === 'single') {
+      console.log('Updating filter: ', dateMinFilters, dateMaxFilters);
+      updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
+      if (localDate.date_end) updateFilters(undefined, dateMaxFilters, 'dateMax', column, setActiveFilters);
+    } else {
+      console.log('Updating filters: ', dateMinFilters, dateMaxFilters);
+      updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
+      updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
+    }
+    closePopover?.();
+  };
 
-//   const isApplyDisabled = useMemo(() => {
-//     if (filterType === 'single') {
-//       return localDate.date_start === minDate || !localDate.date_start || dateError;
-//     } else {
-//       return !localDate.date_start || !localDate.date_end || dateError;
-//     }
-//   }, [filterType, localDate.date_start, localDate.date_end, minDate, dateError]);
+  const isApplyDisabled = useMemo(() => {
+    if (filterType === 'single') {
+      return localDate.date_start === minDate || !localDate.date_start || dateError;
+    } else {
+      return !localDate.date_start || !localDate.date_end || dateError;
+    }
+  }, [filterType, localDate.date_start, localDate.date_end, minDate, dateError]);
 
-//   return (
-//     <Grid
-//       container
-//       size={12}
-//       alignItems="center"
-//       gap={1}
-//     >
-//       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
-//         <Grid size={12}>
-//           <Select
-//             fullWidth
-//             value={filterType}
-//             onChange={updateFilterType}
-//             size='small'
-//           >
-//             <MenuItem value='single' > Data Singola </MenuItem>
-//             <MenuItem value='range'> Intervallo </MenuItem>
-//           </Select>
-//         </Grid>
+  return (
+    <Grid
+      container
+      size={12}
+      alignItems="center"
+      gap={1}
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
+        <Grid size={12}>
+          <Select
+            fullWidth
+            value={filterType}
+            onChange={updateFilterType}
+            size='small'
+          >
+            <MenuItem value='single' > Data Singola </MenuItem>
+            <MenuItem value='range'> Intervallo </MenuItem>
+          </Select>
+        </Grid>
 
-//         <Grid size={12}>
-//           <DatePicker
-//             label={filterType === 'single' ? 'Data' : 'Data Inizio'}
-//             defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
-//             onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
-//             maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
-//             onError={(error) => setDateError(Boolean(error))}
-//             slotProps={{
-//               textField: {
-//                 size: 'small',
-//                 fullWidth: true,
-//               }
-//             }}
-//           />
-//         </Grid>
-//         {filterType === 'range' &&
-//           <Grid size={12}>
-//             <DatePicker
-//               label="Data Fine"
-//               defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-//               onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
-//               minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
-//               onError={(error) => setDateError(Boolean(error))}
-//               slotProps={{
-//                 textField: {
-//                   size: 'small',
-//                   fullWidth: true,
-//                 }
-//               }}
-//             />
-//           </Grid>
-//         }
-//         <Grid size={12}>
-//           <Button
-//             fullWidth
-//             variant='contained'
-//             color='primary'
-//             size='small'
-//             onClick={handleApply}
-//             disabled={isApplyDisabled}
-//           >
-//             Apply
-//           </Button>
-//         </Grid>
-//       </LocalizationProvider>
-//     </Grid>
-//   );
-// }
+        <Grid size={12}>
+          <DatePicker
+            label={filterType === 'single' ? 'Data' : 'Data Inizio'}
+            defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
+            maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+            onError={(error) => setDateError(Boolean(error))}
+            slotProps={{
+              textField: {
+                size: 'small',
+                fullWidth: true,
+              }
+            }}
+          />
+        </Grid>
+
+        {filterType === 'range' &&
+          <Grid size={12}>
+            <DatePicker
+              label="Data Fine"
+              defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
+              onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
+              minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
+              onError={(error) => setDateError(Boolean(error))}
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  fullWidth: true,
+                }
+              }}
+            />
+          </Grid>
+        }
+
+        <Grid size={12}>
+          <Button
+            fullWidth
+            variant='contained'
+            color='primary'
+            size='small'
+            onClick={handleApply}
+            disabled={isApplyDisabled}
+          >
+            Apply
+          </Button>
+        </Grid>
+      </LocalizationProvider>
+    </Grid>
+  );
+}

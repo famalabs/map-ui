@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -15,11 +15,25 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import qs from 'qs';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DateFilterForm, NumberFilterForm, SelectFilterForm, StringFilterForm, updateFilters } from './DynamicFilters';
-import { ActiveFilter, DynamicColumns, i18nStrings } from './DynamicTypes';
+import { ActiveFilter, CustomIconButton, DynamicColumns, i18nStrings } from './DynamicTypes';
 
+const typeConverter = (type: string, value: any) => {
+  // real typescript type conversion
+  switch (type) {
+    case 'string':
+      return value.toString();
+    case 'number':
+      return Number(value);
+    case 'boolean':
+      return Boolean(value);
+    default:
+      return value;
+  }
+}
 
 /* ---------- Filter Switcher ---------- */
 
@@ -126,7 +140,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
 
   const open = Boolean(anchorEl);
 
-  const filterValue = useMemo(() => activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null, [activeFilters, column.accessor, filterIndex]);
+  const filterValue = useMemo(() => activeFilters?.find(filter => filter?.filterColumn === column.accessor && filter?.filterIndex === filterIndex)?.filterValue ?? null, [activeFilters, column.accessor, filterIndex]);
   const selectedFilterOption = useMemo(() => column.filterOptions?.options?.find(option => option.id === filterValue), [column.filterOptions, filterValue]);
 
   const chipLabel = useMemo(() => {
@@ -158,7 +172,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
         onClick={handleChipClick}
         icon={filterValue !== null
           ? (
-            <Tooltip title={localeStr.removeFilter} arrow>
+            <Tooltip title={localeStr?.removeFilter} arrow>
               <HighlightOffIcon
                 fontSize='small'
                 color='action'
@@ -167,7 +181,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
             </Tooltip>
           )
           : (
-            <Tooltip title={localeStr.addFilter} arrow>
+            <Tooltip title={localeStr?.addFilter} arrow>
               <AddCircleOutlineIcon fontSize='small' color='action' />
             </Tooltip>
           )
@@ -241,7 +255,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
               color='textSecondary'
               fontWeight='bold'
             >
-              {`${localeStr.filterBy} ${column.label}`}
+              {`${localeStr?.filterBy} ${column.label}`}
             </Typography>
           </Grid>
 
@@ -250,7 +264,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
               column={column}
               filterMode='single'
               filterIndex={filterIndex}
-              activeFilters={activeFilters}
+              activeFilters={activeFilters ?? []}
               setActiveFilters={setActiveFilters}
               handleClose={handleClose}
               localeStr={localeStr}
@@ -301,7 +315,7 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
         size='medium'
         onClick={handleChipClick}
         icon={
-          <Tooltip title={localeStr.addFilter} arrow>
+          <Tooltip title={localeStr?.addFilter} arrow>
             <AddCircleOutlineIcon fontSize='small' color='action' />
           </Tooltip>
         }
@@ -310,7 +324,7 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
             variant='body2'
             fontWeight='light'
           >
-            {localeStr.moreFilters}
+            {localeStr?.moreFilters}
           </Typography>
         }
         deleteIcon={<KeyboardArrowDownIcon fontSize='small' />}
@@ -415,23 +429,33 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
 
 /* ---------- Main Component ---------- */
 
+const comparatorMap: Record<string, string | string[]> = {
+  '$gte': ['dateMin', 'dateFrom'],
+  '$lte': ['dateMax', 'dateTo'],
+  '$gt': 'dateFrom',
+  '$lt': 'dateTo',
+}
+
 interface ChipItems<T> extends DynamicColumns<T> {
   filterIndex?: number;
 }
 
 export interface DynamicSimpleFiltersProps<T> {
   columns: DynamicColumns<T>[];
-  filterMode: 'single' | 'multiple';
+  filterMode?: 'single' | 'multiple';
   defaultShowFilters?: boolean;
   onLoadQuery?: ActiveFilter[] | string;
   setCurrentQuery?: Dispatch<React.SetStateAction<string>>;
   activeFilters: ActiveFilter[];
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>;
   fetchEvent: (fetchType?: "first" | "next") => Promise<void>;
-  currentPage: number;
-  setCurrentPage: Dispatch<SetStateAction<number>>;
-  setHighestFetchedPage: Dispatch<SetStateAction<number>>;
+  setCurrentPage?: Dispatch<SetStateAction<number>>;
+  setHighestFetchedPage?: Dispatch<SetStateAction<number>>;
   hasTableLoaded: boolean;
+  setAreFiltersLoaded?: Dispatch<SetStateAction<boolean>>;
+  refreshButton?: CustomIconButton;
+  showRefreshButton: boolean;
+  skipQueryUpdate?: boolean;
   localeStr: i18nStrings['filters'];
 }
 
@@ -439,7 +463,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
 
   const {
     columns,
-    filterMode,
+    filterMode = 'multiple',
     defaultShowFilters,
     onLoadQuery,
     setCurrentQuery,
@@ -449,17 +473,21 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     setCurrentPage,
     setHighestFetchedPage,
     hasTableLoaded,
+    setAreFiltersLoaded,
+    refreshButton,
+    showRefreshButton,
+    skipQueryUpdate = false,
     localeStr
   } = props;
 
   const isFilterActive = useMemo(() => {
     return (column: DynamicColumns<T>) => activeFilters.some(filter =>
-      filter.filterColumn === column.accessor
-      && filter.filterType === column.filterOptions?.type
+      filter?.filterColumn === column.accessor
+      && filter?.filterType === column.filterOptions?.type
     );
   }, [activeFilters]);
 
-  const filterableColumns = useMemo(() => columns.filter(column => column.filterOptions), [columns]);
+  const filterableColumns = useMemo(() => columns.filter(column => column.filterOptions && typeof column.filterOptions === 'object'), [columns]);
   const priorityFilterColumns = useMemo(() => filterableColumns.filter(column => column.filterOptions?.priority || isFilterActive(column)), [filterableColumns, isFilterActive]);
 
   // visible columns that have filters
@@ -481,23 +509,23 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       return;
     }
     const activeFilterChips = activeFilters
-      .map(filter => {
-        const matchingColumn = visibleFilterColumns.find(
-          column => column.accessor === filter.filterColumn
-            && column.filterOptions?.type === filter.filterType
-        );
-
-        // skips dateMax filter since the provided dateMin filter is enough to avoid duplicates
-        if (filter.filterType === 'date' && filter.filterComparator === 'dateMax') return undefined;
-
-        const updatedColumn = {
-          ...matchingColumn,
-          filterIndex: filter.filterIndex,
-        } as ChipItems<T>;
-
-        return matchingColumn && filter.filterIndex ? updatedColumn : undefined;
-      })
-      .filter(filter => filter);
+    .map(filter => {
+      const matchingColumn = visibleFilterColumns?.find(
+        column => column.accessor === filter?.filterColumn
+        && column.filterOptions?.type === filter?.filterType
+      );
+      
+      // skips dateMax filter since the provided dateMin filter is enough to avoid duplicates
+      if (filter?.filterType === 'date' && filter?.filterComparator === 'dateMax') return undefined;
+      
+      const updatedColumn = {
+        ...matchingColumn,
+        filterIndex: filter?.filterIndex,
+      } as ChipItems<T>;
+      
+      return matchingColumn && filter?.filterIndex ? updatedColumn : undefined;
+    })
+    .filter(filter => filter);
 
     setVisibleChips(activeFilterChips as ChipItems<T>[]);
 
@@ -524,6 +552,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     if (activeFilters.length > 0) setActiveFilters([]);
     setVisibleChips(visibleFilterColumns);
   }, [activeFilters, setActiveFilters, visibleFilterColumns]);
+  
 
   /* Load filters from querystring */
   useEffect(() => {
@@ -532,19 +561,23 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
       const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
 
+      console.log('Parsed query:', filterQuery);
+
       const filterTypeIndexMap: Record<string, number> = {};
 
       const updatedActiveFilters = Object.entries(filterQuery).map(([filterColumn, filterValue]) => {
         const selectColumn = columns.find(column => column.filterOptions && column.accessor === filterColumn);
-        const filterType = selectColumn?.filterOptions.type;
+        const filterType = selectColumn?.filterOptions?.type;
 
-        if (!filterType) return null;
+        if (!filterType) return [];
 
         if (!filterTypeIndexMap[filterType]) {
           filterTypeIndexMap[filterType] = 0;
         }
 
-        const filterIndex = filterTypeIndexMap[filterType]++;
+        // Only increment filter index if we already have a filter with this column
+        const existingFilterCount = activeFilters.filter(f => f?.filterColumn === filterColumn).length;
+        const filterIndex = existingFilterCount > 0 ? filterTypeIndexMap[filterType]++ : filterTypeIndexMap[filterType];
 
         switch (filterType) {
           case 'string':
@@ -561,23 +594,45 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
               filterIndex,
               filterType: 'number'
             } as ActiveFilter;
-          case 'select': {
+          case 'select':
+             {
             if (Array.isArray(filterValue)) {
               return filterValue.map((value: string, selectIndex) => ({
                 filterColumn,
-                filterValue: value,
+                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, value),
                 filterIndex: filterIndex + selectIndex,
                 filterType: 'select'
               }));
             } else {
               return {
                 filterColumn,
-                filterValue,
+                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, filterValue),
                 filterIndex,
                 filterType: 'select'
               } as ActiveFilter;
             }
           }
+          case 'date':
+            {
+
+              if (typeof filterValue === 'object') {
+                return Object.entries(filterValue).map(([dateComparator, dateValue]) => ({
+                  filterColumn,
+                  filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, dateValue),
+                  filterIndex: filterIndex,
+                  filterType: 'date',
+                  filterComparator: comparatorMap[dateComparator]?.[Object.keys(filterValue)?.length > 1 ? 0 : 1] ?? 'exact',
+                } as ActiveFilter));
+              } else {
+                return {
+                  filterColumn,
+                  filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, filterValue),
+                  filterIndex,
+                  filterType: 'date',
+                  filterComparator: 'exact',
+                } as ActiveFilter;
+              }
+            }
           default:
             return {
               filterColumn,
@@ -587,7 +642,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
         }
       })
         .flat()
-        .filter(filter => filter.filterValue !== undefined || filter.filterValue !== null);
+        .filter(filter => filter?.filterValue !== undefined || filter?.filterValue !== null);
 
       setActiveFilters(updatedActiveFilters as ActiveFilter[]);
     } else {
@@ -596,26 +651,29 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* Parse filter query */
+  const parseFilterQuery = useCallback(() => {
+    if (!setCurrentQuery) return;
+    const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
+      obj[`filter[${filter?.filterColumn}]`] = filter?.filterValue;
+      return obj;
+    }, {});
+    setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
+    // console.log('Query updated: ', qs.stringify(filterQuery, { encode: false }));
+  }, [activeFilters, setCurrentQuery]);
+
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    /* Parse filter query */
-    const parseFilterQuery = () => {
-      if (!setCurrentQuery) return;
-      const filterQuery = activeFilters.reduce((obj: Record<string, any>, filter) => {
-        obj[`filter[${filter.filterColumn}]`] = filter.filterValue;
-        return obj;
-      }, {});
-      setCurrentQuery(qs.stringify(filterQuery, { encode: false }));
-    };
 
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
     debounceTimeoutRef.current = setTimeout(async () => {
-      if (hasTableLoaded) parseFilterQuery();
-      setCurrentPage(0);
-      setHighestFetchedPage(-1);
+      if (hasTableLoaded && !skipQueryUpdate) parseFilterQuery();
+      setCurrentPage?.(0);
+      setHighestFetchedPage?.(-1);
+      setAreFiltersLoaded?.(true);
       await fetchEvent('first');
     }, 300);
 
@@ -628,9 +686,24 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilters]);
 
+  const handleRefetchTable = useCallback(async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setCurrentPage?.(0);
+    setHighestFetchedPage?.(-1);
+    if (!onLoadQuery) {
+      setActiveFilters([]);
+    } else {
+      await fetchEvent('first');
+    }
+    refreshButton?.buttonClick?.(e);
+  }, [fetchEvent, onLoadQuery, refreshButton, setActiveFilters, setCurrentPage, setHighestFetchedPage]);
 
   const [showFilters, setShowFilters] = useState<boolean>(defaultShowFilters !== undefined ? defaultShowFilters : true);
   const handleToggleFilters = () => setShowFilters(prev => !prev);
+
+  useEffect(() => {
+    console.log('Active filters:', activeFilters);
+  }
+    , [activeFilters]);
 
   return (
     <Grid
@@ -709,7 +782,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
                       variant='body2'
                       fontWeight='light'
                     >
-                      {localeStr.clear}
+                      {localeStr?.clear}
                     </Typography>
                   }
                   variant='outlined'
@@ -720,6 +793,21 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
                 />
               </Grid>
             }
+
+            {showRefreshButton &&
+              <Grid>
+                <Tooltip title={refreshButton?.label ?? localeStr?.refresh} arrow>
+                  <IconButton
+                    size='medium'
+                    color='primary'
+                    onClick={handleRefetchTable}
+                  >
+                    {refreshButton?.icon ?? <RefreshIcon />}
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            }
+
           </Grid>
         )
       )}

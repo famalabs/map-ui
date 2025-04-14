@@ -1,7 +1,7 @@
 import { ButtonOwnProps, useTheme } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Modal from '@mui/material/Modal';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';

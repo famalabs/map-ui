@@ -17,7 +17,7 @@ export interface NotifierProps {
 
 let displayed: SnackbarKey[] = [];
 
-export const Notifier: React.VFC<NotifierProps> = ({ snackbars, removeSnackbar }) => {
+export const Notifier: React.FC<NotifierProps> = ({ snackbars, removeSnackbar }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const addDisplayed = (key: SnackbarKey) => {

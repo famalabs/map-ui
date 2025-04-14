@@ -5,7 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import React from 'react';
 import { SxProps } from '@mui/system/styleFunctionSx';
 import { styled, Theme, useTheme } from '@mui/material';

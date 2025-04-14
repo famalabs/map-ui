@@ -1,10 +1,10 @@
 import React, { useCallback, useRef } from 'react';
-import { TablePaginationActions } from '../dynamicV2/DynamicPagination';
+import { TablePaginationActions, TablePaginationActionsProps } from '../dynamicV2/DynamicPagination';
 import TableFooter from '@mui/material/TableFooter';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 interface StandardTableFooterProps {
   expectedItemCount: number;
@@ -28,7 +28,7 @@ const StandardTableFooter = (props: StandardTableFooterProps) => {
     handleChangeRowsPerPage
   } = props;
 
-  const CustomTablePaginationActions = (props) => {
+  const CustomTablePaginationActions = (props: TablePaginationActionsProps) => {
     return (
       <TablePaginationActions
         {...props}
@@ -47,7 +47,7 @@ const StandardTableFooter = (props: StandardTableFooterProps) => {
           page={currentPage}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          ActionsComponent={CustomTablePaginationActions}
+          ActionsComponent={CustomTablePaginationActions as any}
           sx={{
             paddingY: '1rem !important',
             borderBottom: 'none'
@@ -107,7 +107,7 @@ const InfiniteFooter = (props: InfiniteFooterProps<unknown>) => {
   const ScrollDetector = () => {
     const observer = useRef<IntersectionObserver | null>(null);
 
-    const lastElementRef = useCallback((node) => {
+    const lastElementRef = useCallback((node: HTMLTableRowElement | null) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver(async (entries) => {
         if (entries[0].isIntersecting) {

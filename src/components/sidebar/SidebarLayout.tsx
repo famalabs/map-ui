@@ -7,11 +7,13 @@ import Fab from '@mui/material/Fab';
 import List, { ListOwnProps } from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { alpha, styled, Theme, useTheme } from '@mui/material/styles';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import SwipeableDrawer, { SwipeableDrawerProps } from '@mui/material/SwipeableDrawer';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 import { MenuItems } from "../common/MenuItems";
 import { FooterData, SidebarFooter } from "./SidebarFooter";
+import IconButton from '@mui/material/IconButton';
+import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 
 const drawerWidth = 240;
 
@@ -64,25 +66,28 @@ const MiniDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== "open"
 
 /* ------------ Swipeable Drawer ------------  */
 
-const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+// const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-const SwipeDrawer = styled(({ ...other }) => (
-  <SwipeableDrawer
-    disableBackdropTransition={!iOS}
-    disableDiscovery={iOS}
+const SwipeDrawer = styled((props: SwipeableDrawerProps) => (
+  <Drawer
+    // disableBackdropTransition={!iOS}
+    // disableDiscovery={iOS}
+    // allowSwipeInChildren={true}
     onClose={() => { }}
     onOpen={() => { }}
-    {...other}
+    {...props}
   />
 ))(() => ({
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
   overflow: "hidden",
+  zIndex: 0,
   '& .MuiDrawer-paper': {
-    width: drawerWidth,
+    width: '100%',
   },
 })) as typeof SwipeableDrawer;
+
 
 const SwipeFab = styled(Fab)(({ theme }) => ({
   position: 'fixed',
@@ -124,18 +129,21 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }: Sidebar
             aria-label='swipe-sidebar-button'
             onClick={() => setSidebarOpen(true)}
             size='medium'
+
           >
             <ArrowForwardIcon />
           </SwipeFab>
         )}
-        <SwipeDrawer
-          anchor={'left'}
-          open={sidebarOpen}
-          onClose={() => setSidebarOpen(!sidebarOpen)}
-          onOpen={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {children}
-        </SwipeDrawer>
+        {sidebarOpen &&
+          <SwipeDrawer
+            anchor='left'
+            open={sidebarOpen}
+            onClose={() => setSidebarOpen(!sidebarOpen)}
+            onOpen={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {children}
+          </SwipeDrawer>
+        }
         {mainContent}
       </>
     );
@@ -222,32 +230,51 @@ export function SidebarLayout(props: SidebarLayoutProps) {
 
         {/* Sidebar Logo */}
 
-        {mainLogo && (
-          <>
-            <List sx={{ padding: '1rem 0 0.5rem 0' }}>
-              <ListItemIcon
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
+        <List sx={{ padding: '1rem 0 0.5rem 0', position: 'relative', }}>
+          {isSmallScreen &&
+            <Box
+              component='div'
+              sx={{
+                position: 'absolute',
+                right: 0,
+                pr: 2,
+              }}
+            >
+              <IconButton
+                size='large'
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                sx={{ p: 1 }}
               >
-                <Box component='div'>
-                  {
-                    sidebarOpen
-                      ? <img src={mainLogo.fullLogo || ''} alt="FullLogo" style={{ width: '10rem', height: 'auto' }} />
-                      : <Avatar
-                        variant={mainLogo.variant || 'square'}
-                        alt="Minilogo"
-                        src={mainLogo.miniLogo}
-                        sx={{ padding: '4px' }}
-                      />
-                  }
-                </Box>
-              </ListItemIcon>
-            </List>
-            <Divider />
-          </>
-        )}
+                <ArrowLeftIcon fontSize='medium' />
+              </IconButton>
+            </Box>
+          }
+          {mainLogo &&
+            <ListItemIcon
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Box component='div'>
+                {
+                  sidebarOpen
+                    ? <img src={mainLogo.fullLogo || ''} alt="FullLogo" style={{ width: '10rem', height: 'auto' }} />
+                    : <Avatar
+                      variant={mainLogo.variant || 'square'}
+                      alt="Minilogo"
+                      src={mainLogo.miniLogo}
+                      sx={{ padding: '4px' }}
+                    />
+                }
+              </Box>
+            </ListItemIcon>
+          }
+
+        </List>
+
+        {mainLogo && <Divider />}
+
 
         {/* Custom Header */}
 
@@ -258,20 +285,24 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         <MenuItems
           displayItems={itemsList ?? []}
           listType="body"
-          iconOnly={!sidebarOpen}
+          iconOnly={!sidebarOpen && !isSmallScreen}
           onSelectItem={(...args) => {
             onSelectMenuItem(...args);
             if (isSmallScreen) setSidebarOpen(false);
           }}
           onHoverItem={onHoverMenuItem}
           selectedLink={selectedLink}
-          listProps={listProps}
+          listProps={{
+            dense: isSmallScreen ? false : true,
+            ...listProps,
+          }}
           listStyle={{
             margin: '0',
-            marginTop: 1,
+            marginTop: isSmallScreen ? 'auto' : 1,
             marginBottom: 'auto',
             ...listStyle,
           }}
+          mobile={isSmallScreen}
         />
 
         {brandLogo && (
@@ -306,6 +337,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
               onSelectMenuItem(...args);
               if (isSmallScreen) setSidebarOpen(false);
             }}
+            mobile={isSmallScreen}
           />
         }
 

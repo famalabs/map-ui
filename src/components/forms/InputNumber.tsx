@@ -47,7 +47,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback((input?: number): boolean => {
+  const validate = React.useCallback((input: number | undefined | null): boolean => {
       if (required && input === null) {
         setError(emptyMessage);
         return false;

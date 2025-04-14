@@ -100,13 +100,13 @@ export function DynamicTableFooter(props: TableFooterProps) {
   }
 
   const rowsPerPageOptions = footerVariant === 'standard' ? (customSelectPages ?? [5, 10]) : [];
-  const labelRowsPerPage = footerVariant === 'standard' ? localeStr.rowsPerPage : '';
+  const labelRowsPerPage = footerVariant === 'standard' ? localeStr?.rowsPerPage : '';
   const labelDisplayedRows = footerVariant === 'standard' 
-  ? ({ from, to, count }) => {
-    return `${from} - ${to} ${localeStr.of} ${count}`
+  ? ({ from, to, count }:{ from: number, to: number, count: number }) => {
+    return `${from} - ${to} ${localeStr?.of} ${count}`
   }
-  : ({ count }) => {
-    return `${count} ${localeStr.elements}`
+  : ({ count }:{ count: number }) => {
+    return `${count} ${localeStr?.elements}`
   };
 
   return (

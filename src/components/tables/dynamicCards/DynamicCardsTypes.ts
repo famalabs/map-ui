@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, JSX, SetStateAction } from "react";
 import { DynamicColumns, FetchInfoProps, i18nStrings, QueryInfoProps } from "../dynamicV2/DynamicTypes";
 
 export type CardFilters<T> = Omit<DynamicColumns<T>, 'Cell' | 'ColumnCell' | 'Tooltip' | 'maxWidth' | 'visible'>;
@@ -14,6 +14,7 @@ export interface DynamicCardInfo<T extends Record<string, any>> {
   gridSizings?: { xs: number, sm: number, md: number, lg: number, xl: number };
   filterMode?: 'single' | 'multiple';
   defaultShowFilters?: boolean;
+  showEmptyTable?: boolean;
   standardOptions?: {
     customPageItemCount?: number;
     customSelectPages?: number[];
@@ -22,6 +23,7 @@ export interface DynamicCardInfo<T extends Record<string, any>> {
     loadingType: 'infiniteScroll' | 'loadMore';
     itemsPerPage?: number;
     viewType: InfiniteViewType;
+    onViewTypeChange?: (viewType: InfiniteViewType) => void;
     switcherPosition?: 'left' | 'right';
   }
 }

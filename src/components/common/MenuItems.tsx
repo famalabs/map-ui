@@ -16,6 +16,7 @@ export interface MenuItemsProps<T extends Record<string, any>> {
   listProps?: ListOwnProps;
   listStyle?: Record<string, any>;
   iconOnly?: boolean;
+  mobile?: boolean;
 }
 
 export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T>) {
@@ -28,12 +29,13 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
     selectedLink, 
     listProps, 
     listStyle, 
-    iconOnly = false 
+    iconOnly = false,
+    mobile = false,
   } = props;
 
   const theme = useTheme();
 
-  const getLongestMatchingLink = (items: T[], selectedLink: string) => {
+  const getLongestMatchingLink = (items: T[], selectedLink: string | undefined) => {
     if (!items.length || !selectedLink) return '';
 
     return items.reduce((longestMatch, item) => {
@@ -67,8 +69,9 @@ export function MenuItems<T extends Record<string, any>>(props: MenuItemsProps<T
                 }),
                 justifyContent:'center',
                 paddingInline: iconOnly ? 0 : 'auto',
-                paddingY: iconOnly ? 0.8 : 0.5,
+                paddingY: mobile ? 2 : (iconOnly ? 0.8 : 0.5),
                 transition: `padding ${theme.transitions.easing.sharp} ${theme.transitions.duration.leavingScreen}ms`,
+                px: 'auto',
               }}
             >
               <ListItemIcon

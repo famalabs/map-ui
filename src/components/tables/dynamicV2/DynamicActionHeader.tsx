@@ -1,10 +1,13 @@
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import AddIcon from '@mui/icons-material/Add';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from "@mui/material/Grid2";
+import Divider from '@mui/material/Divider';
+import Grid from "@mui/material/Grid";
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,55 +18,194 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { ActionEvent, ActionEventItem, ActiveFilter, CustomButton, CustomIconButton, DynamicColumns, i18nStrings } from './DynamicTypes';
 
 interface ColumnVisibilityPopperProps<T> {
-  columnsButton: CustomIconButton;
-  tableName: string;
-  visibleColumns: DynamicColumns<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
+  columnsButton?: CustomIconButton;
+  currentColumns: DynamicColumns<T>[];
+  setCurrentColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
+  onColumnsPopoverClose?: (visibleColumns: string[]) => void;
   localeStr: i18nStrings['header'];
 }
 
 function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
 
-  const { columnsButton, tableName, visibleColumns, setVisibleColumns, localeStr } = props;
+  const { 
+    columnsButton, 
+    currentColumns, 
+    setCurrentColumns, 
+    onColumnsPopoverClose,
+    localeStr 
+  } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
+  const popOpen = Boolean(anchorEl);
   const handlePopClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handlePopClose = () => {
-    setAnchorEl(null);
+  const lockedColumns = React.useMemo(() => currentColumns.filter(column => Boolean(column.locked)), [currentColumns]);
+  const visibleColumns = React.useMemo(() => currentColumns.filter(column => !Boolean(column.locked) && Boolean(column.visible)), [currentColumns]);
+  const hiddenColumns = React.useMemo(() => currentColumns.filter(column => !Boolean(column.locked) && !Boolean(column.visible)), [currentColumns]);;
 
-    // save array of objects with { accessor, visible } to local storage from visibleColumns
-    const localVisibleCols = visibleColumns.map(column => {
-      return { accessor: column.accessor, visible: column.visible ?? false }
-    });
-    localStorage.setItem(tableName, JSON.stringify(localVisibleCols));
-
-  };
-
-  const popOpen = Boolean(anchorEl);
-
-  const handleHideColumn = (accessor: string) => () => {
-
-    setVisibleColumns(visibleColumns.map(column => {
+  const handleToggleColumn = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, accessor: string) => {
+    event.stopPropagation();
+    // column should be set to visible (columns has to be from hiddenColumns)
+    setCurrentColumns(currentColumns.map(column => {
       if (column.accessor === accessor) {
-        column.visible = !(column.visible ?? false);
+        column.visible = !Boolean(column.visible);
       }
       return column;
     }
     ));
+  }, [currentColumns, setCurrentColumns]);
 
-  };
+  const handlePopClose = useCallback(() => {
+    setAnchorEl(null);
+    // save array of visible columns as array of strings
+    const localVisibleCols = currentColumns
+      .filter(column => !Boolean(column.locked) && Boolean(column.visible))
+      .map(column => column.accessor);
+   
+    onColumnsPopoverClose?.(localVisibleCols);
+  }, [currentColumns, onColumnsPopoverClose]);
+  
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const handleDragEnd = useCallback((result: DropResult) => {
+    try {
+
+      console.log('result', result);
+
+      if (!result.destination) return;
+      if (!result.source) return;
+      if (
+        result.destination.droppableId === result.source.droppableId &&
+        result.destination.index === result.source.index
+      ) {
+        return;
+      }
+
+      const reorderedItems = Array.from(currentColumns);
+      const [movedItem] = reorderedItems.splice(result.source.index - 1, 1);
+      reorderedItems.splice(result.destination.index - 1, 0, movedItem);
+      setCurrentColumns(reorderedItems);
+
+    } catch (error) {
+      console.error('Error dragging column', error);
+    } finally {
+      setIsDragging(false);
+    }
+  }, [currentColumns, setCurrentColumns]);
+
+  const ColumDisplayList = useCallback((columns: DynamicColumns<T>[], type: 'locked' | 'visible' | 'hidden') => (
+    <>
+      <Grid size={12} p={2}>
+        <Typography
+          variant="body1"
+          fontWeight='bold'
+          fontSize={13}
+        >
+          {type === 'locked' ? localeStr?.lockedColumns : type === 'visible' ? localeStr?.visibleColumns : localeStr?.hiddenColumns}
+        </Typography>
+      </Grid>
+
+      <Grid size={12} pb={2}>
+        <DragDropContext
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={handleDragEnd}
+        >
+          <Droppable
+            droppableId="droppableMain"
+            type={`droppable-${type}`}
+            isDropDisabled={type !== 'visible'}
+
+          >
+            {(provided) => (
+              <List
+                ref={provided.innerRef}
+                dense
+                style={{
+                  width: '100%',
+                  padding: 0,
+                }}
+                {...provided?.droppableProps}
+                >
+                {columns.map((column, index) => (
+                  <Draggable
+                    key={`${column.accessor}`}
+                    draggableId={`draggable-${column.accessor}`}
+                    index={index + 1}
+                    isDragDisabled={type !== 'visible'}
+                  >
+                    {(provided) => (
+                      <ListItem
+                        ref={provided.innerRef}
+                        {...provided?.draggableProps}
+                        disablePadding
+                        disableGutters
+                        dense
+                        sx={type === 'visible' 
+                          ? { display: Boolean(column.visible) && !Boolean(column.locked) ? 'block' : 'none' }
+                          : undefined
+                        }
+                      >
+                        <ListItemButton
+                          disableRipple={type === 'locked'}
+                          sx={{
+                            py: 0,
+                            pointerEvents: isDragging ? 'none' : (type === 'locked' ? 'none' : 'auto'),
+                            cursor: type === 'locked' ? 'default' : 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          {type !== 'locked' &&
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={Boolean(column.visible)}
+                                disableRipple
+                                onClick={(event) => {
+                                  handleToggleColumn(event, column.accessor);
+                                }}
+                              />
+                            </ListItemIcon>
+                          }
+                          
+                          <ListItemText id={column.label} primary={column.label} />
+
+                          {type === 'visible' &&
+                            <Grid
+                            container
+                            justifyContent='center'
+                            alignItems='center'
+                            style={{
+                              visibility: type !== 'visible' ? 'hidden' : 'visible',
+                            }}
+                            {...provided?.dragHandleProps}
+                            >
+                              <DragIndicatorIcon color='action' />
+                            </Grid>
+                          }
+                        </ListItemButton>
+                      </ListItem>
+                    )}
+
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </List>
+            )}
+          </Droppable>
+
+        </DragDropContext>
+      </Grid>
+    </>
+  ), [handleDragEnd, handleToggleColumn, isDragging, localeStr?.hiddenColumns, localeStr?.lockedColumns, localeStr?.visibleColumns]);
 
   return (
     <>
-      <Tooltip title={columnsButton?.label ?? localeStr.visibleColumns}>
+      <Tooltip title={columnsButton?.label ?? localeStr?.visibleColumns} arrow>
         <IconButton
           color='primary'
           onClick={(event) => {
@@ -99,41 +241,15 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
           }}
         >
 
-          <Grid size={12} p={2}>
-            <Typography variant="subtitle1">
-              {localeStr.visibleColumns}
-            </Typography>
-          </Grid>
+          {lockedColumns.length > 0 && ColumDisplayList(lockedColumns, 'locked')}
 
-          <Grid size={12}>
-            <List
-              dense
-              sx={{ width: '100%', padding: 0 }}
-            >
-              {visibleColumns.map((column) => (
-                <ListItem
-                  key={column.accessor}
-                  disablePadding
-                  disableGutters
-                >
-                  <ListItemButton
-                    onClick={handleHideColumn(column.accessor)}
-                    sx={{ py: 0 }}
-                  >
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={column.visible ?? false}
-                        tabIndex={-1}
-                        disableRipple
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={column.label} primary={column.label} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
+          <Divider flexItem style={{ width: '100%' }} />
+
+          {visibleColumns.length > 0 && ColumDisplayList(currentColumns, 'visible')}
+
+          <Divider flexItem style={{ width: '100%' }} />
+
+          {hiddenColumns.length > 0 && ColumDisplayList(hiddenColumns, 'hidden')}
 
         </Grid>
 
@@ -143,7 +259,6 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
 }
 
 interface ActionButtonsProps<T extends Record<string, any>> {
-  fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>;
   quickActions: boolean;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> };
   quickSelectedRows: T[];
@@ -154,7 +269,6 @@ interface ActionButtonsProps<T extends Record<string, any>> {
 function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<T>) {
 
   const {
-    fetchData,
     quickActions,
     quickSelectedRows,
     defineActions,
@@ -166,7 +280,7 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
 
   const handleAction = async (action: ActionEventItem, quickSelectedRows: T[], activeFilters: ActiveFilter[]) => {
     onAction?.(action.type, quickSelectedRows, activeFilters);
-    if (action.refetch) await fetchData(quickSelectedRows.length, activeFilters, false);
+    // if (action.refetch) await fetchData(quickSelectedRows.length, activeFilters, false);
   }
 
   if (!quickActions) return null;
@@ -190,7 +304,7 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
         }}
       >
         <Typography fontSize={14} marginInlineStart={1}>
-          {`${localeStr.itemsSelected} ${quickSelectedRows.length}`}
+          {`${localeStr?.itemsSelected} ${quickSelectedRows.length}`}
         </Typography>
       </Grid>
       {/* Action Buttons */}
@@ -207,7 +321,7 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
         {actionList && actionList?.map((action, index) => (
           <Grid key={index}>
             {action.isIconButton ? (
-              <Tooltip title={action.label ?? action.type}>
+              <Tooltip title={action.label ?? action.type} arrow>
                 <IconButton
                   color={action.color ?? 'primary'}
                   onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
@@ -258,7 +372,7 @@ function ExportButton(props: CustomButton) {
   const { label, icon, buttonClick } = props;
 
   return (
-    <Tooltip title={label ?? 'Export'}>
+    <Tooltip title={label ?? 'Export'} arrow>
       <IconButton
         color="primary"
         onClick={(event) => buttonClick?.(event)}
@@ -269,11 +383,10 @@ function ExportButton(props: CustomButton) {
   )
 }
 
-export interface DynamicActionsProps<T extends Record<string, any>> {
+export interface DynamicActionsProps<T> {
   tableName: string;
-  fetchData: (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => Promise<void>
-  visibleColumns: DynamicColumns<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
+  currentColumns: DynamicColumns<T>[];
+  setCurrentColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
   defineActions: { actionList: ActionEventItem[], onAction: ActionEvent<T> }
   quickActions: boolean;
   setQuickActions: Dispatch<SetStateAction<boolean>>;
@@ -284,6 +397,7 @@ export interface DynamicActionsProps<T extends Record<string, any>> {
   columnsButton?: CustomIconButton;
   actionButton?: CustomIconButton;
   exportButton?: CustomIconButton;
+  onColumnsPopoverClose?: (visibleColumns: string[]) => void;
   showVisibleColumnsButton: boolean;
   localeStr: i18nStrings['header'];
 }
@@ -291,10 +405,8 @@ export interface DynamicActionsProps<T extends Record<string, any>> {
 export function DynamicActionHeader<T extends Record<string, any>>(props: DynamicActionsProps<T>) {
 
   const {
-    tableName,
-    fetchData,
-    visibleColumns,
-    setVisibleColumns,
+    currentColumns,
+    setCurrentColumns,
     defineActions,
     quickActions,
     setQuickActions,
@@ -305,6 +417,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     actionButton,
     columnsButton,
     exportButton,
+    onColumnsPopoverClose,
     showVisibleColumnsButton,
     localeStr,
   } = props;
@@ -314,7 +427,7 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     if (quickActions) setQuickSelectedRows([]);
   }
 
-  const CustomActionButton = actionButton?.icon 
+  const CustomActionButton = actionButton?.icon
     ? actionButton?.icon
     : <LayersOutlinedIcon />;
 
@@ -337,16 +450,16 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
           {exportButton &&
             <Grid p={0.5}>
               <ExportButton
-                label={exportButton?.label}
+                label={exportButton?.label ?? ''}
                 icon={exportButton?.icon}
-                buttonClick={exportButton?.buttonClick}
+                buttonClick={exportButton?.buttonClick ?? (() => null)}
               />
             </Grid>
           }
 
           {defineActions.actionList?.length > 0 &&
             <Grid p={0.5}>
-              <Tooltip title={actionButton?.label ?? localeStr.quickActions}>
+              <Tooltip title={actionButton?.label ?? localeStr?.quickActions} arrow>
                 <IconButton
                   color='primary'
                   onClick={(event) => {
@@ -364,9 +477,9 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
             <Grid p={0.5}>
               <ColumnVisibilityPopper
                 columnsButton={columnsButton}
-                tableName={tableName}
-                visibleColumns={visibleColumns}
-                setVisibleColumns={setVisibleColumns}
+                currentColumns={currentColumns}
+                setCurrentColumns={setCurrentColumns}
+                onColumnsPopoverClose={onColumnsPopoverClose}
                 localeStr={localeStr}
               />
             </Grid>
@@ -386,7 +499,6 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
       }
 
       <ActionButtons
-        fetchData={fetchData}
         quickActions={quickActions}
         quickSelectedRows={quickSelectedRows}
         defineActions={defineActions}

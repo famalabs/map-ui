@@ -1,12 +1,12 @@
 import Grid from '@mui/material/Grid';
 import { Meta, StoryObj } from '@storybook/react';
-import React, { useState } from 'react';
-import { ActionEventItem, ActiveFilter, DynamicColumns, DynamicTable, DynamicTableProps } from '../../src/components/tables';
+import React, { useEffect, useState } from 'react';
+import { ActionEventItem, ActiveFilter, AvatarCell, DynamicColumns, DynamicTable, DynamicTableProps, RealtimeTable, RealtimeTableProps } from '../../src/components/tables';
 
 const meta: Meta<typeof DynamicTable> = { component: DynamicTable };
 export default meta;
 
-type Story = StoryObj<DynamicTableProps<any>>;
+type Story = StoryObj<RealtimeTableProps<any>>;
 
 export const DynamicV2Template: Story = {
 
@@ -26,19 +26,11 @@ export const DynamicV2Template: Story = {
           visible: false,
           locked: true,
         },
-        {
-          accessor: 'postId', label: 'Post ID',
-          // Tooltip: {
-          //   label: 'The ID of the user',
-          //   color: 'primary'
-          // },
-          filterOptions: { type: 'number', priority: true },
-          priority: true,
-          maxWidth: '20px',
-        },
-        { accessor: 'name', label: 'Nome', filterOptions: { type: 'string', priority: true }},
-        { accessor: 'email', label: 'Email', filterOptions: { type: 'string', priority: true } },
-        { accessor: 'body', label: 'Descrizione', priority: true },
+        { accessor: 'avatar', label: '', Cell: AvatarCell(true) },
+        { accessor: 'email', label: 'Email', filterOptions: { type: 'string' }, priority: true },
+        { accessor: 'date', label: 'Data', filterOptions: { type: 'date', priority: true}, priority: true },
+        { accessor: 'first_name', label: 'Nome', filterOptions: { type: 'string' }, priority: true },
+        { accessor: 'last_name', label: 'Cognome', priority: true },
         // {
         //   accessor: 'code',
         //   label: 'Code',
@@ -66,29 +58,38 @@ export const DynamicV2Template: Story = {
 
     //const [fetchToken, setFetchToken] = useState<string>('');
 
-    const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], firstLoad?: boolean) => {
+    const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], direction?: 'left' | 'right' | 'reset') => {
       try {
 
-        console.log('Fetching: ', limit, filters, firstLoad);
+        console.log('Fetching: ', limit, filters, direction);
 
         setIsFetching(true);
 
         // const rowCount = await generateAsyncCount(20);
         const requestFilters = filters.map(filter => `${filter.filterColumn}=${filter.filterValue}`).join('&');
-        
-        const itemData = await fetch(`https://jsonplaceholder.typicode.com/comments?${requestFilters}`).then(response => response.json());
-        setExpectedRowCount(itemData?.length);
 
-        console.log('Data fetched: ', itemData, 'First load:', firstLoad);
+        const url = `https://reqres.in/api/users?per_page=${limit}&${requestFilters}`;
+        const currentPageData = await fetch(url).then(response => response.json());
+        setExpectedRowCount(currentPageData?.total);
+        console.log('Data fetched: ', currentPageData);
 
-        if (firstLoad) {
-          setData(itemData)
-        } else {
-          setData(prevData => [...prevData, ...itemData])
+        const nextPageData = await fetch(`${url}&page=2`).then(response => response.json());
+        const prevPageData = await fetch(`${url}&page=0`).then(response => response.json());
+
+        const shuffledData = [...(currentPageData?.data || [])].sort(() => Math.random() - 0.5);
+        setData(shuffledData);
+        return {
+          prevCount: prevPageData?.data?.length || 0,
+          nextCount: nextPageData?.data?.length || 0,
         }
+        
 
       } catch (e) {
         console.error(e);
+        return {
+          prevCount: 0,
+          nextCount: 0,
+        }
       } finally {
         setIsFetching(false);
       }
@@ -131,7 +132,7 @@ export const DynamicV2Template: Story = {
     };
 
     /* Readonly? queryParamString to set URL */
-    const [queryParamString, setQueryParamString] = useState<string>('?filter[postId]=3&filter[email]=B&filter[name]=C&filter[name]=D');
+    const [queryParamString, setQueryParamString] = useState<string>('?filter[email]=A&filter[date][gte]=2023-01-01&filter[date][lte]=2023-12-31&filter[name]=C&filter[name]=D');
     React.useEffect(() => {
       console.log('Query string:', queryParamString);
     }, [queryParamString]);
@@ -145,7 +146,7 @@ export const DynamicV2Template: Story = {
       >
 
         <Grid size={12}>
-          <DynamicTable
+          <RealtimeTable
             tableInfo={{
               tableName: 'DynamicV2',
               tableData: data,
@@ -155,20 +156,18 @@ export const DynamicV2Template: Story = {
               variant: 'standard',
               filterMode: 'single',
               // defaultShowFilters: false,
-              staticMode: false,
               emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
               paginationOptions: {
                 customPageRowCount: 5,
                 customSelectPages: [5, 10, 20],
                 // autoSizeHeight: false,
                 hideFooter: false,
-                // footerVariant: 'simple',
+                footerVariant: 'standard',
               },
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
               isFetching: isFetching,
-              // prefetchNextPage: false,
             }}
             queryInfo={{
               onLoadQuery: queryParamString,
@@ -208,8 +207,8 @@ export const DynamicV2Template: Story = {
                 console.log('COLONNE clicked');
               }
             }}
-            tableLocale={args.tableLocale}
-            
+            tableLocale={args.tableLocale || 'it'}
+
           />
         </Grid>
 

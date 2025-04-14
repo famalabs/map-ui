@@ -20,7 +20,7 @@ export default [
     },
     plugins: [
       peerDepsExternal(),
-      resolve(),
+      resolve({ preferBuiltins: true, exportConditions: ['mui-modern', '...'], }),
       commonjs(),
       typescript({
         tsconfig: './tsconfig.json',

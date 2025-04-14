@@ -48,7 +48,7 @@ export function InputRadio({
   const [error, setError] = React.useState(required ? emptyMessage : '');
 
   const validate = React.useCallback(
-    (input: FormNodeType): boolean => {
+    (input: FormNodeType | undefined | null): boolean => {
       if (required && (input === '' || input == null)) {
         setError(emptyMessage);
         return false;

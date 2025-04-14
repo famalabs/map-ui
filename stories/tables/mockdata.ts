@@ -97,7 +97,7 @@ export const generateAsyncData = async (n = 1): Promise<DynamicData[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(generateDynamicData(n));
-    }, 1000);
+    }, 500);
   });
 }
 

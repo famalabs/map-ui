@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import { CardItemInfo, InfiniteViewType } from './DynamicCardsTypes';
@@ -112,7 +112,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     gridSizings = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4 },
     viewType = 'cards',
     itemsPerPage,
-  } = infiniteOptions;
+  } = infiniteOptions || {};
 
   const currentPageRows = useMemo(() =>
     rowsPerPage > 0
@@ -121,7 +121,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
     , [tableData, page, rowsPerPage]);
 
   const skeletonItems = isFetching
-    ? tableVariant === 'standard' ? (rowsPerPage - currentPageRows.length) : itemsPerPage
+    ? tableVariant === 'standard' ? (rowsPerPage - currentPageRows.length) : (itemsPerPage ?? 0)
     : 0;
 
   const gridTemplateSizings = useMemo(() => ({
@@ -157,7 +157,7 @@ export function CardBodyCreator<T extends Record<string, any>>(props: CardBodyPr
 
     return (
       <>
-        {tableData.map((row) => (
+        {CardElement && tableData.map((row) => (
           <CardElement
             key={row.id}
             {...row}

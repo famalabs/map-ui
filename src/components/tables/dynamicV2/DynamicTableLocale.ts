@@ -4,7 +4,9 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
   it: {
     header: {
       quickActions: 'Azioni Veloci',
+      lockedColumns: 'Colonne Fisse',
       visibleColumns: 'Colonne Visibili',
+      hiddenColumns: 'Colonne Nascoste',
       itemsSelected: 'Righe Selezionate: ',
     },
     filters: {
@@ -13,11 +15,14 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       filterBy: 'Filtra per',
       moreFilters: 'Altri Filtri',
       date: 'Data',
+      exact: 'Esatta',
       dateFrom: 'A partire dal',
       dateTo: 'Fino al',
+      range: 'Intervallo',
       dateLanguage: 'it',
       apply: 'Applica',
       clear: 'Rimuovi filtri',
+      refresh: 'Aggiorna Tabella',
     },
     footer: {
       rowsPerPage: 'Righe per pagina: ',
@@ -28,7 +33,9 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
   en: {
     header: {
       quickActions: 'Quick Actions',
+      lockedColumns: 'Fixed Columns',
       visibleColumns: 'Visible Columns',
+      hiddenColumns: 'Hidden Columns',
       itemsSelected: 'Items Selected: ',
     },
     filters: {
@@ -37,11 +44,14 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       filterBy: 'Filter by',
       moreFilters: 'More Filters',
       date: 'Date',
+      exact: 'Exact',
       dateFrom: 'From',
       dateTo: 'To',
+      range: 'Range',
       dateLanguage: 'en',
       apply: 'Apply',
       clear: 'Clear all filters',
+      refresh: 'Refresh Table',
     },
     footer: {
       rowsPerPage: 'Rows per page: ',

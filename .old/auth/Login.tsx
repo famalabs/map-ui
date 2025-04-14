@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { ValidTextField, useValidatorState } from '../validators';
 import { AuthContainer, AuthForm, EmailTextField, SubmitButton } from './common';
 

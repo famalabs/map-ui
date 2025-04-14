@@ -1,8 +1,9 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import { Meta, StoryObj } from '@storybook/react';
-import { SidebarItem, SidebarLayout, SidebarLayoutProps } from '../../src/components/sidebar';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import { SidebarItem, SidebarLayout, SidebarLayoutProps } from '../../src/components/sidebar';
 
 const meta: Meta<typeof SidebarLayout> = { component: SidebarLayout };
 export default meta;
@@ -62,7 +63,7 @@ const popupList: SidebarItem[] = [
 
 
 export const SidebarLayoutTemplate: Story = {
-  args : {
+  args: {
     itemsList: menuList,
     mainLogo: {
       fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
@@ -75,9 +76,9 @@ export const SidebarLayoutTemplate: Story = {
     onSelectMenuItem: (itemID, title, link) => console.log(itemID, title, link),
     onHoverMenuItem: (itemID, title, link) => console.log(itemID, title, link),
     selectedLink: "/dashboard/catalog/1",
-    listProps: {
-      dense: true,
-    },
+    // listProps: {
+    //   dense: true,
+    // },
     listStyle: {
       mx: '4px',
     },
@@ -97,13 +98,19 @@ export const SidebarLayoutTemplate: Story = {
   },
 
   render: (args) => {
-    
+
     return (
-        <SidebarLayout {...args}>
-          <Box>
-            {args.children}
-          </Box>
-        </SidebarLayout>
+      <SidebarLayout {...args}>
+        <Grid
+          container
+          size={12}
+          justifyContent='center'
+          alignContent='center'
+          height='100dvh'
+        >
+          <Button variant="contained" color="primary">Click Me</Button>
+        </Grid>
+      </SidebarLayout>
     );
   }
 

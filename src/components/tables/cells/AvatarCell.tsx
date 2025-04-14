@@ -1,6 +1,6 @@
 import React from 'react';
 import Avatar, { AvatarProps } from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 export const AvatarCell = (
   avatarOnly: boolean = false,
@@ -30,10 +30,11 @@ export const AvatarCell = (
       >
         <Avatar
           component={'div'}
+          src={cellValue}
           onClick={clickAction && onAvatarClick}
           {...avatarProps}
         >
-          {avatarProps && avatarProps.children}
+          {avatarProps?.children}
         </Avatar>
       </Grid>
 

@@ -15,7 +15,8 @@
         "@typescript-eslint/no-unused-vars": "warn",
         "react/prop-types": "off",
         "react/jsx-uses-react": "off",
-        "react/display-name": "off"
+        "react/display-name": "off",
+        "react/react-in-jsx-scope": "off"
       }
     }
   ]

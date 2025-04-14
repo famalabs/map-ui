@@ -1,4 +1,4 @@
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
@@ -9,6 +9,38 @@ import { DynamicSimpleFilters } from './DynamicFilterHeader';
 import { DynamicTableFooter } from './DynamicPagination';
 import { localizedTableStrings } from "./DynamicTableLocale";
 import { ActiveFilter, DefineActionsProps, DynamicColumns, DynamicTableProps, QueryInfoProps } from './DynamicTypes';
+
+function LoadCurrentColumns<T>({
+  columns,
+  localVisibleCols,
+  setCurrentColumns,
+}: {
+  columns: DynamicColumns<T>[],
+  localVisibleCols: string | null,
+  setCurrentColumns: (columns: DynamicColumns<T>[]) => void,
+}) {
+  if (!localVisibleCols) {
+    setCurrentColumns(columns);
+    return;
+  }
+  const parsedVisibleCols = JSON.parse(localVisibleCols) as { accessor: string, visible: boolean }[];
+  setCurrentColumns(columns
+    .map(column => {
+      const localColumn = parsedVisibleCols.find(localCol => localCol.accessor === column.accessor);
+      return {
+        ...column,
+        visible: localColumn ? localColumn?.visible : (column?.visible ?? true),
+        locked: Boolean(column.locked),
+      };
+    })
+    // sort them like the order of localVisibleCols
+    .sort((a, b) => {
+      const aIndex = parsedVisibleCols.findIndex(col => col.accessor === a.accessor);
+      const bIndex = parsedVisibleCols.findIndex(col => col.accessor === b.accessor);
+      return aIndex - bIndex;
+    })
+  );
+}
 
 export function DynamicTable<T extends Record<string, any>>(props: DynamicTableProps<T>) {
 
@@ -22,6 +54,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     columnsButton,
     actionButton,
     exportButton,
+    refreshButton,
     paperVariant = 'outlined',
     tableLocale = 'en',
     localeStr,
@@ -30,23 +63,16 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const {
     tableName,
     tableData,
-    // startingPage,
     columns,
     expectedRowCount,
     variant = 'standard',
     filterMode = 'single',
     defaultShowFilters,
     staticMode = false,
+    showRefreshButton = true,
     emptyTablePlaceholderSrc,
     emptyTablePlaceholderText,
     showVisibleColumnsButton = true,
-    paginationOptions: {
-      customPageRowCount,
-      customSelectPages,
-      autoSizeHeight = true,
-      hideFooter = false,
-      footerVariant = 'standard',
-    },
   } = tableInfo;
 
   const {
@@ -54,6 +80,14 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
     isFetching,
     prefetchNextPage = true,
   } = fetchInfo;
+
+  const {
+    customPageRowCount,
+    customSelectPages,
+    autoSizeHeight = true,
+    hideFooter = false,
+    footerVariant = 'standard',
+  } = tableInfo.paginationOptions || {};
 
   const { onLoadQuery, setCurrentQuery } = queryInfo;
 
@@ -69,7 +103,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   const savedRowsPerPage = useMemo(() => localStorage.getItem(`${tableName}-rowsPerPage`), [tableName]);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
     customPageRowCount
-      ? (parseInt(savedRowsPerPage, 10) || customPageRowCount)
+      ? (parseInt(savedRowsPerPage ?? '5') || customPageRowCount)
       : expectedRowCount
   );
 
@@ -85,7 +119,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Visible columns state (define structure later) */
   const localVisibleCols = useMemo(() => localStorage.getItem(tableName), [tableName]);
-  const [visibleColumns, setVisibleColumns] = useState<DynamicColumns<T>[]>([]);
+  const [currentColumns, setCurrentColumns] = useState<DynamicColumns<T>[]>([]);
 
   /* Quick actions */
   const [quickActions, setQuickActions] = useState<boolean>(false);
@@ -94,7 +128,6 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
   /* Has the fetch function been called */
   const [hasDataFetched, setHasDataFetched] = useState<boolean>(false);
 
-  /* Has table loaded */
   const [hasTableLoaded, setHasTableLoaded] = useState<boolean>(false);
 
   /* Fetching event function */
@@ -133,16 +166,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
 
   /* Update visible columns state */
   useEffect(() => {
-    if (!localVisibleCols) {
-      setVisibleColumns(columns);
-      return;
-    }
-    const parsedVisibleCols = JSON.parse(localVisibleCols) as { accessor: string, visible: boolean }[];
-    setVisibleColumns(columns.map(column => {
-      const localColumn = parsedVisibleCols.find(localCol => localCol.accessor === column.accessor);
-      return { ...column, visible: localColumn ? localColumn.visible : column.visible ?? false };
-    }));
-
+    LoadCurrentColumns({ columns, localVisibleCols, setCurrentColumns });
   }, [columns, localVisibleCols]);
 
   /* Fetch event effects when page & rowsPerPage change  */
@@ -183,19 +207,19 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           activeFilters={activeFilters}
           setActiveFilters={setActiveFilters}
           fetchEvent={fetchEvent}
-          currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           setHighestFetchedPage={setHighestFetchedPage}
           hasTableLoaded={hasTableLoaded}
+          refreshButton={refreshButton}
+          showRefreshButton={showRefreshButton}
           localeStr={currentLocale.filters}
         />
 
         {/* Action Header */}
         <DynamicActionHeader
           tableName={tableName}
-          fetchData={fetchData}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
+          currentColumns={currentColumns}
+          setCurrentColumns={setCurrentColumns}
           defineActions={defineActions}
           quickActions={quickActions}
           setQuickActions={setQuickActions}
@@ -212,7 +236,6 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
       </Grid>
 
       <Grid
-        component="div"
         container
         sx={{
           overflowX: 'auto',
@@ -225,14 +248,14 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           <CommonBodyCreator
             tableData={tableData}
             expectedRowCount={expectedRowCount}
-            visibleColumns={visibleColumns}
-            setVisibleColumns={setVisibleColumns}
+            visibleColumns={currentColumns}
+            setVisibleColumns={setCurrentColumns}
             page={currentPage}
             rowsPerPage={rowsPerPage}
             quickActions={quickActions}
             quickSelectedRows={quickSelectedRows}
             setQuickSelectedRows={setQuickSelectedRows}
-            isFetching={isActuallyFetching}
+            isFetching={isActuallyFetching || !hasDataFetched}
             onRowClick={onRowClick}
             autoSizeHeight={autoSizeHeight}
             emptyTablePlaceholderSrc={emptyTablePlaceholderSrc}

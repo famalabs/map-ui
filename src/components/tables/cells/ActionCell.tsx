@@ -21,11 +21,11 @@ export const ActionCell = (
   return (
     ('icon' in buttonProps) ? (
       <IconButton onClick={onButtonClick} {...buttonProps}>
-        {buttonProps.icon}
+        {buttonProps?.icon}
       </IconButton>
     ) : (
       <Button onClick={onButtonClick} {...buttonProps}>
-        {buttonProps.label}
+        {buttonProps?.label}
       </Button>
     )
   );

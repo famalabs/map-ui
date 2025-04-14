@@ -1,7 +1,7 @@
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import InfoIcon from '@mui/icons-material/Info';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { DynamicColumns } from './DynamicTypes';
 
-const StyledTableRow = styled(TableRow)(() => ({
+export const StyledTableRow = styled(TableRow)(() => ({
   minHeight: 56,
   '&:hover': {
     cursor: 'pointer',
@@ -37,7 +37,7 @@ export const variantHeightMap = {
   compact: 40,
 };
 
-export const getMaxWidth = (column: DynamicColumns<unknown>) => {
+export const getMaxWidth = (column: DynamicColumns<any>) => {
   switch (typeof column.maxWidth) {
     case 'number':
       return `${column.maxWidth}px`;
@@ -66,13 +66,13 @@ export interface DynamicCellProps<T> {
 
 export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
 
-  const { row, column, variant } = props;
+  const { row, column, variant = 'standard' } = props;
 
   /* Extract potential nested objects values */
   const getNestedProperty = useCallback((row: T, path: string): string => {
-    return path.split('.').reduce((nestedObject, property) => {
+    return path.split('.').reduce((nestedObject: any, property) => {
       return (nestedObject && property in nestedObject)
-        ? nestedObject[property]
+        ? nestedObject[property] as string
         : '';
     }, row) ?? '';
   }, []);
@@ -89,7 +89,7 @@ export function DynamicCellCreator<T extends Record<string, any>>(props: Dynamic
     <StyledTableCell sx={{ height: variantHeightMap[variant], maxWidth: maxWidth }}>
       {CustomCell
         ? <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
-        : <>{cellValue}</>
+        : <span>{cellValue}</span>
       }
     </StyledTableCell>
   );

@@ -47,7 +47,7 @@ export const InputString: React.FC<InputStringProps> = ({
     if (showError) setShowErr(true);
   }, [showError]);
 
-  const validate = React.useCallback((text?: string): boolean => {
+  const validate = React.useCallback((text: string | undefined | null): boolean => {
       if (required && (text === '' || text === null)) {
         setError(emptyMessage);
         return false;

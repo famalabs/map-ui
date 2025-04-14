@@ -3,7 +3,7 @@ import ChevronRight from "@mui/icons-material/ChevronRight";
 import { useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import List, { ListOwnProps } from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -31,6 +31,7 @@ export interface SidebarFooterProps {
   setSidebarOpen: (open: boolean) => void;
   onSelectItem: (itemID: string, title: string, link: string) => void;
   onHoverItem?: (itemID: string, title: string, link: string) => Promise<void> | void;
+  mobile?: boolean;
 }
 
 export function SidebarFooter(props: SidebarFooterProps) {
@@ -46,6 +47,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
     setSidebarOpen,
     onSelectItem,
     onHoverItem,
+    mobile = false,
   } = props;
 
   const theme = useTheme();
@@ -72,26 +74,28 @@ export function SidebarFooter(props: SidebarFooterProps) {
         onClick={(event) => handleClick(event)}
         disableRipple
         secondaryAction={
-          <IconButton
-            edge='end'
-            color='inherit'
-            disableRipple
-            onClick={(e) => {
-              e.stopPropagation();
-              setSidebarOpen(!sidebarOpen);
-            }}
-            sx={{
-              position: 'absolute',
-              backgroundColor: theme.palette.background.paper,
-              border: '1px solid rgba(0, 0, 0, 0.12)',
-              borderRadius: '8px',
-              padding: 0,
-              right: sidebarOpen ? '5px' : '-15px',
-              bottom: '-10px'
-            }}
-          >
-            {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
-          </IconButton>
+          !mobile ? (
+            <IconButton
+              edge='end'
+              color='inherit'
+              disableRipple
+              onClick={(e) => {
+                e.stopPropagation();
+                setSidebarOpen(!sidebarOpen);
+              }}
+              sx={{
+                position: 'absolute',
+                backgroundColor: theme.palette.background.paper,
+                border: '1px solid rgba(0, 0, 0, 0.12)',
+                borderRadius: '8px',
+                padding: 0,
+                right: sidebarOpen ? '5px' : '-15px',
+                bottom: '-10px'
+              }}
+            >
+              {sidebarOpen ? <ChevronLeft sx={{ fontSize: '0.8em' }} /> : <ChevronRight sx={{ fontSize: '0.8em' }} />}
+            </IconButton>
+          ) : undefined
         }
         sx={{ paddingInline: '12px', paddingRight: '32px' }}
       >
@@ -132,7 +136,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
         elevation={6}
       >
         <Box
-          sx={{ width: 260 }}
+          sx={{ width: mobile ? '100dvw' : 260 }}
         >
           <Grid
             container
@@ -152,6 +156,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
                   margin: 'auto 0',
                   ...listStyle,
                 }}
+                mobile={mobile}
               />
             </Grid>
           </Grid>

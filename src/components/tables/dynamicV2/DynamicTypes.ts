@@ -1,5 +1,5 @@
 import { ButtonOwnProps, IconButtonOwnProps } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, JSX, SetStateAction } from "react";
 
 /**
  * Interface for the options of a select cell.
@@ -31,7 +31,7 @@ export interface DynamicColumns<T> {
   filterOptions?: {
     type: FilterType,
     options?: DynamicFilterOptions[],
-    hideDateSelector?: boolean,
+    singleDate?: boolean,
     regex?: boolean,
     priority?: boolean
   }
@@ -40,6 +40,7 @@ export interface DynamicColumns<T> {
   Tooltip?: { icon?: JSX.Element, color?: IconButtonOwnProps['color'], label: string }
   maxWidth?: number | string | 'stretch';
   visible?: boolean;
+  locked?: boolean;
 }
 
 /**
@@ -69,7 +70,7 @@ export interface ActiveFilter {
 /**
  * Type for the action event.
  */
-export type ActionEvent<T extends Record<string, any>> = (actionType: string, selectedRows: T[], activeFilters: ActiveFilter[]) => void;
+export type ActionEvent<T> = (actionType: string, selectedRows: T[], activeFilters: ActiveFilter[]) => void;
 
 /**
  * Interface for an action event button.
@@ -108,13 +109,13 @@ export interface TableInfoProps<T> {
   tableName: string;
   tableData: Array<T>;
   setTableData?: Dispatch<SetStateAction<T[]>>;
-  // startingPage?: number;
   columns: DynamicColumns<T>[];
   expectedRowCount: number;
   variant?: 'standard' | 'dense' | 'compact';
   filterMode?: 'single' | 'multiple';
   defaultShowFilters?: boolean;
   staticMode?: boolean;
+  showRefreshButton?: boolean;
   showVisibleColumnsButton?: boolean;
   emptyTablePlaceholderSrc?: string;
   emptyTablePlaceholderText?: string;
@@ -153,7 +154,7 @@ export interface QueryInfoProps {
   * @param {ActionEventItem[]} actionList - The list of actions.
   * @param {ActionEvent<Record<string, any>>} onAction - The function to be called when an action is clicked.
  */
-export interface DefineActionsProps<T extends Record<string, any>> {
+export interface DefineActionsProps<T> {
   actionList: ActionEventItem[];
   onAction: ActionEvent<T>;
 }
@@ -169,7 +170,9 @@ export interface DefineActionsProps<T extends Record<string, any>> {
 export interface i18nStrings {
   header?: {
     quickActions: string,
+    lockedColumns: string,
     visibleColumns: string,
+    hiddenColumns: string,
     itemsSelected: string,
   }
   filters?: {
@@ -178,11 +181,14 @@ export interface i18nStrings {
     filterBy: string,
     moreFilters: string,
     date: string,
+    exact: string,
     dateFrom: string,
     dateTo: string,
+    range: string,
     dateLanguage: string;
     apply: string,
     clear: string,
+    refresh: string,
   }
   footer?: {
     rowsPerPage: string,
@@ -222,7 +228,7 @@ export interface CustomIconButton {
   * @param {i18nStrings} localeStr - The props for custom locale strings.
   * 
  */
-export interface DynamicTableProps<T extends Record<string, any>> {
+export interface DynamicTableProps<T> {
   tableInfo: TableInfoProps<T>;
   fetchInfo: FetchInfoProps;
   queryInfo?: QueryInfoProps;
@@ -232,6 +238,7 @@ export interface DynamicTableProps<T extends Record<string, any>> {
   columnsButton?: CustomIconButton;
   actionButton?: CustomIconButton;
   exportButton?: CustomIconButton;
+  refreshButton?: CustomIconButton;
   paperVariant?: 'elevation' | 'outlined';
   tableLocale?: 'en' | 'it';
   localeStr?: i18nStrings;

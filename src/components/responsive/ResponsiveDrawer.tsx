@@ -1,7 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import Box from "@mui/material/Box";
 import Drawer, { DrawerProps } from "@mui/material/Drawer";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import React from "react";
