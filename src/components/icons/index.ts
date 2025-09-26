@@ -1,1 +1,0 @@
-export { HomeIcon, MenuIcon } from './stockholm'

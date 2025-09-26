@@ -6,7 +6,7 @@ export const AvatarCell = (
   avatarOnly: boolean = false,
   avatarProps?: AvatarProps,
   clickAction?: (value: unknown) => void,
-) => ({ cellValue }: { cellValue: string }) => {
+) => ({ cellValue }: { cellValue: string }): React.ReactNode => {
 
   const onAvatarClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();

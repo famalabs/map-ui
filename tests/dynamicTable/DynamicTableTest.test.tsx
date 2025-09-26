@@ -1,7 +1,7 @@
 
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { DynColumnsDef, DynamicTable, DynamicTableProps } from '../../src/components/tables/dynamicV2';
+import { DynamicColumns, DynamicTable, DynamicTableProps } from '../../src/components/tables/dynamicV2';
 import { generateComplexData } from '../../stories/tables/mockdata';
 import { SelectCell } from '../../src/components/tables';
 
@@ -9,29 +9,29 @@ import { SelectCell } from '../../src/components/tables';
 const mockFetchData = jest.fn();
 const mockQuery = jest.fn();
 
-const columns =
-  [
-    { accessor: 'id', label: 'ID', visible: false },
-    { accessor: 'supplier.name', label: 'Supplier', visible: false },
-    { accessor: 'code', label: 'Code', type: 'string', visible: true },
-    { accessor: 'name', label: 'Name', filterOptions: { type: 'string' }, visible: true },
-    { accessor: 'description', label: 'Description', visible: true },
-    {
-      accessor: 'status', label: 'Status',
-      filterOptions: {
-        type: 'select',
-        options: [
-          { id: 1, label: 'Published' },
-          { id: 0, label: 'Pending' },
-        ]
-      },
-      Cell: SelectCell([
-        { id: 1, type: 'success', label: 'Published' },
-        { id: 0, type: 'warning', label: 'Pending' },
-      ]),
-      visible: true
+const columns = [
+  { accessor: 'id', label: 'ID', visible: false },
+  { accessor: 'supplier.name', label: 'Supplier', visible: false },
+  { accessor: 'code', label: 'Code', type: 'string', visible: true },
+  { accessor: 'name', label: 'Name', filterOptions: { type: 'string' }, visible: true },
+  { accessor: 'description', label: 'Description', visible: true },
+  {
+    accessor: 'status',
+    label: 'Status',
+    filterOptions: {
+      type: 'select',
+      options: [
+        { id: 1, label: 'Published' },
+        { id: 0, label: 'Pending' },
+      ],
     },
-  ] as DynColumnsDef<any>[];
+    Cell: SelectCell([
+      { id: 1, type: 'success', label: 'Published' },
+      { id: 0, type: 'warning', label: 'Pending' },
+    ]),
+    visible: true,
+  },
+] as DynamicColumns<any>[];
 
 const mockProps = {
   tableInfo: {

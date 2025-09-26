@@ -1,4 +1,4 @@
-import { Dispatch, JSX, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { DynamicColumns, FetchInfoProps, i18nStrings, QueryInfoProps } from "../dynamicV2/DynamicTypes";
 
 export type CardFilters<T> = Omit<DynamicColumns<T>, 'Cell' | 'ColumnCell' | 'Tooltip' | 'maxWidth' | 'visible'>;
@@ -29,10 +29,10 @@ export interface DynamicCardInfo<T extends Record<string, any>> {
 }
 
 export interface CardItemInfo<T extends Record<string, any>> {
-  CardItem: (item: T) => JSX.Element;
-  ListItem?: (item: T) => JSX.Element;
-  SkeletonItem?: () => JSX.Element;
-  SkeletonListItem?: () => JSX.Element;
+  CardItem: (item: T) => React.ReactNode;
+  ListItem?: (item: T) => React.ReactNode;
+  SkeletonItem?: () => React.ReactNode;
+  SkeletonListItem?: () => React.ReactNode;
 }
 
 /**

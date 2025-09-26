@@ -1,13 +1,12 @@
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
+import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
 import { i18nStrings } from '../dynamicV2';
-import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
-import Box from '@mui/material/Box';
 
 export interface RealtimeTablePaginationActionsProps {
   unfetchedCount: { nextCount: number, prevCount: number };
@@ -38,21 +37,21 @@ export function TablePaginationActions(props: RealtimeTablePaginationActionsProp
         <span />
       ) : (
         <>
-            <IconButton
-              onClick={handleGoLeft}
-              disabled={unfetchedCount.prevCount <= 0 || isFetching}
-              aria-label="previous-page"
-            >
-              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            </IconButton>
+          <IconButton
+            onClick={handleGoLeft}
+            disabled={unfetchedCount.prevCount <= 0 || isFetching}
+            aria-label="previous-page"
+          >
+            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+          </IconButton>
 
-            <IconButton
-              onClick={handleGoRight}
-              disabled={unfetchedCount.nextCount <= 0 || isFetching}
-              aria-label="next-page"
-            >
-              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            </IconButton>
+          <IconButton
+            onClick={handleGoRight}
+            disabled={unfetchedCount.nextCount <= 0 || isFetching}
+            aria-label="next-page"
+          >
+            {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+          </IconButton>
         </>
       )}
 
@@ -110,7 +109,7 @@ export const RealTimeTableFooter = (props: RealTimeTableFooterProps) => {
 
   return (
     <Grid
-      component="div"
+      component='div'
       size={12}
       container
       sx={{
@@ -119,23 +118,21 @@ export const RealTimeTableFooter = (props: RealTimeTableFooterProps) => {
         alignItems: 'center',
       }}
     >
-      <TableRow component='div'>
-        <TablePagination
-          component='div'
-          count={expectedRowCount}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={rowsPerPageOptions}
-          page={0}
-          onPageChange={() => null}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage={labelRowsPerPage}
-          labelDisplayedRows={labelDisplayedRows}
-          ActionsComponent={CustomTablePaginationActions as any}
-          sx={{
-            border: 'none',
-          }}
-        />
-      </TableRow>
+      <TablePagination
+        component="div"
+        count={expectedRowCount}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={rowsPerPageOptions}
+        page={0}
+        onPageChange={() => null}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage={labelRowsPerPage}
+        labelDisplayedRows={labelDisplayedRows}
+        ActionsComponent={CustomTablePaginationActions as any}
+        sx={{
+          border: 'none',
+        }}
+      />
     </Grid>
   );
 

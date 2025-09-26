@@ -7,7 +7,10 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       lockedColumns: 'Colonne Fisse',
       visibleColumns: 'Colonne Visibili',
       hiddenColumns: 'Colonne Nascoste',
-      itemsSelected: 'Righe Selezionate: ',
+      itemsSelected: 'Righe Selezionate',
+      selectedAll: 'Seleziona Tutto',
+      deselectAll: 'Deseleziona Tutto',
+      allItemsSelected: 'Tutti gli elementi selezionati',
     },
     filters: {
       addFilter: 'Aggiungi Filtro',
@@ -36,7 +39,10 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       lockedColumns: 'Fixed Columns',
       visibleColumns: 'Visible Columns',
       hiddenColumns: 'Hidden Columns',
-      itemsSelected: 'Items Selected: ',
+      itemsSelected: 'Items Selected',
+      selectedAll: 'Select All',
+      deselectAll: 'Deselect All',
+      allItemsSelected: 'All Items Selected',
     },
     filters: {
       addFilter: 'Add Filter',

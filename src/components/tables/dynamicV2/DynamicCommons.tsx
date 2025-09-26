@@ -1,11 +1,10 @@
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
-import InfoIcon from '@mui/icons-material/Info';
+import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -14,13 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { DynamicColumns } from './DynamicTypes';
-
-export const StyledTableRow = styled(TableRow)(() => ({
-  minHeight: 56,
-  '&:hover': {
-    cursor: 'pointer',
-  },
-}));
+import Table from '@mui/material/Table';
 
 export const StyledTableCell = styled(TableCell)(() => ({
   height: 56,
@@ -55,7 +48,6 @@ export const getMaxWidth = (column: DynamicColumns<any>) => {
   }
 };
 
-
 /* ---------- Dynamic Cell Creator ---------- */
 
 export interface DynamicCellProps<T> {
@@ -65,37 +57,33 @@ export interface DynamicCellProps<T> {
 }
 
 export function DynamicCellCreator<T extends Record<string, any>>(props: DynamicCellProps<T>) {
-
   const { row, column, variant = 'standard' } = props;
 
   /* Extract potential nested objects values */
   const getNestedProperty = useCallback((row: T, path: string): string => {
-    return path.split('.').reduce((nestedObject: any, property) => {
-      return (nestedObject && property in nestedObject)
-        ? nestedObject[property] as string
-        : '';
-    }, row) ?? '';
+    return (
+      path.split('.').reduce((nestedObject: any, property) => {
+        return nestedObject && property in nestedObject ? (nestedObject[property] as string) : '';
+      }, row) ?? ''
+    );
   }, []);
 
   const maxWidth = getMaxWidth(column);
 
   const cellValue = getNestedProperty(row, column.accessor);
 
-  const CustomCell = 'Cell' in column && column.Cell !== undefined
-    ? column.Cell
-    : undefined;
+  const CustomCell = 'Cell' in column && column.Cell !== undefined ? column.Cell : undefined;
 
   return (
-    <StyledTableCell sx={{ height: variantHeightMap[variant], maxWidth: maxWidth }}>
-      {CustomCell
-        ? <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
-        : <span>{cellValue}</span>
-      }
+    <StyledTableCell component="div" sx={{ height: variantHeightMap[variant], maxWidth: maxWidth }}>
+      {CustomCell ? (
+        <CustomCell cellValue={cellValue} currentColumn={column} currentRow={row} />
+      ) : (
+        <span>{cellValue}</span>
+      )}
     </StyledTableCell>
   );
-
 }
- 
 
 /* ---------- Common header ---------- */
 
@@ -108,39 +96,53 @@ export interface CommonHeaderProps<T extends Record<string, any>> {
 }
 
 export function CommonHeaderCreator<T extends Record<string, any>>(props: CommonHeaderProps<T>) {
-
-  const {
-    currentPageRows,
-    visibleColumns,
-    quickActions,
-    quickSelectedRows,
-    setQuickSelectedRows
-  } = props;
+  const { currentPageRows, visibleColumns, quickActions, quickSelectedRows, setQuickSelectedRows } =
+    props;
 
   const [hoveredColumn, setHoveredColumn] = React.useState<number>(-1);
+  const handleHoveredColumn = useCallback(
+    (column: DynamicColumns<T>, index: number) =>
+      (event: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => {
+        event.stopPropagation();
+        if (!('Tooltip' in column)) {
+          return;
+        }
+        setHoveredColumn(index);
+      },
+    [],
+  );
 
-  const handleSelectAllClick = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      setQuickSelectedRows(prevQuckRows => {
-        const newRows = currentPageRows.filter(row => !prevQuckRows.some(quickRow => quickRow.id === row.id));
-        return [...prevQuckRows, ...newRows];
-      });
-    } else {
-      setQuickSelectedRows(prevQuickRows =>
-        prevQuickRows.filter(quickRow => !currentPageRows.some(row => row.id === quickRow.id))
-      );
-    }
-  }, [currentPageRows, setQuickSelectedRows]);
+  const handleSelectAllClick = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.checked) {
+        setQuickSelectedRows((prevQuckRows) => {
+          const newRows = currentPageRows.filter(
+            (row) => !prevQuckRows.some((quickRow) => quickRow.id === row.id),
+          );
+          return [...prevQuckRows, ...newRows];
+        });
+      } else {
+        setQuickSelectedRows((prevQuickRows) =>
+          prevQuickRows.filter(
+            (quickRow) => !currentPageRows.some((row) => row.id === quickRow.id),
+          ),
+        );
+      }
+    },
+    [currentPageRows, setQuickSelectedRows],
+  );
 
-  const allCurrentRowsSelected = useMemo(() => currentPageRows.every(row =>
-    quickSelectedRows.some(quickRow => quickRow.id === row.id
-    )), [currentPageRows, quickSelectedRows]);
+  const allCurrentRowsSelected = useMemo(
+    () =>
+      currentPageRows.every((row) => quickSelectedRows.some((quickRow) => quickRow.id === row.id)),
+    [currentPageRows, quickSelectedRows],
+  );
 
   return (
-    <TableHead style={{ backgroundColor: 'rgba(224, 227, 235, 0.5)' }}>
-      <TableRow>
-        {quickActions &&
-          <StyledTableCell padding="checkbox">
+    <TableHead component="div" style={{ backgroundColor: 'rgba(224, 227, 235, 0.5)' }}>
+      <TableRow component="div">
+        {quickActions && (
+          <StyledTableCell component="div" padding="checkbox">
             <Checkbox
               color="primary"
               onChange={(event) => handleSelectAllClick(event)}
@@ -148,23 +150,24 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
               checked={allCurrentRowsSelected}
             />
           </StyledTableCell>
-        }
+        )}
         {visibleColumns.length > 0 ? (
           visibleColumns.map((column, index) => {
             const maxWidth = getMaxWidth(column);
-            if (!column.visible) return null;
+            if (column.visible === false) return null;
             return (
               <StyledTableCell
                 key={index}
-                onMouseEnter={() => setHoveredColumn(index)}
-                onMouseLeave={() => setHoveredColumn(-1)}
+                component="div"
+                onMouseEnter={handleHoveredColumn(column, index)}
+                onMouseLeave={handleHoveredColumn(column, -1)}
                 sx={{
                   width: 160,
                   position: 'relative',
                   maxWidth: maxWidth,
                 }}
               >
-                {column.ColumnCell ? column.ColumnCell() : (column.label || '')}
+                {column.ColumnCell ? column.ColumnCell() : column.label || ''}
                 {'Tooltip' in column && hoveredColumn === index && (
                   <Tooltip title={column.Tooltip?.label || ''}>
                     <IconButton
@@ -174,17 +177,18 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
                       sx={{
                         position: 'absolute',
                         top: '50%',
-                        transform: 'translateY(-50%)'
+                        transform: 'translateY(-50%)',
                       }}
                     >
-                      {column.Tooltip?.icon || <InfoIcon />}
+                      {column.Tooltip?.icon || <InfoOutlined fontSize="small" />}
                     </IconButton>
                   </Tooltip>
                 )}
               </StyledTableCell>
             );
-          })) : (
-          <StyledTableCell sx={{ width: 160, position: 'relative' }} />
+          })
+        ) : (
+          <StyledTableCell component="div" sx={{ width: 160, position: 'relative' }} />
         )}
       </TableRow>
     </TableHead>
@@ -215,7 +219,6 @@ export interface CommonBodyProps<T extends Record<string, any>> {
 }
 
 export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBodyProps<T>) {
-
   const {
     tableData,
     visibleColumns,
@@ -234,156 +237,209 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
     variant,
   } = props;
 
-  const currentPageRows = useMemo(() => (
-    rowsPerPage > 0
-      ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      : tableData
-  ), [tableData, page, rowsPerPage]);
+  const currentPageRows = useMemo(
+    () =>
+      rowsPerPage > 0
+        ? tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        : tableData,
+    [tableData, page, rowsPerPage],
+  );
 
   const blankRows = !autoSizeHeight
     ? rowsPerPage - currentPageRows.length
     : 5 - currentPageRows.length || 0;
 
-  const isQuickSelected = useCallback((row: T) => {
-    return quickSelectedRows.some(quickRow => quickRow.id === row.id);
-  }, [quickSelectedRows]);
+  const isQuickSelected = useCallback(
+    (row: T) => {
+      return quickSelectedRows.some((quickRow) => quickRow.id === row.id);
+    },
+    [quickSelectedRows],
+  );
 
-  const handleCheckBoxSelect = useCallback((row: T) => {
-    setQuickSelectedRows(prevRows => {
-      const isRowSelected = prevRows.some(quickRow => quickRow.id === row.id);
-      if (isRowSelected) {
-        return prevRows.filter(quickRow => quickRow.id !== row.id);
-      }
-      return [...prevRows, row];
-    });
-  }, [setQuickSelectedRows]);
+  const handleCheckBoxSelect = useCallback(
+    (row: T) => {
+      setQuickSelectedRows((prevRows) => {
+        const isRowSelected = prevRows.some((quickRow) => quickRow.id === row.id);
+        if (isRowSelected) {
+          return prevRows.filter((quickRow) => quickRow.id !== row.id);
+        }
+        return [...prevRows, row];
+      });
+    },
+    [setQuickSelectedRows],
+  );
 
-  const HeadWrapper = isTableEmpty ? Table : React.Fragment;
+  const HeadWrapper = isTableEmpty ? 'div' : React.Fragment;
 
-  const EmptyTable = useMemo(() => (
-    <Grid
-      container
-      justifyContent='center'
-      alignItems='center'
-      minHeight={(rowsPerPage * 56) + (hideFooter ? 52 : 0)}
-    >
-      {emptyTablePlaceholderSrc ? (
-        <img
-          src={emptyTablePlaceholderSrc}
-          alt={emptyTablePlaceholderText || 'No Data Found'}
-          loading='lazy'
-          style={{
-            width: 'auto',
-            height: '300px',
-            objectFit: 'cover',
-          }}
-        />
-      ) : (
-        <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
-      )}
-    </Grid>
-  ), [emptyTablePlaceholderSrc, emptyTablePlaceholderText, hideFooter, rowsPerPage]);
-
-  const SkeletonRows = useMemo(() => (Array.from({ length: rowsPerPage }, (_, index) => (
-    <TableRow key={`skeleton-${index}`}>
-      {visibleColumns.length > 0 ? (visibleColumns.map((column, colIndex) => {
-        const maxWidth = getMaxWidth(column);
-        if (!column.visible) return null;
-        return (
-          <StyledTableCell
-            key={`skeleton-cell-${colIndex}`}
-            sx={{
-              height: variantHeightMap[variant],
-              maxWidth: maxWidth,
+  const EmptyTable = useMemo(
+    () => (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        minHeight={rowsPerPage * 56 + (hideFooter ? 52 : 0)}
+      >
+        {emptyTablePlaceholderSrc ? (
+          <img
+            src={emptyTablePlaceholderSrc}
+            alt={emptyTablePlaceholderText || 'No Data Found'}
+            loading="lazy"
+            style={{
+              width: 'auto',
+              height: '300px',
+              objectFit: 'cover',
             }}
-          >
-            <Skeleton
-              animation="wave"
-              variant='rounded'
-              height={variant === 'dense' ? undefined : 20}
-            />
-          </StyledTableCell>
-        )
-      })) : (
-        <TableRow sx={{ height: variantHeightMap[variant] }}>
-          <TableCell colSpan={visibleColumns.length} />
-        </TableRow>
-      )}
-    </TableRow>
-  ))), [rowsPerPage, variant, visibleColumns]);
+          />
+        ) : (
+          <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
+        )}
+      </Grid>
+    ),
+    [emptyTablePlaceholderSrc, emptyTablePlaceholderText, hideFooter, rowsPerPage],
+  );
 
-  const TableContent = useMemo(() => (
-    <TableBody>
-      {isFetching ? SkeletonRows : (
-        // Table rows
-        (currentPageRows?.map((row, index) => {
-          const randomId = Math.random().toString(36).substring(7);
-          return (
-            <StyledTableRow
-              key={`table-row-${row.id || randomId}-${index}`}
-              hover
-              selected={isQuickSelected(row)}
-              onClick={quickActions
-                ? () => handleCheckBoxSelect(row)
-                : () => onRowClick && onRowClick(row)
-              }
-              aria-label={`table-row-${row.id || randomId}-${index}`}
-            >
-              {quickActions &&
+  const SkeletonRows = useMemo(
+    () =>
+      Array.from({ length: rowsPerPage }, (_, index) => (
+        <TableRow component="div" key={`skeleton-${index}`}>
+          {visibleColumns.length > 0 ? (
+            visibleColumns.map((column, colIndex) => {
+              const maxWidth = getMaxWidth(column);
+              if (column.visible === false) return null;
+              return (
                 <StyledTableCell
-                  key={`checkbox-${row.id || randomId}-${index}`}
-                  padding="checkbox"
-                  onClick={(event) => {
-                    event.stopPropagation();
+                  key={`skeleton-cell-${colIndex}`}
+                  component="div"
+                  sx={{
+                    height: variantHeightMap[variant],
+                    maxWidth: maxWidth,
                   }}
-                  sx={{ height: variantHeightMap[variant] }}
                 >
-                  <Checkbox
-                    color="primary"
-                    onChange={() => handleCheckBoxSelect(row)}
-                    checked={isQuickSelected(row)}
+                  <Skeleton
+                    animation="wave"
+                    variant="rounded"
+                    height={variant === 'dense' ? undefined : 20}
                   />
                 </StyledTableCell>
-              }
-              {visibleColumns.map((column, index) => {
-                if (!column.visible) return null;
-
-                return (
-                  <DynamicCellCreator<T>
-                    key={`custom-cell-${column.accessor}-${index}`}
-                    row={row}
-                    column={column}
-                    variant={variant}
-                  />
-                );
-              })}
-            </StyledTableRow>
-          )
-        }))
-      )}
-
-      {/* Blank block */}
-      {!isFetching && blankRows > 0 && (
-        <TableRow sx={{ height: 56 * blankRows }}>
-          <TableCell colSpan={visibleColumns.length} />
+              );
+            })
+          ) : (
+            <TableRow component="div" sx={{ height: variantHeightMap[variant] }}>
+              <TableCell component="div" colSpan={visibleColumns.length} />
+            </TableRow>
+          )}
         </TableRow>
-      )}
-    </TableBody>
-  ), [SkeletonRows, blankRows, currentPageRows, handleCheckBoxSelect, isFetching, isQuickSelected, onRowClick, quickActions, variant, visibleColumns]);
+      )),
+    [rowsPerPage, variant, visibleColumns],
+  );
+
+  const TableContent = useMemo(
+    () => (
+      <TableBody component="div">
+        {isFetching
+          ? SkeletonRows
+          : // Table rows
+            currentPageRows?.map((row, index) => {
+              const randomId = Math.random().toString(36).substring(7);
+              return (
+                <TableRow
+                  key={`table-row-${row.id || randomId}-${index}`}
+                  component="div"
+                  hover
+                  selected={isQuickSelected(row)}
+                  onClick={
+                    quickActions
+                      ? () => handleCheckBoxSelect(row)
+                      : () => onRowClick && onRowClick(row)
+                  }
+                  aria-label={`table-row-${row.id || randomId}-${index}`}
+                  sx={{
+                    minHeight: 56,
+                    '&:hover': {
+                      cursor: 'pointer',
+                    },
+                  }}
+                >
+                  {quickActions && (
+                    <StyledTableCell
+                      key={`checkbox-${row.id || randomId}-${index}`}
+                      component="div"
+                      padding="checkbox"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      sx={{ height: variantHeightMap[variant] }}
+                    >
+                      <Checkbox
+                        color="primary"
+                        onChange={() => handleCheckBoxSelect(row)}
+                        checked={isQuickSelected(row)}
+                      />
+                    </StyledTableCell>
+                  )}
+                  {visibleColumns.map((column, index) => {
+                    if (column.visible === false) return null;
+
+                    return (
+                      <DynamicCellCreator<T>
+                        key={`custom-cell-${column.accessor}-${index}`}
+                        row={row}
+                        column={column}
+                        variant={variant}
+                      />
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+
+        {/* Blank block */}
+        {!isFetching && blankRows > 0 && (
+          <TableRow component="div" sx={{ height: 56 * blankRows }}>
+            <TableCell component="div" colSpan={visibleColumns.length} />
+          </TableRow>
+        )}
+      </TableBody>
+    ),
+    [
+      SkeletonRows,
+      blankRows,
+      currentPageRows,
+      handleCheckBoxSelect,
+      isFetching,
+      isQuickSelected,
+      onRowClick,
+      quickActions,
+      variant,
+      visibleColumns,
+    ],
+  );
 
   return (
-    <>
-      <HeadWrapper>
-        <CommonHeaderCreator
-          currentPageRows={currentPageRows}
-          visibleColumns={visibleColumns}
-          quickActions={quickActions}
-          quickSelectedRows={quickSelectedRows}
-          setQuickSelectedRows={setQuickSelectedRows}
-        />
-      </HeadWrapper >
-      {isTableEmpty ? EmptyTable : TableContent}
-    </>
+    <Grid
+      component="div"
+      container
+      sx={{
+        overflowX: 'auto',
+        scrollbarWidth: 'thin',
+        minWidth: 150,
+      }}
+    >
+      <Table component="div">
+        <HeadWrapper
+          {...(isTableEmpty ? { role: 'table', style: { display: 'table', width: '100%' } } : {})}
+        >
+          <CommonHeaderCreator
+            currentPageRows={currentPageRows}
+            visibleColumns={visibleColumns}
+            quickActions={quickActions}
+            quickSelectedRows={quickSelectedRows}
+            setQuickSelectedRows={setQuickSelectedRows}
+          />
+        </HeadWrapper>
+
+        {isTableEmpty ? EmptyTable : TableContent}
+      </Table>
+    </Grid>
   );
 }
-

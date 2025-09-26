@@ -1,4 +1,3 @@
-'use client';
 import FormLabel from '@mui/material/FormLabel';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -7,8 +6,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';
 import React from 'react';
-import { SxProps } from '@mui/system/styleFunctionSx';
-import { styled, Theme, useTheme } from '@mui/material';
+import { styled, SxProps, Theme, useTheme } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
@@ -122,9 +120,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
                 }}
               >
                 {req.regex.test(passwordInput) ? (
-                  <Check
-                    style={{ color: theme.palette.success.main }}
-                  />
+                  <Check style={{ color: theme.palette.success.main }} />
                 ) : (
                   <X style={{ color: theme.palette.error.main }} />
                 )}
@@ -152,16 +148,20 @@ export const PasswordField = (props: PasswordFieldProps) => {
           ))}
         </Grid>
       );
-    }, [Check, X, theme.palette.error.main, theme.palette.success.main]);
+    },
+    [Check, X, theme.palette.error.main, theme.palette.success.main],
+  );
 
   const passwordRef = React.useRef<HTMLInputElement>(null);
   const isRegexValid = controlRegex.test(password);
 
-  const isTooltipOpen = (
-    showRequirements
-    && passwordRef.current?.contains(document.activeElement)
-    && password.length > 0
-    && !isRegexValid
+  const isTooltipOpen = React.useMemo(
+    () =>
+      showRequirements &&
+      passwordRef.current?.contains(document.activeElement) &&
+      password.length > 0 &&
+      !isRegexValid,
+    [isRegexValid, password?.length, showRequirements],
   );
 
   return (

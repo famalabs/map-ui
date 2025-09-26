@@ -218,8 +218,10 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
         {/* Action Header */}
         <DynamicActionHeader
           tableName={tableName}
+          tableData={tableData}
           currentColumns={currentColumns}
           setCurrentColumns={setCurrentColumns}
+          isFetching={isActuallyFetching}
           defineActions={defineActions}
           quickActions={quickActions}
           setQuickActions={setQuickActions}
@@ -243,7 +245,7 @@ export function DynamicTable<T extends Record<string, any>>(props: DynamicTableP
           minWidth: 150,
         }}
       >
-        <Table>
+        <Table component='div'>
           {/* Table Body */}
           <CommonBodyCreator
             tableData={tableData}

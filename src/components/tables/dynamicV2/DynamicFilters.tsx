@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import MenuItem from '@mui/material/MenuItem';
@@ -26,17 +26,19 @@ export function updateFilters<T>(
   column: DynamicColumns<T>,
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>,
 ) {
-  setActiveFilters(prevFilters => {
-
-    const filterIndex = prevFilters.findIndex(filter =>
-      filter.filterColumn === column.accessor
-      && filter.filterIndex === index
-      && filter.filterComparator === comparator
-      && filter.filterType === column.filterOptions?.type
+  setActiveFilters((prevFilters) => {
+    const filterIndex = prevFilters.findIndex(
+      (filter) =>
+        filter.filterColumn === column.accessor &&
+        filter.filterIndex === index &&
+        filter.filterComparator === comparator &&
+        filter.filterType === column.filterOptions?.type,
     );
 
     if (value === null || value === undefined || value === '') {
-      return prevFilters.filter(filter => filter.filterColumn !== column.accessor || filter.filterIndex !== index);
+      return prevFilters.filter(
+        (filter) => filter.filterColumn !== column.accessor || filter.filterIndex !== index,
+      );
     }
 
     const currentFilter = {
@@ -50,9 +52,8 @@ export function updateFilters<T>(
     if (filterIndex === -1) {
       return [...prevFilters, currentFilter];
     } else {
-      return prevFilters.map((filter, index) => index === filterIndex ? currentFilter : filter);
+      return prevFilters.map((filter, index) => (index === filterIndex ? currentFilter : filter));
     }
-
   });
 }
 
@@ -70,7 +71,6 @@ interface StringFilterFormProps<T> {
 }
 
 export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
-
   const {
     column,
     filterMode,
@@ -82,11 +82,17 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
     localeStr,
   } = props;
 
-  const filterValue = useMemo(() =>
-    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
-    , [activeFilters, column.accessor, filterIndex]);
+  const filterValue = useMemo(
+    () =>
+      activeFilters?.find(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      )?.filterValue ?? null,
+    [activeFilters, column.accessor, filterIndex],
+  );
 
-  const [inputValue, setInputValue] = useState<string>(filterMode === 'single' && filterValue ? filterValue?.toString() : '');
+  const [inputValue, setInputValue] = useState<string>(
+    filterMode === 'single' && filterValue ? filterValue?.toString() : '',
+  );
 
   useEffect(() => {
     if (aloneFilter) {
@@ -95,19 +101,20 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
   }, [filterValue, aloneFilter]);
 
   const handleApply = () => {
-    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    const columnFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterColumn === column.accessor)?.length || 0);
     updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
   };
 
-  const isApplyDisabled = useMemo(() => inputValue === filterValue || !inputValue, [inputValue, filterValue]);
+  const isApplyDisabled = useMemo(
+    () => inputValue === filterValue || !inputValue,
+    [inputValue, filterValue],
+  );
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      gap={2}
-    >
+    <Grid container alignItems="center" gap={2}>
       <Grid size={12}>
         <TextField
           fullWidth
@@ -115,39 +122,39 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
           label={!aloneFilter ? column.label : ''}
           placeholder={aloneFilter ? column.label : ''}
           variant="outlined"
-          value={aloneFilter ? (activeFilters[0]?.filterValue ?? '') : inputValue}
-          onChange={aloneFilter
-            ? (event) => updateFilters(event.target.value, 0, '', column, setActiveFilters)
-            : (event) => setInputValue(event.target.value)
+          value={aloneFilter ? activeFilters[0]?.filterValue ?? '' : inputValue}
+          onChange={
+            aloneFilter
+              ? (event) => updateFilters(event.target.value, 0, '', column, setActiveFilters)
+              : (event) => setInputValue(event.target.value)
           }
           aria-label="filter-text"
           slotProps={{
             input: {
-              startAdornment: aloneFilter && (
-                <SearchIcon sx={{ marginRight: '.4rem' }} />
-              ),
+              startAdornment: aloneFilter && <SearchIcon sx={{ marginRight: '.4rem' }} />,
               endAdornment: (
                 <IconButton
                   size="small"
-                  onClick={aloneFilter
-                    ? () => setActiveFilters([])
-                    : () => setInputValue('')
-                  }
+                  onClick={aloneFilter ? () => setActiveFilters([]) : () => setInputValue('')}
                   sx={{
                     visibility: aloneFilter
-                      ? (activeFilters.length ? 'visible' : 'hidden')
-                      : inputValue ? 'visible' : 'hidden'
+                      ? activeFilters.length
+                        ? 'visible'
+                        : 'hidden'
+                      : inputValue
+                      ? 'visible'
+                      : 'hidden',
                   }}
                   aria-label="clear-filter"
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
               ),
-            }
+            },
           }}
         />
       </Grid>
-      {!aloneFilter &&
+      {!aloneFilter && (
         <Grid size={12}>
           <Button
             fullWidth
@@ -161,7 +168,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
             {localeStr?.apply}
           </Button>
         </Grid>
-      }
+      )}
     </Grid>
   );
 }
@@ -180,7 +187,6 @@ interface NumberFilterFormProps<T> {
 }
 
 export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
-
   const {
     column,
     filterMode,
@@ -192,11 +198,17 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
     localeStr,
   } = props;
 
-  const filterValue = useMemo(() =>
-    activeFilters?.find(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
-    , [activeFilters, column.accessor, filterIndex]);
+  const filterValue = useMemo(
+    () =>
+      activeFilters?.find(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      )?.filterValue ?? null,
+    [activeFilters, column.accessor, filterIndex],
+  );
 
-  const [inputValue, setInputValue] = useState<number | null>(filterMode === 'single' ? Number(filterValue) : null);
+  const [inputValue, setInputValue] = useState<number | null>(
+    filterMode === 'single' ? Number(filterValue) : null,
+  );
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (isNaN(Number(event.target.value))) {
       setInputValue(null);
@@ -207,7 +219,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
     } else {
       setInputValue(Number(event.target.value) || null);
     }
-  }
+  };
 
   useEffect(() => {
     if (aloneFilter) {
@@ -216,19 +228,21 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
   }, [filterValue, aloneFilter]);
 
   const handleApply = () => {
-    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length ?? null);
+    const columnFilters =
+      filterIndex ??
+      activeFilters.filter((filter) => filter.filterColumn === column.accessor)?.length ??
+      null;
     updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
   };
 
-  const isApplyDisabled = useMemo(() => inputValue === filterValue || (inputValue === null || inputValue === undefined), [inputValue, filterValue]);
+  const isApplyDisabled = useMemo(
+    () => inputValue === filterValue || inputValue === null || inputValue === undefined,
+    [inputValue, filterValue],
+  );
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      gap={2}
-    >
+    <Grid container alignItems="center" gap={2}>
       <Grid size={12}>
         <TextField
           fullWidth
@@ -237,37 +251,36 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
           label={!aloneFilter ? column.label : ''}
           placeholder={aloneFilter ? column.label : ''}
           variant="outlined"
-          value={aloneFilter ? (activeFilters[0]?.filterValue ?? null) : inputValue}
+          value={aloneFilter ? activeFilters[0]?.filterValue ?? null : inputValue}
           onChange={handleInputChange}
           aria-label="filter-number"
           slotProps={{
             input: {
               type: 'number',
-              startAdornment: aloneFilter && (
-                <SearchIcon sx={{ marginRight: '.4rem' }} />
-              ),
+              startAdornment: aloneFilter && <SearchIcon sx={{ marginRight: '.4rem' }} />,
               endAdornment: filterValue ? (
                 <IconButton
                   size="small"
-                  onClick={aloneFilter
-                    ? () => setActiveFilters([])
-                    : () => setInputValue(null)
-                  }
+                  onClick={aloneFilter ? () => setActiveFilters([]) : () => setInputValue(null)}
                   sx={{
                     visibility: aloneFilter
-                      ? (activeFilters.length ? 'visible' : 'hidden')
-                      : inputValue ? 'visible' : 'hidden'
+                      ? activeFilters.length
+                        ? 'visible'
+                        : 'hidden'
+                      : inputValue
+                      ? 'visible'
+                      : 'hidden',
                   }}
                   aria-label="clear-filter"
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
               ) : null,
-            }
+            },
           }}
         />
       </Grid>
-      {!aloneFilter &&
+      {!aloneFilter && (
         <Grid size={12}>
           <Button
             fullWidth
@@ -281,7 +294,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
             {localeStr?.apply}
           </Button>
         </Grid>
-      }
+      )}
     </Grid>
   );
 }
@@ -299,7 +312,6 @@ interface SelectFilterFormProps<T> {
 }
 
 export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
-
   const {
     column,
     filterMode,
@@ -310,36 +322,41 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
     localeStr,
   } = props;
 
-  const filterValue = useMemo(() => activeFilters?.find(filter =>
-    filter.filterColumn === column.accessor && filter.filterIndex === filterIndex)?.filterValue ?? null
-    , [activeFilters, column.accessor, filterIndex]);
-  const selectedFilterOption = useMemo(() => column.filterOptions?.options?.find(option => option.id === filterValue), [column.filterOptions?.options, filterValue]);
+  const filterValue = useMemo(
+    () =>
+      activeFilters?.find(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      )?.filterValue ?? null,
+    [activeFilters, column.accessor, filterIndex],
+  );
+  const selectedFilterOption = useMemo(
+    () => column.filterOptions?.options?.find((option) => option.id === filterValue),
+    [column.filterOptions?.options, filterValue],
+  );
 
   const [localSelectedOption, setLocalSelectedOption] = useState<DynamicFilterOptions | null>(
-    selectedFilterOption ?? null
+    selectedFilterOption ?? null,
   );
 
   const handleApply = () => {
-    const columnFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterColumn === column.accessor)?.length || 0);
+    const columnFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterColumn === column.accessor)?.length || 0);
     updateFilters(
       localSelectedOption ? localSelectedOption.id : undefined,
       columnFilters,
       '',
       column,
-      setActiveFilters
+      setActiveFilters,
     );
     closePopover?.();
   };
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      gap={1}
-    >
+    <Grid container alignItems="center" gap={1}>
       <Grid size={12}>
         <Autocomplete
-          size='small'
+          size="small"
           blurOnSelect
           clearOnBlur
           defaultValue={filterMode === 'single' ? selectedFilterOption : null}
@@ -354,14 +371,8 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
           getOptionLabel={(option) => option.label}
           getOptionKey={(option) => option.id as any}
           renderOption={(props, option) => <ListItem {...props}>{option.label}</ListItem>}
-          renderInput={
-            (params) => (
-              <TextField
-                {...params}
-                label={column.label}
-              />)
-          }
-          aria-label='filter-select'
+          renderInput={(params) => <TextField {...params} label={column.label} />}
+          aria-label="filter-select"
         />
       </Grid>
       <Grid size={12}>
@@ -393,23 +404,26 @@ interface DateFilterFormProps<T> {
 }
 
 export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
-
-  const {
-    column,
-    filterIndex,
-    activeFilters,
-    setActiveFilters,
-    closePopover,
-    localeStr,
-  } = props;
+  const { column, filterIndex, activeFilters, setActiveFilters, closePopover, localeStr } = props;
 
   const firstDateComparators = ['dateMin', 'dateFrom', 'dateTo', 'exact'];
 
-  const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
-  const minDate = dateFilters?.find(filter => firstDateComparators.includes(filter.filterComparator))?.filterValue as string;
-  const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
-  const dateMinComparator = minDate 
-    ? firstDateComparators.find(comparator => dateFilters.find(filter => filter.filterComparator === comparator)) 
+  const dateFilters = useMemo(
+    () =>
+      activeFilters.filter(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      ),
+    [activeFilters, column.accessor, filterIndex],
+  );
+  const minDate = dateFilters?.find((filter) =>
+    firstDateComparators.includes(filter.filterComparator ?? ''),
+  )?.filterValue as string;
+  const maxDate = dateFilters?.find((filter) => filter.filterComparator === 'dateMax')
+    ?.filterValue as string;
+  const dateMinComparator = minDate
+    ? firstDateComparators.find((comparator) =>
+        dateFilters.find((filter) => filter.filterComparator === comparator),
+      )
     : 'dateFrom';
 
   const currentSelectType = useMemo(() => {
@@ -423,52 +437,70 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
     return 'exact';
   }, [minDate, maxDate, dateMinComparator]);
 
-  const [selectType, setSelectType] = useState<'exact' | 'from' | 'to' | 'range'>(currentSelectType);
+  const [selectType, setSelectType] = useState<'exact' | 'from' | 'to' | 'range'>(
+    currentSelectType,
+  );
 
   const [dateError, setDateError] = useState<boolean>(false);
-  const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
+  const [localDate, setValue] = useState<{ date_start: string; date_end: string }>({
     date_start: minDate ?? '',
     date_end: selectType === 'range' ? maxDate : '',
   });
 
-  const updateFilterType = (event: SelectChangeEvent<"exact" | "from" | "to" | "range">) => {
+  const updateFilterType = (event: SelectChangeEvent<'exact' | 'from' | 'to' | 'range'>) => {
     if (selectType !== 'range') {
-      setValue(prevDate => ({
+      setValue((prevDate) => ({
         date_start: prevDate.date_start,
         date_end: '',
       }));
     }
     setSelectType(event.target.value as 'exact' | 'from' | 'to' | 'range');
-  }
+  };
 
   const updateDateRange = (date: string, type: 'start' | 'end') => {
     setDateError(false);
-    setValue(prevDate => ({
+    setValue((prevDate) => ({
       date_start: type === 'start' ? date : prevDate.date_start,
-      date_end: type === 'end' ? date : prevDate.date_end
+      date_end: type === 'end' ? date : prevDate.date_end,
     }));
-  }
+  };
 
   const handleApply = useCallback(() => {
-
-    const dateMinComparator = selectType === 'range' 
-      ? 'dateMin'
-      : selectType === 'from'
+    const dateMinComparator =
+      selectType === 'range'
+        ? 'dateMin'
+        : selectType === 'from'
         ? 'dateFrom'
         : selectType === 'to'
-          ? 'dateTo'
-          : 'exact';
+        ? 'dateTo'
+        : 'exact';
 
-    const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
-    const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
+    const dateMinFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterComparator === 'dateMin').length || 0);
+    const dateMaxFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterComparator === 'dateMax').length || 0);
 
     // clear up previous date filters
-    activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex).forEach(filter => {
-      setActiveFilters(prevFilters => prevFilters.filter(prevFilter => prevFilter !== filter));
-    });
+    activeFilters
+      .filter(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      )
+      .forEach((filter) => {
+        setActiveFilters((prevFilters) =>
+          prevFilters.filter((prevFilter) => prevFilter !== filter),
+        );
+      });
 
     if (selectType !== 'range') {
-      updateFilters(localDate.date_start, dateMinFilters, dateMinComparator, column, setActiveFilters);
+      updateFilters(
+        localDate.date_start,
+        dateMinFilters,
+        dateMinComparator,
+        column,
+        setActiveFilters,
+      );
     } else {
       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
       updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
@@ -486,69 +518,67 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
   }, [selectType, localDate.date_start, localDate.date_end, dateError]);
 
   return (
-    <Grid
-      container
-      size={12}
-      alignItems="center"
-      gap={1}
-    >
+    <Grid container size={12} alignItems="center" gap={1}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr?.dateLanguage}>
-        {!column.filterOptions?.singleDate &&
+        {!column.filterOptions?.singleDate && (
           <Grid size={12}>
-            <Select
-              fullWidth
-              value={selectType}
-              onChange={updateFilterType}
-              size='small'
-            >
-              <MenuItem value='exact' > {localeStr?.exact} </MenuItem>
-              <MenuItem value='from' > {localeStr?.dateFrom} </MenuItem>
-              <MenuItem value='to'> {localeStr?.dateTo} </MenuItem>
-              <MenuItem value='range'> {localeStr?.range} </MenuItem>
+            <Select fullWidth value={selectType} onChange={updateFilterType} size="small">
+              <MenuItem value="exact"> {localeStr?.exact} </MenuItem>
+              <MenuItem value="from"> {localeStr?.dateFrom} </MenuItem>
+              <MenuItem value="to"> {localeStr?.dateTo} </MenuItem>
+              <MenuItem value="range"> {localeStr?.range} </MenuItem>
             </Select>
           </Grid>
-        }
+        )}
 
         <Grid size={12}>
           <DatePicker
             label={selectType !== 'range' ? 'Data' : 'Data Inizio'}
             defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
-            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
+            onChange={(date, context) =>
+              !context.validationError && date
+                ? updateDateRange(date?.toISOString(), 'start')
+                : null
+            }
             maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
             onError={(error) => setDateError(Boolean(error))}
             slotProps={{
               textField: {
                 size: 'small',
                 fullWidth: true,
-              }
+              },
             }}
           />
         </Grid>
 
-        {selectType === 'range' &&
+        {selectType === 'range' && (
           <Grid size={12}>
             <DatePicker
               label="Data Fine"
               defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-              onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
+              onChange={(date, context) =>
+                !context.validationError && date
+                  ? updateDateRange(date?.toISOString(), 'end')
+                  : null
+              }
               minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
               onError={(error) => setDateError(Boolean(error))}
               slotProps={{
                 textField: {
                   size: 'small',
                   fullWidth: true,
-                }
+                },
               }}
             />
           </Grid>
-        }
+        )}
 
         <Grid size={12}>
           <Button
             fullWidth
-            variant='contained'
-            color='primary'
-            size='small'
+            variant="contained"
+            color="primary"
+            size="small"
             onClick={handleApply}
             disabled={isApplyDisabled}
           >
@@ -573,63 +603,68 @@ interface MultipleDateFilterFormProps<T> {
 }
 
 export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>) {
+  const { column, filterMode, filterIndex, activeFilters, setActiveFilters, closePopover } = props;
 
-  const {
-    column,
-    filterMode,
-    filterIndex,
-    activeFilters,
-    setActiveFilters,
-    closePopover,
-  } = props;
-
-
-  const dateFilters = useMemo(() => activeFilters.filter(filter => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
-  const minDate = dateFilters?.find(filter => filter.filterComparator === 'dateMin')?.filterValue as string;
-  const maxDate = dateFilters?.find(filter => filter.filterComparator === 'dateMax')?.filterValue as string;
+  const dateFilters = useMemo(
+    () =>
+      activeFilters.filter(
+        (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
+      ),
+    [activeFilters, column.accessor, filterIndex],
+  );
+  const minDate = dateFilters?.find((filter) => filter.filterComparator === 'dateMin')
+    ?.filterValue as string;
+  const maxDate = dateFilters?.find((filter) => filter.filterComparator === 'dateMax')
+    ?.filterValue as string;
 
   const [dateError, setDateError] = useState<boolean>(false);
-  const [localDate, setValue] = useState<{ date_start: string, date_end: string }>({
+  const [localDate, setValue] = useState<{ date_start: string; date_end: string }>({
     date_start: filterMode === 'single' ? minDate : '',
     date_end: filterMode === 'single' ? maxDate : '',
   });
 
-  const updateDateRange = (date: string, type: 'start' | 'end') => {
+  const updateDateRange = useCallback((date: string, type: 'start' | 'end') => {
     setDateError(false);
-    console.log(date);
-    setValue(prevDate => ({
+    setValue((prevDate) => ({
       date_start: type === 'start' ? date : prevDate.date_start,
-      date_end: type === 'end' ? date : prevDate.date_end
+      date_end: type === 'end' ? date : prevDate.date_end,
     }));
-  }
+  }, []);
 
-  const [filterType, setFilterType] = useState<'single' | 'range'>(minDate && maxDate ? 'range' : 'single');
-  const updateFilterType = (event: SelectChangeEvent<"single" | "range">) => {
+  const [filterType, setFilterType] = useState<'single' | 'range'>(
+    minDate && maxDate ? 'range' : 'single',
+  );
+  const updateFilterType = useCallback(
+    (event: SelectChangeEvent<'single' | 'range'>) => {
+      if (filterType === 'single') {
+        setValue((prevDate) => ({
+          date_start: prevDate.date_start,
+          date_end: '',
+        }));
+      }
+      setFilterType(event.target.value as 'single' | 'range');
+    },
+    [filterType],
+  );
+
+  const handleApply = useCallback(() => {
+    const dateMinFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterComparator === 'dateMin').length || 0);
+    const dateMaxFilters =
+      filterIndex ??
+      (activeFilters.filter((filter) => filter.filterComparator === 'dateMax').length || 0);
+
     if (filterType === 'single') {
-      setValue(prevDate => ({
-        date_start: prevDate.date_start,
-        date_end: '',
-      }));
-    }
-    setFilterType(event.target.value as 'single' | 'range');
-  }
-
-  const handleApply = () => {
-
-    const dateMinFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMin').length || 0);
-    const dateMaxFilters = filterIndex ?? (activeFilters.filter(filter => filter.filterComparator === 'dateMax').length || 0);
-
-    if (filterType === 'single') {
-      console.log('Updating filter: ', dateMinFilters, dateMaxFilters);
       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
-      if (localDate.date_end) updateFilters(undefined, dateMaxFilters, 'dateMax', column, setActiveFilters);
+      if (localDate.date_end)
+        updateFilters(undefined, dateMaxFilters, 'dateMax', column, setActiveFilters);
     } else {
-      console.log('Updating filters: ', dateMinFilters, dateMaxFilters);
       updateFilters(localDate.date_start, dateMinFilters, 'dateMin', column, setActiveFilters);
       updateFilters(localDate.date_end, dateMaxFilters, 'dateMax', column, setActiveFilters);
     }
     closePopover?.();
-  };
+  }, [filterType, localDate, activeFilters, column, filterIndex, setActiveFilters, closePopover]);
 
   const isApplyDisabled = useMemo(() => {
     if (filterType === 'single') {
@@ -640,22 +675,12 @@ export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>)
   }, [filterType, localDate.date_start, localDate.date_end, minDate, dateError]);
 
   return (
-    <Grid
-      container
-      size={12}
-      alignItems="center"
-      gap={1}
-    >
+    <Grid container size={12} alignItems="center" gap={1}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
         <Grid size={12}>
-          <Select
-            fullWidth
-            value={filterType}
-            onChange={updateFilterType}
-            size='small'
-          >
-            <MenuItem value='single' > Data Singola </MenuItem>
-            <MenuItem value='range'> Intervallo </MenuItem>
+          <Select fullWidth value={filterType} onChange={updateFilterType} size="small">
+            <MenuItem value="single"> Data Singola </MenuItem>
+            <MenuItem value="range"> Intervallo </MenuItem>
           </Select>
         </Grid>
 
@@ -663,42 +688,50 @@ export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>)
           <DatePicker
             label={filterType === 'single' ? 'Data' : 'Data Inizio'}
             defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
-            onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'start') : null}
+            onChange={(date, context) =>
+              !context.validationError && date
+                ? updateDateRange(date?.toISOString(), 'start')
+                : null
+            }
             maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
             onError={(error) => setDateError(Boolean(error))}
             slotProps={{
               textField: {
                 size: 'small',
                 fullWidth: true,
-              }
+              },
             }}
           />
         </Grid>
 
-        {filterType === 'range' &&
+        {filterType === 'range' && (
           <Grid size={12}>
             <DatePicker
               label="Data Fine"
               defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-              onChange={(date, context) => !context.validationError ? updateDateRange(date?.toISOString(), 'end') : null}
+              onChange={(date, context) =>
+                !context.validationError && date
+                  ? updateDateRange(date?.toISOString(), 'end')
+                  : null
+              }
               minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
               onError={(error) => setDateError(Boolean(error))}
               slotProps={{
                 textField: {
                   size: 'small',
                   fullWidth: true,
-                }
+                },
               }}
             />
           </Grid>
-        }
+        )}
 
         <Grid size={12}>
           <Button
             fullWidth
-            variant='contained'
-            color='primary'
-            size='small'
+            variant="contained"
+            color="primary"
+            size="small"
             onClick={handleApply}
             disabled={isApplyDisabled}
           >

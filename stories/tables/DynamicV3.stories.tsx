@@ -1,56 +1,90 @@
 import Grid from '@mui/material/Grid';
 import { Meta, StoryObj } from '@storybook/react';
-import React, { useEffect, useState } from 'react';
-import { ActionEventItem, ActiveFilter, AvatarCell, DynamicColumns, DynamicTable, DynamicTableProps, RealtimeTable, RealtimeTableProps } from '../../src/components/tables';
+import React, { useState } from 'react';
+import {
+  ActionEventItem,
+  ActiveFilter,
+  AvatarCell,
+  DateCell,
+  DynamicColumns,
+  DynamicTable,
+  RealtimeTable,
+  RealtimeTableProps,
+  SelectCell,
+} from '../../src/components/tables';
 
 const meta: Meta<typeof DynamicTable> = { component: DynamicTable };
 export default meta;
 
 type Story = StoryObj<RealtimeTableProps<any>>;
 
-export const DynamicV2Template: Story = {
-
+export const DynamicV3Template: Story = {
   args: {
-    tableLocale: "it"
+    tableLocale: 'it',
   },
 
   render: (args) => {
-    const columns =
-      [
-        {
-          accessor: 'id', label: 'ID',
-          // Tooltip: {
-          //   label: 'The ID of the item',
-          //   color: 'primary'
-          // },
-          visible: false,
-          locked: true,
+    const columns = [
+      {
+        accessor: 'id',
+        label: 'ID',
+        visible: true,
+        locked: true,
+      },
+      {
+        accessor: 'avatar',
+        label: 'Avatar',
+        Cell: AvatarCell(true),
+        Tooltip: { color: 'primary' },
+      },
+      { accessor: 'email', label: 'Email', filterOptions: { type: 'string' }, priority: true },
+      {
+        accessor: 'date',
+        label: 'Data',
+        filterOptions: { type: 'date', priority: true },
+        Cell: DateCell(),
+        priority: true,
+      },
+      { accessor: 'first_name', label: 'Nome', filterOptions: { type: 'string' }, priority: true },
+      { accessor: 'last_name', label: 'Cognome', priority: true },
+      {
+        accessor: 'status',
+        label: 'Stato',
+        visible: false,
+        Cell: SelectCell([
+          { id: 2, type: 'primary', label: 'Accettato' },
+          { id: 1, type: 'success', label: 'Sottomesso' },
+          { id: 0, type: 'warning', label: 'Non sottomesso' },
+        ]),
+        filterOptions: {
+          type: 'select',
+          options: [
+            { id: 2, label: 'Accettato' },
+            { id: 1, label: 'Sottomesso' },
+            { id: 0, label: 'Non sottomesso' },
+          ],
         },
-        { accessor: 'avatar', label: '', Cell: AvatarCell(true) },
-        { accessor: 'email', label: 'Email', filterOptions: { type: 'string' }, priority: true },
-        { accessor: 'date', label: 'Data', filterOptions: { type: 'date', priority: true}, priority: true },
-        { accessor: 'first_name', label: 'Nome', filterOptions: { type: 'string' }, priority: true },
-        { accessor: 'last_name', label: 'Cognome', priority: true },
-        // {
-        //   accessor: 'code',
-        //   label: 'Code',
-        //   visible: true,
-        //   Cell: AvatarCell(),
-        //   filterOptions: {
-        //     type: 'select', options: [
-        //       { id: 'A', label: 'A' },
-        //       { id: 'B', label: 'B' },
-        //       { id: 'C', label: 'C' },
-        //     ],
-        //     priority: true
-        //   },
-        //   maxWidth: '300px'
-        // },
-        // { accessor: 'name', label: 'Name', filterOptions: { type: 'date', priority: true }, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
-        // { accessor: 'description', label: 'Description', filterOptions: { type: 'string' }, visible: true },
-        // { accessor: 'description2', label: 'Description', visible: true },
-        // { accessor: 'description3', label: 'Description', visible: true },
-      ] as DynamicColumns<any>[];
+      },
+      // {
+      //   accessor: 'code',
+      //   label: 'Code',
+      //   visible: true,
+      //   Cell: AvatarCell(),
+      //   filterOptions: {
+      //     type: 'select', options: [
+      //       { id: 'A', label: 'A' },
+      //       { id: 'B', label: 'B' },
+      //       { id: 'C', label: 'C' },
+      //     ],
+      //     priority: true
+      //   },
+      //   maxWidth: '300px'
+      // },
+      // { accessor: 'name', label: 'Name', filterOptions: { type: 'date', priority: true }, Cell: ({ cellValue, currentRow }) => <div style={{ fontWeight: 600 }}>{cellValue + currentRow.supplier.name}</div>, },
+      // { accessor: 'description', label: 'Description', filterOptions: { type: 'string' }, visible: true },
+      // { accessor: 'description2', label: 'Description', visible: true },
+      // { accessor: 'description3', label: 'Description', visible: true },
+    ] as DynamicColumns<any>[];
 
     const [data, setData] = useState<any[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -58,42 +92,61 @@ export const DynamicV2Template: Story = {
 
     //const [fetchToken, setFetchToken] = useState<string>('');
 
-    const fetchItemsHandler = async (limit: number, filters: ActiveFilter[], direction?: 'left' | 'right' | 'reset') => {
+    const fetchItemsHandler = async (
+      limit: number,
+      filters: ActiveFilter[],
+      direction?: 'left' | 'right' | 'reset',
+    ) => {
       try {
-
         console.log('Fetching: ', limit, filters, direction);
 
         setIsFetching(true);
 
         // const rowCount = await generateAsyncCount(20);
-        const requestFilters = filters.map(filter => `${filter.filterColumn}=${filter.filterValue}`).join('&');
+        const requestFilters = filters
+          .map((filter) => `${filter.filterColumn}=${filter.filterValue}`)
+          .join('&');
 
-        const url = `https://reqres.in/api/users?per_page=${limit}&${requestFilters}`;
-        const currentPageData = await fetch(url).then(response => response.json());
+        const url = `https://reqres.in/api/users?per_page&${requestFilters}`;
+        const api_key = 'reqres-free-v1';
+        const currentPageData = await fetch(
+          `${url}&page=1&per_page=${limit}${requestFilters ? '&' + requestFilters : ''}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              // add api key to x-api-key
+              'x-api-key': api_key,
+            },
+          },
+        ).then((response) => response.json());
         setExpectedRowCount(currentPageData?.total);
         console.log('Data fetched: ', currentPageData);
 
-        const nextPageData = await fetch(`${url}&page=2`).then(response => response.json());
-        const prevPageData = await fetch(`${url}&page=0`).then(response => response.json());
+        const nextPageData = await fetch(`${url}&page=2`).then((response) => response.json());
+        const prevPageData = await fetch(`${url}&page=1`).then((response) => response.json());
+        const customData = currentPageData.data.map((item) => ({
+          ...item,
+          date: new Date().toISOString(),
+          status: Math.floor(Math.random() * 3),
+        }));
 
-        const shuffledData = [...(currentPageData?.data || [])].sort(() => Math.random() - 0.5);
+        const shuffledData = [...(customData || [])].sort(() => Math.random() - 0.5);
+        console.log('Shuffled data: ', shuffledData);
         setData(shuffledData);
         return {
-          prevCount: prevPageData?.data?.length || 0,
-          nextCount: nextPageData?.data?.length || 0,
-        }
-        
-
+          prevCount: prevPageData?.data?.length || 1,
+          nextCount: nextPageData?.data?.length || 1,
+        };
       } catch (e) {
         console.error(e);
         return {
           prevCount: 0,
           nextCount: 0,
-        }
+        };
       } finally {
         setIsFetching(false);
       }
-
     };
 
     const actionList = [
@@ -103,23 +156,28 @@ export const DynamicV2Template: Story = {
 
     const [quickActions, setQuickActions] = useState<boolean>(false);
 
-    const actionHandler = async (actionType: string, selectedRows: any[], activeFilters: ActiveFilter[]) => {
-
+    const actionHandler = async (
+      actionType: string,
+      selectedRows: any[],
+      activeFilters: ActiveFilter[],
+    ) => {
       const requestArray: Promise<any>[] = [];
 
       switch (actionType) {
         case 'import':
-
           break;
         case 'delete':
-
           for (const item of selectedRows) {
             requestArray.push(item.code);
           }
 
           await Promise.all(requestArray)
             .then(() => {
-              setData(prevData => prevData.filter(item => !selectedRows.some(selected => selected.code === item.code)));
+              setData((prevData) =>
+                prevData.filter(
+                  (item) => !selectedRows.some((selected) => selected.code === item.code),
+                ),
+              );
               console.log('Deleted');
               setQuickActions(false);
             })
@@ -132,31 +190,28 @@ export const DynamicV2Template: Story = {
     };
 
     /* Readonly? queryParamString to set URL */
-    const [queryParamString, setQueryParamString] = useState<string>('?filter[email]=A&filter[date][gte]=2023-01-01&filter[date][lte]=2023-12-31&filter[name]=C&filter[name]=D');
+    const [queryParamString, setQueryParamString] = useState<string>(
+      '?filter[email]=A&filter[date][gte]=2023-01-01&filter[date][lte]=2023-12-31&filter[name]=C&filter[name]=D',
+    );
     React.useEffect(() => {
       console.log('Query string:', queryParamString);
     }, [queryParamString]);
 
-
     return (
-      <Grid
-        container
-        size={12}
-        spacing={2}
-      >
-
+      <Grid container size={12} spacing={2}>
         <Grid size={12}>
           <RealtimeTable
             tableInfo={{
               tableName: 'DynamicV2',
               tableData: data,
               columns: columns,
-              // startingPage: 2,
+              savedVisibleColumns: undefined,
               expectedRowCount: expectedRowCount,
               variant: 'standard',
               filterMode: 'single',
               // defaultShowFilters: false,
-              emptyTablePlaceholderSrc: 'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
+              emptyTablePlaceholderSrc:
+                'https://theyouthproject.in/static/media/empty_data_set.88c7d759.png',
               paginationOptions: {
                 customPageRowCount: 5,
                 customSelectPages: [5, 10, 20],
@@ -167,11 +222,12 @@ export const DynamicV2Template: Story = {
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
+              fetchAllData: async (filters: ActiveFilter[]) => [],
               isFetching: isFetching,
             }}
             queryInfo={{
               onLoadQuery: queryParamString,
-              setCurrentQuery: setQueryParamString
+              setCurrentQuery: setQueryParamString,
             }}
             onRowClick={(row) => {
               console.log('Row clicked:', row);
@@ -184,13 +240,13 @@ export const DynamicV2Template: Story = {
               label: 'New Item',
               buttonClick: () => {
                 console.log('New item clicked');
-              }
+              },
             }}
             exportButton={{
               label: 'Esporta',
               buttonClick: () => {
                 console.log('Export clicked');
-              }
+              },
             }}
             actionButton={{
               label: 'AZIONI',
@@ -198,21 +254,19 @@ export const DynamicV2Template: Story = {
               // activeIcon: 'CIAO CIAO',
               buttonClick: () => {
                 console.log('AZIONI clicked');
-              }
+              },
             }}
             columnsButton={{
               label: 'COLONNE',
               // icon: 'CIAO',
               buttonClick: () => {
                 console.log('COLONNE clicked');
-              }
+              },
             }}
             tableLocale={args.tableLocale || 'it'}
-
           />
         </Grid>
-
       </Grid>
     );
-  }
+  },
 };

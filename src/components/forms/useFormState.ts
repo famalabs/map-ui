@@ -209,14 +209,14 @@ function initFormIsValid<T extends Form>(
   requires: InferFormRequired<T>,
   validators: InferFormValidator<T>
 ): InferFormIsValid<T> {
-  
+
   if (formIsNode(form) && Array.isArray(validators)) {
     return (
       (!requires || (value != null && value !== '')) &&
       (validators.map((validator) => validator.f(value)).every((val) => val) as any)
     );
   }
-    
+
   if (formIsArray(form) && Array.isArray(value)) {
     const children = value.map((v) => initFormIsValid(form.value, v, requires, validators));
     return {

@@ -12,29 +12,35 @@ import { RealtimeTableProps } from './RealtimeTableTypes';
 
 export function LoadSavedColumns<T>(
   columns: DynamicColumns<T>[],
-  savedVisibleColumns: Array<string> | undefined,
+  savedVisibleColumns: string[] | undefined,
   setCurrentColumns: (columns: DynamicColumns<T>[]) => void,
 ) {
   if (!savedVisibleColumns || savedVisibleColumns.length === 0) {
     setCurrentColumns(columns);
     return;
   }
-  
-  setCurrentColumns(columns
-    .map(column => {
-      const localColumn = savedVisibleColumns.find(savedColumn => savedColumn === column.accessor);
-      return {
-        ...column,
-        visible: Boolean(localColumn) ?? Boolean(column.visible),
-        locked: Boolean(column.locked),
-      };
-    })
-    // sort them like the order of localVisibleCols
-    .sort((a, b) => {
-      const aIndex = savedVisibleColumns.findIndex(col => col === a.accessor);
-      const bIndex = savedVisibleColumns.findIndex(col => col === b.accessor);
-      return aIndex - bIndex;
-    })
+
+  // Filter out savedVisibleColumns that do not exist in columns
+  const validSavedVisibleColumns = savedVisibleColumns.filter(savedCol =>
+    columns.some(col => col.accessor === savedCol)
+  );
+
+  setCurrentColumns(
+    columns
+      .map(column => {
+        const localColumn = validSavedVisibleColumns.find(savedColumn => savedColumn === column.accessor);
+        return {
+          ...column,
+          visible: Boolean(localColumn) ?? Boolean(column.visible ?? true),
+          locked: Boolean(column.locked),
+        };
+      })
+      // sort them like the order of validSavedVisibleColumns
+      .sort((a, b) => {
+        const aIndex = validSavedVisibleColumns.findIndex(col => col === a.accessor);
+        const bIndex = validSavedVisibleColumns.findIndex(col => col === b.accessor);
+        return aIndex - bIndex;
+      })
   );
 }
 
@@ -52,6 +58,7 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
     columnsButton,
     actionButton,
     exportButton,
+    selectedAllButton,
     refreshButton,
     paperVariant = 'outlined',
     tableLocale = 'en',
@@ -83,6 +90,7 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
 
   const {
     fetchData,
+    fetchAllData,
     isFetching,
   } = fetchInfo;
 
@@ -111,7 +119,7 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
 
   /* Visible columns state (define structure later) */
-  const [currentColumns, setCurrentColumns] = useState<DynamicColumns<T>[]>([]);
+  const [currentColumns, setCurrentColumns] = useState<DynamicColumns<T>[]>(columns);
 
   /* Update visible columns state */
   useEffect(() => {
@@ -155,10 +163,17 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
     <TableContainer
       component={Paper}
       variant={paperVariant}
-      sx={{ overflowX: 'hidden', tableLayout: 'fixed', width: '100%' }}
+      sx={{
+        overflowX: 'hidden',
+        tableLayout: 'fixed',
+        width: '100%'
+      }}
     >
 
-      <Grid container>
+      <Grid
+        component='div'
+        container
+      >
         {/* Filters Header */}
         <DynamicSimpleFilters
           columns={columns}
@@ -180,8 +195,12 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
         {/* Action Header */}
         <DynamicActionHeader
           tableName={tableName}
+          tableData={tableData}
+          fetchAllData={fetchAllData}
+          expectedRowCount={expectedRowCount}
           currentColumns={currentColumns}
           setCurrentColumns={setCurrentColumns}
+          isFetching={isFetching}
           defineActions={defineActions}
           quickActions={quickActions}
           setQuickActions={setQuickActions}
@@ -192,6 +211,7 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
           columnsButton={columnsButton}
           actionButton={actionButton}
           exportButton={exportButton}
+          selectAllButton={selectedAllButton}
           onColumnsPopoverClose={onColumnsPopoverClose}
           showVisibleColumnsButton={showVisibleColumnsButton}
           localeStr={currentLocale.header}

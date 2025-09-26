@@ -1,5 +1,5 @@
 import { ButtonOwnProps, IconButtonOwnProps } from "@mui/material";
-import { Dispatch, JSX, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 /**
  * Interface for the options of a select cell.
@@ -21,8 +21,8 @@ export type ColumnType = 'string'
  * @param {string} accessor - The accessor of the column.
  * @param {string} label - The label of the column.
  * @param {DynamicFilterOptions[]} filterOptions - The options for the filter in case of select.
- * @param {(props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => JSX.Element} Cell - The custom cell component.
- * @param {{ icon: JSX.Element, action: (currentColumn?: DynamicColumns<T>) => void }} Tooltip - The tooltip component.
+ * @param {(props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => React.ReactNode} Cell - The custom cell component.
+ * @param {{ icon: React.ReactNode, action: (currentColumn?: DynamicColumns<T>) => void }} Tooltip - The tooltip component.
  * @param {boolean} visible - Indicates whether the column is visible.
  */
 export interface DynamicColumns<T> {
@@ -35,9 +35,9 @@ export interface DynamicColumns<T> {
     regex?: boolean,
     priority?: boolean
   }
-  ColumnCell?: () => JSX.Element;
-  Cell?: (props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => JSX.Element;
-  Tooltip?: { icon?: JSX.Element, color?: IconButtonOwnProps['color'], label: string }
+  ColumnCell?: () => React.ReactNode;
+  Cell?: (props: { cellValue: string, currentColumn?: DynamicColumns<T>, currentRow?: T }) => React.ReactNode;
+  Tooltip?: { icon?: React.ReactNode, color?: IconButtonOwnProps['color'], label: string }
   maxWidth?: number | string | 'stretch';
   visible?: boolean;
   locked?: boolean;
@@ -70,7 +70,12 @@ export interface ActiveFilter {
 /**
  * Type for the action event.
  */
-export type ActionEvent<T> = (actionType: string, selectedRows: T[], activeFilters: ActiveFilter[]) => void;
+export type ActionEvent<T> = (
+  actionType: string,
+  selectedRows: T[],
+  activeFilters: ActiveFilter[],
+  allSelected?: boolean,
+) => void;
 
 /**
  * Interface for an action event button.
@@ -78,14 +83,14 @@ export type ActionEvent<T> = (actionType: string, selectedRows: T[], activeFilte
  * @param {ActionType} type - The type of the action.
  * @param {string} label - Optional label of the button.
  * @param {ButtonOwnProps['color']} color - Optional color of the button.
- * @param {JSX.Element} icon - Optional icon of the button.
+ * @param {React.ReactNode} icon - Optional icon of the button.
  * @param {boolean} isIconButton - Indicates whether the button is an icon button.
  */
 export interface ActionEventItem {
   type: string;
   label?: string;
-  color?: ButtonOwnProps['color'];
-  icon?: JSX.Element;
+  color?: ButtonOwnProps['color'] | 'default';
+  icon?: React.ReactNode;
   isIconButton?: boolean;
   refetch?: boolean;
 }
@@ -174,6 +179,9 @@ export interface i18nStrings {
     visibleColumns: string,
     hiddenColumns: string,
     itemsSelected: string,
+    selectedAll: string,
+    deselectAll: string,
+    allItemsSelected: string,
   }
   filters?: {
     addFilter: string,
@@ -200,19 +208,22 @@ export interface i18nStrings {
 /**
  * Interface for the newItemButton.
  * @param {string} label - The label of the button.
- * @param {JSX.Element} icon - Optional icon of the button.
+ * @param {React.ReactNode} icon - Optional icon of the button.
  * @param {() => void} buttonClick - Function to be called when the button is clicked.
  */
 export interface CustomButton {
   label: string;
-  icon?: JSX.Element;
+  icon?: React.ReactNode;
+  color?: ButtonOwnProps['color'];
+  variant?: ButtonOwnProps['variant'];
   buttonClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export interface CustomIconButton {
   label?: string;
-  icon?: JSX.Element;
-  activeIcon?: JSX.Element;
+  icon?: React.ReactNode;
+  activeIcon?: React.ReactNode;
+  color?: IconButtonOwnProps['color'];
   buttonClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
@@ -238,6 +249,7 @@ export interface DynamicTableProps<T> {
   columnsButton?: CustomIconButton;
   actionButton?: CustomIconButton;
   exportButton?: CustomIconButton;
+  selectedAllButton?: CustomButton;
   refreshButton?: CustomIconButton;
   paperVariant?: 'elevation' | 'outlined';
   tableLocale?: 'en' | 'it';

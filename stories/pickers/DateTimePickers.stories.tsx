@@ -1,9 +1,8 @@
-import React from 'react';
-import { Meta, StoryFn } from '@storybook/react';
-import { DatePicker, DatePickerProps } from '../../src/components/pickers';
-import moment from 'moment';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { Meta, StoryFn } from '@storybook/react';
+import dayjs from 'dayjs';
+import { DatePicker, DatePickerProps } from '../../src/components/pickers';
 
 // controls docs at https://storybook.js.org/docs/react/essentials/controls
 export default {
@@ -17,12 +16,12 @@ export default {
 export const DateTime: StoryFn<DatePickerProps> = (args) => {
 
   return (
-    <LocalizationProvider dateAdapter={AdapterMoment}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker {...args} />
     </LocalizationProvider>
-  )
+  );
 };
 
 DateTime.args = {
-  value: moment(new Date()),
+  value: dayjs(new Date()),
 };

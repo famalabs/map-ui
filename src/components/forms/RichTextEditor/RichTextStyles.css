@@ -1,0 +1,28 @@
+/* Change the default size of h elements */
+.bn-default-styles h1 {
+  font-size: 32px;
+}
+
+.bn-default-styles h2 {
+  font-size: 24px;
+}
+
+.bn-default-styles h3 {
+  font-size: 16px;
+}
+
+.bn-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+}
+
+.bn-formatting-toolbar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  margin: 10px;
+  margin-top: 25px;
+  box-shadow: none !important;
+  max-width: 100% !important;
+}

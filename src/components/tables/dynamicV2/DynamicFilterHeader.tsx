@@ -130,17 +130,23 @@ interface FilterChip<T> {
 
 export function FilterChip<T>(props: FilterChip<T>) {
 
-  const { filterIndex, column, activeFilters, setActiveFilters, localeStr } = props;
+  const {
+    filterIndex,
+    column,
+    activeFilters,
+    setActiveFilters,
+    localeStr
+  } = props;
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const open = Boolean(anchorEl);
   const handleClose = () => setAnchorEl(null);
   const handleChipClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const open = Boolean(anchorEl);
-
-  const filterValue = useMemo(() => activeFilters?.find(filter => filter?.filterColumn === column.accessor && filter?.filterIndex === filterIndex)?.filterValue ?? null, [activeFilters, column.accessor, filterIndex]);
+  const foundFilter = useMemo(() => activeFilters?.find(filter => filter?.filterColumn === column.accessor && filter?.filterIndex === filterIndex), [activeFilters, column.accessor, filterIndex]);
+  const filterValue = useMemo(() => foundFilter?.filterValue ?? null, [foundFilter?.filterValue]);
   const selectedFilterOption = useMemo(() => column.filterOptions?.options?.find(option => option.id === filterValue), [column.filterOptions, filterValue]);
 
   const chipLabel = useMemo(() => {
@@ -148,19 +154,24 @@ export function FilterChip<T>(props: FilterChip<T>) {
       case 'select':
         return selectedFilterOption?.label;
       case 'date': {
-        return new Date(filterValue as string).toLocaleDateString();
+        if (foundFilter?.filterComparator === 'dateMin' || foundFilter?.filterComparator === 'dateMax') {
+          const dateMin = activeFilters?.find(filter => filter?.filterColumn === column.accessor && filter?.filterComparator === 'dateMin');
+          const dateMax = activeFilters?.find(filter => filter?.filterColumn === column.accessor && filter?.filterComparator === 'dateMax');
+          return `${dateMin ? new Date(dateMin?.filterValue as string).toLocaleDateString() : ''} - ${dateMax ? new Date(dateMax?.filterValue as string).toLocaleDateString() : ''}`;
+        }
+        return new Date(filterValue as string ?? '').toLocaleDateString();
       }
       default:
-        return filterValue as string;
+        return filterValue as string ?? '';
     }
-  }, [column.filterOptions?.type, selectedFilterOption?.label, filterValue]);
+  }, [column.filterOptions?.type, column.accessor, selectedFilterOption?.label, filterValue, foundFilter?.filterComparator, activeFilters]);
 
 
-  const clearFilter = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+  const clearFilter = useCallback((e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
     updateFilters(undefined, filterIndex, '', column, setActiveFilters);
     handleClose();
-  }
+  }, [filterIndex, column, setActiveFilters]);
 
   return (
     <Grid>
@@ -434,7 +445,13 @@ const comparatorMap: Record<string, string | string[]> = {
   '$lte': ['dateMax', 'dateTo'],
   '$gt': 'dateFrom',
   '$lt': 'dateTo',
-}
+  '$eq': 'exact',
+  'gte': ['dateMin', 'dateFrom'],
+  'lte': ['dateMax', 'dateTo'],
+  'gt': 'dateFrom',
+  'lt': 'dateTo',
+  'eq': 'exact',
+};
 
 interface ChipItems<T> extends DynamicColumns<T> {
   filterIndex?: number;
@@ -509,23 +526,23 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
       return;
     }
     const activeFilterChips = activeFilters
-    .map(filter => {
-      const matchingColumn = visibleFilterColumns?.find(
-        column => column.accessor === filter?.filterColumn
-        && column.filterOptions?.type === filter?.filterType
-      );
-      
-      // skips dateMax filter since the provided dateMin filter is enough to avoid duplicates
-      if (filter?.filterType === 'date' && filter?.filterComparator === 'dateMax') return undefined;
-      
-      const updatedColumn = {
-        ...matchingColumn,
-        filterIndex: filter?.filterIndex,
-      } as ChipItems<T>;
-      
-      return matchingColumn && filter?.filterIndex ? updatedColumn : undefined;
-    })
-    .filter(filter => filter);
+      .map(filter => {
+        const matchingColumn = visibleFilterColumns?.find(
+          column => column.accessor === filter?.filterColumn
+            && column.filterOptions?.type === filter?.filterType
+        );
+
+        // skips dateMax filter since the provided dateMin filter is enough to avoid duplicates
+        if (filter?.filterType === 'date' && filter?.filterComparator === 'dateMax') return undefined;
+
+        const updatedColumn = {
+          ...matchingColumn,
+          filterIndex: filter?.filterIndex,
+        } as ChipItems<T>;
+
+        return matchingColumn && filter?.filterIndex ? updatedColumn : undefined;
+      })
+      .filter(filter => filter);
 
     setVisibleChips(activeFilterChips as ChipItems<T>[]);
 
@@ -552,7 +569,7 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     if (activeFilters.length > 0) setActiveFilters([]);
     setVisibleChips(visibleFilterColumns);
   }, [activeFilters, setActiveFilters, visibleFilterColumns]);
-  
+
 
   /* Load filters from querystring */
   useEffect(() => {
@@ -560,8 +577,6 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
     if (typeof onLoadQuery === 'string') {
       const parsedObject = qs.parse(onLoadQuery, { ignoreQueryPrefix: true });
       const filterQuery = parsedObject.filter as Record<string, any> ?? {} as Record<string, any>;
-
-      console.log('Parsed query:', filterQuery);
 
       const filterTypeIndexMap: Record<string, number> = {};
 
@@ -595,44 +610,42 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
               filterType: 'number'
             } as ActiveFilter;
           case 'select':
-             {
-            if (Array.isArray(filterValue)) {
-              return filterValue.map((value: string, selectIndex) => ({
-                filterColumn,
-                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, value),
-                filterIndex: filterIndex + selectIndex,
-                filterType: 'select'
-              }));
-            } else {
-              return {
-                filterColumn,
-                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, filterValue),
-                filterIndex,
-                filterType: 'select'
-              } as ActiveFilter;
-            }
-          }
-          case 'date':
             {
-
-              if (typeof filterValue === 'object') {
-                return Object.entries(filterValue).map(([dateComparator, dateValue]) => ({
+              if (Array.isArray(filterValue)) {
+                return filterValue.map((value: string, selectIndex) => ({
                   filterColumn,
-                  filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, dateValue),
-                  filterIndex: filterIndex,
-                  filterType: 'date',
-                  filterComparator: comparatorMap[dateComparator]?.[Object.keys(filterValue)?.length > 1 ? 0 : 1] ?? 'exact',
-                } as ActiveFilter));
+                  filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, value),
+                  filterIndex: filterIndex + selectIndex,
+                  filterType: 'select'
+                }));
               } else {
                 return {
                   filterColumn,
                   filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, filterValue),
                   filterIndex,
-                  filterType: 'date',
-                  filterComparator: 'exact',
+                  filterType: 'select'
                 } as ActiveFilter;
               }
             }
+          case 'date': {
+            if (typeof filterValue === 'object') {
+              return Object.entries(filterValue).map(([dateComparator, dateValue]) => ({
+                filterColumn,
+                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, dateValue),
+                filterIndex: filterIndex,
+                filterType: 'date',
+                filterComparator: comparatorMap[dateComparator]?.[Object.keys(filterValue)?.length > 1 ? 0 : 1] ?? 'exact',
+              } as ActiveFilter));
+            } else {
+              return {
+                filterColumn,
+                filterValue: typeConverter(typeof selectColumn.filterOptions?.options?.[0]?.id, filterValue),
+                filterIndex,
+                filterType: 'date',
+                filterComparator: 'exact',
+              } as ActiveFilter;
+            }
+          }
           default:
             return {
               filterColumn,
@@ -700,13 +713,9 @@ export function DynamicSimpleFilters<T>(props: DynamicSimpleFiltersProps<T>) {
   const [showFilters, setShowFilters] = useState<boolean>(defaultShowFilters !== undefined ? defaultShowFilters : true);
   const handleToggleFilters = () => setShowFilters(prev => !prev);
 
-  useEffect(() => {
-    console.log('Active filters:', activeFilters);
-  }
-    , [activeFilters]);
-
   return (
     <Grid
+      component='div'
       container
       justifyContent="flex-start"
       alignItems="center"

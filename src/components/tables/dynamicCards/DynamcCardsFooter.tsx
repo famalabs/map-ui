@@ -1,5 +1,8 @@
 import React, { useCallback, useRef } from 'react';
-import { TablePaginationActions, TablePaginationActionsProps } from '../dynamicV2/DynamicPagination';
+import {
+  TablePaginationActions,
+  TablePaginationActionsProps,
+} from '../dynamicV2/DynamicPagination';
 import TableFooter from '@mui/material/TableFooter';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
@@ -12,12 +15,11 @@ interface StandardTableFooterProps {
   customSelectPages?: number[];
   currentPage: number;
   isFetching: boolean;
-  handleChangePage: (event: unknown, newPage: number) => void;
+  handleChangePage: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const StandardTableFooter = (props: StandardTableFooterProps) => {
-
   const {
     expectedItemCount,
     rowsPerPage,
@@ -25,16 +27,11 @@ const StandardTableFooter = (props: StandardTableFooterProps) => {
     currentPage,
     isFetching,
     handleChangePage,
-    handleChangeRowsPerPage
+    handleChangeRowsPerPage,
   } = props;
 
   const CustomTablePaginationActions = (props: TablePaginationActionsProps) => {
-    return (
-      <TablePaginationActions
-        {...props}
-        isFetching={isFetching}
-      />
-    );
+    return <TablePaginationActions {...props} isFetching={isFetching} />;
   };
 
   return (
@@ -50,7 +47,7 @@ const StandardTableFooter = (props: StandardTableFooterProps) => {
           ActionsComponent={CustomTablePaginationActions as any}
           sx={{
             paddingY: '1rem !important',
-            borderBottom: 'none'
+            borderBottom: 'none',
           }}
         />
       </TableRow>
@@ -63,24 +60,17 @@ interface InfiniteFooterProps<T> {
   expectedItemCount: number;
   isFetching: boolean;
   hasDataFetched: boolean;
-  fetchEvent: (fetchType?: "first" | "next") => Promise<void>;
+  fetchEvent: (fetchType?: 'first' | 'next') => Promise<void>;
   loadingType: 'infiniteScroll' | 'loadMore';
 }
 
 const InfiniteFooter = (props: InfiniteFooterProps<unknown>) => {
-
-  const {
-    tableData,
-    expectedItemCount,
-    isFetching,
-    hasDataFetched,
-    fetchEvent,
-    loadingType
-  } = props;
+  const { tableData, expectedItemCount, isFetching, hasDataFetched, fetchEvent, loadingType } =
+    props;
 
   const LoadMoreButton = () => {
-    
-    if ((tableData?.length >= expectedItemCount && hasDataFetched) || isFetching || !hasDataFetched) return null;
+    if ((tableData?.length >= expectedItemCount && hasDataFetched) || isFetching || !hasDataFetched)
+      return null;
 
     return (
       <Grid
@@ -88,12 +78,12 @@ const InfiniteFooter = (props: InfiniteFooterProps<unknown>) => {
         sx={{
           justifyContent: 'center',
           alignItems: 'center',
-          my: 4
+          my: 4,
         }}
       >
         <Button
-          variant='contained'
-          color='primary'
+          variant="contained"
+          color="primary"
           onClick={async () => {
             await fetchEvent('next');
           }}
@@ -102,7 +92,7 @@ const InfiniteFooter = (props: InfiniteFooterProps<unknown>) => {
         </Button>
       </Grid>
     );
-  }
+  };
 
   const ScrollDetector = () => {
     const observer = useRef<IntersectionObserver | null>(null);
@@ -123,17 +113,15 @@ const InfiniteFooter = (props: InfiniteFooterProps<unknown>) => {
         <td colSpan={6} />
       </TableRow>
     );
-  }
+  };
 
-  return loadingType === 'loadMore'
-    ? LoadMoreButton()
-    : ScrollDetector();
+  return loadingType === 'loadMore' ? LoadMoreButton() : ScrollDetector();
 };
 
 interface DynamicCardsFooterProps<T> {
-  tableData: Array<T>
+  tableData: Array<T>;
   tableVariant: 'standard' | 'infinite';
-  fetchEvent: (fetchType?: "first" | "next") => Promise<void>;
+  fetchEvent: (fetchType?: 'first' | 'next') => Promise<void>;
   loadingType: 'infiniteScroll' | 'loadMore';
   expectedItemCount: number;
   rowsPerPage: number;
@@ -141,12 +129,11 @@ interface DynamicCardsFooterProps<T> {
   currentPage: number;
   isFetching: boolean;
   hasDataFetched: boolean;
-  handleChangePage: (event: unknown, newPage: number) => void;
+  handleChangePage: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function DynamicCardsFooter<T>(props: DynamicCardsFooterProps<T>) {
-
   const {
     tableData,
     tableVariant,
@@ -159,7 +146,7 @@ export function DynamicCardsFooter<T>(props: DynamicCardsFooterProps<T>) {
     isFetching,
     hasDataFetched,
     handleChangePage,
-    handleChangeRowsPerPage
+    handleChangeRowsPerPage,
   } = props;
 
   if (tableVariant === 'infinite') {
@@ -168,7 +155,7 @@ export function DynamicCardsFooter<T>(props: DynamicCardsFooterProps<T>) {
         tableData={tableData}
         expectedItemCount={expectedItemCount}
         isFetching={isFetching}
-        hasDataFetched={hasDataFetched} 
+        hasDataFetched={hasDataFetched}
         fetchEvent={fetchEvent}
         loadingType={loadingType}
       />

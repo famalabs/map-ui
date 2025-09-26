@@ -1,12 +1,9 @@
-import React from "react";
-import moment from "moment";
-import Grid from "@mui/material/Grid";
+import React from 'react';
+import Grid from '@mui/material/Grid';
+import dayjs from 'dayjs';
 
-export const DateCell = (format = "DD/MM/yyyy") =>
-  ({ cellValue }: { cellValue: string }) => {
-    return (
-      <Grid container>
-        {cellValue ? moment(cellValue).format(format) : ''}
-      </Grid>
-    );
+export const DateCell =
+  (format = 'DD/MM/YYYY') =>
+  ({ cellValue }: { cellValue: string }): React.ReactNode => {
+    return <Grid container>{cellValue ? dayjs(cellValue).format(format) : ''}</Grid>;
   };

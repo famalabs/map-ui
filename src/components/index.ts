@@ -1,11 +1,7 @@
 export * from './auth';
 export * from './common';
 export * from './forms';
-export * from './icons';
-export * from './pickers';
 export * from './sidebar';
 export * from './snackbar';
 export * from './tables';
 export * from './theme';
-export * from './validators';
-// export * from './responsive';

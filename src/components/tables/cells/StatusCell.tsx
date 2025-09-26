@@ -16,7 +16,7 @@ function isStatus(status: IStatus | string): status is IStatus {
 export const StatusCell = (
   tooltip?: (value: IStatus) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
-) => ({ cellValue }: { cellValue: string }) => {
+) => ({ cellValue }: { cellValue: string }): React.ReactNode => {
 
   if (typeof cellValue === 'undefined' || cellValue === null || !isStatus(cellValue)) {
     return (

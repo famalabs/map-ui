@@ -11,7 +11,7 @@ interface ExtIconButtonProps extends Omit<IconButtonProps, 'onClick'> {
 export const ActionCell = (
   clickAction: (value: unknown) => void,
   buttonProps: ExtButtonProps | ExtIconButtonProps
-) => ({ cellValue }: { cellValue: string }) => {
+) => ({ cellValue }: { cellValue: string }): React.ReactNode => {
 
   const onButtonClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();

@@ -1,8 +1,8 @@
 
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { DynColumnsDef, DynamicSimpleFilters, DynamicSimpleFiltersProps } from '../../src/components/tables/dynamicV2';
-import { SelectCell } from '../../src/components/tables';
+import { DynamicColumns, SelectCell } from '../../src/components/tables';
+import { DynamicSimpleFilters } from '../../src/components/tables/dynamicV2/DynamicFilterHeader';
 
 const columns =
   [
@@ -26,7 +26,7 @@ const columns =
       ]),
       visible: true
     },
-  ] as DynColumnsDef<any>[];
+  ] as DynamicColumns<any>[];
 
 const mockSetFilters = jest.fn();
 
@@ -34,7 +34,7 @@ const mockProps = {
   columns: columns,
   activeFilters: [],
   setActiveFilters: mockSetFilters,
-} as DynamicSimpleFiltersProps<any>;
+} as any;
 
 describe('DynamicSimpleFilters', () => {
 

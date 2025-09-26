@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ALL_STATUS } from '../../src/components/tables';
 
 const randomInt = (max: number, min = 0) => Math.round(Math.random() * (max - min) + min);
@@ -50,8 +50,8 @@ export const generateComplexData = (n = 1): ComplexData[] => {
       qty: Math.random() * 1000,
       available: randomBool(),
       date: 1
-        ? moment().add(randomInt(1000), 'days').toDate()
-        : moment().add(randomInt(1000), 'days').toISOString(),
+        ? dayjs().add(randomInt(1000), 'days').toDate()
+        : dayjs().add(randomInt(1000), 'days').toISOString(),
       status: ALL_STATUS[i % 4],
     };
     v.push(data);

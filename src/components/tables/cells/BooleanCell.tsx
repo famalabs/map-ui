@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 export const BooleanCell = (
   toolTip?: (value: string) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
-) => ({ cellValue }: { cellValue: any }) => {
+) => ({ cellValue }: { cellValue: any }): React.ReactNode => {
 
   if (typeof cellValue === 'undefined' || cellValue === null) {
     return (
