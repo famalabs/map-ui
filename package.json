@@ -1,7 +1,7 @@
 {
   "name": "@famalabs/map-ui",
   "type": "module",
-  "version": "0.12.0-beta.14",
+  "version": "0.12.0-beta.15",
   "description": "FamaLabs Map UI",
   "author": "Alberto Pietrangelo",
   "private": false,

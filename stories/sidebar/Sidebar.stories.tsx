@@ -14,71 +14,71 @@ const menuList: SidebarItem[] = [
   {
     title: 'Dashboard',
     link: '/dashboard',
-    icon: <ViewModuleIcon />
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Catalog',
     link: '/dashboard/catalog',
-    icon: <ViewModuleIcon />
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Brands',
     link: '/dashboard/brands',
-    icon: <ViewModuleIcon />
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Users',
     link: '/dashboard/users',
-    icon: <ViewModuleIcon />
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Settings',
     link: '/dashboard/settings',
-    icon: <ViewModuleIcon />
-  }
+    icon: <ViewModuleIcon />,
+  },
 ];
 
 const popupList: SidebarItem[] = [
   {
     title: 'Profile',
-    link: "user/profile",
-    icon: <ViewModuleIcon />
+    link: 'user/profile',
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Account',
-    link: "user/account",
-    icon: <ViewModuleIcon />
+    link: 'user/account',
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Preferences',
-    link: "/preferences",
-    icon: <ViewModuleIcon />
+    link: '/preferences',
+    icon: <ViewModuleIcon />,
   },
   {
     title: 'Logout',
-    link: "/preferences/logout",
-    icon: <ViewModuleIcon />
-  }
+    link: '/preferences/logout',
+    icon: <ViewModuleIcon />,
+  },
 ];
-
 
 export const SidebarLayoutTemplate: Story = {
   args: {
     itemsList: menuList,
     mainLogo: {
       fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
-      miniLogo: ''
+      miniLogo: '',
     },
     brandLogo: {
       fullLogo: 'https://www.famalabs.com/svgs/fl-arrows-light.svg',
-      miniLogo: ''
+      miniLogo: '',
     },
     onSelectMenuItem: (itemID, title, link) => console.log(itemID, title, link),
     onHoverMenuItem: (itemID, title, link) => console.log(itemID, title, link),
-    selectedLink: "/dashboard/catalog/1",
+    selectedLink: '/dashboard/catalog/1',
     // listProps: {
     //   dense: true,
     // },
+    isLoading: false,
     listStyle: {
       mx: '4px',
     },
@@ -86,32 +86,26 @@ export const SidebarLayoutTemplate: Story = {
       itemsList: popupList,
       avatar: {
         username: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-        imageSrc: 'https://live.staticflickr.com/65535/52232153379_a96ddd1233_k.jpg'
+        imageSrc: 'https://live.staticflickr.com/65535/52232153379_a96ddd1233_k.jpg',
       },
       listProps: {
         dense: true,
       },
       listStyle: {
         mx: '4px',
-      }
-    }
+      },
+    },
   },
 
   render: (args) => {
-
     return (
       <SidebarLayout {...args}>
-        <Grid
-          container
-          size={12}
-          justifyContent='center'
-          alignContent='center'
-          height='100dvh'
-        >
-          <Button variant="contained" color="primary">Click Me</Button>
+        <Grid container size={12} justifyContent="center" alignContent="center" height="100dvh">
+          <Button variant="contained" color="primary">
+            Click Me
+          </Button>
         </Grid>
       </SidebarLayout>
     );
-  }
-
-}
+  },
+};

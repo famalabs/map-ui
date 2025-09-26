@@ -10,7 +10,7 @@ import { RealTimeTableBody } from './RealTimeTableBody';
 import { RealTimeTableFooter } from './RealTimeTableFooter';
 import { RealtimeTableProps } from './RealtimeTableTypes';
 
-export function LoadSavedColumns<T>(
+function LoadSavedColumns<T>(
   columns: DynamicColumns<T>[],
   savedVisibleColumns: string[] | undefined,
   setCurrentColumns: (columns: DynamicColumns<T>[]) => void,
@@ -21,14 +21,16 @@ export function LoadSavedColumns<T>(
   }
 
   // Filter out savedVisibleColumns that do not exist in columns
-  const validSavedVisibleColumns = savedVisibleColumns.filter(savedCol =>
-    columns.some(col => col.accessor === savedCol)
+  const validSavedVisibleColumns = savedVisibleColumns.filter((savedCol) =>
+    columns.some((col) => col.accessor === savedCol),
   );
 
   setCurrentColumns(
     columns
-      .map(column => {
-        const localColumn = validSavedVisibleColumns.find(savedColumn => savedColumn === column.accessor);
+      .map((column) => {
+        const localColumn = validSavedVisibleColumns.find(
+          (savedColumn) => savedColumn === column.accessor,
+        );
         return {
           ...column,
           visible: Boolean(localColumn) ?? Boolean(column.visible ?? true),
@@ -37,20 +39,20 @@ export function LoadSavedColumns<T>(
       })
       // sort them like the order of validSavedVisibleColumns
       .sort((a, b) => {
-        const aIndex = validSavedVisibleColumns.findIndex(col => col === a.accessor);
-        const bIndex = validSavedVisibleColumns.findIndex(col => col === b.accessor);
+        const aIndex = validSavedVisibleColumns.findIndex((col) => col === a.accessor);
+        const bIndex = validSavedVisibleColumns.findIndex((col) => col === b.accessor);
         return aIndex - bIndex;
-      })
+      }),
   );
 }
 
 export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTableProps<T>) {
-
   const {
     tableInfo,
     fetchInfo,
     queryInfo = {} as QueryInfoProps,
     defineActions = {} as DefineActionsProps<T>,
+    contextMenuActions = {} as DefineActionsProps<T>,
     onRowClick,
     onRowsPerPageChange,
     onColumnsPopoverClose,
@@ -88,32 +90,34 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
     footerVariant = 'standard',
   } = tableInfo.paginationOptions || {};
 
-  const {
-    fetchData,
-    fetchAllData,
-    isFetching,
-  } = fetchInfo;
+  const { fetchData, fetchAllData, isFetching } = fetchInfo;
 
   const { onLoadQuery, setCurrentQuery } = queryInfo;
 
-  const currentLocale = useMemo(() => ({
-    ...localizedTableStrings[tableLocale],
-    ...localeStr,
-  }), [tableLocale, localeStr]);
+  const currentLocale = useMemo(
+    () => ({
+      ...localizedTableStrings[tableLocale],
+      ...localeStr,
+    }),
+    [tableLocale, localeStr],
+  );
 
   const [hasTableLoaded, setHasTableLoaded] = useState<boolean>(false);
   const [areFiltersLoaded, setAreFiltersLoaded] = useState<boolean>(false);
 
   /* Rows displayed per page */
-  const [rowsPerPage, setRowsPerPage] = useState<number>(Number(customPageRowCount) ?? Number(expectedRowCount));
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    Number(customPageRowCount) ?? Number(expectedRowCount),
+  );
 
-  const handleChangeRowsPerPage = useCallback((
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const newRowsPerPage = Number(event.target.value);
-    setRowsPerPage(newRowsPerPage);
-    onRowsPerPageChange?.(newRowsPerPage);
-  }, [onRowsPerPageChange]);
+  const handleChangeRowsPerPage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const newRowsPerPage = Number(event.target.value);
+      setRowsPerPage(newRowsPerPage);
+      onRowsPerPageChange?.(newRowsPerPage);
+    },
+    [onRowsPerPageChange],
+  );
 
   /* Active filters object */
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
@@ -123,11 +127,7 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
 
   /* Update visible columns state */
   useEffect(() => {
-    LoadSavedColumns(
-      columns,
-      savedVisibleColumns,
-      setCurrentColumns,
-    );
+    LoadSavedColumns(columns, savedVisibleColumns, setCurrentColumns);
   }, [columns, savedVisibleColumns]);
 
   /* Quick actions */
@@ -137,23 +137,27 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
   // indicates the amount of items contained in the next page and previous page
   const [unfetchedCount, setUnfetchedCount] = useState({ nextCount: 0, prevCount: 0 });
 
-  const handleDataFetch = useCallback(async (direction?: 'left' | 'right' | 'reset') => {
-    const { nextCount, prevCount } = await fetchData(rowsPerPage, activeFilters, direction);
-    setUnfetchedCount({ nextCount, prevCount });
-  }, [fetchData, rowsPerPage, activeFilters]);
+  const handleDataFetch = useCallback(
+    async (direction?: 'left' | 'right' | 'reset') => {
+      const { nextCount, prevCount } = await fetchData(rowsPerPage, activeFilters, direction);
+      setUnfetchedCount({ nextCount, prevCount });
+    },
+    [fetchData, rowsPerPage, activeFilters],
+  );
 
   useEffect(() => {
     if (hasTableLoaded && areFiltersLoaded) handleDataFetch('reset');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowsPerPage]);
 
-  const filterFetchEvent = async (fetchType?: "first" | "next") => {
-    if (fetchType === "first") {
+  const filterFetchEvent = async (fetchType?: 'first' | 'next') => {
+    if (fetchType === 'first') {
       await handleDataFetch();
     }
-  }
+  };
 
-  const isTableEmpty = (hasTableLoaded && !isFetching) && (expectedRowCount === 0 || tableData.length === 0);
+  const isTableEmpty =
+    hasTableLoaded && !isFetching && (expectedRowCount === 0 || tableData.length === 0);
 
   useEffect(() => {
     setHasTableLoaded(true);
@@ -166,14 +170,10 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
       sx={{
         overflowX: 'hidden',
         tableLayout: 'fixed',
-        width: '100%'
+        width: '100%',
       }}
     >
-
-      <Grid
-        component='div'
-        container
-      >
+      <Grid component="div" container>
         {/* Filters Header */}
         <DynamicSimpleFilters
           columns={columns}
@@ -218,17 +218,19 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
         />
       </Grid>
 
-
       {/* Table Body */}
       <RealTimeTableBody
         tableData={tableData}
         expectedRowCount={expectedRowCount}
+        activeFilters={activeFilters}
         visibleColumns={currentColumns}
         setVisibleColumns={setCurrentColumns}
         rowsPerPage={rowsPerPage}
         quickActions={quickActions}
         quickSelectedRows={quickSelectedRows}
         setQuickSelectedRows={setQuickSelectedRows}
+        defineActions={defineActions}
+        contextMenuActions={contextMenuActions}
         isFetching={isFetching}
         onRowClick={onRowClick}
         autoSizeHeight={autoSizeHeight}
@@ -254,7 +256,6 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
         localeStr={currentLocale.footer}
         footerVariant={footerVariant}
       />
-
     </TableContainer>
   );
 }

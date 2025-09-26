@@ -1,6 +1,9 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import Avatar from '@mui/material/Avatar';
+import Skeleton from '@mui/material/Skeleton';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -185,6 +188,7 @@ export interface SidebarLayoutProps {
   onSelectMenuItem: (itemID: string, title: string, link: string) => void;
   onHoverMenuItem?: (itemID: string, title: string, link: string) => Promise<void> | void;
   selectedLink?: string;
+  isLoading?: boolean;
   footerData?: FooterData;
   listProps?: ListOwnProps;
   listStyle?: Record<string, any>;
@@ -201,6 +205,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
     onSelectMenuItem,
     onHoverMenuItem,
     selectedLink,
+    isLoading = false,
     footerData,
     listProps,
     listStyle,
@@ -211,6 +216,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(true);
+  const iconOnly = !sidebarOpen && !isSmallScreen;
 
   const mainContent = <>{children}</>;
 
@@ -269,28 +275,71 @@ export function SidebarLayout(props: SidebarLayoutProps) {
 
         {!sidebarOpen && customHeaderCompact}
 
-        <MenuItems
-          displayItems={itemsList ?? []}
-          listType="body"
-          iconOnly={!sidebarOpen && !isSmallScreen}
-          onSelectItem={(...args) => {
-            onSelectMenuItem(...args);
-            if (isSmallScreen) setSidebarOpen(false);
-          }}
-          onHoverItem={onHoverMenuItem}
-          selectedLink={selectedLink}
-          listProps={{
-            dense: isSmallScreen ? false : true,
-            ...listProps,
-          }}
-          listStyle={{
-            margin: '0',
-            marginTop: isSmallScreen ? 'auto' : 1,
-            marginBottom: 'auto',
-            ...listStyle,
-          }}
-          mobile={isSmallScreen}
-        />
+        {!isLoading ? (
+          <MenuItems
+            displayItems={itemsList ?? []}
+            listType="body"
+            iconOnly={iconOnly}
+            onSelectItem={(...args) => {
+              onSelectMenuItem(...args);
+              if (isSmallScreen) setSidebarOpen(false);
+            }}
+            onHoverItem={onHoverMenuItem}
+            selectedLink={selectedLink}
+            listProps={{
+              dense: isSmallScreen ? false : true,
+              ...listProps,
+            }}
+            listStyle={{
+              margin: '0',
+              marginTop: isSmallScreen ? 'auto' : 1,
+              marginBottom: 'auto',
+              ...listStyle,
+            }}
+            mobile={isSmallScreen}
+          />
+        ) : (
+          <List
+            {...listProps}
+            dense={isSmallScreen ? false : true}
+            sx={{
+              margin: '0',
+              marginTop: isSmallScreen ? 'auto' : 1,
+              marginBottom: 'auto',
+              ...(listStyle || {}),
+            }}
+          >
+            {Array.from({ length: Math.min(itemsList?.length || 6, 8) }).map((_, idx) => (
+              <ListItem
+                key={`skeleton-item-${idx}`}
+                disableGutters
+                sx={{ px: sidebarOpen ? 2 : 1 }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 40,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    paddingY: isSmallScreen ? 2 : iconOnly ? 0.8 : 0.5,
+                  }}
+                >
+                  <Skeleton
+                    variant={sidebarOpen ? 'circular' : 'rounded'}
+                    width={22}
+                    height={22}
+                    animation="wave"
+                  />
+                </ListItemIcon>
+                {sidebarOpen && (
+                  <ListItemText
+                    primary={<Skeleton variant="text" width={150} animation="wave" />}
+                    sx={{ my: 0 }}
+                  />
+                )}
+              </ListItem>
+            ))}
+          </List>
+        )}
 
         {brandLogo && (
           <List>

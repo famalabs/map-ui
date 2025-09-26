@@ -245,6 +245,7 @@ export interface DynamicTableProps<T> {
   queryInfo?: QueryInfoProps;
   onRowClick?: (row: T) => void;
   defineActions?: DefineActionsProps<T>
+  contextMenuActions?: DefineActionsProps<T>
   newItemButton?: CustomButton;
   columnsButton?: CustomIconButton;
   actionButton?: CustomIconButton;

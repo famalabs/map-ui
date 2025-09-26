@@ -12,7 +12,7 @@ export interface ISnackbar {
 
 export interface NotifierProps {
   snackbars: ISnackbar[];
-  removeSnackbar: (SnackbarKey) => void;
+  removeSnackbar: (key: SnackbarKey) => void;
 }
 
 let displayed: SnackbarKey[] = [];
@@ -29,27 +29,34 @@ export const Notifier: React.FC<NotifierProps> = ({ snackbars, removeSnackbar })
 
   React.useEffect(() => {
     snackbars.forEach(({ message, options, dismissed, manualClose }) => {
-      if (dismissed) closeSnackbar(options.key);
+      if (dismissed) closeSnackbar(options?.key);
 
-      if (displayed.includes(options.key)) return;
+      if (options?.key && displayed.includes(options.key)) return;
 
       const action = manualClose
-        ? (key) => (
-          <IconButton size="small" aria-label="close" color="inherit" onClick={() => closeSnackbar(key)}>
-            <Close fontSize="small" />
-          </IconButton>
-        )
-        : options.action;
+        ? (key: SnackbarKey) => (
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={() => closeSnackbar(key)}
+            >
+              <Close fontSize="small" />
+            </IconButton>
+          )
+        : options?.action;
+
       enqueueSnackbar(message, {
         ...options,
         onExited: (node, key) => {
-          if (options.onExited) options.onExited(node, key);
+          if (options?.onExited) options.onExited(node, key);
           removeSnackbar(key);
           removeDisplayed(key);
         },
         action,
       });
-      addDisplayed(options.key);
+
+      if (options?.key) addDisplayed(options.key);
     });
   }, [enqueueSnackbar, closeSnackbar, snackbars, removeSnackbar]);
 

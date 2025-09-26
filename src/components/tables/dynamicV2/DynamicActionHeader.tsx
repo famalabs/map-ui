@@ -6,6 +6,7 @@ import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import Collapse from '@mui/material/Collapse';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -26,6 +27,7 @@ import {
   ActiveFilter,
   CustomButton,
   CustomIconButton,
+  DefineActionsProps,
   DynamicColumns,
   i18nStrings,
 } from './DynamicTypes';
@@ -391,119 +393,121 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
     if (isAllSelected && isFetching) setQuickSelectedRows([]);
   }, [isAllSelected, isFetching, setQuickSelectedRows]);
 
-  if (!quickActions) return null;
-
   return (
-    <Grid
-      container
-      size={{
-        sm: 12,
-        md: 12,
-      }}
-      p={2}
-    >
+    <Collapse in={quickActions} timeout="auto" collapsedSize={0} sx={{ width: '100%' }}>
       <Grid
         container
-        justifyContent="flex-start"
-        alignItems="center"
-        spacing={1}
         size={{
-          sm: 6,
-          md: 6,
+          sm: 12,
+          md: 12,
         }}
+        p={2}
       >
-        {!isAllSelected ? (
-          <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
-            <Grid>
-              <Chip
-                label={<Typography fontSize={14}>{`${quickSelectedRows.length}`}</Typography>}
-                color="primary"
-                size="small"
-                sx={{
-                  borderRadius: '50%',
-                  width: 24,
-                  height: 24,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 14,
-                }}
-              />
+        <Grid
+          container
+          justifyContent="flex-start"
+          alignItems="center"
+          spacing={1}
+          size={{
+            sm: 6,
+            md: 6,
+          }}
+        >
+          {!isAllSelected ? (
+            <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+              <Grid>
+                <Chip
+                  label={<Typography fontSize={14}>{`${quickSelectedRows.length}`}</Typography>}
+                  color="primary"
+                  size="small"
+                  sx={{
+                    borderRadius: '50%',
+                    width: 24,
+                    height: 24,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                  }}
+                />
+              </Grid>
+              <Grid>
+                <Typography fontSize={14} ml={1} color="text.secondary">
+                  {localeStr?.itemsSelected.toLocaleLowerCase()}
+                </Typography>
+              </Grid>
             </Grid>
+          ) : (
             <Grid>
-              <Typography fontSize={14} ml={1} color="text.secondary">
-                {localeStr?.itemsSelected.toLocaleLowerCase()}
+              <Typography fontSize={14} color="text.secondary">
+                {localeStr?.allItemsSelected}
               </Typography>
             </Grid>
-          </Grid>
-        ) : (
+          )}
           <Grid>
-            <Typography fontSize={14} color="text.secondary">
-              {localeStr?.allItemsSelected}
-            </Typography>
+            <Button
+              variant={selectAllButton?.variant ?? 'text'}
+              color={(selectAllButton?.color as any) ?? 'primary'}
+              startIcon={selectAllButton?.icon ?? null}
+              onClick={handleSelectAll}
+              loading={isFetchingAll}
+              disabled={unableToSelectAll}
+              size="small"
+              sx={{
+                borderRadius: 5,
+              }}
+            >
+              <Typography fontSize={11}>
+                {isAllSelected ? localeStr?.deselectAll : localeStr?.selectedAll}
+              </Typography>
+            </Button>
           </Grid>
-        )}
-        <Grid>
-          <Button
-            variant={selectAllButton?.variant ?? 'text'}
-            color={(selectAllButton?.color as any) ?? 'primary'}
-            startIcon={selectAllButton?.icon ?? null}
-            onClick={handleSelectAll}
-            loading={isFetchingAll}
-            disabled={unableToSelectAll}
-            size="small"
-            sx={{
-              borderRadius: 5,
-            }}
-          >
-            <Typography fontSize={11}>
-              {isAllSelected ? localeStr?.deselectAll : localeStr?.selectedAll}
-            </Typography>
-          </Button>
         </Grid>
-      </Grid>
-      {/* Action Buttons */}
-      <Grid
-        container
-        justifyContent="flex-end"
-        alignItems="center"
-        spacing={1}
-        size={{
-          sm: 6,
-          md: 6,
-        }}
-      >
-        {actionList &&
-          actionList?.map((action, index) => (
-            <Grid key={index}>
-              {action.isIconButton ? (
-                <Tooltip title={action.label ?? action.type} arrow>
-                  <IconButton
-                    color={action.color ?? 'primary'}
+        {/* Action Buttons */}
+        <Grid
+          container
+          justifyContent="flex-end"
+          alignItems="center"
+          spacing={1}
+          size={{
+            sm: 6,
+            md: 6,
+          }}
+        >
+          {actionList &&
+            actionList?.map((action, index) => (
+              <Grid key={index}>
+                {action.isIconButton ? (
+                  <Tooltip title={action.label ?? action.type} arrow>
+                    <IconButton
+                      color={action.color ?? 'primary'}
+                      onClick={async () =>
+                        await handleAction(action, quickSelectedRows, activeFilters)
+                      }
+                      disabled={quickSelectedRows.length === 0}
+                    >
+                      {action.icon ?? undefined}
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color={(action.color as any) ?? 'primary'}
                     onClick={async () =>
                       await handleAction(action, quickSelectedRows, activeFilters)
                     }
                     disabled={quickSelectedRows.length === 0}
                   >
                     {action.icon ?? undefined}
-                  </IconButton>
-                </Tooltip>
-              ) : (
-                <Button
-                  variant="contained"
-                  size="small"
-                  color={(action.color as any) ?? 'primary'}
-                  onClick={async () => await handleAction(action, quickSelectedRows, activeFilters)}
-                  disabled={quickSelectedRows.length === 0}
-                >
-                  {action.icon ?? undefined}
-                  <Typography fontSize={14}> {action.label ?? action.type} </Typography>
-                </Button>
-              )}
-            </Grid>
-          ))}
+                    <Typography fontSize={14}> {action.label ?? action.type} </Typography>
+                  </Button>
+                )}
+              </Grid>
+            ))}
+        </Grid>
       </Grid>
-    </Grid>
+    </Collapse>
   );
 }
 
@@ -538,7 +542,7 @@ export interface DynamicActionsProps<T> {
   currentColumns: DynamicColumns<T>[];
   setCurrentColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
   isFetching: boolean;
-  defineActions: { actionList: ActionEventItem[]; onAction: ActionEvent<T> };
+  defineActions: DefineActionsProps<T>;
   quickActions: boolean;
   setQuickActions: Dispatch<SetStateAction<boolean>>;
   quickSelectedRows: T[];
@@ -584,7 +588,6 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
   };
 
   const CustomActionButton = actionButton?.icon ? actionButton?.icon : <LayersOutlinedIcon />;
-
   const CustomActiveActionButton = actionButton?.activeIcon ? (
     actionButton?.activeIcon
   ) : (

@@ -11,10 +11,12 @@ import { localizedTableStrings } from '../dynamicV2/DynamicTableLocale';
 import { CardBodyCreator } from './CardsBodyCreator';
 import { DynamicCardsFooter } from './DynamcCardsFooter';
 import { DynamicCardsProps, InfiniteViewType } from './DynamicCardsTypes';
+import Typography from '@mui/material/Typography';
 
 export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicCardsProps<T>) {
   const {
     tableInfo: {
+      tableTitle,
       tableData,
       filtersDef,
       expectedItemCount,
@@ -186,6 +188,18 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
           alignItems="center"
           spacing={2}
         >
+          {tableTitle && (
+            <Grid>
+              {typeof tableTitle === 'string' ? (
+                <Typography variant="h6" component="div">
+                  {tableTitle}
+                </Typography>
+              ) : (
+                tableTitle
+              )}
+            </Grid>
+          )}
+
           {/* Filters Header */}
           <DynamicSimpleFilters
             columns={filtersDef}

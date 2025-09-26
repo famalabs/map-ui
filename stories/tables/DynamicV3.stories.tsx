@@ -125,7 +125,7 @@ export const DynamicV3Template: Story = {
 
         const nextPageData = await fetch(`${url}&page=2`).then((response) => response.json());
         const prevPageData = await fetch(`${url}&page=1`).then((response) => response.json());
-        const customData = currentPageData.data.map((item) => ({
+        const customData = currentPageData.data.map((item: Record<string, any>) => ({
           ...item,
           date: new Date().toISOString(),
           status: Math.floor(Math.random() * 3),
@@ -151,10 +151,20 @@ export const DynamicV3Template: Story = {
 
     const actionList = [
       { type: 'delete', label: 'Delete', color: 'error', isIconButton: false, refetch: true },
-      { type: 'export', label: 'Export', color: 'success', isIconButton: false, refetch: true },
+      {
+        type: 'export',
+        label: 'Export',
+        color: 'success',
+        isIconButton: false,
+        refetch: true,
+      },
     ] as ActionEventItem[];
 
-    const [quickActions, setQuickActions] = useState<boolean>(false);
+    const contextMenuList = [
+      { type: 'import', label: 'Import', isIconButton: false, refetch: true },
+    ] as ActionEventItem[];
+
+    const [, setQuickActions] = useState<boolean>(false);
 
     const actionHandler = async (
       actionType: string,
@@ -165,8 +175,13 @@ export const DynamicV3Template: Story = {
 
       switch (actionType) {
         case 'import':
+          console.log('Import action triggered', selectedRows[0], activeFilters);
+          break;
+        case 'export':
+          console.log('Export action triggered', selectedRows[0], activeFilters);
           break;
         case 'delete':
+          console.log('Delete action triggered for rows: ', selectedRows);
           for (const item of selectedRows) {
             requestArray.push(item.code);
           }
@@ -222,7 +237,7 @@ export const DynamicV3Template: Story = {
             }}
             fetchInfo={{
               fetchData: fetchItemsHandler,
-              fetchAllData: async (filters: ActiveFilter[]) => [],
+              fetchAllData: async () => [],
               isFetching: isFetching,
             }}
             queryInfo={{
@@ -234,6 +249,10 @@ export const DynamicV3Template: Story = {
             }}
             defineActions={{
               actionList: actionList,
+              onAction: actionHandler,
+            }}
+            contextMenuActions={{
+              actionList: contextMenuList,
               onAction: actionHandler,
             }}
             newItemButton={{

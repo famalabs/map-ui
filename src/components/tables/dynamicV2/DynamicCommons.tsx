@@ -145,7 +145,7 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
           <StyledTableCell component="div" padding="checkbox">
             <Checkbox
               color="primary"
-              onChange={(event) => handleSelectAllClick(event)}
+              onChange={handleSelectAllClick}
               checkedIcon={allCurrentRowsSelected ? <IndeterminateCheckBoxIcon /> : undefined}
               checked={allCurrentRowsSelected}
             />

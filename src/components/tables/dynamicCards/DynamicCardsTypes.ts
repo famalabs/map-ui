@@ -5,6 +5,7 @@ export type CardFilters<T> = Omit<DynamicColumns<T>, 'Cell' | 'ColumnCell' | 'To
 export type InfiniteViewType = 'list' | 'cards' | 'dual';
 
 export interface DynamicCardInfo<T extends Record<string, any>> {
+  tableTitle?: React.ReactNode | string;
   tableName?: string;
   tableData: Array<T>;
   setTableData?: Dispatch<SetStateAction<T[]>>;
