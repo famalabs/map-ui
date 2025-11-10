@@ -3,7 +3,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import babel from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
-import postcss from 'rollup-plugin-postcss';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import { builtinModules, createRequire } from 'node:module';
 
@@ -35,12 +34,6 @@ export default [
       typescript({
         tsconfig: './tsconfig.json',
         exclude: ['node_modules/**', '**/*.stories.tsx', '**/*.test.tsx'],
-      }),
-      postcss({
-        extract: true,
-        modules: false,
-        minimize: true,
-        sourceMap: false,
       }),
       babel({
         exclude: ['node_modules/**', '**/*.stories.tsx', '**/*.test.tsx'],

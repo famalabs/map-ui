@@ -125,6 +125,8 @@ export interface TableInfoProps<T> {
   emptyTablePlaceholderSrc?: string;
   emptyTablePlaceholderText?: string;
   paginationOptions?: {
+    stickyHeader?: boolean;
+    stickyFooter?: boolean;
     customPageRowCount?: number;
     customSelectPages?: number[];
     autoSizeHeight?: boolean;
@@ -146,12 +148,10 @@ export interface FetchInfoProps {
 
 /**
   * Interface for the props accepted by the QueryInfo prop.
-  * @param {string} onLoadQuery - The query to be loaded.
-  * @param {Dispatch<SetStateAction<string>>} setCurrentQuery - The function to set the current query.
+  * @param {string} filtersQuery - The query to be loaded.
  */
 export interface QueryInfoProps {
-  onLoadQuery: ActiveFilter[] | string;
-  setCurrentQuery: Dispatch<SetStateAction<string>>;
+  filtersQuery: ActiveFilter[] | string;
 }
 
 /**
@@ -197,6 +197,8 @@ export interface i18nStrings {
     apply: string,
     clear: string,
     refresh: string,
+    showFilters: string,
+    hideFilters: string,
   }
   footer?: {
     rowsPerPage: string,

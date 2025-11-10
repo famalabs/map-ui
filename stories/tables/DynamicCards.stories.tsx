@@ -3,7 +3,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
 import { ActiveFilter, DynamicCardsProps, DynamicCardsTable } from '../../src/components/tables';
 import { CardFilters } from '../../src/components/tables/dynamicCards/DynamicCardsTypes';

@@ -1,26 +1,76 @@
-'use client';
 import { PartialBlock } from '@blocknote/core';
 import '@blocknote/core/fonts/inter.css';
 import { it } from '@blocknote/core/locales';
 import { BlockNoteView, darkDefaultTheme, lightDefaultTheme } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { useCreateBlockNote } from '@blocknote/react';
-import { Button, ButtonProps, Typography, useTheme } from '@mui/material';
+import { Button, ButtonProps, GlobalStyles, Typography, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useIsAiDirty, useIsAiEditing } from '../AiEditingContext';
 import {
   AvailableToolbarButtons,
   CustomFormattingToolbar,
   CustomToolbarButton,
 } from './FormattingToolbar';
-import './RichTextStyles.css';
 
 const locale = it;
+const richTextGlobalStyles = {
+  '.bn-editor': {
+    backgroundColor: 'transparent',
+  },
+  '.bn-default-styles h1': { fontSize: '32px' },
+  '.bn-default-styles h2': { fontSize: '24px' },
+  '.bn-default-styles h3': { fontSize: '16px' },
+  '.bn-container': {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    gap: '8px',
+  },
+  '.bn-formatting-toolbar': {
+    display: 'flex !important',
+    flexWrap: 'wrap !important',
+    margin: '10px',
+    marginTop: '25px',
+    boxShadow: 'none !important',
+    maxWidth: '100% !important',
+  },
+  '.bn-ai-effect': {
+    border: '2px solid',
+    borderColor: 'rgba(0,122,255,0.3)',
+    transition: 'border-color 0.3s ease',
+    boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
+    borderRadius: 8,
+  },
+  '.bn-ai-effect:hover': {
+    borderColor: 'rgba(0,122,255,0.5)',
+  },
+  '.bn-ai-animating': {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    transition: 'border-color 0.3s ease',
+    boxShadow: '0 0 16px rgba(0, 122, 255, 0.5), inset 0 0 0 1px rgba(0,122,255,0.6)',
+    animation: 'glowPulse 1.6s ease-in-out infinite',
+  },
+  '@keyframes glowPulse': {
+    '0%': {
+      boxShadow: '0 0 6px rgba(0,122,255,0.3)',
+    },
+    '50%': {
+      boxShadow: '0 0 12px rgba(0,122,255,0.6)',
+    },
+    '100%': {
+      boxShadow: '0 0 6px rgba(0,122,255,0.3)',
+    },
+  },
+};
 
 export interface RichTextEditorProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onBlur'> {
   ref?: React.Ref<HTMLDivElement | null>;
   id?: string;
+  name?: string; // optional name to track AI editing/dirty state
   title?: string;
   placeholder?: string;
   mode?: 'html' | 'json' | 'markdown';
@@ -47,6 +97,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
   const {
     ref,
     id,
+    name,
     title,
     placeholder,
     mode = 'html',
@@ -68,6 +119,37 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     customButtons = [],
     ...restProps
   } = props;
+
+  // Use context hooks only if name is provided
+  const isAiEditing = useIsAiEditing(name) ?? false;
+  const isDirtyAi = useIsAiDirty(name) ?? false;
+
+  const combinedClassName = React.useMemo(
+    () =>
+      [
+        (restProps as Record<string, any>)?.className,
+        isDirtyAi || isAiEditing ? 'bn-ai-effect' : '',
+        isAiEditing ? 'bn-ai-animating' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    [restProps, isDirtyAi, isAiEditing],
+  );
+
+  // ============== Editor Setup ===================
+
+  const editor = useCreateBlockNote({
+    trailingBlock,
+    dictionary: {
+      ...locale,
+      placeholders: {
+        ...locale.placeholders,
+        default: placeholder,
+      },
+    },
+  });
+
+  // ============== Theme setup ===================
 
   const muiTheme = useTheme();
   const currentTheme = theme ?? muiTheme.palette.mode;
@@ -136,34 +218,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     [muiTheme, editorBackground, menuBackground],
   );
 
-  const inputAsBlock = useCallback(() => {
-    try {
-      if (!value || mode !== 'json') return undefined;
-      if (Array.isArray(value) && value.length > 0) {
-        return (value as PartialBlock[]) ?? undefined;
-      } else {
-        throw new Error('Value must be an array of PartialBlock objects when mode is "json"');
-      }
-    } catch (error) {
-      console.error(error);
-      return undefined;
-    }
-  }, [mode, value]);
-
-  const editor = useCreateBlockNote({
-    trailingBlock,
-    initialContent: inputAsBlock(),
-    dictionary: {
-      ...locale,
-      placeholders: {
-        ...locale.placeholders,
-        default: placeholder,
-      },
-    },
-  });
-
   const [isFocused, setIsFocused] = useState<boolean>(focus || false);
-
   const editorStyles: React.CSSProperties = useMemo(() => {
     const borderColor = error ? muiTheme.palette.error.main : isFocused ? 'transparent' : 'silver';
     return {
@@ -173,7 +228,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
       minHeight: toolbar === 'default' ? 120 : undefined,
       borderWidth: 1,
       borderStyle: 'solid',
-      borderColor,
+      borderColor: isDirtyAi || isAiEditing ? 'rgba(0,122,255,0.3)' : borderColor,
       borderRadius: 8,
       boxShadow: isFocused ? '0 0 0 2px ' + muiTheme.palette.primary.main : undefined,
       pointerEvents: disabled ? 'none' : 'auto',
@@ -182,11 +237,15 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     disabled,
     editorBackground,
     error,
+    isAiEditing,
+    isDirtyAi,
     isFocused,
     muiTheme.palette.error.main,
     muiTheme.palette.primary.main,
     toolbar,
   ]);
+
+  // ============== Callback handlers ===================
 
   const [uncontrolledHtml, setUncontrolledHtml] = useState<string | undefined>(
     id ? (value as string) : undefined,
@@ -211,8 +270,6 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     }
     return undefined;
   }, [editor, id, mode, uncontrolledHtml]);
-
-  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
   const handleOnChange = useCallback(async () => {
     const output = await getOutput();
@@ -240,63 +297,77 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     [isFocused, getOutput, onBlur],
   );
 
-  useEffect(() => {
-    const inputAsHtml = async () => {
-      try {
-        if (!value || mode !== 'html') return;
-        if (typeof value !== 'string') {
-          console.log('Value must be a string when mode is "html"');
-          return;
-        }
-        const blocks = await editor.tryParseHTMLToBlocks(value as string);
+  // ============== Load initial value based on mode ===================
 
-        editor.replaceBlocks(editor.document, blocks);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+
+  const inputAsHtml = React.useCallback(async () => {
+    try {
+      // console.log('inputAsHtml called with value:', value, 'and mode:', mode);
+      if (!value || mode !== 'html') return;
+      if (typeof value !== 'string') {
+        console.log('Value must be a string when mode is "html"');
+        return;
+      }
+      const blocks = editor.tryParseHTMLToBlocks(value as string);
+      editor.replaceBlocks(editor.document, blocks);
+      setDataLoaded(true);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [mode, value, editor]);
+
+  const inputAsJson = React.useCallback(async () => {
+    try {
+      // console.log('inputAsJson called with value:', value, 'and mode:', mode);
+      if (!value || mode !== 'json') return;
+      if (Array.isArray(value) && value.length > 0) {
+        editor.replaceBlocks(editor.document, value as PartialBlock[]);
         setDataLoaded(true);
-      } catch (error) {
-        console.error(error);
+      } else {
+        throw new Error('Value must be an array of PartialBlock objects when mode is "json"');
       }
-    };
-    if (!dataLoaded) inputAsHtml();
-  }, [editor, mode, value, dataLoaded]);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [mode, value, editor]);
 
-  useEffect(() => {
-    const inputAsJson = async () => {
-      try {
-        if (!value || mode !== 'json') return;
-        if (Array.isArray(value) && value.length > 0) {
-          editor.replaceBlocks(editor.document, value as PartialBlock[]);
-          setDataLoaded(true);
-        } else {
-          throw new Error('Value must be an array of PartialBlock objects when mode is "json"');
-        }
-      } catch (error) {
-        console.error(error);
+  const inputAsMarkdown = React.useCallback(async () => {
+    try {
+      // console.log('inputAsMarkdown called with value:', value, 'and mode:', mode);
+      if (!value || mode !== 'markdown') return;
+      if (typeof value !== 'string') {
+        console.log('Value must be a string when mode is "markdown"');
+        return;
       }
-    };
-    if (!dataLoaded) inputAsJson();
-  }, [editor, mode, value, dataLoaded]);
+      const blocks = await editor.tryParseMarkdownToBlocks(value as string);
 
-  useEffect(() => {
-    const inputAsMarkdown = async () => {
-      try {
-        if (!value || mode !== 'markdown') return;
-        if (typeof value !== 'string') {
-          console.log('Value must be a string when mode is "markdown"');
-          return;
-        }
-        const blocks = await editor.tryParseMarkdownToBlocks(value as string);
+      editor.replaceBlocks(editor.document, blocks);
+      setDataLoaded(true);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [mode, value, editor]);
 
-        editor.replaceBlocks(editor.document, blocks);
-        setDataLoaded(true);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (!dataLoaded) inputAsMarkdown();
-  }, [editor, mode, value, dataLoaded]);
+  if (!dataLoaded) {
+    switch (mode) {
+      case 'html':
+        inputAsHtml();
+        break;
+      case 'json':
+        inputAsJson();
+        break;
+      case 'markdown':
+        inputAsMarkdown();
+        break;
+      default:
+        break;
+    }
+  }
 
   return (
     <Grid container size={12}>
+      <GlobalStyles styles={richTextGlobalStyles} />
       {title && (
         <Grid size={12}>
           <Typography variant="body1" color="textSecondary" mb={1}>
@@ -315,6 +386,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
           formattingToolbar={toolbar !== 'static'}
           draggable={false}
           {...restProps}
+          className={combinedClassName}
           onChange={handleOnChange}
           onBlurCapture={handleOnBlur}
           onFocusCapture={() => setIsFocused(true)}

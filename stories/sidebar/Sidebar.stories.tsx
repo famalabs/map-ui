@@ -1,9 +1,8 @@
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { SidebarItem, SidebarLayout, SidebarLayoutProps } from '../../src/components/sidebar';
+import { LayoutGridIcon } from 'lucide-react';
 
 const meta: Meta<typeof SidebarLayout> = { component: SidebarLayout };
 export default meta;
@@ -14,27 +13,27 @@ const menuList: SidebarItem[] = [
   {
     title: 'Dashboard',
     link: '/dashboard',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Catalog',
     link: '/dashboard/catalog',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Brands',
     link: '/dashboard/brands',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Users',
     link: '/dashboard/users',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Settings',
     link: '/dashboard/settings',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
 ];
 
@@ -42,22 +41,22 @@ const popupList: SidebarItem[] = [
   {
     title: 'Profile',
     link: 'user/profile',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Account',
     link: 'user/account',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Preferences',
     link: '/preferences',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
   {
     title: 'Logout',
     link: '/preferences/logout',
-    icon: <ViewModuleIcon />,
+    icon: <LayoutGridIcon size={20} />,
   },
 ];
 

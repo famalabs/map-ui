@@ -1,28 +1,25 @@
-import React from 'react';
-import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
 import Grid from '@mui/material/Grid';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
+import { CircleCheckIcon, CircleXIcon } from 'lucide-react';
+import React from 'react';
 
 export const BooleanCell = (
   toolTip?: (value: string) => string,
-  tooltipProps?: Omit<TooltipProps, 'title' | 'children'>
-) => ({ cellValue }: { cellValue: any }): React.ReactNode => {
+  tooltipProps?: Omit<TooltipProps, 'title' | 'children'>,
+) => {
+  const BooleanCellComponent = ({ cellValue }: { cellValue: any }): React.ReactNode => {
+    if (typeof cellValue === 'undefined' || cellValue === null) {
+      return <Grid container>{''}</Grid>;
+    }
 
-  if (typeof cellValue === 'undefined' || cellValue === null) {
     return (
-      <Grid container>
-        {''}
+      <Grid>
+        <Tooltip title={toolTip && toolTip(cellValue)} {...tooltipProps}>
+          {cellValue ? <CircleCheckIcon size={20} /> : <CircleXIcon size={20} />}
+        </Tooltip>
       </Grid>
-    )
-  }
-
-  return (
-    <Grid>
-      <Tooltip title={toolTip && toolTip(cellValue)} {...tooltipProps}>
-        {cellValue ? <CheckCircleIcon /> : <ErrorIcon />}
-      </Tooltip>
-    </Grid>
-  );
+    );
+  };
+  BooleanCellComponent.displayName = 'BooleanCellComponent';
+  return BooleanCellComponent;
 };
-

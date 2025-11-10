@@ -1,19 +1,18 @@
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { InfoIcon, SquareCheckIcon, SquareIcon, SquareMinusIcon } from 'lucide-react';
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { DynamicColumns } from './DynamicTypes';
-import Table from '@mui/material/Table';
 
 export const StyledTableCell = styled(TableCell)(() => ({
   height: 56,
@@ -99,19 +98,6 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
   const { currentPageRows, visibleColumns, quickActions, quickSelectedRows, setQuickSelectedRows } =
     props;
 
-  const [hoveredColumn, setHoveredColumn] = React.useState<number>(-1);
-  const handleHoveredColumn = useCallback(
-    (column: DynamicColumns<T>, index: number) =>
-      (event: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => {
-        event.stopPropagation();
-        if (!('Tooltip' in column)) {
-          return;
-        }
-        setHoveredColumn(index);
-      },
-    [],
-  );
-
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
@@ -146,7 +132,8 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
             <Checkbox
               color="primary"
               onChange={handleSelectAllClick}
-              checkedIcon={allCurrentRowsSelected ? <IndeterminateCheckBoxIcon /> : undefined}
+              checkedIcon={allCurrentRowsSelected ? <SquareMinusIcon size={22} /> : undefined}
+              icon={<SquareIcon size={22} />}
               checked={allCurrentRowsSelected}
             />
           </StyledTableCell>
@@ -159,18 +146,26 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
               <StyledTableCell
                 key={index}
                 component="div"
-                onMouseEnter={handleHoveredColumn(column, index)}
-                onMouseLeave={handleHoveredColumn(column, -1)}
                 sx={{
                   width: 160,
                   position: 'relative',
                   maxWidth: maxWidth,
+                  '& .tooltip-icon': {
+                    opacity: 0,
+                    visibility: 'hidden',
+                    transition: 'opacity 0.2s ease',
+                  },
+                  '&:hover .tooltip-icon, &:focus-within .tooltip-icon': {
+                    opacity: 1,
+                    visibility: 'visible',
+                  },
                 }}
               >
                 {column.ColumnCell ? column.ColumnCell() : column.label || ''}
-                {'Tooltip' in column && hoveredColumn === index && (
+                {'Tooltip' in column && (
                   <Tooltip title={column.Tooltip?.label || ''}>
                     <IconButton
+                      className="tooltip-icon"
                       disableRipple
                       color={column.Tooltip?.color || 'default'}
                       size="small"
@@ -180,7 +175,7 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
                         transform: 'translateY(-50%)',
                       }}
                     >
-                      {column.Tooltip?.icon || <InfoOutlined fontSize="small" />}
+                      {column.Tooltip?.icon || <InfoIcon size={16} />}
                     </IconButton>
                   </Tooltip>
                 )}
@@ -339,59 +334,65 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
         {isFetching
           ? SkeletonRows
           : // Table rows
-            currentPageRows?.map((row, index) => {
-              const randomId = Math.random().toString(36).substring(7);
-              return (
-                <TableRow
-                  key={`table-row-${row.id || randomId}-${index}`}
-                  component="div"
-                  hover
-                  selected={isQuickSelected(row)}
-                  onClick={
-                    quickActions
-                      ? () => handleCheckBoxSelect(row)
-                      : () => onRowClick && onRowClick(row)
-                  }
-                  aria-label={`table-row-${row.id || randomId}-${index}`}
-                  sx={{
-                    minHeight: 56,
-                    '&:hover': {
-                      cursor: 'pointer',
-                    },
-                  }}
-                >
-                  {quickActions && (
-                    <StyledTableCell
-                      key={`checkbox-${row.id || randomId}-${index}`}
-                      component="div"
-                      padding="checkbox"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                      }}
-                      sx={{ height: variantHeightMap[variant] }}
-                    >
-                      <Checkbox
-                        color="primary"
-                        onChange={() => handleCheckBoxSelect(row)}
-                        checked={isQuickSelected(row)}
-                      />
-                    </StyledTableCell>
-                  )}
-                  {visibleColumns.map((column, index) => {
-                    if (column.visible === false) return null;
+            currentPageRows
+              ?.filter((row) => row !== undefined && row !== null)
+              ?.filter(
+                (row, index, self) => row && self.findIndex((r) => r.id === row.id) === index,
+              )
+              ?.map((row, index) => {
+                return (
+                  <TableRow
+                    key={`table-row-${row.id}-${index}`}
+                    component="div"
+                    hover
+                    selected={isQuickSelected(row)}
+                    onClick={
+                      quickActions
+                        ? () => handleCheckBoxSelect(row)
+                        : () => onRowClick && onRowClick(row)
+                    }
+                    aria-label={`table-row-${row.id}-${index}`}
+                    sx={{
+                      minHeight: 56,
+                      '&:hover': {
+                        cursor: 'pointer',
+                      },
+                    }}
+                  >
+                    {quickActions && (
+                      <StyledTableCell
+                        key={`checkbox-${row.id}-${index}`}
+                        component="div"
+                        padding="checkbox"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                        }}
+                        sx={{ height: variantHeightMap[variant] }}
+                      >
+                        <Checkbox
+                          color="primary"
+                          onChange={() => handleCheckBoxSelect(row)}
+                          icon={<SquareIcon size={22} />}
+                          checkedIcon={<SquareCheckIcon size={22} />}
+                          checked={isQuickSelected(row)}
+                        />
+                      </StyledTableCell>
+                    )}
+                    {visibleColumns.map((column, index) => {
+                      if (column.visible === false) return null;
 
-                    return (
-                      <DynamicCellCreator<T>
-                        key={`custom-cell-${column.accessor}-${index}`}
-                        row={row}
-                        column={column}
-                        variant={variant}
-                      />
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
+                      return (
+                        <DynamicCellCreator<T>
+                          key={`custom-cell-${column.accessor}-${index}`}
+                          row={row}
+                          column={column}
+                          variant={variant}
+                        />
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
 
         {/* Blank block */}
         {!isFetching && blankRows > 0 && (

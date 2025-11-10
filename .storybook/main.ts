@@ -1,22 +1,19 @@
-import type { StorybookConfig } from "@storybook/react-webpack5";
+import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: ["../src/**/*.mdx", "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [
-    "@storybook/addon-webpack5-compiler-swc",
     "@storybook/addon-onboarding",
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
-    "@storybook/addon-interactions",
+    "@storybook/addon-docs",
+    '@storybook/addon-themes'
   ],
   framework: {
-    name: "@storybook/react-webpack5",
+    name: '@storybook/react-vite',
     options: {},
   },
   typescript: {
-    check: true,
-    reactDocgen: 'react-docgen',
+    check: false,
+    // reactDocgen: 'react-docgen',
   },
 };
 export default config;

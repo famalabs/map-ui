@@ -10,7 +10,10 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import React from 'react';
+import { aiSxEffect } from './InputField';
+import InputAdornment from '@mui/material/InputAdornment';
+import { SparklesIcon } from 'lucide-react';
+import { useIsAiDirty, useIsAiEditing } from './AiEditingContext';
 
 export interface AutocompleteFieldProps<
   T extends FieldValues,
@@ -56,6 +59,9 @@ export function AutocompleteField<
     ...autoProps
   } = props as AutocompleteFieldProps<T, Option, any, any, any>;
 
+  const isAiEditing = useIsAiEditing(name);
+  const isDirtyAi = useIsAiDirty(name);
+
   return (
     <Controller
       name={name}
@@ -91,13 +97,32 @@ export function AutocompleteField<
                 onBlur={field.onBlur}
                 disabled={field.disabled}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={!legend ? label : ''}
-                    error={Boolean(error)}
-                    helperText={error?.message}
-                    {...textFieldProps}
-                  />
+                  <>
+                    <TextField
+                      {...params}
+                      label={!legend ? label : ''}
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                      {...textFieldProps}
+                      sx={{
+                        ...textFieldProps?.sx,
+                        ...(isDirtyAi || isAiEditing ? aiSxEffect(isAiEditing) : {}),
+                      }}
+                    />
+                    {isDirtyAi && !isAiEditing && (
+                      <InputAdornment
+                        position="end"
+                        sx={{
+                          position: 'absolute',
+                          right: 45,
+                          top: '55%',
+                          transform: 'translateY(-50%)',
+                        }}
+                      >
+                        <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
+                      </InputAdornment>
+                    )}
+                  </>
                 )}
               />
             </FormControl>

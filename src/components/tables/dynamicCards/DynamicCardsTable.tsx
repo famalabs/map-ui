@@ -1,9 +1,9 @@
-import ViewStreamIcon from '@mui/icons-material/ViewStream';
-import WindowIcon from '@mui/icons-material/Window';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
+import { Grid2x2Icon, Rows2Icon } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActiveFilter, QueryInfoProps } from '../dynamicV2';
 import { DynamicSimpleFilters } from '../dynamicV2/DynamicFilterHeader';
@@ -11,7 +11,6 @@ import { localizedTableStrings } from '../dynamicV2/DynamicTableLocale';
 import { CardBodyCreator } from './CardsBodyCreator';
 import { DynamicCardsFooter } from './DynamcCardsFooter';
 import { DynamicCardsProps, InfiniteViewType } from './DynamicCardsTypes';
-import Typography from '@mui/material/Typography';
 
 export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicCardsProps<T>) {
   const {
@@ -54,7 +53,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
     switcherPosition,
   } = infiniteOptions;
 
-  const { onLoadQuery, setCurrentQuery } = queryInfo;
+  const { filtersQuery } = queryInfo;
 
   const currentLocale = useMemo(
     () => ({
@@ -179,7 +178,6 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
           my: 2,
         }}
       >
-        {/* Dual View Button */}
         <Grid
           container
           size={12}
@@ -205,14 +203,12 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
             columns={filtersDef}
             filterMode={filterMode}
             defaultShowFilters={defaultShowFilters}
-            onLoadQuery={onLoadQuery}
-            setCurrentQuery={setCurrentQuery}
+            filtersQuery={filtersQuery}
             activeFilters={activeFilters}
             setActiveFilters={setActiveFilters}
             fetchEvent={fetchEvent}
             setCurrentPage={setCurrentPage}
             setHighestFetchedPage={setHighestFetchedPage}
-            hasTableLoaded={hasLoaded}
             showRefreshButton={false}
             localeStr={currentLocale.filters}
           />
@@ -228,10 +224,10 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
                 sx={{ alignSelf: 'center' }}
               >
                 <ToggleButton value="cards" size="small" color="primary" sx={{ p: '5px' }}>
-                  <WindowIcon fontSize="small" />
+                  <Grid2x2Icon size={18} />
                 </ToggleButton>
                 <ToggleButton value="list" size="small" color="primary" sx={{ p: '5px' }}>
-                  <ViewStreamIcon fontSize="small" />
+                  <Rows2Icon size={18} />
                 </ToggleButton>
               </ToggleButtonGroup>
             </Grid>
@@ -239,7 +235,7 @@ export function DynamicCardsTable<T extends Record<string, any>>(props: DynamicC
         </Grid>
       </Grid>
 
-      <Table sx={{ width: '100%', minWidth: 150 }}>
+      <Table component="div" sx={{ width: '100%', minWidth: 150 }}>
         {/* Table Body */}
         <CardBodyCreator
           tableVariant={tableVariant}

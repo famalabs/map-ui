@@ -1,7 +1,7 @@
 import React from 'react';
 import { OptionsObject, SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
-import Close from '@mui/icons-material/Close';
+import { XIcon } from 'lucide-react';
 
 export interface ISnackbar {
   message: SnackbarMessage;
@@ -23,6 +23,7 @@ export const Notifier: React.FC<NotifierProps> = ({ snackbars, removeSnackbar })
   const addDisplayed = (key: SnackbarKey) => {
     displayed = [...displayed, key];
   };
+
   const removeDisplayed = (key: SnackbarKey) => {
     displayed = displayed.filter((id) => id !== key);
   };
@@ -41,7 +42,7 @@ export const Notifier: React.FC<NotifierProps> = ({ snackbars, removeSnackbar })
               color="inherit"
               onClick={() => closeSnackbar(key)}
             >
-              <Close fontSize="small" />
+              <XIcon size={20} />
             </IconButton>
           )
         : options?.action;

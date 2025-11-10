@@ -1,2 +1,2 @@
-export { SidebarItem, SidebarLayout, SidebarLayoutProps, SidebarLogo, SidebarProps } from './SidebarLayout';
-export { FooterData, SidebarFooterProps } from './SidebarFooter';
+export { type SidebarItem, SidebarLayout, type SidebarLayoutProps, type SidebarProps, type SidebarLogo } from './SidebarLayout';
+export { type FooterData, type SidebarFooterProps } from './SidebarFooter';

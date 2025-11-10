@@ -8,7 +8,7 @@ interface ThemeLoaderProps {
   load: () => void | Promise<void>;
   lang?: string;
   children: any;
-};
+}
 
 /*
  * Wrapper component for loading and providing theme on Material-UI
@@ -18,8 +18,7 @@ export const ThemeLoader: React.FC<ThemeLoaderProps> = ({ loaded, load, theme, c
     const waitLoad = load();
     if (waitLoad instanceof Promise)
       waitLoad.then(loaded).catch((err) => {
-        console.log("Couldn't load theme");
-        console.log(err);
+        console.log("Couldn't load theme: ", err);
       });
     else loaded();
     // eslint-disable-next-line react-hooks/exhaustive-deps

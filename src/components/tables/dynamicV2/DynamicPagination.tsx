@@ -1,5 +1,3 @@
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
@@ -7,20 +5,17 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { i18nStrings } from './DynamicTypes';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 export interface TablePaginationActionsProps {
   count: number;
   page: number;
   rowsPerPage: number;
   isFetching: boolean;
-  onPageChange: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    newPage: number,
-  ) => void;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
 }
 
 export function TablePaginationActions(props: TablePaginationActionsProps) {
-
   const { count, page, rowsPerPage, isFetching, onPageChange } = props;
 
   const theme = useTheme();
@@ -32,28 +27,20 @@ export function TablePaginationActions(props: TablePaginationActionsProps) {
   const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onPageChange(event, page + 1);
   };
-  
+
   return (
-    <Box
-      component='div'
-      sx={{ flexShrink: 0, ml: 2.5 }}
-    >
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous-page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+    <Box component="div" sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous-page">
+        {theme.direction === 'rtl' ? <ChevronRightIcon size={20} /> : <ChevronLeftIcon size={20} />}
       </IconButton>
 
       <IconButton
         onClick={handleNextButtonClick}
-        disabled={(page >= Math.ceil(count / rowsPerPage) - 1) || isFetching}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1 || isFetching}
         aria-label="next-page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme.direction === 'rtl' ? <ChevronLeftIcon size={20} /> : <ChevronRightIcon size={20} />}
       </IconButton>
-
     </Box>
   );
 }
@@ -65,7 +52,7 @@ export interface TableFooterProps {
   handleChangePage: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
   customSelectPages?: number[];
-  localeStr: i18nStrings["footer"]
+  localeStr: i18nStrings['footer'];
   isTableEmpty: boolean;
   hideFooter: boolean;
   isFetching: boolean;
@@ -73,7 +60,6 @@ export interface TableFooterProps {
 }
 
 export function DynamicTableFooter(props: TableFooterProps) {
-
   const {
     expectedRowCount,
     rowsPerPage,
@@ -91,28 +77,24 @@ export function DynamicTableFooter(props: TableFooterProps) {
   if (isTableEmpty && hideFooter) return null;
 
   const CustomTablePaginationActions: React.ElementType<TablePaginationActionsProps> = (props) => {
-    return (
-      <TablePaginationActions
-        {...props}
-        isFetching={isFetching}
-      />
-    );
-  }
-
-  const rowsPerPageOptions = footerVariant === 'standard' ? (customSelectPages ?? [5, 10]) : [];
-  const labelRowsPerPage = footerVariant === 'standard' ? localeStr?.rowsPerPage : '';
-  const labelDisplayedRows = footerVariant === 'standard' 
-  ? ({ from, to, count }:{ from: number, to: number, count: number }) => {
-    return `${from} - ${to} ${localeStr?.of} ${count}`
-  }
-  : ({ count }:{ count: number }) => {
-    return `${count} ${localeStr?.elements}`
+    return <TablePaginationActions {...props} isFetching={isFetching} />;
   };
 
+  const rowsPerPageOptions = footerVariant === 'standard' ? customSelectPages ?? [5, 10] : [];
+  const labelRowsPerPage = footerVariant === 'standard' ? localeStr?.rowsPerPage : '';
+  const labelDisplayedRows =
+    footerVariant === 'standard'
+      ? ({ from, to, count }: { from: number; to: number; count: number }) => {
+          return `${from} - ${to} ${localeStr?.of} ${count}`;
+        }
+      : ({ count }: { count: number }) => {
+          return `${count} ${localeStr?.elements}`;
+        };
+
   return (
-    <TableRow component='div'>
+    <TableRow component="div">
       <TablePagination
-        component='div'
+        component="div"
         count={expectedRowCount}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={rowsPerPageOptions}

@@ -1,6 +1,7 @@
 import FormLabel from '@mui/material/FormLabel';
+import InputAdornment from '@mui/material/InputAdornment';
 import TextField, { OutlinedTextFieldProps } from '@mui/material/TextField';
-import React from 'react';
+import { SparklesIcon } from 'lucide-react';
 import {
   Control,
   Controller,
@@ -9,6 +10,59 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
+import { useIsAiDirty } from './AiEditingContext';
+import { useIsAiEditing } from './AiEditingContext';
+
+export const aiSxEffect = (animate = false) => {
+  const staticStyle = {
+    '& fieldset': {
+      border: '2px solid',
+      borderColor: 'rgba(0,122,255,0.3)',
+      transition: 'border-color 0.3s ease',
+      boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(0,122,255,0.5)',
+    },
+  };
+
+  const animationStyle = {
+    pointerEvents: 'none',
+    userSelect: 'none',
+    transition: 'border-color 0.3s ease',
+    boxShadow: '0 0 16px rgba(0, 122, 255, 0.5), inset 0 0 0 1px rgba(0,122,255,0.6)',
+    '& fieldset': {
+      border: '2px solid',
+      borderColor: 'rgba(0,122,255,0.8)',
+      boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
+      animation: 'glowPulse 1.6s ease-in-out infinite',
+    },
+    '&:hover fieldset': {
+      borderColor: 'rgba(0,122,255,0.5)',
+    },
+  };
+
+  return {
+    '& .MuiOutlinedInput-root': {
+      transition: 'all 0.3s ease',
+      ...(animate ? animationStyle : staticStyle),
+      '&.Mui-focused': {
+        ...(animate ? animationStyle : staticStyle),
+      },
+    },
+    '@keyframes glowPulse': {
+      '0%': {
+        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
+      },
+      '50%': {
+        boxShadow: '0 0 12px rgba(0,122,255,0.6)',
+      },
+      '100%': {
+        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
+      },
+    },
+  };
+};
 
 export interface InputFieldProps<T extends FieldValues>
   extends Omit<OutlinedTextFieldProps, 'name' | 'defaultValue' | 'variant' | 'error'> {
@@ -34,6 +88,9 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
     ...textFieldProps
   } = props;
 
+  const isAiEditing = useIsAiEditing(name);
+  const isDirtyAi = useIsAiDirty(name);
+
   return (
     <Controller
       name={name}
@@ -56,6 +113,14 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
               helperText={error?.message}
               slotProps={{
                 ...textFieldProps.slotProps,
+                input: {
+                  endAdornment: isDirtyAi && !isAiEditing && (
+                    <InputAdornment position="end">
+                      <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
+                    </InputAdornment>
+                  ),
+                  ...textFieldProps.slotProps?.input,
+                },
                 htmlInput: {
                   ...textFieldProps.slotProps?.htmlInput,
                   ...(isNumber && {
@@ -67,6 +132,10 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
               {...field}
               disabled={field.disabled}
               value={field.value ?? null}
+              onBlur={(e) => {
+                field.onBlur();
+                textFieldProps.onBlur?.(e);
+              }}
               onChange={(e) => {
                 textFieldProps.onChange?.(e);
                 if (isNumber) {
@@ -75,6 +144,10 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
                 } else {
                   field.onChange(e);
                 }
+              }}
+              sx={{
+                ...textFieldProps.sx,
+                ...(isDirtyAi || isAiEditing ? aiSxEffect(isAiEditing) : {}),
               }}
             />
           </>

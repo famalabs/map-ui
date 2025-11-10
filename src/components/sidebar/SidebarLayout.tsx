@@ -1,19 +1,18 @@
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import Avatar from '@mui/material/Avatar';
-import Skeleton from '@mui/material/Skeleton';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Fab from '@mui/material/Fab';
 import IconButton from '@mui/material/IconButton';
 import List, { ListOwnProps } from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Skeleton from '@mui/material/Skeleton';
 import { alpha, styled, Theme, useTheme } from '@mui/material/styles';
 import SwipeableDrawer, { SwipeableDrawerProps } from '@mui/material/SwipeableDrawer';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { ArrowRightIcon, ChevronLeftIcon } from 'lucide-react';
 import React from 'react';
 import { MenuItems } from '../common/MenuItems';
 import { FooterData, SidebarFooter } from './SidebarFooter';
@@ -133,7 +132,7 @@ const Sidebar = ({ children, sidebarOpen, setSidebarOpen, mainContent }: Sidebar
             onClick={() => setSidebarOpen(true)}
             size="medium"
           >
-            <ArrowForwardIcon />
+            <ArrowRightIcon size={20} />
           </SwipeFab>
         )}
         {sidebarOpen && (
@@ -179,6 +178,7 @@ export interface SidebarLogo {
   variant?: 'square' | 'rounded' | 'circular';
   width?: string;
 }
+
 export interface SidebarLayoutProps {
   itemsList: SidebarItem[];
   customHeader?: React.ReactNode;
@@ -231,12 +231,13 @@ export function SidebarLayout(props: SidebarLayoutProps) {
               component="div"
               sx={{
                 position: 'absolute',
+                top: 10,
                 right: 0,
                 pr: 2,
               }}
             >
-              <IconButton size="large" onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ p: 1 }}>
-                <ChevronLeft fontSize="medium" />
+              <IconButton size="small" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                <ChevronLeftIcon />
               </IconButton>
             </Box>
           )}

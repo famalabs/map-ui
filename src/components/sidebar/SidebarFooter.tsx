@@ -1,5 +1,3 @@
-import ChevronLeft from '@mui/icons-material/ChevronLeft';
-import ChevronRight from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -15,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 import { MenuItems } from '../common/MenuItems';
 import { SidebarItem } from './SidebarLayout';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 export interface FooterData {
   itemsList: SidebarItem[];
@@ -90,11 +89,7 @@ export function SidebarFooter(props: SidebarFooterProps) {
                   bottom: '-10px',
                 }}
               >
-                {sidebarOpen ? (
-                  <ChevronLeft sx={{ fontSize: '0.8em' }} />
-                ) : (
-                  <ChevronRight sx={{ fontSize: '0.8em' }} />
-                )}
+                {sidebarOpen ? <ChevronLeftIcon size="1rem" /> : <ChevronRightIcon size="1rem" />}
               </IconButton>
             ) : undefined
           }

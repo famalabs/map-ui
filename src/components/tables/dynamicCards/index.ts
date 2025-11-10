@@ -1,2 +1,2 @@
 export { DynamicCardsTable } from './DynamicCardsTable';
-export { CardFilters, DynamicCardsProps, InfiniteViewType } from './DynamicCardsTypes';
+export { type CardFilters, type DynamicCardsProps, type InfiniteViewType } from './DynamicCardsTypes';

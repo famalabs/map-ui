@@ -1,7 +1,7 @@
-import LockOutlined from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { LockKeyholeIcon } from 'lucide-react';
 import React from 'react';
 
 export interface AuthSuccessProps {
@@ -16,7 +16,6 @@ export const AuthSuccess: React.FC<AuthSuccessProps> = ({
   success = 'Operation completed successfully',
 }) => {
   const authColor = error ? 'error' : success ? 'success' : 'primary';
-
   return (
     <Box
       sx={{
@@ -30,10 +29,10 @@ export const AuthSuccess: React.FC<AuthSuccessProps> = ({
       <Avatar
         sx={{
           margin: (theme) => theme.spacing(1),
-          backgroundColor: (theme) => theme.palette.secondary.main,
+          backgroundColor: (theme) => theme.palette[authColor].main,
         }}
       >
-        <LockOutlined color={authColor} />
+        <LockKeyholeIcon size={20} color="white" />
       </Avatar>
       <Typography component="h1" variant="h5">
         {title}

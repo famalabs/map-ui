@@ -1,2 +1,2 @@
-export { ActionEvent, ActionEventItem, ActiveFilter, ColumnType, CustomButton, DefineActionsProps, DynamicColumns, DynamicFilterOptions, DynamicTableProps, FetchInfoProps, FilterType, FilterValue, QueryInfoProps, TableInfoProps, i18nStrings } from './DynamicTypes';
+export type { ActionEvent, ActionEventItem, ActiveFilter, ColumnType, CustomButton, DefineActionsProps, DynamicColumns, DynamicFilterOptions, DynamicTableProps, FetchInfoProps, FilterType, FilterValue, QueryInfoProps, TableInfoProps, i18nStrings } from './DynamicTypes';
 export { DynamicTable } from './DynamicTable';

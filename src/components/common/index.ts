@@ -1,2 +1,2 @@
-export { MainDiv, IProps } from './MainDiv';
-export { MenuID, MenuItems, MenuItemsProps } from './MenuItems';
+export { MainDiv, type IProps } from './MainDiv';
+export { type MenuID, MenuItems, type MenuItemsProps } from './MenuItems';

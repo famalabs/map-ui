@@ -1,13 +1,9 @@
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
-import AddIcon from '@mui/icons-material/Add';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import { useTheme } from '@mui/material';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Collapse from '@mui/material/Collapse';
 import Chip from '@mui/material/Chip';
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -20,7 +16,17 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  CopyCheckIcon,
+  CopyMinusIcon,
+  DownloadIcon,
+  GripVerticalIcon,
+  PlusIcon,
+  SettingsIcon,
+  SquareCheckIcon,
+  SquareIcon,
+} from 'lucide-react';
+import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
 import {
   ActionEvent,
   ActionEventItem,
@@ -44,6 +50,8 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
   const { columnsButton, currentColumns, setCurrentColumns, onColumnsPopoverClose, localeStr } =
     props;
 
+  const theme = useTheme();
+
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const popOpen = Boolean(anchorEl);
   const handlePopClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -66,26 +74,22 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
   const handleToggleColumn = useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, accessor: string) => {
       event.stopPropagation();
-      // column should be set to visible (columns has to be from hiddenColumns)
-      setCurrentColumns(
-        currentColumns.map((column) => {
-          if (column.accessor === accessor) {
-            column.visible = !Boolean(column.visible);
-          }
-          return column;
+      setCurrentColumns((prevColumns) =>
+        prevColumns.map((column) => {
+          if (column.accessor !== accessor) return column;
+          const isCurrentlyVisible = column.visible !== false;
+          return { ...column, visible: !isCurrentlyVisible };
         }),
       );
     },
-    [currentColumns, setCurrentColumns],
+    [setCurrentColumns],
   );
 
   const handlePopClose = useCallback(async () => {
     setAnchorEl(null);
-    // save array of visible columns as array of strings
     const localVisibleCols = currentColumns
       .filter((column) => column.visible !== false)
       .map((column) => column.accessor);
-
     await onColumnsPopoverClose?.(localVisibleCols);
   }, [currentColumns, onColumnsPopoverClose]);
 
@@ -202,6 +206,8 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
                                   onClick={(event) => {
                                     handleToggleColumn(event, column.accessor);
                                   }}
+                                  icon={<SquareIcon size={20} />}
+                                  checkedIcon={<SquareCheckIcon size={20} />}
                                 />
                               </ListItemIcon>
                             )}
@@ -218,7 +224,7 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
                                 }}
                                 {...provided?.dragHandleProps}
                               >
-                                <DragIndicatorIcon color="action" />
+                                <GripVerticalIcon size={18} color={theme.palette.action.active} />
                               </Grid>
                             )}
                           </ListItemButton>
@@ -241,6 +247,7 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
       localeStr?.hiddenColumns,
       localeStr?.lockedColumns,
       localeStr?.visibleColumns,
+      theme.palette.action.active,
     ],
   );
 
@@ -253,8 +260,12 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
             handlePopClick(event);
             columnsButton?.buttonClick?.(event);
           }}
+          sx={{
+            transform: popOpen ? 'rotate(30deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease-in-out',
+          }}
         >
-          {columnsButton?.icon ?? <SettingsOutlinedIcon />}
+          {columnsButton?.icon ?? <SettingsIcon size={22} />}
         </IconButton>
       </Tooltip>
       <Popover
@@ -279,6 +290,7 @@ function ColumnVisibilityPopper<T>(props: ColumnVisibilityPopperProps<T>) {
           sx={{
             overflow: 'auto',
             scrollbarWidth: 'thin',
+            scrollbarColor: 'silver transparent',
           }}
         >
           {lockedColumns.length > 0 && (
@@ -347,7 +359,6 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
       try {
         setIsFetchingAll(true);
         const allData = await fetchAllData?.(filters ?? []);
-        console.log('Fetched all data:', allData, allData?.length);
         return allData ?? [];
       } catch (error) {
         console.error('Error', error);
@@ -383,15 +394,10 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
   );
 
   // Reset all selected if page is changed
-  useEffect(() => {
-    if (isFetching) {
-      setIsAllSelected(false);
-    }
-  }, [isAllSelected, isFetching, setQuickSelectedRows]);
-
-  useEffect(() => {
-    if (isAllSelected && isFetching) setQuickSelectedRows([]);
-  }, [isAllSelected, isFetching, setQuickSelectedRows]);
+  if (isFetching && isAllSelected) {
+    setQuickSelectedRows([]);
+    setIsAllSelected(false);
+  }
 
   return (
     <Collapse in={quickActions} timeout="auto" collapsedSize={0} sx={{ width: '100%' }}>
@@ -414,20 +420,25 @@ function ActionButtons<T extends Record<string, any>>(props: ActionButtonsProps<
           }}
         >
           {!isAllSelected ? (
-            <Grid container justifyContent="flex-start" alignItems="center" spacing={1}>
+            <Grid container justifyContent="flex-start" alignItems="center" spacing={1} px="9.5px">
               <Grid>
                 <Chip
-                  label={<Typography fontSize={14}>{`${quickSelectedRows.length}`}</Typography>}
+                  label={
+                    <Typography fontSize={14} component="span">
+                      {quickSelectedRows.length}
+                    </Typography>
+                  }
                   color="primary"
                   size="small"
                   sx={{
-                    borderRadius: '50%',
-                    width: 24,
+                    borderRadius: '999px',
+                    minWidth: 24,
                     height: 24,
+                    px: quickSelectedRows.length > 9 ? 1 : 0,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 14,
+                    lineHeight: 1,
                   }}
                 />
               </Grid>
@@ -516,7 +527,7 @@ function NewItemButton(props: CustomButton) {
 
   return (
     <Button variant="contained" size="small" color="primary" onClick={buttonClick}>
-      {icon ?? <AddIcon sx={{ mr: 0.5 }} />}
+      {icon ?? <PlusIcon size={20} style={{ marginRight: 4 }} />}
       <Typography fontSize={14}> {label ?? 'NEW'} </Typography>
     </Button>
   );
@@ -528,7 +539,7 @@ function ExportButton(props: CustomButton) {
   return (
     <Tooltip title={label ?? 'Export'} arrow>
       <IconButton color="primary" onClick={(event) => buttonClick?.(event)}>
-        {icon ?? <FileUploadOutlinedIcon sx={{ mr: 0.5 }} />}
+        {icon ?? <DownloadIcon size={20} style={{ marginRight: 4 }} />}
       </IconButton>
     </Tooltip>
   );
@@ -587,11 +598,11 @@ export function DynamicActionHeader<T extends Record<string, any>>(props: Dynami
     if (quickActions) setQuickSelectedRows([]);
   };
 
-  const CustomActionButton = actionButton?.icon ? actionButton?.icon : <LayersOutlinedIcon />;
+  const CustomActionButton = actionButton?.icon ? actionButton?.icon : <CopyCheckIcon size={20} />;
   const CustomActiveActionButton = actionButton?.activeIcon ? (
     actionButton?.activeIcon
   ) : (
-    <LayersOutlinedIcon />
+    <CopyMinusIcon size={20} />
   );
 
   const shouldActionBeHidden =

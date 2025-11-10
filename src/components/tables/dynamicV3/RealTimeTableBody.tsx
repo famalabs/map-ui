@@ -21,6 +21,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuList from '@mui/material/MenuList';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import { SquareCheckIcon, SquareIcon } from 'lucide-react';
 
 /* ---------- Common Body ---------- */
 
@@ -67,8 +69,9 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
     variant,
   } = props;
 
-  const { actionList: actionHeaderList, onAction: onActionHeader } = defineActions;
-  const { actionList: contextMenuActionList, onAction: onContextMenuAction } = contextMenuActions;
+  const { actionList: actionHeaderList = [], onAction: onActionHeader } = defineActions;
+  const { actionList: contextMenuActionList = [], onAction: onContextMenuAction } =
+    contextMenuActions;
 
   const selectedContextRow = React.useRef<T | undefined>(undefined);
   const [contextMenu, setContextMenu] = React.useState<{
@@ -79,6 +82,8 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
   const handleContextMenu = React.useCallback(
     (event: React.MouseEvent) => {
       if (quickActions) return;
+      if (actionHeaderList.length === 0 && contextMenuActionList.length === 0) return;
+
       event.preventDefault();
 
       const rowId = (event.currentTarget as HTMLElement).getAttribute('id');
@@ -108,7 +113,7 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
         });
       }
     },
-    [contextMenu, quickActions, tableData],
+    [actionHeaderList.length, contextMenu, contextMenuActionList.length, quickActions, tableData],
   );
 
   const handleCloseContextMenu = useCallback(() => {
@@ -214,124 +219,208 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
     [rowsPerPage, variant, visibleColumns],
   );
 
-  const TableContent = () => (
-    <TableBody component="div">
-      {isFetching
-        ? SkeletonRows
-        : // Table rows
-          currentPageRows?.map((row, index) => {
-            const randomId = Math.random().toString(36).substring(7);
-            return (
-              <TableRow
-                key={`table-row-${row.id || randomId}-${index}`}
-                id={row.id}
-                component="div"
-                hover
-                selected={isQuickSelected(row) || isContextSelected(row)}
-                onClick={quickActions ? () => handleCheckBoxSelect(row) : () => onRowClick?.(row)}
-                onContextMenu={handleContextMenu}
-                aria-label={`table-row-${row.id || randomId}-${index}`}
-                sx={{
-                  minHeight: 56,
-                  '&:hover': {
-                    cursor: 'pointer',
-                  },
+  const TableContent = useMemo(
+    () => (
+      <TableBody component="div">
+        {isFetching
+          ? SkeletonRows
+          : // eslint-disable-next-line
+            currentPageRows?.map((row, index) => {
+              return (
+                <TableRow
+                  key={`table-row-${row.id}-${index}`}
+                  id={row.id}
+                  component="div"
+                  hover
+                  selected={isQuickSelected(row) || isContextSelected(row)}
+                  onClick={quickActions ? () => handleCheckBoxSelect(row) : () => onRowClick?.(row)}
+                  onContextMenu={handleContextMenu}
+                  aria-label={`table-row-${row.id}-${index}`}
+                  sx={{
+                    minHeight: 56,
+                    transition: 'background-color 0.1s ease',
+                    '&:hover': {
+                      cursor: 'pointer',
+                      transition: 'background-color 0s ease',
+                    },
+                  }}
+                >
+                  {quickActions && (
+                    <StyledTableCell
+                      key={`checkbox-${row.id}-${index}`}
+                      component="div"
+                      padding="checkbox"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      sx={{ height: variantHeightMap[variant] }}
+                    >
+                      <Checkbox
+                        color="primary"
+                        onChange={() => handleCheckBoxSelect(row)}
+                        checked={isQuickSelected(row)}
+                        icon={<SquareIcon size={22} />}
+                        checkedIcon={<SquareCheckIcon size={22} />}
+                      />
+                    </StyledTableCell>
+                  )}
+                  {visibleColumns.map((column, index) => {
+                    if (column.visible === false) return null;
+
+                    return (
+                      <DynamicCellCreator<T>
+                        key={`custom-cell-${column.accessor}-${index}`}
+                        row={row}
+                        column={column}
+                        variant={variant}
+                      />
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+
+        <Menu
+          open={contextMenu !== null && !quickActions}
+          onClose={handleCloseContextMenu}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            handleCloseContextMenu();
+          }}
+          anchorReference="anchorPosition"
+          anchorPosition={
+            contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+          }
+        >
+          <MenuList
+            sx={{
+              minWidth: 100,
+              maxWidth: 240,
+              p: 0,
+              outline: 'none',
+              '& .MuiMenuItem-root': {
+                gap: 0.5,
+              },
+              '& .MuiListItemText-root': {
+                overflow: 'hidden',
+                maxWidth: '100%',
+              },
+              '& .MuiListItemText-root .MuiTypography-root': {
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block',
+                maxWidth: '100%',
+              },
+            }}
+          >
+            {contextMenuActionList?.map((action, index) => (
+              <MenuItem
+                key={`context-header-item-${index}`}
+                onClick={() => {
+                  if (onContextMenuAction && selectedContextRow?.current) {
+                    onContextMenuAction(action.type, [selectedContextRow.current], activeFilters);
+                  }
+                  handleCloseContextMenu();
                 }}
               >
-                {quickActions && (
-                  <StyledTableCell
-                    key={`checkbox-${row.id || randomId}-${index}`}
-                    component="div"
-                    padding="checkbox"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                    }}
-                    sx={{ height: variantHeightMap[variant] }}
-                  >
-                    <Checkbox
-                      color="primary"
-                      onChange={() => handleCheckBoxSelect(row)}
-                      checked={isQuickSelected(row)}
-                    />
-                  </StyledTableCell>
+                {action.icon && (
+                  <ListItemIcon>
+                    <IconButton
+                      color={action.color || 'inherit'}
+                      disableRipple
+                      disableFocusRipple
+                      disableTouchRipple
+                      sx={{ p: 0 }}
+                    >
+                      {action.icon}
+                    </IconButton>
+                  </ListItemIcon>
                 )}
-                {visibleColumns.map((column, index) => {
-                  if (column.visible === false) return null;
+                <ListItemText>
+                  <Typography
+                    variant="body2"
+                    color={action.color || 'inherit'}
+                    noWrap
+                    title={action.label}
+                  >
+                    {action.label}
+                  </Typography>
+                </ListItemText>
+              </MenuItem>
+            ))}
 
-                  return (
-                    <DynamicCellCreator<T>
-                      key={`custom-cell-${column.accessor}-${index}`}
-                      row={row}
-                      column={column}
-                      variant={variant}
-                    />
-                  );
-                })}
-              </TableRow>
-            );
-          })}
+            {contextMenuActionList.length > 0 && actionHeaderList.length > 0 && <Divider />}
 
-      <Menu
-        open={contextMenu !== null && !quickActions}
-        onClose={handleCloseContextMenu}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          handleCloseContextMenu();
-        }}
-        anchorReference="anchorPosition"
-        anchorPosition={
-          contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
-        }
-      >
-        <MenuList>
-          {contextMenuActionList?.map((action, index) => (
-            <MenuItem
-              key={`context-header-item-${index}`}
-              onClick={() => {
-                if (onActionHeader && selectedContextRow?.current) {
-                  onActionHeader(action.type, [selectedContextRow.current], activeFilters);
-                }
-                handleCloseContextMenu();
-              }}
-            >
-              {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
-              <ListItemText>
-                <Typography variant="body2" color={action.color || 'inherit'}>
-                  {action.label}
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          ))}
-          <Divider />
-          {actionHeaderList?.map((action, index) => (
-            <MenuItem
-              key={`context-menu-item-${index}`}
-              onClick={() => {
-                if (onContextMenuAction && selectedContextRow?.current) {
-                  onContextMenuAction(action.type, [selectedContextRow.current], activeFilters);
-                }
-                handleCloseContextMenu();
-              }}
-            >
-              {action.icon && <ListItemIcon>{action.icon}</ListItemIcon>}
-              <ListItemText>
-                <Typography variant="body2" color={action.color || 'inherit'}>
-                  {action.label}
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Menu>
+            {actionHeaderList?.map((action, index) => (
+              <MenuItem
+                key={`context-menu-item-${index}`}
+                onClick={() => {
+                  if (onActionHeader && selectedContextRow?.current) {
+                    onActionHeader(action.type, [selectedContextRow.current], activeFilters);
+                  }
+                  handleCloseContextMenu();
+                }}
+              >
+                {action.icon && (
+                  <ListItemIcon>
+                    <IconButton
+                      color={action.color || 'inherit'}
+                      disableRipple
+                      disableFocusRipple
+                      disableTouchRipple
+                      sx={{ p: 0 }}
+                    >
+                      {action.icon}
+                    </IconButton>
+                  </ListItemIcon>
+                )}
 
-      {/* Blank block */}
-      {!isFetching && blankRows > 0 && (
-        <TableRow
-          component="div"
-          sx={{ height: 56 * blankRows, borderBottom: '1px solid', borderColor: 'divider' }}
-        />
-      )}
-    </TableBody>
+                <ListItemText>
+                  <Typography
+                    variant="body2"
+                    color={action.color || 'inherit'}
+                    noWrap
+                    title={action.label}
+                  >
+                    {action.label}
+                  </Typography>
+                </ListItemText>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
+
+        {/* Blank block */}
+        {!isFetching && blankRows > 0 && (
+          <TableRow
+            component="div"
+            sx={{ height: 56 * blankRows, borderBottom: '1px solid', borderColor: 'divider' }}
+          />
+        )}
+      </TableBody>
+    ),
+    [
+      SkeletonRows,
+      actionHeaderList,
+      activeFilters,
+      blankRows,
+      contextMenu,
+      contextMenuActionList,
+      currentPageRows,
+      handleCheckBoxSelect,
+      handleCloseContextMenu,
+      handleContextMenu,
+      isContextSelected,
+      isFetching,
+      isQuickSelected,
+      onActionHeader,
+      onContextMenuAction,
+      onRowClick,
+      quickActions,
+      variant,
+      visibleColumns,
+    ],
   );
 
   return (
@@ -357,7 +446,7 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
           />
         </HeadWrapper>
 
-        {isTableEmpty ? EmptyTable : <TableContent />}
+        {isTableEmpty ? EmptyTable : TableContent}
       </Table>
     </Grid>
   );

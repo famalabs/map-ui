@@ -1,5 +1,3 @@
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -8,14 +6,12 @@ import ListItem from '@mui/material/ListItem';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import 'dayjs/locale/it';
-import 'dayjs/locale/en';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { ActiveFilter, DynamicFilterOptions, DynamicColumns, i18nStrings } from './DynamicTypes';
+import { CalendarFoldIcon, SearchIcon, XIcon } from 'lucide-react';
+import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { ActiveFilter, DynamicColumns, DynamicFilterOptions, i18nStrings } from './DynamicTypes';
+import { SvgIconProps, useTheme } from '@mui/material';
 
 /* ---------- Update Filters Function ---------- */
 
@@ -26,13 +22,16 @@ export function updateFilters<T>(
   column: DynamicColumns<T>,
   setActiveFilters: Dispatch<SetStateAction<ActiveFilter[]>>,
 ) {
+  const normalizedComparator = comparator ?? '';
+  const normalizedType = column.filterOptions?.type ?? '';
+
   setActiveFilters((prevFilters) => {
     const filterIndex = prevFilters.findIndex(
       (filter) =>
         filter.filterColumn === column.accessor &&
         filter.filterIndex === index &&
-        filter.filterComparator === comparator &&
-        filter.filterType === column.filterOptions?.type,
+        (filter.filterComparator ?? '') === normalizedComparator &&
+        (filter.filterType ?? '') === normalizedType,
     );
 
     if (value === null || value === undefined || value === '') {
@@ -45,15 +44,13 @@ export function updateFilters<T>(
       filterIndex: index,
       filterColumn: column.accessor,
       filterValue: value,
-      filterType: column.filterOptions?.type,
-      filterComparator: comparator,
+      filterType: normalizedType,
+      filterComparator: normalizedComparator,
     } as ActiveFilter;
 
-    if (filterIndex === -1) {
-      return [...prevFilters, currentFilter];
-    } else {
-      return prevFilters.map((filter, index) => (index === filterIndex ? currentFilter : filter));
-    }
+    return filterIndex === -1
+      ? [...prevFilters, currentFilter]
+      : prevFilters.map((filter, idx) => (idx === filterIndex ? currentFilter : filter));
   });
 }
 
@@ -94,19 +91,18 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
     filterMode === 'single' && filterValue ? filterValue?.toString() : '',
   );
 
-  useEffect(() => {
-    if (aloneFilter) {
-      setInputValue(filterValue?.toString() ?? '');
-    }
-  }, [filterValue, aloneFilter]);
+  if (filterValue && aloneFilter) {
+    setInputValue(filterValue?.toString() ?? '');
+  }
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     const columnFilters =
       filterIndex ??
       (activeFilters.filter((filter) => filter.filterColumn === column.accessor)?.length || 0);
+
     updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
-  };
+  }, [activeFilters, closePopover, column, filterIndex, inputValue, setActiveFilters]);
 
   const isApplyDisabled = useMemo(
     () => inputValue === filterValue || !inputValue,
@@ -114,7 +110,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
   );
 
   return (
-    <Grid container alignItems="center" gap={2}>
+    <Grid container alignItems="center" spacing={2}>
       <Grid size={12}>
         <TextField
           fullWidth
@@ -131,7 +127,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
           aria-label="filter-text"
           slotProps={{
             input: {
-              startAdornment: aloneFilter && <SearchIcon sx={{ marginRight: '.4rem' }} />,
+              startAdornment: aloneFilter && <SearchIcon style={{ marginRight: '.4rem' }} />,
               endAdornment: (
                 <IconButton
                   size="small"
@@ -147,7 +143,7 @@ export function StringFilterForm<T>(props: StringFilterFormProps<T>) {
                   }}
                   aria-label="clear-filter"
                 >
-                  <CloseIcon fontSize="small" />
+                  <XIcon size={18} />
                 </IconButton>
               ),
             },
@@ -221,20 +217,18 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
     }
   };
 
-  useEffect(() => {
-    if (aloneFilter) {
-      setInputValue(Number(filterValue) || null);
-    }
-  }, [filterValue, aloneFilter]);
+  if (filterValue && aloneFilter) {
+    setInputValue(Number(filterValue) || null);
+  }
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     const columnFilters =
       filterIndex ??
       activeFilters.filter((filter) => filter.filterColumn === column.accessor)?.length ??
       null;
     updateFilters(inputValue, columnFilters, '', column, setActiveFilters);
     closePopover?.();
-  };
+  }, [activeFilters, closePopover, column, filterIndex, inputValue, setActiveFilters]);
 
   const isApplyDisabled = useMemo(
     () => inputValue === filterValue || inputValue === null || inputValue === undefined,
@@ -242,7 +236,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
   );
 
   return (
-    <Grid container alignItems="center" gap={2}>
+    <Grid container alignItems="center" spacing={2}>
       <Grid size={12}>
         <TextField
           fullWidth
@@ -257,7 +251,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
           slotProps={{
             input: {
               type: 'number',
-              startAdornment: aloneFilter && <SearchIcon sx={{ marginRight: '.4rem' }} />,
+              startAdornment: aloneFilter && <SearchIcon style={{ marginRight: '.4rem' }} />,
               endAdornment: filterValue ? (
                 <IconButton
                   size="small"
@@ -273,7 +267,7 @@ export function NumberFilterForm<T>(props: NumberFilterFormProps<T>) {
                   }}
                   aria-label="clear-filter"
                 >
-                  <CloseIcon fontSize="small" />
+                  <XIcon size={18} />
                 </IconButton>
               ) : null,
             },
@@ -353,7 +347,7 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
   };
 
   return (
-    <Grid container alignItems="center" gap={1}>
+    <Grid container alignItems="center" spacing={1}>
       <Grid size={12}>
         <Autocomplete
           size="small"
@@ -406,6 +400,7 @@ interface DateFilterFormProps<T> {
 export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
   const { column, filterIndex, activeFilters, setActiveFilters, closePopover, localeStr } = props;
 
+  const theme = useTheme();
   const firstDateComparators = ['dateMin', 'dateFrom', 'dateTo', 'exact'];
 
   const dateFilters = useMemo(
@@ -519,30 +514,66 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
 
   return (
     <Grid container size={12} alignItems="center" gap={1}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={localeStr?.dateLanguage}>
-        {!column.filterOptions?.singleDate && (
-          <Grid size={12}>
-            <Select fullWidth value={selectType} onChange={updateFilterType} size="small">
-              <MenuItem value="exact"> {localeStr?.exact} </MenuItem>
-              <MenuItem value="from"> {localeStr?.dateFrom} </MenuItem>
-              <MenuItem value="to"> {localeStr?.dateTo} </MenuItem>
-              <MenuItem value="range"> {localeStr?.range} </MenuItem>
-            </Select>
-          </Grid>
-        )}
+      {!column.filterOptions?.singleDate && (
+        <Grid size={12}>
+          <Select fullWidth value={selectType} onChange={updateFilterType} size="small">
+            <MenuItem value="exact"> {localeStr?.exact} </MenuItem>
+            <MenuItem value="from"> {localeStr?.dateFrom} </MenuItem>
+            <MenuItem value="to"> {localeStr?.dateTo} </MenuItem>
+            <MenuItem value="range"> {localeStr?.range} </MenuItem>
+          </Select>
+        </Grid>
+      )}
 
+      <Grid size={12}>
+        <DatePicker
+          label={selectType !== 'range' ? 'Data' : 'Data Inizio'}
+          defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+          onChange={(date, context) =>
+            !context.validationError && date ? updateDateRange(date?.toISOString(), 'start') : null
+          }
+          maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+          onError={(error) => setDateError(Boolean(error))}
+          slots={{
+            openPickerIcon: CalendarFoldIcon,
+          }}
+          slotProps={{
+            openPickerIcon: {
+              color: theme.palette.action.active,
+              size: 20,
+            } as SvgIconProps & { size?: number },
+            openPickerButton: {
+              size: 'small',
+            },
+            textField: {
+              size: 'small',
+              fullWidth: true,
+            },
+          }}
+        />
+      </Grid>
+
+      {selectType === 'range' && (
         <Grid size={12}>
           <DatePicker
-            label={selectType !== 'range' ? 'Data' : 'Data Inizio'}
-            defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+            label="Data Fine"
+            defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
             onChange={(date, context) =>
-              !context.validationError && date
-                ? updateDateRange(date?.toISOString(), 'start')
-                : null
+              !context.validationError && date ? updateDateRange(date?.toISOString(), 'end') : null
             }
-            maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+            minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
             onError={(error) => setDateError(Boolean(error))}
+            slots={{
+              openPickerIcon: CalendarFoldIcon,
+            }}
             slotProps={{
+              openPickerIcon: {
+                color: theme.palette.action.active,
+                size: 20,
+              } as SvgIconProps & { size?: number },
+              openPickerButton: {
+                size: 'small',
+              },
               textField: {
                 size: 'small',
                 fullWidth: true,
@@ -550,42 +581,20 @@ export function DateFilterForm<T>(props: DateFilterFormProps<T>) {
             }}
           />
         </Grid>
+      )}
 
-        {selectType === 'range' && (
-          <Grid size={12}>
-            <DatePicker
-              label="Data Fine"
-              defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-              onChange={(date, context) =>
-                !context.validationError && date
-                  ? updateDateRange(date?.toISOString(), 'end')
-                  : null
-              }
-              minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
-              onError={(error) => setDateError(Boolean(error))}
-              slotProps={{
-                textField: {
-                  size: 'small',
-                  fullWidth: true,
-                },
-              }}
-            />
-          </Grid>
-        )}
-
-        <Grid size={12}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={handleApply}
-            disabled={isApplyDisabled}
-          >
-            {localeStr?.apply}
-          </Button>
-        </Grid>
-      </LocalizationProvider>
+      <Grid size={12}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={handleApply}
+          disabled={isApplyDisabled}
+        >
+          {localeStr?.apply}
+        </Button>
+      </Grid>
     </Grid>
   );
 }
@@ -675,25 +684,41 @@ export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>)
   }, [filterType, localDate.date_start, localDate.date_end, minDate, dateError]);
 
   return (
-    <Grid container size={12} alignItems="center" gap={1}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
-        <Grid size={12}>
-          <Select fullWidth value={filterType} onChange={updateFilterType} size="small">
-            <MenuItem value="single"> Data Singola </MenuItem>
-            <MenuItem value="range"> Intervallo </MenuItem>
-          </Select>
-        </Grid>
+    <Grid container size={12} alignItems="center" spacing={1}>
+      <Grid size={12}>
+        <Select fullWidth value={filterType} onChange={updateFilterType} size="small">
+          <MenuItem value="single"> Data Singola </MenuItem>
+          <MenuItem value="range"> Intervallo </MenuItem>
+        </Select>
+      </Grid>
 
+      <Grid size={12}>
+        <DatePicker
+          label={filterType === 'single' ? 'Data' : 'Data Inizio'}
+          defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+          onChange={(date, context) =>
+            !context.validationError && date ? updateDateRange(date?.toISOString(), 'start') : null
+          }
+          maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+          onError={(error) => setDateError(Boolean(error))}
+          slotProps={{
+            textField: {
+              size: 'small',
+              fullWidth: true,
+            },
+          }}
+        />
+      </Grid>
+
+      {filterType === 'range' && (
         <Grid size={12}>
           <DatePicker
-            label={filterType === 'single' ? 'Data' : 'Data Inizio'}
-            defaultValue={localDate.date_start ? dayjs(localDate.date_start) : null}
+            label="Data Fine"
+            defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
             onChange={(date, context) =>
-              !context.validationError && date
-                ? updateDateRange(date?.toISOString(), 'start')
-                : null
+              !context.validationError && date ? updateDateRange(date?.toISOString(), 'end') : null
             }
-            maxDate={localDate.date_end ? dayjs(localDate.date_end).subtract(1, 'day') : undefined}
+            minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
             onError={(error) => setDateError(Boolean(error))}
             slotProps={{
               textField: {
@@ -703,42 +728,20 @@ export function MultipleDateFilterForm<T>(props: MultipleDateFilterFormProps<T>)
             }}
           />
         </Grid>
+      )}
 
-        {filterType === 'range' && (
-          <Grid size={12}>
-            <DatePicker
-              label="Data Fine"
-              defaultValue={localDate.date_end ? dayjs(localDate.date_end) : null}
-              onChange={(date, context) =>
-                !context.validationError && date
-                  ? updateDateRange(date?.toISOString(), 'end')
-                  : null
-              }
-              minDate={localDate.date_start ? dayjs(localDate.date_start).add(1, 'day') : undefined}
-              onError={(error) => setDateError(Boolean(error))}
-              slotProps={{
-                textField: {
-                  size: 'small',
-                  fullWidth: true,
-                },
-              }}
-            />
-          </Grid>
-        )}
-
-        <Grid size={12}>
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={handleApply}
-            disabled={isApplyDisabled}
-          >
-            Apply
-          </Button>
-        </Grid>
-      </LocalizationProvider>
+      <Grid size={12}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={handleApply}
+          disabled={isApplyDisabled}
+        >
+          Apply
+        </Button>
+      </Grid>
     </Grid>
   );
 }

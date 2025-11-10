@@ -1,1 +1,1 @@
-export { ISnackbar, Notifier, NotifierProps } from './Notifier';
+export { type ISnackbar, Notifier, type NotifierProps } from './Notifier';

@@ -26,6 +26,8 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       apply: 'Applica',
       clear: 'Rimuovi filtri',
       refresh: 'Aggiorna Tabella',
+      showFilters: 'Mostra filtri',
+      hideFilters: 'Nascondi filtri',
     },
     footer: {
       rowsPerPage: 'Righe per pagina: ',
@@ -58,6 +60,8 @@ export const localizedTableStrings: Record<string, i18nStrings> = {
       apply: 'Apply',
       clear: 'Clear all filters',
       refresh: 'Refresh Table',
+      showFilters: 'Show Filters',
+      hideFilters: 'Hide Filters',
     },
     footer: {
       rowsPerPage: 'Rows per page: ',

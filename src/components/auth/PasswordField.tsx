@@ -1,16 +1,13 @@
+import { styled, SxProps, Theme, useTheme } from '@mui/material';
 import FormLabel from '@mui/material/FormLabel';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { CheckIcon, EyeClosedIcon, EyeIcon, LucideProps, XIcon } from 'lucide-react';
 import React from 'react';
-import { styled, SxProps, Theme, useTheme } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
 
 const CardTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -32,10 +29,10 @@ const requirements = [
 ];
 
 type CustomIcons = {
-  Eye: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  EyeOff: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  X: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  Check: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  Eye: React.ComponentType<React.SVGProps<SVGSVGElement> & Omit<LucideProps, 'ref'>>;
+  EyeOff: React.ComponentType<React.SVGProps<SVGSVGElement> & Omit<LucideProps, 'ref'>>;
+  X: React.ComponentType<React.SVGProps<SVGSVGElement> & Omit<LucideProps, 'ref'>>;
+  Check: React.ComponentType<React.SVGProps<SVGSVGElement> & Omit<LucideProps, 'ref'>>;
 };
 
 export interface PasswordFieldProps {
@@ -46,6 +43,7 @@ export interface PasswordFieldProps {
   required?: boolean;
   requiredText?: string;
   margin?: 'none' | 'dense' | 'normal';
+  size?: 'small' | 'medium';
   errorText?: string;
   fullWidth?: boolean;
   showRequirements?: boolean;
@@ -62,13 +60,14 @@ export const PasswordField = (props: PasswordFieldProps) => {
     required = true,
     requiredText = 'Questo campo è obbligatorio',
     margin = 'dense',
+    size = 'medium',
     errorText = 'La password non è conforme',
     fullWidth = true,
     showRequirements = true,
     customIcons = {
-      Eye: VisibilityIcon,
-      EyeOff: VisibilityOffIcon,
-      X: CloseIcon,
+      Eye: EyeIcon,
+      EyeOff: EyeClosedIcon,
+      X: XIcon,
       Check: CheckIcon,
     } as CustomIcons,
     sx,
@@ -88,7 +87,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
   };
 
   const RequirementsTooltip = React.useCallback(
-    ({ passwordInput }: { passwordInput: string }) => {
+    (passwordInput: string) => {
       return (
         <Grid
           container
@@ -120,9 +119,9 @@ export const PasswordField = (props: PasswordFieldProps) => {
                 }}
               >
                 {req.regex.test(passwordInput) ? (
-                  <Check style={{ color: theme.palette.success.main }} />
+                  <Check size={18} style={{ color: theme.palette.success.main }} />
                 ) : (
-                  <X style={{ color: theme.palette.error.main }} />
+                  <X size={18} style={{ color: theme.palette.error.main }} />
                 )}
               </Grid>
 
@@ -156,11 +155,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
   const isRegexValid = controlRegex.test(password);
 
   const isTooltipOpen = React.useMemo(
-    () =>
-      showRequirements &&
-      passwordRef.current?.contains(document.activeElement) &&
-      password.length > 0 &&
-      !isRegexValid,
+    () => showRequirements && password.length > 0 && !isRegexValid,
     [isRegexValid, password?.length, showRequirements],
   );
 
@@ -168,7 +163,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
     <Grid size={12}>
       <FormLabel>{`${title}${required ? '*' : ''}`}</FormLabel>
       <CardTooltip
-        title={<RequirementsTooltip passwordInput={password} />}
+        title={RequirementsTooltip(password)}
         placement="bottom-start"
         open={isTooltipOpen ?? false}
         onClose={() => passwordRef.current?.blur()}
@@ -186,6 +181,7 @@ export const PasswordField = (props: PasswordFieldProps) => {
           error={!!passwordError}
           helperText={passwordError}
           value={password}
+          size={size}
           autoComplete={'off'}
           onChange={(e) => setPassword(e.target.value)}
           onBlur={(e) => {
@@ -216,7 +212,11 @@ export const PasswordField = (props: PasswordFieldProps) => {
                     focusRipple={false}
                     sx={{ mr: '-5px' }}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? (
+                      <EyeOff size={size === 'small' ? 18 : 24} />
+                    ) : (
+                      <Eye size={size === 'small' ? 18 : 24} />
+                    )}
                   </IconButton>
                 </InputAdornment>
               ),
