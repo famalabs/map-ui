@@ -10,10 +10,12 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import { aiSxEffect } from './InputField';
 import InputAdornment from '@mui/material/InputAdornment';
 import { SparklesIcon } from 'lucide-react';
 import { useIsAiDirty, useIsAiEditing } from './AiEditingContext';
+import { aiEffectStyle } from './AiUtils';
+import { InputField } from './InputField';
+import React from 'react';
 
 export interface AutocompleteFieldProps<
   T extends FieldValues,
@@ -62,6 +64,22 @@ export function AutocompleteField<
   const isAiEditing = useIsAiEditing(name);
   const isDirtyAi = useIsAiDirty(name);
 
+  const getDisplayValue = React.useCallback(
+    (value: any): string => {
+      if (!value) return '';
+
+      const multiple = Boolean(autoProps.multiple);
+      const getOptionLabel = autoProps.getOptionLabel || ((option: any) => String(option));
+
+      if (multiple && Array.isArray(value)) {
+        return value.map((v) => getOptionLabel(v)).join(', ');
+      }
+
+      return getOptionLabel(value);
+    },
+    [autoProps.multiple, autoProps.getOptionLabel],
+  );
+
   return (
     <Controller
       name={name}
@@ -81,51 +99,61 @@ export function AutocompleteField<
         return (
           <>
             {legend && <FormLabel component="legend">{label}</FormLabel>}
-            <FormControl fullWidth={autoProps.fullWidth} style={{ marginTop: 0 }}>
-              <Autocomplete<Option, any, any, any>
-                {...autoProps}
-                value={
-                  controlledValue as Option | (string | Option)[] | NonNullable<string | Option>[]
-                }
-                onChange={(event, newValue, reason, details) => {
-                  if (onChange) {
-                    onChange(event, newValue, reason, details);
-                  } else {
-                    field.onChange(newValue);
+            {!isAiEditing ? (
+              <FormControl fullWidth={autoProps.fullWidth} style={{ marginTop: 0 }}>
+                <Autocomplete<Option, any, any, any>
+                  {...autoProps}
+                  value={
+                    controlledValue as Option | (string | Option)[] | NonNullable<string | Option>[]
                   }
-                }}
-                onBlur={field.onBlur}
-                disabled={field.disabled}
-                renderInput={(params) => (
-                  <>
-                    <TextField
-                      {...params}
-                      label={!legend ? label : ''}
-                      error={Boolean(error)}
-                      helperText={error?.message}
-                      {...textFieldProps}
-                      sx={{
-                        ...textFieldProps?.sx,
-                        ...(isDirtyAi || isAiEditing ? aiSxEffect(isAiEditing) : {}),
-                      }}
-                    />
-                    {isDirtyAi && !isAiEditing && (
-                      <InputAdornment
-                        position="end"
+                  onChange={(event, newValue, reason, details) => {
+                    if (onChange) {
+                      onChange(event, newValue, reason, details);
+                    } else {
+                      field.onChange(newValue);
+                    }
+                  }}
+                  onBlur={field.onBlur}
+                  disabled={field.disabled}
+                  renderInput={(params) => (
+                    <>
+                      <TextField
+                        {...params}
+                        label={!legend ? label : ''}
+                        error={Boolean(error)}
+                        helperText={error?.message}
+                        {...textFieldProps}
                         sx={{
-                          position: 'absolute',
-                          right: 45,
-                          top: '55%',
-                          transform: 'translateY(-50%)',
+                          ...textFieldProps?.sx,
+                          ...(isDirtyAi || isAiEditing ? aiEffectStyle(isAiEditing) : {}),
                         }}
-                      >
-                        <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
-                      </InputAdornment>
-                    )}
-                  </>
-                )}
+                      />
+                      {isDirtyAi && !isAiEditing && (
+                        <InputAdornment
+                          position="end"
+                          sx={{
+                            position: 'absolute',
+                            right: 45,
+                            top: '55%',
+                            transform: 'translateY(-50%)',
+                          }}
+                        >
+                          <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
+                        </InputAdornment>
+                      )}
+                    </>
+                  )}
+                />
+              </FormControl>
+            ) : (
+              <InputField
+                name={name}
+                control={control}
+                legend={false}
+                value={getDisplayValue(field.value)}
+                sx={{ ...aiEffectStyle(isAiEditing), pointerEvents: 'none' }}
               />
-            </FormControl>
+            )}
           </>
         );
       }}

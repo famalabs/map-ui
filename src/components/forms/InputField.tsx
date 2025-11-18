@@ -9,60 +9,11 @@ import {
   FieldValues,
   Path,
   RegisterOptions,
+  useWatch,
 } from 'react-hook-form';
 import { useIsAiDirty } from './AiEditingContext';
-import { useIsAiEditing } from './AiEditingContext';
-
-export const aiSxEffect = (animate = false) => {
-  const staticStyle = {
-    '& fieldset': {
-      border: '2px solid',
-      borderColor: 'rgba(0,122,255,0.3)',
-      transition: 'border-color 0.3s ease',
-      boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
-    },
-    '&:hover fieldset': {
-      borderColor: 'rgba(0,122,255,0.5)',
-    },
-  };
-
-  const animationStyle = {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    transition: 'border-color 0.3s ease',
-    boxShadow: '0 0 16px rgba(0, 122, 255, 0.5), inset 0 0 0 1px rgba(0,122,255,0.6)',
-    '& fieldset': {
-      border: '2px solid',
-      borderColor: 'rgba(0,122,255,0.8)',
-      boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
-      animation: 'glowPulse 1.6s ease-in-out infinite',
-    },
-    '&:hover fieldset': {
-      borderColor: 'rgba(0,122,255,0.5)',
-    },
-  };
-
-  return {
-    '& .MuiOutlinedInput-root': {
-      transition: 'all 0.3s ease',
-      ...(animate ? animationStyle : staticStyle),
-      '&.Mui-focused': {
-        ...(animate ? animationStyle : staticStyle),
-      },
-    },
-    '@keyframes glowPulse': {
-      '0%': {
-        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-      },
-      '50%': {
-        boxShadow: '0 0 12px rgba(0,122,255,0.6)',
-      },
-      '100%': {
-        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-      },
-    },
-  };
-};
+import { useIsAiEditing, useTypewriterSpeed } from './AiEditingContext';
+import { aiEffectStyle, useTypewriter } from './AiUtils';
 
 export interface InputFieldProps<T extends FieldValues>
   extends Omit<OutlinedTextFieldProps, 'name' | 'defaultValue' | 'variant' | 'error'> {
@@ -90,6 +41,15 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
 
   const isAiEditing = useIsAiEditing(name);
   const isDirtyAi = useIsAiDirty(name);
+  const typewriterSpeed = useTypewriterSpeed();
+
+  const fieldValue = useWatch({ control, name });
+  const actualValue = textFieldProps.value ?? fieldValue;
+
+  const typewriterText = useTypewriter(
+    isAiEditing && typeof actualValue === 'string' ? actualValue : '',
+    isAiEditing ? typewriterSpeed : 0,
+  );
 
   return (
     <Controller
@@ -131,7 +91,7 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
               }}
               {...field}
               disabled={field.disabled}
-              value={field.value ?? null}
+              value={isAiEditing ? typewriterText : fieldValue ?? null}
               onBlur={(e) => {
                 field.onBlur();
                 textFieldProps.onBlur?.(e);
@@ -147,7 +107,7 @@ export function InputField<T extends FieldValues>(props: InputFieldProps<T>) {
               }}
               sx={{
                 ...textFieldProps.sx,
-                ...(isDirtyAi || isAiEditing ? aiSxEffect(isAiEditing) : {}),
+                ...(isDirtyAi || isAiEditing ? aiEffectStyle(isAiEditing) : {}),
               }}
             />
           </>

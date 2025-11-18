@@ -7,12 +7,21 @@ interface AiEditingContextType {
   markAiDirty: (fieldName: string) => void;
   clearAiDirty: (fieldName: string) => void;
   clearAllAiDirty: () => void;
+  typewriterSpeed: number;
+  setTypewriterSpeed: (speed: number) => void;
 }
 
 const AiEditingContext = createContext<AiEditingContextType | undefined>(undefined);
-export const AiEditingProvider = ({ children }: { children: ReactNode }) => {
+export const AiEditingProvider = ({
+  defaultEditSpeed = 10,
+  children,
+}: {
+  defaultEditSpeed?: number;
+  children: ReactNode;
+}) => {
   const [aiDirtyFields, setAiDirtyFields] = React.useState<Set<string>>(new Set());
   const [aiEditingField, setAiEditingField] = React.useState<string | null>(null);
+  const [typewriterSpeed, setTypewriterSpeed] = React.useState<number>(defaultEditSpeed);
 
   const markAiDirty = React.useCallback((fieldName: string) => {
     setAiDirtyFields((prev) => new Set(prev).add(fieldName));
@@ -39,6 +48,8 @@ export const AiEditingProvider = ({ children }: { children: ReactNode }) => {
         markAiDirty,
         clearAiDirty,
         clearAllAiDirty,
+        typewriterSpeed,
+        setTypewriterSpeed,
       }}
     >
       {children}
@@ -56,6 +67,8 @@ export const useAiEditing = () => {
       markAiDirty: () => {},
       clearAiDirty: () => {},
       clearAllAiDirty: () => {},
+      typewriterSpeed: 10,
+      setTypewriterSpeed: () => {},
     }
   );
 };
@@ -70,4 +83,9 @@ export const useIsAiDirty = (fieldName: string | undefined) => {
   const { aiDirtyFields } = useAiEditing();
   if (!fieldName) return false;
   return aiDirtyFields.has(fieldName);
+};
+
+export const useTypewriterSpeed = () => {
+  const { typewriterSpeed } = useAiEditing();
+  return typewriterSpeed;
 };

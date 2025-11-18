@@ -1,7 +1,9 @@
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectProps } from '@mui/material/Select';
+import { SparklesIcon } from 'lucide-react';
 import React from 'react';
 import {
   Control,
@@ -11,62 +13,9 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import { aiSxEffect, InputField } from './InputField';
-import InputAdornment from '@mui/material/InputAdornment';
-import { SparklesIcon } from 'lucide-react';
 import { useIsAiDirty, useIsAiEditing } from './AiEditingContext';
-
-export const aiSelectSxEffect = (animate = false) => {
-  const staticStyle = {
-    border: '2px solid',
-    borderColor: 'rgba(0,122,255,0.3)',
-    transition: 'border-color 0.3s ease',
-    boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
-  };
-
-  const animationStyle = {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    transition: 'border-color 0.3s ease',
-    boxShadow: '0 0 16px rgba(0, 122, 255, 0.5), inset 0 0 0 1px rgba(0,122,255,0.6)',
-    '& fieldset': {
-      border: '2px solid',
-      borderRadius: 4,
-      borderColor: 'rgba(0,122,255,0.8)',
-      boxShadow: '0 0 12px rgba(0, 122, 255, 0.3), inset 0 0 0 1px rgba(0,122,255,0.5)',
-      animation: 'glowPulse 1.6s ease-in-out infinite',
-    },
-    '&:hover fieldset': {
-      borderColor: 'rgba(0,122,255,0.5)',
-    },
-  };
-
-  return {
-    '& .MuiInputBase-input': {
-      ...(animate ? animationStyle : staticStyle),
-      '&:focus': {
-        ...(animate ? animationStyle : staticStyle),
-      },
-      '&:hover': {
-        borderColor: 'rgba(0,122,255,0.5)',
-      },
-    },
-    '& fieldset': {
-      border: 'none',
-    },
-    '@keyframes glowPulse': {
-      '0%': {
-        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-      },
-      '50%': {
-        boxShadow: '0 0 12px rgba(0,122,255,0.6)',
-      },
-      '100%': {
-        boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-      },
-    },
-  };
-};
+import { InputField } from './InputField';
+import { aiEffectStyle, aiSelectSxEffect } from './AiUtils';
 
 export interface SelectFieldProps<T extends FieldValues>
   extends Omit<SelectProps, 'name' | 'defaultValue' | 'variant' | 'error'> {
@@ -96,6 +45,23 @@ export function SelectField<T extends FieldValues>(props: SelectFieldProps<T>) {
 
   const isAiEditing = useIsAiEditing(name);
   const isDirtyAi = useIsAiDirty(name);
+
+  const getSelectedLabel = React.useCallback(
+    (value: any): string => {
+      let selectedLabel = '';
+      React.Children.forEach(children, (child) => {
+        if (
+          React.isValidElement<{ value: any; children?: React.ReactNode }>(child) &&
+          child.props.value === value
+        ) {
+          selectedLabel =
+            typeof child.props.children === 'string' ? child.props.children : String(value);
+        }
+      });
+      return selectedLabel || String(value);
+    },
+    [children],
+  );
 
   return (
     <Controller
@@ -147,8 +113,8 @@ export function SelectField<T extends FieldValues>(props: SelectFieldProps<T>) {
                 name={name}
                 control={control}
                 legend={false}
-                value={field.value}
-                sx={{ ...aiSxEffect(isAiEditing), pointerEvents: 'none' }}
+                value={getSelectedLabel(field.value)}
+                sx={{ ...aiEffectStyle(isAiEditing), pointerEvents: 'none' }}
               />
             )}
           </>

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Control,
   Controller,
@@ -7,6 +6,9 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
+import { useIsAiEditing } from './AiEditingContext';
+import { aiEffectStyle } from './AiUtils';
+import { InputField } from './InputField';
 import { RichTextEditor, RichTextEditorProps } from './RichTextEditor';
 
 export interface RichTextFieldProps<T extends FieldValues>
@@ -23,6 +25,9 @@ export interface RichTextFieldProps<T extends FieldValues>
 
 export function RichTextField<T extends FieldValues>(props: RichTextFieldProps<T>) {
   const { name, control, defaultValue, rules, shouldUnregister, ...richTextProps } = props;
+
+  const isAiEditing = useIsAiEditing(name) ?? false;
+
   return (
     <Controller
       name={name}
@@ -33,13 +38,31 @@ export function RichTextField<T extends FieldValues>(props: RichTextFieldProps<T
       shouldUnregister={shouldUnregister}
       render={({ field, fieldState: { error } }) => {
         return (
-          <RichTextEditor
-            {...richTextProps}
-            {...field}
-            value={field.value as string}
-            error={Boolean(error)}
-            errorMessage={error?.message}
-          />
+          <>
+            {!isAiEditing ? (
+              <RichTextEditor
+                {...richTextProps}
+                {...field}
+                value={field.value as string}
+                error={Boolean(error)}
+                errorMessage={error?.message}
+              />
+            ) : (
+              <InputField
+                name={name}
+                control={control}
+                label={richTextProps.title || ''}
+                value={field.value}
+                multiline
+                minRows={4}
+                sx={{
+                  ...aiEffectStyle(isAiEditing),
+                  bgcolor: 'background.paper',
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+          </>
         );
       }}
     />

@@ -17,24 +17,27 @@ type Story = StoryObj<InputFieldProps<Record<string, any>>>;
 export default meta;
 
 const RenderInputField = (args: Omit<InputFieldProps<Record<string, any>>, 'name' | 'control'>) => {
-  const { control } = useForm<Record<string, any>>({
+  const { control, setValue } = useForm<Record<string, any>>({
     defaultValues: {
       inputField: args.defaultValue || '',
+      inputFieldTwo: 'TEST',
     },
   });
 
   return (
-    <AiEditingProvider>
-      <InnerRender control={control} args={args} />
+    <AiEditingProvider defaultEditSpeed={10}>
+      <InnerRender control={control} setValue={setValue} args={args} />
     </AiEditingProvider>
   );
 };
 
 const InnerRender = ({
   control,
+  setValue,
   args,
 }: {
   control: any;
+  setValue: (name: string, value: any) => void;
   args: Omit<InputFieldProps<Record<string, any>>, 'name' | 'control'>;
 }) => {
   const { aiEditingField, setAiEditingField, markAiDirty } = useAiEditing();
@@ -46,6 +49,7 @@ const InnerRender = ({
       markAiDirty('inputField'); // mark as dirty when done editing
     } else {
       console.log('Setting AI Edit field to inputField');
+      setValue('inputField', 'Automated AI generated content.');
       setAiEditingField('inputField');
     }
   };
@@ -53,6 +57,8 @@ const InnerRender = ({
   return (
     <Container maxWidth="md" sx={{ verticalAlign: 'middle' }}>
       <InputField control={control} name="inputField" {...args} />
+      <InputField control={control} name="inputFieldTwo" {...args} />
+
       <button onClick={handleToggleAiEdit} style={{ marginTop: '16px' }}>
         {aiEditingField === 'inputField' ? 'Stop AI Edit' : 'Start AI Edit'}
       </button>
@@ -67,7 +73,6 @@ export const InputFieldTemplate: Story = {
   args: {
     label: 'Title',
     legend: true,
-    defaultValue: 'TEST',
   },
 
   render: (args) => <RenderInputField {...args} />,

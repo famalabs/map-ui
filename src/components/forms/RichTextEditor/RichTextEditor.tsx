@@ -7,7 +7,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { Button, ButtonProps, GlobalStyles, Typography, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useIsAiDirty, useIsAiEditing } from '../AiEditingContext';
+import { useIsAiDirty } from '../AiEditingContext';
 import {
   AvailableToolbarButtons,
   CustomFormattingToolbar,
@@ -16,6 +16,9 @@ import {
 
 const locale = it;
 const richTextGlobalStyles = {
+  '.ProseMirror': {
+    bakcgroundColor: 'transparent',
+  },
   '.bn-editor': {
     backgroundColor: 'transparent',
   },
@@ -45,24 +48,6 @@ const richTextGlobalStyles = {
   },
   '.bn-ai-effect:hover': {
     borderColor: 'rgba(0,122,255,0.5)',
-  },
-  '.bn-ai-animating': {
-    pointerEvents: 'none',
-    userSelect: 'none',
-    transition: 'border-color 0.3s ease',
-    boxShadow: '0 0 16px rgba(0, 122, 255, 0.5), inset 0 0 0 1px rgba(0,122,255,0.6)',
-    animation: 'glowPulse 1.6s ease-in-out infinite',
-  },
-  '@keyframes glowPulse': {
-    '0%': {
-      boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-    },
-    '50%': {
-      boxShadow: '0 0 12px rgba(0,122,255,0.6)',
-    },
-    '100%': {
-      boxShadow: '0 0 6px rgba(0,122,255,0.3)',
-    },
   },
 };
 
@@ -120,20 +105,14 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     ...restProps
   } = props;
 
-  // Use context hooks only if name is provided
-  const isAiEditing = useIsAiEditing(name) ?? false;
   const isDirtyAi = useIsAiDirty(name) ?? false;
 
   const combinedClassName = React.useMemo(
     () =>
-      [
-        (restProps as Record<string, any>)?.className,
-        isDirtyAi || isAiEditing ? 'bn-ai-effect' : '',
-        isAiEditing ? 'bn-ai-animating' : '',
-      ]
+      [(restProps as Record<string, any>)?.className, isDirtyAi ? 'bn-ai-effect' : '']
         .filter(Boolean)
         .join(' '),
-    [restProps, isDirtyAi, isAiEditing],
+    [restProps, isDirtyAi],
   );
 
   // ============== Editor Setup ===================
@@ -228,7 +207,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
       minHeight: toolbar === 'default' ? 120 : undefined,
       borderWidth: 1,
       borderStyle: 'solid',
-      borderColor: isDirtyAi || isAiEditing ? 'rgba(0,122,255,0.3)' : borderColor,
+      borderColor: isDirtyAi ? 'rgba(0,122,255,0.3)' : borderColor,
       borderRadius: 8,
       boxShadow: isFocused ? '0 0 0 2px ' + muiTheme.palette.primary.main : undefined,
       pointerEvents: disabled ? 'none' : 'auto',
@@ -237,7 +216,6 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     disabled,
     editorBackground,
     error,
-    isAiEditing,
     isDirtyAi,
     isFocused,
     muiTheme.palette.error.main,

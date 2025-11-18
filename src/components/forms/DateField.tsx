@@ -2,6 +2,7 @@ import { FormControl, InputAdornment, SvgIconProps, TextFieldProps, useTheme } f
 import FormLabel from '@mui/material/FormLabel';
 import { DateTimePicker, DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
+import { CalendarFoldIcon, SparklesIcon } from 'lucide-react';
 import {
   Control,
   Controller,
@@ -10,9 +11,9 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import { aiSxEffect, InputField } from './InputField';
-import { CalendarFoldIcon, SparklesIcon } from 'lucide-react';
 import { useIsAiDirty, useIsAiEditing } from './AiEditingContext';
+import { aiEffectStyle } from './AiUtils';
+import { InputField } from './InputField';
 
 export interface DateFieldProps<T extends FieldValues>
   extends Omit<DateTimePickerProps, 'name' | 'defaultValue' | 'variant' | 'error'> {
@@ -108,7 +109,7 @@ export function DateField<T extends FieldValues>(props: DateFieldProps<T>) {
                     ...datePickerProps.slotProps?.textField,
                     sx: {
                       ...(datePickerProps.slotProps?.textField as TextFieldProps)?.sx,
-                      ...(isDirtyAi ? aiSxEffect() : {}),
+                      ...(isDirtyAi ? aiEffectStyle() : {}),
                     },
                   },
                 }}
@@ -124,6 +125,10 @@ export function DateField<T extends FieldValues>(props: DateFieldProps<T>) {
               name={name}
               control={control}
               size={(datePickerProps.slotProps?.textField as TextFieldProps)?.size || 'medium'}
+              value={
+                field.value ? dayjs(field.value as string).format('DD/MM/YYYY HH:mm') : emptyValue
+              }
+              legend={false}
               slotProps={{
                 input: {
                   endAdornment: (
@@ -139,7 +144,7 @@ export function DateField<T extends FieldValues>(props: DateFieldProps<T>) {
                   ),
                 },
               }}
-              sx={{ ...aiSxEffect(isAiEditing) }}
+              sx={{ ...aiEffectStyle(isAiEditing) }}
             />
           )}
         </FormControl>
