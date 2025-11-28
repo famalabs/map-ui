@@ -62,11 +62,13 @@ const serializeFilters = (filters: ActiveFilter[]) =>
     .map((item) => `${item.type}|${item.column}|${item.index}|${item.comparator}|${item.value}`)
     .join('-');
 
-const typeConverter = (type: string, value: any) => {
-  // real typescript type conversion
-  switch (type) {
+const typeConverter = (id: string | number | boolean | undefined, value: unknown) => {
+  if (id === undefined || id === null) return value;
+  const idType = typeof id;
+
+  switch (idType) {
     case 'string':
-      return value.toString();
+      return (value as number | boolean).toString();
     case 'number':
       return Number(value);
     case 'boolean':
@@ -272,10 +274,10 @@ export function FilterChip<T>(props: FilterChip<T>) {
             justifyContent="space-between"
             alignItems="center"
             flexWrap="nowrap"
-            gap={1}
+            spacing={1}
           >
             <Grid>
-              <Typography variant="body2" fontWeight="light">
+              <Typography variant="subtitle2" fontWeight="light">
                 {column.label}
               </Typography>
             </Grid>
@@ -285,7 +287,7 @@ export function FilterChip<T>(props: FilterChip<T>) {
                 <Divider orientation="vertical" flexItem />
 
                 <Grid>
-                  <Typography variant="body2" color="primary">
+                  <Typography variant="subtitle2" color="primary">
                     {chipLabel}
                   </Typography>
                 </Grid>
@@ -385,7 +387,7 @@ export function MoreFiltersChip<T>(props: MoreFiltersChipProps<T>) {
           </Tooltip>
         }
         label={
-          <Typography variant="body2" fontWeight="light">
+          <Typography variant="subtitle2" fontWeight="light">
             {localeStr?.moreFilters}
           </Typography>
         }

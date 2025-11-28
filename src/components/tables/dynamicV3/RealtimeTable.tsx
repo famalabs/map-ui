@@ -1,5 +1,4 @@
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActiveFilter, DefineActionsProps, DynamicColumns, QueryInfoProps } from '../dynamicV2';
@@ -61,7 +60,6 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
     exportButton,
     selectedAllButton,
     refreshButton,
-    paperVariant = 'outlined',
     tableLocale = 'en',
     localeStr,
   } = props;
@@ -223,12 +221,13 @@ export function RealtimeTable<T extends Record<string, any>>(props: RealtimeTabl
 
       <TableContainer
         className="RealTimeTable-Body"
-        component={Paper}
-        variant={paperVariant}
         sx={{
-          overflowX: 'hidden',
+          bgcolor: 'background.paper',
           tableLayout: 'fixed',
           width: '100%',
+          overflowY: !isTableEmpty ? 'auto' : 'visible',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'silver transparent',
         }}
       >
         <RealTimeTableBody

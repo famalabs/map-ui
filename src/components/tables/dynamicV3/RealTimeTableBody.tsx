@@ -1,14 +1,19 @@
 import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import Skeleton from '@mui/material/Skeleton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
+import { SquareCheckIcon, SquareIcon } from 'lucide-react';
+import React from 'react';
 import { ActiveFilter, DefineActionsProps, DynamicColumns } from '../dynamicV2';
 import {
   CommonHeaderCreator,
@@ -17,26 +22,18 @@ import {
   StyledTableCell,
   variantHeightMap,
 } from '../dynamicV2/DynamicCommons';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import MenuList from '@mui/material/MenuList';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import { SquareCheckIcon, SquareIcon } from 'lucide-react';
-
-/* ---------- Common Body ---------- */
 
 interface RealTimeBodyProps<T> {
   tableData: T[];
   expectedRowCount: number;
   activeFilters: ActiveFilter[];
   visibleColumns: DynamicColumns<T>[];
-  setVisibleColumns: Dispatch<SetStateAction<DynamicColumns<T>[]>>;
+  setVisibleColumns: React.Dispatch<React.SetStateAction<DynamicColumns<T>[]>>;
   quickActions: boolean;
   quickSelectedRows: T[];
   defineActions: DefineActionsProps<T>;
   contextMenuActions: DefineActionsProps<T>;
-  setQuickSelectedRows: Dispatch<SetStateAction<T[]>>;
+  setQuickSelectedRows: React.Dispatch<React.SetStateAction<T[]>>;
   rowsPerPage: number;
   isFetching: boolean;
   onRowClick?: (row: T) => void;
@@ -73,7 +70,7 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
   const { actionList: contextMenuActionList = [], onAction: onContextMenuAction } =
     contextMenuActions;
 
-  const selectedContextRow = React.useRef<T | undefined>(undefined);
+  const [selectedContextRow, setSelectedContextRow] = React.useState<T | undefined>(undefined);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -89,9 +86,9 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
       const rowId = (event.currentTarget as HTMLElement).getAttribute('id');
       if (rowId) {
         const row = tableData.find((r) => String(r.id) === rowId);
-        selectedContextRow.current = row;
+        setSelectedContextRow(row);
       } else {
-        selectedContextRow.current = undefined;
+        setSelectedContextRow(undefined);
       }
 
       setContextMenu(
@@ -116,12 +113,12 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
     [actionHeaderList.length, contextMenu, contextMenuActionList.length, quickActions, tableData],
   );
 
-  const handleCloseContextMenu = useCallback(() => {
+  const handleCloseContextMenu = React.useCallback(() => {
     setContextMenu(null);
-    selectedContextRow.current = undefined;
+    setSelectedContextRow(undefined);
   }, []);
 
-  const currentPageRows = useMemo(
+  const currentPageRows = React.useMemo(
     () => (rowsPerPage > 0 ? tableData.slice(0, rowsPerPage) : tableData),
     [tableData, rowsPerPage],
   );
@@ -130,18 +127,21 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
     ? rowsPerPage - currentPageRows.length
     : 5 - currentPageRows.length || 0;
 
-  const isQuickSelected = useCallback(
+  const isQuickSelected = React.useCallback(
     (row: T) => {
       return quickSelectedRows.some((quickRow) => quickRow.id === row.id);
     },
     [quickSelectedRows],
   );
 
-  const isContextSelected = useCallback((row: T) => {
-    return selectedContextRow?.current?.id === row.id;
-  }, []);
+  const isContextSelected = React.useCallback(
+    (row: T) => {
+      return selectedContextRow?.id === row.id;
+    },
+    [selectedContextRow],
+  );
 
-  const handleCheckBoxSelect = useCallback(
+  const handleCheckBoxSelect = React.useCallback(
     (row: T) => {
       setQuickSelectedRows((prevRows) => {
         const isRowSelected = prevRows.some((quickRow) => quickRow.id === row.id);
@@ -156,45 +156,57 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
 
   const HeadWrapper = isTableEmpty ? 'div' : React.Fragment;
 
-  const EmptyTable = useMemo(
-    () => (
-      <Grid
-        component="div"
-        container
-        justifyContent="center"
-        alignItems="center"
-        minHeight={rowsPerPage * 56 + (hideFooter ? 52 : 0)}
-      >
-        {emptyTablePlaceholderSrc ? (
-          <img
-            src={emptyTablePlaceholderSrc}
-            alt={emptyTablePlaceholderText || 'No Data Found'}
-            loading="lazy"
-            style={{
-              width: 'auto',
-              height: '300px',
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
-        )}
-      </Grid>
-    ),
-    [emptyTablePlaceholderSrc, emptyTablePlaceholderText, hideFooter, rowsPerPage],
+  const EmptyTable = (
+    <Grid
+      component="div"
+      container
+      justifyContent="center"
+      alignItems="center"
+      minHeight={rowsPerPage * 56 + (hideFooter ? 52 : 0)}
+    >
+      {emptyTablePlaceholderSrc ? (
+        <img
+          src={emptyTablePlaceholderSrc}
+          alt={emptyTablePlaceholderText || 'No Data Found'}
+          loading="lazy"
+          style={{
+            width: 'auto',
+            height: '300px',
+            objectFit: 'cover',
+          }}
+        />
+      ) : (
+        <Typography>{emptyTablePlaceholderText || 'No Data Found'}</Typography>
+      )}
+    </Grid>
   );
 
-  const SkeletonRows = useMemo(
+  const SkeletonRows = React.useMemo(
     () =>
       Array.from({ length: rowsPerPage }, (_, index) => (
         <TableRow component="div" key={`skeleton-${index}`}>
+          {quickActions && (
+            <StyledTableCell
+              key={`skeleton-checkbox-${index}`}
+              component="div"
+              padding="checkbox"
+              sx={{ height: variantHeightMap[variant], width: 56 }}
+            >
+              <Skeleton
+                animation="wave"
+                variant="rounded"
+                height={variant === 'dense' ? undefined : 20}
+              />
+            </StyledTableCell>
+          )}
+
           {visibleColumns.length > 0 ? (
-            visibleColumns.map((column, colIndex) => {
+            visibleColumns.map((column) => {
               const maxWidth = getMaxWidth(column);
               if (column.visible === false) return null;
               return (
                 <StyledTableCell
-                  key={`skeleton-cell-${colIndex}`}
+                  key={`skeleton-cell-${column.accessor}`}
                   component="div"
                   sx={{
                     height: variantHeightMap[variant],
@@ -210,212 +222,77 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
               );
             })
           ) : (
-            <TableRow component="div" sx={{ height: variantHeightMap[variant] }}>
-              <TableCell component="div" colSpan={visibleColumns.length} />
-            </TableRow>
+            <StyledTableCell
+              component="div"
+              colSpan={quickActions ? 1 : 0}
+              sx={{ height: variantHeightMap[variant] }}
+            />
           )}
         </TableRow>
       )),
-    [rowsPerPage, variant, visibleColumns],
+    [rowsPerPage, variant, visibleColumns, quickActions],
   );
 
-  const TableContent = useMemo(
-    () => (
-      <TableBody component="div">
-        {isFetching
-          ? SkeletonRows
-          : // eslint-disable-next-line
-            currentPageRows?.map((row, index) => {
-              return (
-                <TableRow
-                  key={`table-row-${row.id}-${index}`}
-                  id={row.id}
-                  component="div"
-                  hover
-                  selected={isQuickSelected(row) || isContextSelected(row)}
-                  onClick={quickActions ? () => handleCheckBoxSelect(row) : () => onRowClick?.(row)}
-                  onContextMenu={handleContextMenu}
-                  aria-label={`table-row-${row.id}-${index}`}
-                  sx={{
-                    minHeight: 56,
-                    transition: 'background-color 0.1s ease',
-                    '&:hover': {
-                      cursor: 'pointer',
-                      transition: 'background-color 0s ease',
-                    },
-                  }}
-                >
-                  {quickActions && (
-                    <StyledTableCell
-                      key={`checkbox-${row.id}-${index}`}
-                      component="div"
-                      padding="checkbox"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                      }}
-                      sx={{ height: variantHeightMap[variant] }}
-                    >
-                      <Checkbox
-                        color="primary"
-                        onChange={() => handleCheckBoxSelect(row)}
-                        checked={isQuickSelected(row)}
-                        icon={<SquareIcon size={22} />}
-                        checkedIcon={<SquareCheckIcon size={22} />}
-                      />
-                    </StyledTableCell>
-                  )}
-                  {visibleColumns.map((column, index) => {
-                    if (column.visible === false) return null;
-
-                    return (
-                      <DynamicCellCreator<T>
-                        key={`custom-cell-${column.accessor}-${index}`}
-                        row={row}
-                        column={column}
-                        variant={variant}
-                      />
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-
-        <Menu
-          open={contextMenu !== null && !quickActions}
-          onClose={handleCloseContextMenu}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            handleCloseContextMenu();
+  const DataRows = React.useMemo(
+    () =>
+      currentPageRows?.map((row, index) => (
+        <TableRow
+          key={`table-row-${row.id}-${index}`}
+          id={row.id}
+          component="div"
+          hover
+          selected={isQuickSelected(row) || isContextSelected(row)}
+          onClick={quickActions ? () => handleCheckBoxSelect(row) : () => onRowClick?.(row)}
+          onContextMenu={handleContextMenu}
+          aria-label={`table-row-${row.id}-${index}`}
+          sx={{
+            minHeight: 56,
+            transition: 'background-color 0.1s ease',
+            '&:hover': {
+              cursor: 'pointer',
+              transition: 'background-color 0s ease',
+            },
           }}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
-          }
         >
-          <MenuList
-            sx={{
-              minWidth: 100,
-              maxWidth: 240,
-              p: 0,
-              outline: 'none',
-              '& .MuiMenuItem-root': {
-                gap: 0.5,
-              },
-              '& .MuiListItemText-root': {
-                overflow: 'hidden',
-                maxWidth: '100%',
-              },
-              '& .MuiListItemText-root .MuiTypography-root': {
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: 'block',
-                maxWidth: '100%',
-              },
-            }}
-          >
-            {contextMenuActionList?.map((action, index) => (
-              <MenuItem
-                key={`context-header-item-${index}`}
-                onClick={() => {
-                  if (onContextMenuAction && selectedContextRow?.current) {
-                    onContextMenuAction(action.type, [selectedContextRow.current], activeFilters);
-                  }
-                  handleCloseContextMenu();
-                }}
-              >
-                {action.icon && (
-                  <ListItemIcon>
-                    <IconButton
-                      color={action.color || 'inherit'}
-                      disableRipple
-                      disableFocusRipple
-                      disableTouchRipple
-                      sx={{ p: 0 }}
-                    >
-                      {action.icon}
-                    </IconButton>
-                  </ListItemIcon>
-                )}
-                <ListItemText>
-                  <Typography
-                    variant="body2"
-                    color={action.color || 'inherit'}
-                    noWrap
-                    title={action.label}
-                  >
-                    {action.label}
-                  </Typography>
-                </ListItemText>
-              </MenuItem>
-            ))}
+          {quickActions && (
+            <StyledTableCell
+              key={`checkbox-${row.id}-${index}`}
+              component="div"
+              padding="checkbox"
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              sx={{ height: variantHeightMap[variant] }}
+            >
+              <Checkbox
+                color="primary"
+                onChange={() => handleCheckBoxSelect(row)}
+                checked={isQuickSelected(row)}
+                icon={<SquareIcon size={22} />}
+                checkedIcon={<SquareCheckIcon size={22} />}
+              />
+            </StyledTableCell>
+          )}
+          {visibleColumns.map((column, index) => {
+            if (column.visible === false) return null;
 
-            {contextMenuActionList.length > 0 && actionHeaderList.length > 0 && <Divider />}
-
-            {actionHeaderList?.map((action, index) => (
-              <MenuItem
-                key={`context-menu-item-${index}`}
-                onClick={() => {
-                  if (onActionHeader && selectedContextRow?.current) {
-                    onActionHeader(action.type, [selectedContextRow.current], activeFilters);
-                  }
-                  handleCloseContextMenu();
-                }}
-              >
-                {action.icon && (
-                  <ListItemIcon>
-                    <IconButton
-                      color={action.color || 'inherit'}
-                      disableRipple
-                      disableFocusRipple
-                      disableTouchRipple
-                      sx={{ p: 0 }}
-                    >
-                      {action.icon}
-                    </IconButton>
-                  </ListItemIcon>
-                )}
-
-                <ListItemText>
-                  <Typography
-                    variant="body2"
-                    color={action.color || 'inherit'}
-                    noWrap
-                    title={action.label}
-                  >
-                    {action.label}
-                  </Typography>
-                </ListItemText>
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-
-        {/* Blank block */}
-        {!isFetching && blankRows > 0 && (
-          <TableRow
-            component="div"
-            sx={{ height: 56 * blankRows, borderBottom: '1px solid', borderColor: 'divider' }}
-          />
-        )}
-      </TableBody>
-    ),
+            return (
+              <DynamicCellCreator<T>
+                key={`custom-cell-${column.accessor}-${index}`}
+                row={row}
+                column={column}
+                variant={variant}
+              />
+            );
+          })}
+        </TableRow>
+      )),
     [
-      SkeletonRows,
-      actionHeaderList,
-      activeFilters,
-      blankRows,
-      contextMenu,
-      contextMenuActionList,
       currentPageRows,
       handleCheckBoxSelect,
-      handleCloseContextMenu,
       handleContextMenu,
       isContextSelected,
-      isFetching,
       isQuickSelected,
-      onActionHeader,
-      onContextMenuAction,
       onRowClick,
       quickActions,
       variant,
@@ -423,31 +300,166 @@ export function RealTimeTableBody<T extends Record<string, any>>(props: RealTime
     ],
   );
 
+  const ContextMenu = React.useMemo(
+    () => (
+      <Menu
+        open={contextMenu !== null && !quickActions}
+        onClose={handleCloseContextMenu}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleCloseContextMenu();
+        }}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
+        }
+      >
+        <MenuList
+          sx={{
+            minWidth: 100,
+            maxWidth: 240,
+            p: 0,
+            outline: 'none',
+            '& .MuiMenuItem-root': {
+              gap: 0.5,
+            },
+            '& .MuiListItemText-root': {
+              overflow: 'hidden',
+              maxWidth: '100%',
+            },
+            '& .MuiListItemText-root .MuiTypography-root': {
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: 'block',
+              maxWidth: '100%',
+            },
+          }}
+        >
+          {contextMenuActionList?.map((action, index) => (
+            <MenuItem
+              key={`context-header-item-${index}`}
+              onClick={() => {
+                if (onContextMenuAction && selectedContextRow) {
+                  onContextMenuAction(action.type, [selectedContextRow], activeFilters);
+                }
+                handleCloseContextMenu();
+              }}
+            >
+              {action.icon && (
+                <ListItemIcon>
+                  <IconButton
+                    color={action.color || 'inherit'}
+                    disableRipple
+                    disableFocusRipple
+                    disableTouchRipple
+                    sx={{ p: 0 }}
+                  >
+                    {action.icon}
+                  </IconButton>
+                </ListItemIcon>
+              )}
+              <ListItemText>
+                <Typography
+                  variant="body2"
+                  color={action.color || 'inherit'}
+                  noWrap
+                  title={action.label}
+                >
+                  {action.label}
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+          ))}
+
+          {contextMenuActionList.length > 0 && actionHeaderList.length > 0 && <Divider />}
+
+          {actionHeaderList?.map((action, index) => (
+            <MenuItem
+              key={`context-menu-item-${index}`}
+              onClick={() => {
+                if (onActionHeader && selectedContextRow) {
+                  onActionHeader(action.type, [selectedContextRow], activeFilters);
+                }
+                handleCloseContextMenu();
+              }}
+            >
+              {action.icon && (
+                <ListItemIcon>
+                  <IconButton
+                    color={action.color || 'inherit'}
+                    disableRipple
+                    disableFocusRipple
+                    disableTouchRipple
+                    sx={{ p: 0 }}
+                  >
+                    {action.icon}
+                  </IconButton>
+                </ListItemIcon>
+              )}
+
+              <ListItemText>
+                <Typography
+                  variant="body2"
+                  color={action.color || 'inherit'}
+                  noWrap
+                  title={action.label}
+                >
+                  {action.label}
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Menu>
+    ),
+    [
+      actionHeaderList,
+      activeFilters,
+      contextMenu,
+      contextMenuActionList,
+      handleCloseContextMenu,
+      onActionHeader,
+      onContextMenuAction,
+      quickActions,
+      selectedContextRow,
+    ],
+  );
+
+  const TableContent = (
+    <TableBody component="div">
+      {isFetching ? SkeletonRows : DataRows}
+      {ContextMenu}
+      {!isFetching && blankRows > 0 && (
+        <TableRow
+          component="div"
+          sx={{ height: 56 * blankRows, borderBottom: '1px solid', borderColor: 'divider' }}
+        />
+      )}
+    </TableBody>
+  );
+
   return (
-    <Grid
+    <Table
       component="div"
-      container
       sx={{
         overflowX: 'auto',
-        scrollbarWidth: 'thin',
         minWidth: 150,
       }}
     >
-      <Table component="div">
-        <HeadWrapper
-          {...(isTableEmpty ? { role: 'table', style: { display: 'table', width: '100%' } } : {})}
-        >
-          <CommonHeaderCreator
-            currentPageRows={currentPageRows}
-            visibleColumns={visibleColumns}
-            quickActions={quickActions}
-            quickSelectedRows={quickSelectedRows}
-            setQuickSelectedRows={setQuickSelectedRows}
-          />
-        </HeadWrapper>
+      <HeadWrapper
+        {...(isTableEmpty ? { role: 'table', style: { display: 'table', width: '100%' } } : {})}
+      >
+        <CommonHeaderCreator
+          currentPageRows={currentPageRows}
+          visibleColumns={visibleColumns}
+          quickActions={quickActions}
+          quickSelectedRows={quickSelectedRows}
+          setQuickSelectedRows={setQuickSelectedRows}
+        />
+      </HeadWrapper>
 
-        {isTableEmpty ? EmptyTable : TableContent}
-      </Table>
-    </Grid>
+      {isTableEmpty ? EmptyTable : TableContent}
+    </Table>
   );
 }

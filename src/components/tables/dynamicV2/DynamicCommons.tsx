@@ -2,7 +2,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,8 +14,10 @@ import { InfoIcon, SquareCheckIcon, SquareIcon, SquareMinusIcon } from 'lucide-r
 import React, { Dispatch, SetStateAction, useCallback, useMemo } from 'react';
 import { DynamicColumns } from './DynamicTypes';
 
+export const ROW_HEIGHT = 56;
+
 export const StyledTableCell = styled(TableCell)(() => ({
-  height: 56,
+  height: ROW_HEIGHT,
   maxWidth: 180,
   padding: '0px 16px',
   textOverflow: 'ellipsis',
@@ -24,7 +26,7 @@ export const StyledTableCell = styled(TableCell)(() => ({
 }));
 
 export const variantHeightMap = {
-  standard: 56,
+  standard: ROW_HEIGHT,
   dense: 48,
   compact: 40,
 };
@@ -98,6 +100,10 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
   const { currentPageRows, visibleColumns, quickActions, quickSelectedRows, setQuickSelectedRows } =
     props;
 
+  const theme = useTheme();
+  const headerColor =
+    theme.palette.mode === 'light' ? 'rgba(235, 238, 245)' : theme.palette.action.selected;
+
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
@@ -125,7 +131,10 @@ export function CommonHeaderCreator<T extends Record<string, any>>(props: Common
   );
 
   return (
-    <TableHead component="div" style={{ backgroundColor: 'rgba(224, 227, 235, 0.5)' }}>
+    <TableHead
+      component="div"
+      style={{ backgroundColor: headerColor, position: 'sticky', top: 0, zIndex: 1 }}
+    >
       <TableRow component="div">
         {quickActions && (
           <StyledTableCell component="div" padding="checkbox">
@@ -272,7 +281,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
         container
         justifyContent="center"
         alignItems="center"
-        minHeight={rowsPerPage * 56 + (hideFooter ? 52 : 0)}
+        minHeight={rowsPerPage * ROW_HEIGHT + (hideFooter ? 52 : 0)}
       >
         {emptyTablePlaceholderSrc ? (
           <img
@@ -353,7 +362,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
                     }
                     aria-label={`table-row-${row.id}-${index}`}
                     sx={{
-                      minHeight: 56,
+                      minHeight: ROW_HEIGHT,
                       '&:hover': {
                         cursor: 'pointer',
                       },
@@ -396,7 +405,7 @@ export function CommonBodyCreator<T extends Record<string, any>>(props: CommonBo
 
         {/* Blank block */}
         {!isFetching && blankRows > 0 && (
-          <TableRow component="div" sx={{ height: 56 * blankRows }}>
+          <TableRow component="div" sx={{ height: ROW_HEIGHT * blankRows }}>
             <TableCell component="div" colSpan={visibleColumns.length} />
           </TableRow>
         )}

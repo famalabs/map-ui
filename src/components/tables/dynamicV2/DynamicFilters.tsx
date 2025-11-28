@@ -318,11 +318,12 @@ export function SelectFilterForm<T>(props: SelectFilterFormProps<T>) {
 
   const filterValue = useMemo(
     () =>
-      activeFilters?.find(
+      (activeFilters?.find(
         (filter) => filter.filterColumn === column.accessor && filter.filterIndex === filterIndex,
-      )?.filterValue ?? null,
+      )?.filterValue as string | number | boolean | undefined) ?? null,
     [activeFilters, column.accessor, filterIndex],
   );
+
   const selectedFilterOption = useMemo(
     () => column.filterOptions?.options?.find((option) => option.id === filterValue),
     [column.filterOptions?.options, filterValue],
