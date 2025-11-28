@@ -1,5 +1,12 @@
-import { PaletteOptions, createTheme } from '@mui/material/styles';
-import { TypographyVariantsOptions } from '@mui/material/styles';
+import {
+  Components,
+  CssVarsTheme,
+  PaletteOptions,
+  Theme,
+  TypographyVariantsOptions,
+  createTheme,
+} from '@mui/material/styles';
+import { SquareCheck, SquareIcon } from 'lucide-react';
 
 /* --- (!Important!) Declare custom component variants here --- */
 // declare module "@mui/material/Button" {
@@ -24,35 +31,35 @@ export const FamaTheme = {
   secondary: {
     main: '#EE6C4D',
     light: '#EE6C4D',
-    dark: '#FFFFFF90',
+    dark: '#FFF3E8',
     contrastText: '#000000',
   },
 
   info: {
     main: '#98C1D9',
-    light: '#190793',
-    dark: '#2f2d9f',
+    light: '#CFEFFB',
+    dark: '#A3CAF0',
     contrastText: '#000000',
   },
 
   success: {
     main: '#40916C',
     light: '#6abf99',
-    dark: '#2c6d47',
+    dark: '#7FD1A8',
     contrastText: '#ffffff',
   },
 
   warning: {
     main: '#FECF45',
     light: '#fffd77',
-    dark: '#c79a0a',
+    dark: '#FECF45',
     contrastText: '#000000',
   },
 
   danger: {
     main: '#E63946',
     light: '#ff6f70',
-    dark: '#9e2b2e',
+    dark: '#FF7A7C',
     contrastText: '#ffffff',
   },
 
@@ -78,7 +85,7 @@ export const FamaTheme = {
 
 /* Custom Components */
 
-const CustomizedComponents: any = {
+const CustomizedComponents: Components<Omit<Theme, 'palette' | 'components'> & CssVarsTheme> = {
   MuiButton: {
     styleOverrides: {
       root: {
@@ -87,7 +94,6 @@ const CustomizedComponents: any = {
       },
     },
   },
-
   MuiButtonBase: {
     defaultProps: {
       disableRipple: true,
@@ -99,7 +105,6 @@ const CustomizedComponents: any = {
       },
     },
   },
-
   MuiPaper: {
     styleOverrides: {
       root: {
@@ -134,6 +139,7 @@ const CustomizedComponents: any = {
     styleOverrides: {
       root: {
         minWidth: '36px',
+        color: '#2c3349',
       },
     },
   },
@@ -144,11 +150,15 @@ const CustomizedComponents: any = {
       },
     },
   },
+  MuiIconButton: {
+    styleOverrides: {
+      colorInherit: '#2c3349',
+    },
+  },
   MuiCard: {
     styleOverrides: {
       root: {
         '&:hover': {
-          // border: '1px solid rgba(25, 25, 25, 0.15)',
           boxShadow: 'rgba(25, 25, 25, 0.09) 0px 0px 0px 3px',
         },
       },
@@ -162,12 +172,6 @@ const CustomizedComponents: any = {
         borderRadius: '12px',
         boxShadow: 'rgba(25, 25, 25, 0.09) 0px 0px 0px 3px',
       },
-      listItem: {
-        padding: '0 !important',
-      },
-      root: {
-        // backdropFilter: 'blur(1px)'
-      },
     },
   },
   MuiAutocomplete: {
@@ -178,6 +182,26 @@ const CustomizedComponents: any = {
         borderRadius: '12px',
         boxShadow: 'rgba(25, 25, 25, 0.09) 0px 0px 0px 3px',
       },
+    },
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        borderRadius: '10px',
+      },
+    },
+  },
+  MuiInput: {
+    styleOverrides: {
+      root: {
+        borderRadius: '10px',
+      },
+    },
+  },
+  MuiCheckbox: {
+    defaultProps: {
+      checkedIcon: <SquareCheck size={22} />,
+      icon: <SquareIcon size={22} />,
     },
   },
 };
@@ -230,13 +254,10 @@ const DarkTypography: TypographyVariantsOptions = {
 const LightPalette: PaletteOptions = {
   mode: 'light',
   primary: {
-    main: '#146EF5', //FamaTheme.primary.main,
-  },
-  info: {
-    main: '#EFF3FB',
+    main: '#146EF5',
   },
   secondary: {
-    main: '#146EF5', //FamaTheme.secondary.light,
+    main: '#146EF5',
   },
   success: {
     main: FamaTheme.success.main,
@@ -252,6 +273,10 @@ const LightPalette: PaletteOptions = {
     paper: '#ffffff',
   },
   divider: 'rgba(25, 25, 25, 0.08)',
+  text: {
+    primary: FamaTheme.text_strong,
+    secondary: FamaTheme.text_medium,
+  },
 };
 
 const DarkPalette: PaletteOptions = {
@@ -308,7 +333,6 @@ const LightTheme = createTheme({
 });
 
 LightTheme.shadows[1] = '0 .5rem 1rem 0 rgba(44,51,73,.1)';
-//LightTheme.shadows[6] =  '0 .5rem 1rem 0 rgba(44,51,73,.1)';
 
 const DarkTheme = createTheme({
   breakpoints: {

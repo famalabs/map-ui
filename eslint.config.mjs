@@ -32,6 +32,11 @@ export default [
         },
       ],
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
