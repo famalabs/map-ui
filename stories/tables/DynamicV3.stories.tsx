@@ -98,20 +98,20 @@ const RenderTable = (args: RealtimeTableProps<any>) => {
         {
           accessor: 'status',
           label: 'Stato',
-          visible: false,
+          visible: true,
           Cell: SelectCell([
             { id: 2, type: 'primary', label: 'Accettato' },
             { id: 1, type: 'success', label: 'Sottomesso' },
             { id: 0, type: 'warning', label: 'Non sottomesso' },
           ]),
-          // filterOptions: {
-          //   type: 'select',
-          //   options: [
-          //     { id: 2, label: 'Accettato' },
-          //     { id: 1, label: 'Sottomesso' },
-          //     { id: 0, label: 'Non sottomesso' },
-          //   ],
-          // },
+          filterOptions: {
+            type: 'select',
+            options: [
+              { id: 2, label: 'Accettato' },
+              { id: true, label: 'Sottomesso' },
+              { id: false, label: 'Non sottomesso' },
+            ],
+          },
         },
         {
           accessor: 'actions',

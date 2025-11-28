@@ -18,8 +18,8 @@ export default meta;
 
 const RenderInputField = (args: Omit<InputFieldProps<Record<string, any>>, 'name' | 'control'>) => {
   const { control, setValue } = useForm<Record<string, any>>({
-    defaultValues: {
-      inputField: args.defaultValue || '',
+    values: {
+      inputField: 'One',
       inputFieldTwo: 'TEST',
     },
   });

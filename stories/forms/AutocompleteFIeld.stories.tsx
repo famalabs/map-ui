@@ -63,6 +63,7 @@ const InnerRender = ({
     <Container maxWidth="md" sx={{ verticalAlign: 'middle' }}>
       <AutocompleteField
         fullWidth
+        size="small"
         control={control}
         name="inputField"
         {...args}

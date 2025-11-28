@@ -1,10 +1,11 @@
 import Container from '@mui/material/Container';
-import { Meta, StoryObj } from '@storybook/react';
-import { useForm } from 'react-hook-form';
-import { DateField, DateFieldProps } from '../../src/components/forms/DateField';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { AiEditingProvider, useAiEditing } from '../../src/components/forms/AiEditingContext';
+import { DateField, DateFieldProps } from '../../src/components/forms/DateField';
 
 const meta: Meta<typeof DateField> = {
   title: 'Forms/DateField',
@@ -19,11 +20,19 @@ type Story = StoryObj<DateFieldProps<Record<string, any>>>;
 export default meta;
 
 const RenderDateField = (args: Omit<DateFieldProps<Record<string, any>>, 'name' | 'control'>) => {
-  const { control } = useForm<Record<string, any>>({
+  const { control, setValue, watch } = useForm<Record<string, any>>({
     defaultValues: {
-      inputField: args.defaultValue || '',
+      inputField: '2024-12-15T10:30',
     },
   });
+  React.useEffect(() => {
+    setTimeout(() => {
+      console.log('Setting inputField to 2023-12-25T10:30');
+      setValue('inputField', '2023-12-25T10:30');
+    }, 6000);
+  }, [setValue]);
+
+  console.log('Current value:', watch('inputField'));
 
   return (
     <AiEditingProvider>
@@ -52,15 +61,35 @@ const InnerRender = ({
     }
   };
 
+  const [currentField, setCurrentField] = React.useState<string>('inputField');
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="it">
       <Container maxWidth="md" sx={{ verticalAlign: 'middle' }}>
-        <DateField
-          control={control}
-          name="inputField"
-          {...args}
-          slotProps={{ textField: { size: 'small' } }}
-        />
+        {currentField === 'inputField' && (
+          <DateField
+            control={control}
+            name="inputField"
+            {...args}
+            slotProps={{ textField: { size: 'small' } }}
+          />
+        )}
+        {currentField === 'inputField_2' && (
+          <DateField
+            control={control}
+            name="inputField_2"
+            {...args}
+            slotProps={{ textField: { size: 'small' } }}
+          />
+        )}
+
+        <div style={{ marginTop: '16px' }}>
+          <button onClick={() => setCurrentField('inputField')} style={{ marginRight: '8px' }}>
+            Show Input Field 1
+          </button>
+          <button onClick={() => setCurrentField('inputField_2')}>Show Input Field 2</button>
+        </div>
+
         <button onClick={handleToggleAiEdit} style={{ marginTop: '16px' }}>
           {aiEditingField === 'inputField' ? 'Stop AI Edit' : 'Start AI Edit'}
         </button>
@@ -76,7 +105,7 @@ export const DateFieldTemplate: Story = {
   args: {
     label: 'Title',
     legend: true,
-    defaultValue: '11/02/2020 13:45',
+    closeOnSelect: true,
   },
 
   render: (args) => <RenderDateField {...args} />,

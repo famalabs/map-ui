@@ -75,9 +75,13 @@ export function SelectField<T extends FieldValues>(props: SelectFieldProps<T>) {
         return (
           <>
             {legend && <FormLabel> {selectProps.label} </FormLabel>}
-            {!legend && <InputLabel id={`${name}-label`}> {selectProps.label} </InputLabel>}
             {!isAiEditing ? (
-              <FormControl fullWidth={selectProps.fullWidth ?? true} sx={{ position: 'relative' }}>
+              <FormControl
+                fullWidth={selectProps.fullWidth ?? true}
+                size={selectProps.size}
+                sx={{ position: 'relative' }}
+              >
+                {!legend && <InputLabel id={`${name}-label`}> {selectProps.label} </InputLabel>}
                 <Select
                   labelId={`${name}-label`}
                   variant="outlined"
@@ -114,6 +118,7 @@ export function SelectField<T extends FieldValues>(props: SelectFieldProps<T>) {
                 control={control}
                 legend={false}
                 value={getSelectedLabel(field.value)}
+                size={selectProps.size}
                 sx={{ ...aiEffectStyle(isAiEditing), pointerEvents: 'none' }}
               />
             )}

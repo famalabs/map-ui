@@ -3,6 +3,7 @@ import FormLabel from '@mui/material/FormLabel';
 import { DateTimePicker, DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { CalendarFoldIcon, SparklesIcon } from 'lucide-react';
+import React from 'react';
 import {
   Control,
   Controller,
@@ -10,6 +11,7 @@ import {
   FieldValues,
   Path,
   RegisterOptions,
+  useWatch,
 } from 'react-hook-form';
 import { useIsAiDirty, useIsAiEditing } from './AiEditingContext';
 import { aiEffectStyle } from './AiUtils';
@@ -48,6 +50,51 @@ export function DateField<T extends FieldValues>(props: DateFieldProps<T>) {
   const isAiEditing = useIsAiEditing(name);
   const isDirtyAi = useIsAiDirty(name);
 
+  const minDate: dayjs.Dayjs = datePickerProps.minDate ?? dayjs('1900-01-01');
+  const maxDate: dayjs.Dayjs = datePickerProps.maxDate ?? dayjs('2099-12-31');
+  const isWithinBounds = React.useCallback(
+    (date: dayjs.Dayjs) => {
+      return (
+        (!minDate || date.isAfter(minDate) || date.isSame(minDate, 'day')) &&
+        (!maxDate || date.isBefore(maxDate) || date.isSame(maxDate, 'day'))
+      );
+    },
+    [minDate, maxDate],
+  );
+
+  const fieldValue = useWatch({ control, name });
+  const [internalValue, setInternalValue] = React.useState<dayjs.Dayjs | null>(() => {
+    if (fieldValue) {
+      const date = dayjs(fieldValue as string);
+      return date.isValid() && isWithinBounds(date) ? date : null;
+    }
+    return null;
+  });
+
+  if (fieldValue && !internalValue) {
+    const date = dayjs(fieldValue as string);
+    if (date.isValid() && isWithinBounds(date)) {
+      setInternalValue(date);
+    }
+  }
+
+  const handleOnAccept = React.useCallback(
+    (date: dayjs.Dayjs | null, fieldOnChange: (value: any) => void, fieldOnBlur: () => void) => {
+      if (!date || !date.isValid()) {
+        fieldOnChange(emptyValue);
+        fieldOnBlur();
+        setInternalValue(null);
+        return;
+      }
+
+      const isoString = date.toDate().toISOString();
+      fieldOnChange(isoString);
+      fieldOnBlur();
+      setInternalValue(date);
+    },
+    [emptyValue],
+  );
+
   return (
     <Controller
       name={name}
@@ -56,99 +103,106 @@ export function DateField<T extends FieldValues>(props: DateFieldProps<T>) {
       disabled={datePickerProps.disabled}
       rules={rules}
       shouldUnregister={shouldUnregister}
-      render={({ field, fieldState: { error } }) => (
-        <FormControl
-          fullWidth={fullWidth}
-          sx={{
-            margin: 'auto',
-            position: 'relative',
-          }}
-        >
-          {legend && <FormLabel>{datePickerProps.label}</FormLabel>}
-          {!isAiEditing ? (
-            <>
-              <DateTimePicker
-                views={['year', 'month', 'day']}
-                format="DD/MM/YYYY HH:mm"
-                {...datePickerProps}
-                {...field}
-                ref={field.ref}
-                formatDensity="dense"
-                value={field.value ? dayjs(field.value as string) : null}
-                onChange={(date, context) => {
-                  if (context?.validationError) return;
-                  if (!date || !date.isValid()) return;
-                  field.onChange(date.toDate().toISOString());
-                }}
-                enableAccessibleFieldDOMStructure={false}
-                onAccept={(date) => {
-                  field.onChange(date && date.isValid() ? date.toDate().toISOString() : emptyValue);
-                  field.onBlur();
-                }}
-                slots={{
-                  ...datePickerProps.slots,
-                  openPickerIcon: CalendarFoldIcon,
-                }}
-                slotProps={{
-                  openPickerIcon: {
-                    color: theme.palette.action.active,
-                    size:
-                      (datePickerProps.slotProps?.textField as TextFieldProps)?.size === 'small'
-                        ? 20
-                        : 24,
-                  } as SvgIconProps & { size?: number },
-                  openPickerButton: {
-                    size: (datePickerProps.slotProps?.textField as TextFieldProps)?.size,
-                  },
-                  ...datePickerProps.slotProps,
-                  textField: {
-                    label: !legend ? datePickerProps.label : '',
-                    error: Boolean(error),
-                    helperText: error?.message,
-                    onBlur: field.onBlur,
-                    ...datePickerProps.slotProps?.textField,
-                    sx: {
-                      ...(datePickerProps.slotProps?.textField as TextFieldProps)?.sx,
-                      ...(isDirtyAi ? aiEffectStyle() : {}),
+      render={({ field, fieldState: { error } }) => {
+        return (
+          <FormControl
+            fullWidth={fullWidth}
+            sx={{
+              margin: 'auto',
+              position: 'relative',
+            }}
+          >
+            {legend && <FormLabel>{datePickerProps.label}</FormLabel>}
+            {!isAiEditing ? (
+              <>
+                <DateTimePicker
+                  views={['year', 'month', 'day']}
+                  format="DD/MM/YYYY HH:mm"
+                  {...datePickerProps}
+                  {...field}
+                  ref={field.ref}
+                  formatDensity="dense"
+                  value={internalValue}
+                  onChange={(date) => {
+                    if (!date || !date.isValid() || !isWithinBounds(date)) {
+                      setInternalValue(null);
+                      return;
+                    }
+                    setInternalValue(date);
+                  }}
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  enableAccessibleFieldDOMStructure={false}
+                  onAccept={(date) => handleOnAccept(date, field.onChange, field.onBlur)}
+                  slots={{
+                    ...datePickerProps.slots,
+                    openPickerIcon: CalendarFoldIcon,
+                  }}
+                  slotProps={{
+                    openPickerIcon: {
+                      color: theme.palette.action.active,
+                      size:
+                        (datePickerProps.slotProps?.textField as TextFieldProps)?.size === 'small'
+                          ? 20
+                          : 24,
+                    } as SvgIconProps & { size?: number },
+                    openPickerButton: {
+                      size: (datePickerProps.slotProps?.textField as TextFieldProps)?.size,
                     },
+                    ...datePickerProps.slotProps,
+                    textField: {
+                      label: !legend ? datePickerProps.label : '',
+                      error: Boolean(error),
+                      helperText: error?.message,
+                      onBlur: field.onBlur,
+                      ...datePickerProps.slotProps?.textField,
+                      sx: {
+                        ...(datePickerProps.slotProps?.textField as TextFieldProps)?.sx,
+                        ...(isDirtyAi ? aiEffectStyle() : {}),
+                      },
+                    },
+                  }}
+                />
+                {isDirtyAi && !isAiEditing && (
+                  <InputAdornment
+                    position="end"
+                    sx={{ position: 'absolute', right: 45, top: '57%' }}
+                  >
+                    <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
+                  </InputAdornment>
+                )}
+              </>
+            ) : (
+              <InputField
+                name={name}
+                control={control}
+                size={(datePickerProps.slotProps?.textField as TextFieldProps)?.size || 'medium'}
+                value={
+                  field.value ? dayjs(field.value as string).format('DD/MM/YYYY HH:mm') : emptyValue
+                }
+                legend={false}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <CalendarFoldIcon
+                          size={
+                            (datePickerProps.slotProps?.textField as TextFieldProps)?.size ===
+                            'small'
+                              ? 20
+                              : 24
+                          }
+                        />
+                      </InputAdornment>
+                    ),
                   },
                 }}
+                sx={{ ...aiEffectStyle(isAiEditing) }}
               />
-              {isDirtyAi && !isAiEditing && (
-                <InputAdornment position="end" sx={{ position: 'absolute', right: 45, top: '57%' }}>
-                  <SparklesIcon size={20} color="rgba(0,122,255,0.8)" />
-                </InputAdornment>
-              )}
-            </>
-          ) : (
-            <InputField
-              name={name}
-              control={control}
-              size={(datePickerProps.slotProps?.textField as TextFieldProps)?.size || 'medium'}
-              value={
-                field.value ? dayjs(field.value as string).format('DD/MM/YYYY HH:mm') : emptyValue
-              }
-              legend={false}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <CalendarFoldIcon
-                        size={
-                          (datePickerProps.slotProps?.textField as TextFieldProps)?.size === 'small'
-                            ? 20
-                            : 24
-                        }
-                      />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{ ...aiEffectStyle(isAiEditing) }}
-            />
-          )}
-        </FormControl>
-      )}
+            )}
+          </FormControl>
+        );
+      }}
     />
   );
 }

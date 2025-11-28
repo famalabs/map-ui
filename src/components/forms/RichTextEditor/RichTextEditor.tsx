@@ -16,7 +16,7 @@ import {
 
 const locale = it;
 const richTextGlobalStyles = {
-  '.ProseMirror': {
+  '.ProseMirror .bn-editor .bn-default-styles': {
     bakcgroundColor: 'transparent',
   },
   '.bn-editor': {
@@ -229,6 +229,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     id ? (value as string) : undefined,
   );
   const getOutput = useCallback(async () => {
+    if (!editor) return;
     if (mode === 'html') {
       const html = await editor.blocksToHTMLLossy(editor.document);
       if (id && uncontrolledHtml !== html) {
@@ -282,7 +283,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
   const inputAsHtml = React.useCallback(async () => {
     try {
       // console.log('inputAsHtml called with value:', value, 'and mode:', mode);
-      if (!value || mode !== 'html') return;
+      if (!editor || !value || mode !== 'html') return;
       if (typeof value !== 'string') {
         console.log('Value must be a string when mode is "html"');
         return;
@@ -298,7 +299,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
   const inputAsJson = React.useCallback(async () => {
     try {
       // console.log('inputAsJson called with value:', value, 'and mode:', mode);
-      if (!value || mode !== 'json') return;
+      if (!editor || !value || mode !== 'json') return;
       if (Array.isArray(value) && value.length > 0) {
         editor.replaceBlocks(editor.document, value as PartialBlock[]);
         setDataLoaded(true);
@@ -313,7 +314,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
   const inputAsMarkdown = React.useCallback(async () => {
     try {
       // console.log('inputAsMarkdown called with value:', value, 'and mode:', mode);
-      if (!value || mode !== 'markdown') return;
+      if (!editor || !value || mode !== 'markdown') return;
       if (typeof value !== 'string') {
         console.log('Value must be a string when mode is "markdown"');
         return;
@@ -353,72 +354,80 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
           </Typography>
         </Grid>
       )}
-      <Grid size={12} container component="div">
-        <BlockNoteView
-          ref={ref}
-          title={placeholder}
-          slashMenu={menu}
-          editor={editor}
-          editable={!readonly}
-          theme={currentTheme === 'dark' ? darkTheme : lightTheme}
-          formattingToolbar={toolbar !== 'static'}
-          draggable={false}
-          {...restProps}
-          className={combinedClassName}
-          onChange={handleOnChange}
-          onBlurCapture={handleOnBlur}
-          onFocusCapture={() => setIsFocused(true)}
-          style={editorStyles}
-        >
-          <Grid
-            container
-            size={12}
-            sx={{ position: 'relative', pointerEvents: disabled ? 'none' : 'auto' }}
+      {editor && (
+        <Grid size={12} container component="div">
+          <BlockNoteView
+            ref={ref}
+            title={placeholder}
+            slashMenu={menu}
+            editor={editor}
+            editable={!readonly}
+            theme={currentTheme === 'dark' ? darkTheme : lightTheme}
+            formattingToolbar={toolbar !== 'static'}
+            {...restProps}
+            className={combinedClassName}
+            onChange={handleOnChange}
+            onBlurCapture={handleOnBlur}
+            onFocusCapture={() => setIsFocused(true)}
+            style={editorStyles}
           >
-            <Grid flexGrow={1}>
-              {!readonly && toolbar === 'static' ? (
-                <CustomFormattingToolbar
-                  editor={editor}
-                  availableButtons={availableButtons}
-                  customButtons={customButtons}
-                />
-              ) : (
-                <span className="bn-placeholder" />
+            <Grid
+              container
+              size={12}
+              sx={{
+                position: 'relative',
+                pointerEvents: disabled ? 'none' : 'auto',
+              }}
+            >
+              <Grid flexGrow={1}>
+                {!readonly && toolbar === 'static' ? (
+                  <CustomFormattingToolbar
+                    editor={editor}
+                    availableButtons={availableButtons}
+                    customButtons={customButtons}
+                  />
+                ) : (
+                  <span className="bn-placeholder" />
+                )}
+              </Grid>
+
+              {submitButton && (
+                <Grid container justifyContent="flex-end" alignItems="flex-end" m="10px" mb="12px">
+                  <Button
+                    type={submitButton.type ?? 'button'}
+                    variant={submitButton.variant ?? 'contained'}
+                    size="small"
+                    color={submitButton.color ?? 'primary'}
+                    onClick={submitButton.onClick}
+                  >
+                    {submitButton.label || 'Custom Action'}
+                  </Button>
+                </Grid>
               )}
             </Grid>
-
-            {submitButton && (
-              <Grid container justifyContent="flex-end" alignItems="flex-end" m="10px" mb="12px">
-                <Button
-                  type={submitButton.type ?? 'button'}
-                  variant={submitButton.variant ?? 'contained'}
-                  size="small"
-                  color={submitButton.color ?? 'primary'}
-                  onClick={submitButton.onClick}
-                >
-                  {submitButton.label || 'Custom Action'}
-                </Button>
-              </Grid>
-            )}
-          </Grid>
-        </BlockNoteView>
-        {id && (
-          <input
-            type="hidden"
-            name={id}
-            value={uncontrolledHtml ?? ''}
-            style={{
-              display: 'none',
-            }}
-          />
-        )}
-      </Grid>
+          </BlockNoteView>
+          {id && (
+            <input
+              type="hidden"
+              name={id}
+              value={uncontrolledHtml ?? ''}
+              style={{
+                display: 'none',
+              }}
+            />
+          )}
+        </Grid>
+      )}
       {error && errorMessage && (
         <Grid size={12}>
           <Typography
             variant="caption"
             color="error"
-            style={{ marginInline: '14px', marginTop: '3px', marginBottom: -1 }}
+            style={{
+              marginInline: '14px',
+              marginTop: '3px',
+              marginBottom: -1,
+            }}
           >
             {errorMessage}
           </Typography>

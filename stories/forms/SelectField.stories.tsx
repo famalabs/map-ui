@@ -59,7 +59,7 @@ const InnerRender = ({
 
   return (
     <Container maxWidth="md" sx={{ verticalAlign: 'middle' }}>
-      <SelectField control={control} name="inputField" {...args}>
+      <SelectField control={control} name="inputField" size="small" {...args}>
         <MenuItem value="">None</MenuItem>
         <MenuItem value="option1">Option 1</MenuItem>
         <MenuItem value="option2">Option 2</MenuItem>
@@ -79,7 +79,7 @@ const InnerRender = ({
 export const SelectFieldTemplate: Story = {
   args: {
     label: 'Title',
-    legend: true,
+    legend: false,
   },
 
   render: (args) => <RenderSelectField {...args} />,

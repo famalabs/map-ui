@@ -151,6 +151,7 @@ export function AutocompleteField<
                 control={control}
                 legend={false}
                 value={getDisplayValue(field.value)}
+                size={autoProps.size}
                 sx={{ ...aiEffectStyle(isAiEditing), pointerEvents: 'none' }}
               />
             )}
