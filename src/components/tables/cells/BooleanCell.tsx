@@ -7,7 +7,7 @@ export const BooleanCell = (
   toolTip?: (value: string) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>,
 ) => {
-  const BooleanCellComponent = ({ cellValue }: { cellValue: any }): React.ReactNode => {
+  const Renderer = ({ cellValue }: { cellValue: any }): React.ReactNode => {
     if (typeof cellValue === 'undefined' || cellValue === null) {
       return <Grid container>{''}</Grid>;
     }
@@ -20,6 +20,6 @@ export const BooleanCell = (
       </Grid>
     );
   };
-  BooleanCellComponent.displayName = 'BooleanCellComponent';
-  return BooleanCellComponent;
+  Renderer.displayName = 'BooleanCell';
+  return Renderer;
 };

@@ -21,7 +21,7 @@ export const StatusCell = (
   tooltip?: (value: IStatus) => string,
   tooltipProps?: Omit<TooltipProps, 'title' | 'children'>,
 ) => {
-  const StatusCellComponent = ({ cellValue }: { cellValue: string }): React.ReactNode => {
+  const Renderer = ({ cellValue }: { cellValue: string }): React.ReactNode => {
     if (typeof cellValue === 'undefined' || cellValue === null || !isStatus(cellValue)) {
       return <Grid container>{''}</Grid>;
     }
@@ -36,6 +36,6 @@ export const StatusCell = (
       </Grid>
     );
   };
-  StatusCellComponent.displayName = 'StatusCellComponent';
-  return StatusCellComponent;
+  Renderer.displayName = 'StatusCell';
+  return Renderer;
 };

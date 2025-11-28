@@ -10,16 +10,15 @@ interface ExtIconButtonProps extends Omit<IconButtonProps, 'onClick'> {
 
 export const ActionCell = (
   clickAction: (value: unknown) => void,
-  buttonProps: ExtButtonProps | ExtIconButtonProps
-) => ({ cellValue }: { cellValue: string }): React.ReactNode => {
+  buttonProps: ExtButtonProps | ExtIconButtonProps,
+) => {
+  const Renderer = ({ cellValue }: { cellValue: string }): React.ReactNode => {
+    const onButtonClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+      e.stopPropagation();
+      clickAction(cellValue);
+    };
 
-  const onButtonClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.stopPropagation();
-    clickAction(cellValue);
-  };
-
-  return (
-    ('icon' in buttonProps) ? (
+    return 'icon' in buttonProps ? (
       <IconButton onClick={onButtonClick} {...buttonProps}>
         {buttonProps?.icon}
       </IconButton>
@@ -27,6 +26,10 @@ export const ActionCell = (
       <Button onClick={onButtonClick} {...buttonProps}>
         {buttonProps?.label}
       </Button>
-    )
-  );
+    );
+  };
+
+  Renderer.displayName = 'ActionCell';
+
+  return Renderer;
 };

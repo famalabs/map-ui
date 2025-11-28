@@ -1,6 +1,6 @@
-import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
-import React from "react";
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import React from 'react';
 
 export interface SelectCellOption {
   id: string | number | boolean;
@@ -8,17 +8,10 @@ export interface SelectCellOption {
   label: string;
 }
 
-export const SelectCell = (selectOptions: SelectCellOption[]) =>
-  ({ cellValue }: { cellValue: string }): React.ReactNode => {
-
-    if (
-      cellValue === undefined
-      || cellValue === null
-      || cellValue === ''
-    ) {
-      <Grid container>
-        {''}
-      </Grid>
+export const SelectCell = (selectOptions: SelectCellOption[]) => {
+  const Renderer = ({ cellValue }: { cellValue: string }): React.ReactNode => {
+    if (cellValue === undefined || cellValue === null || cellValue === '') {
+      return <Grid container>{''}</Grid>;
     }
 
     const cellColor = selectOptions.find((option) => option.id === cellValue)?.type;
@@ -41,3 +34,7 @@ export const SelectCell = (selectOptions: SelectCellOption[]) =>
       </Grid>
     );
   };
+
+  Renderer.displayName = 'SelectCell';
+  return Renderer;
+};
